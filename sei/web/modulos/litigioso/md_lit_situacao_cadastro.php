@@ -57,6 +57,7 @@
                         $objSituacaoLitigiosoDTO->setStrSinDefesa('N');
                         $objSituacaoLitigiosoDTO->setStrSinRecursal('N');
                         $objSituacaoLitigiosoDTO->setStrSinDecisoria('N');
+                        $objSituacaoLitigiosoDTO->setStrSinOpcional('N');
                         #$objSituacaoLitigiosoDTO->setStrSinSuspensiva('N');
                         #$objSituacaoLitigiosoDTO->setStrSinLivre('N');
 
