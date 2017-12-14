@@ -1,0 +1,52 @@
+<div class="clear-margin-3"></div>
+
+<div class="grid grid_13">
+    <fieldset class="infraFieldset" id="fieldsetDecisao" style="<?php echo $strGridDecisao == '' && !count($arrVincDecisaoSit) ?'display:none': ''?>" >
+        <legend class="infraLegend">Decisões</legend>
+        <div class="clear-margin-1"></div>
+ 
+            <div class="botoesDecisao">
+                <button id="btnCadastroDecisoes" name="btnCadastroDecisoes" type="button" value="Cadastro de Decisões"
+                        class="infraButton" onclick="abrirModalCadastarDecisao()">Cadastro de Decisões </button>
+
+                <button id="btnHistoricoGeral" name="btnHistoricoGeral" type="button" value="Histórico Geral"
+                        class="infraButton" onclick="abrirModalHistoricoDecisao()">Histórico Geral </button>
+            </div>
+
+        <div class="clear-margin-2"></div>
+
+        <!-- Grid Decisões -->
+        <div class="grid grid_12" style="<?php echo ($strGridDecisao == '') ? 'display: none' : ''; ?>">
+            <table width="99%" class="infraTable" summary="Decisão" id="tbDecisao">
+
+
+                <caption class="infraCaption">
+                    <?= PaginaSEI::getInstance()->gerarCaptionTabela('Infrações cadastradas para este Processo', 1) ?>
+                </caption>
+
+
+                <tr>
+                    <th class="infraTh" style="display: none">ID Infração</th>
+                    <th class="infraTh" style="display: none">ID RelDispositivoNormativoCondutaControle</th>
+                    <th class="infraTh" style="display: none">ID Tipo Decisao</th>
+                    <th class="infraTh" style="display: none">ID Especie Decisao</th>
+                    <th class="infraTh" style="display: none">multa</th>
+                    <th class="infraTh" style="display: none">id Obrigação</th>
+                    <th class="infraTh" style="display: none">prazo</th>
+                    <th class="infraTh" style="display: none">ID Usuário</th>
+                    <th class="infraTh" style="display: none">ID Unidade</th>
+                    <th class="infraTh">Infração</th>
+                    <th class="infraTh">Última decisão</th>
+                    <th class="infraTh">Espécie de decisão</th>
+                    <th class="infraTh">Data da operação</th>
+                    <th class="infraTh">Usuário</th>
+                    <th class="infraTh">Unidade</th>
+                </tr>
+
+            </table>
+            <!-- Hidden Relacionado à tabela -->
+            <input type="hidden" name="hdnTbDecisao" id="hdnTbDecisao" value="<?php echo $strGridDecisao?>"/>
+        </div>
+
+    </fieldset>
+</div>
