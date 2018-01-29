@@ -317,14 +317,14 @@
 
         </div>
 
-        <!--Fistel -->
-        <div class="grid grid_8" id="div-fistel" style="display: none">
+        <!--Numero do interessado -->
+        <div class="grid grid_8" id="div-numero" style="display: none">
             <div class="grid grid_6">
-                <label class="infraLabelObrigatorio" id="lbFistel" name="lblFistel" for="txtDtVencimento">Fistel:</label>
+                <label class="infraLabelObrigatorio" id="lbNumeroInteressado" name="lblNumeroInteressado" for="txtDtVencimento">Número de Complemento do Interessado:</label>
             </div>
 
             <div class="grid grid_6">
-                <select class="infraSelect" name="selFistel" id="selFistel" data-numFistel="<?= $numFistel ?>"  <?= $objMdLitLancamentoDTO? 'disabled="disabled"':''  ?>>
+                <select class="infraSelect" name="selNumeroInteressado" id="selNumeroInteressado" data-numInteressado="<?= $numInteressado ?>"  <?= $objMdLitLancamentoDTO? 'disabled="disabled"':''  ?>>
                 </select>
 
             </div>
@@ -355,7 +355,7 @@
         <!-- Hidden suspenso para as situações recursal -->
         <input type="hidden" name="hdnSinSuspenso" id="hdnSinSuspenso" value="<?= $objMdLitLancamentoDTO? $objMdLitLancamentoDTO->getStrSinSuspenso():'' ?>" />
 
-        <input type="hidden" name="hdnNumFistel" value="<?= $numFistel ?>">
+        <input type="hidden" name="hdnNumInteressado" value="<?= $numInteressado ?>">
 
 </fieldset>
 </div>

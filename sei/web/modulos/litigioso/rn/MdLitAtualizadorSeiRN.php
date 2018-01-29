@@ -178,24 +178,6 @@
             //$this->finalizar(' EXECUTANDO v001', true);
             $this->logar(' EXECUTANDO A INSTALACAO DA VERSAO 0.0.1 DO MODULO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
 
-            $this->logar(' CRIANDO A TABELA mod_tipo_processo_litigioso E SUA sequence');
-
-            BancoSEI::getInstance()->executarSql('CREATE TABLE mod_tipo_processo_litigioso (id_mod_tipo_processo_litigioso ' . $objInfraMetaBD->tipoNumero() . '  NOT NULL ,
-		                                                                             sigla  ' . $objInfraMetaBD->tipoTextoVariavel(50) . '  NOT NULL ,
-		                                                                             descricao ' . $objInfraMetaBD->tipoTextoVariavel(250) . '  NOT NULL ,
-		                                                                             sin_ativo ' . $objInfraMetaBD->tipoTextoFixo(1) . '  NOT NULL )');
-
-            $objInfraMetaBD->adicionarChavePrimaria('mod_tipo_processo_litigioso', 'pk_mod_tipo_processo_litigioso', array('id_mod_tipo_processo_litigioso'));
-
-            //criando a sequence para a tabela mod_tipo_processo_litigioso
-            if (BancoSEI::getInstance() instanceof InfraMySql) {
-                BancoSEI::getInstance()->executarSql('create table seq_mod_tipo_processo_litigioso (id bigint not null primary key AUTO_INCREMENT, campo char(1) null) AUTO_INCREMENT = 1');
-            } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql('create table seq_mod_tipo_processo_litigioso (id bigint identity(1,1), campo char(1) null)');
-            } else if (BancoSEI::getInstance() instanceof InfraOracle) {
-                BancoSEI::getInstance()->criarSequencialNativa('seq_mod_tipo_processo_litigioso', 1);
-            }
-
             //adicionando parametro para controlar versao do modulo
             BancoSEI::getInstance()->executarSql('insert into infra_parametro (valor, nome ) VALUES( \'' . $this->versaoAtualDesteModulo . '\',  \'' . $this->nomeParametroModulo . '\' )');
 
@@ -213,17 +195,6 @@
             $this->logar(' INICIANDO OPERACOES DA INSTALACAO DA VERSAO 0.0.2 DO MODULO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
 
             //============================= alteraï¿½oes na tabela mod_tipo_processo_litigioso e na sua PK ============================
-
-            //DROPAR TABELA E SUA SEQUENCE - ACORDADO POR TELEFONE COM O NEI DIA 22/02
-            if (BancoSEI::getInstance() instanceof InfraMySql) {
-                BancoSEI::getInstance()->executarSql(' DROP TABLE seq_mod_tipo_processo_litigioso ');
-            } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql(' DROP TABLE seq_mod_tipo_processo_litigioso ');
-            } else if (BancoSEI::getInstance() instanceof InfraOracle) {
-                BancoSEI::getInstance()->executarSql(' DROP SEQUENCE seq_mod_tipo_processo_litigioso ');
-            }
-
-            BancoSEI::getInstance()->executarSql(' DROP TABLE mod_tipo_processo_litigioso ');
 
             //recriar a tabela e a sua sequence
             $this->logar(' CRIANDO A TABELA md_lit_tipo_controle E SUA sequence');
@@ -465,10 +436,10 @@
 
             //=========================================== Tabelas md_lit_tipo_decisao
 
-            BancoSEI::getInstance()->executarSql('CREATE TABLE IF NOT EXISTS md_lit_tipo_decisao(
+            BancoSEI::getInstance()->executarSql('CREATE TABLE md_lit_tipo_decisao(
 		  id_md_lit_tipo_decisao ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL,
 		  nome ' . $objInfraMetaBD->tipoTextoVariavel(50) . ' NOT NULL,
-		  descricao ' . $objInfraMetaBD->tipoTextoVariavel(250) . ',
+		  descricao ' . $objInfraMetaBD->tipoTextoVariavel(250) . ' NULL,
 		  sin_ativo ' . $objInfraMetaBD->tipoTextoFixo(1) . ' NOT NULL ) ');
 
             $objInfraMetaBD->adicionarChavePrimaria('md_lit_tipo_decisao', 'pk_lit_tipo_decisao', array('id_md_lit_tipo_decisao'));
@@ -515,7 +486,7 @@
 	  id_md_lit_especie_decisao ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL ) ');
 
             //PKs
-            $objInfraMetaBD->adicionarChavePrimaria('md_lit_rel_tp_especie_dec', 'pk_rel_esp_dec_obr_01', array('id_md_lit_tipo_decisao', 'id_md_lit_especie_decisao'));
+            $objInfraMetaBD->adicionarChavePrimaria('md_lit_rel_tp_especie_dec', 'pk_rel_tp_esp_dec_01', array('id_md_lit_tipo_decisao', 'id_md_lit_especie_decisao'));
 
             //FKs
             $objInfraMetaBD->adicionarChaveEstrangeira('fk_rel_tipo_especie_decisao_01', 'md_lit_rel_tp_especie_dec', array('id_md_lit_tipo_decisao'), 'md_lit_tipo_decisao', array('id_md_lit_tipo_decisao'));
@@ -582,9 +553,9 @@
             //-- ==============================================================
             BancoSEI::getInstance()->executarSql('CREATE TABLE md_lit_controle (
 	  id_md_lit_controle ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL,
-	  id_procedimento ' . $objInfraMetaBD->tipoNumeroGrande() . ' ,
-	  id_documento ' . $objInfraMetaBD->tipoNumeroGrande() . ' ,
-	  id_md_lit_tipo_controle ' . $objInfraMetaBD->tipoNumero() . ' ,
+	  id_procedimento ' . $objInfraMetaBD->tipoNumeroGrande() . ' NULL,
+	  id_documento ' . $objInfraMetaBD->tipoNumeroGrande() . ' NULL,
+	  id_md_lit_tipo_controle ' . $objInfraMetaBD->tipoNumero() . ' NULL,
 	  dta_instauracao ' . $objInfraMetaBD->tipoDataHora() . ' NOT NULL) ');
 
             //PKs
@@ -602,7 +573,7 @@
             if (BancoSEI::getInstance() instanceof InfraMySql) {
                 BancoSEI::getInstance()->executarSql('create table seq_md_lit_controle (id int(11) not null primary key AUTO_INCREMENT, campo char(1)) AUTO_INCREMENT = 1');
             } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql('create table seq_md_lit_controle (id int(11) identity(1,1), campo char(1))');
+                BancoSEI::getInstance()->executarSql('create table seq_md_lit_controle (id int identity(1,1), campo char(1) null)');
             } else if (BancoSEI::getInstance() instanceof InfraOracle) {
                 BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_controle', 1);
             }
@@ -614,8 +585,9 @@
             BancoSEI::getInstance()->executarSql('CREATE TABLE md_lit_rel_dis_nor_con_ctr (
 	  id_md_lit_rel_dis_nor_con_ctr ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL,
 	  id_md_lit_disp_normat ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL,
-	  id_md_lit_conduta ' . $objInfraMetaBD->tipoNumero() . ' ,
-	  id_md_lit_controle ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL ) ');
+	  id_md_lit_conduta ' . $objInfraMetaBD->tipoNumero() . ' NULL,
+	  id_md_lit_controle ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL,
+	  dta_infracao ' . $objInfraMetaBD->tipoDataHora() . ' NOT NULL ) ');
 
             //PKs
             $objInfraMetaBD->adicionarChavePrimaria('md_lit_rel_dis_nor_con_ctr', 'pk_md_lit_rel_dis_nor_con_ctr', array('id_md_lit_rel_dis_nor_con_ctr'));
@@ -633,7 +605,7 @@
             if (BancoSEI::getInstance() instanceof InfraMySql) {
                 BancoSEI::getInstance()->executarSql('create table seq_md_lit_rel_dis_nor_con_ctr (id int(11) not null primary key AUTO_INCREMENT, campo char(1)) AUTO_INCREMENT = 1');
             } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql('create table seq_md_lit_rel_dis_nor_con_ctr (id int(11) identity(1,1), campo char(1))');
+                BancoSEI::getInstance()->executarSql('create table seq_md_lit_rel_dis_nor_con_ctr (id int identity(1,1), campo char(1) null)');
             } else if (BancoSEI::getInstance() instanceof InfraOracle) {
                 BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_rel_dis_nor_con_ctr', 1);
             }
@@ -668,7 +640,7 @@
             if (BancoSEI::getInstance() instanceof InfraMySql) {
                 BancoSEI::getInstance()->executarSql('create table seq_md_lit_rel_protoco_protoco (id int(11) not null primary key AUTO_INCREMENT, campo char(1)) AUTO_INCREMENT = 1');
             } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql('create table seq_md_lit_rel_protoco_protoco (id int(11) identity(1,1), campo char(1))');
+                BancoSEI::getInstance()->executarSql('create table seq_md_lit_rel_protoco_protoco (id int identity(1,1), campo char(1) null)');
             } else if (BancoSEI::getInstance() instanceof InfraOracle) {
                 BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_rel_protoco_protoco', 1);
             }
@@ -689,7 +661,7 @@
             if (BancoSEI::getInstance() instanceof InfraMySql) {
                 BancoSEI::getInstance()->executarSql('create table seq_md_lit_modalidade (id int(11) not null primary key AUTO_INCREMENT, campo char(1)) AUTO_INCREMENT = 1');
             } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql('create table seq_md_lit_modalidade (id int(11) identity(1,1), campo char(1))');
+                BancoSEI::getInstance()->executarSql('create table seq_md_lit_modalidade (id int identity(1,1), campo char(1) null)');
             } else if (BancoSEI::getInstance() instanceof InfraOracle) {
                 BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_modalidade', 1);
             }
@@ -722,7 +694,7 @@
             if (BancoSEI::getInstance() instanceof InfraMySql) {
                 BancoSEI::getInstance()->executarSql('create table seq_md_lit_abrangencia (id int(11) not null primary key AUTO_INCREMENT, campo char(1)) AUTO_INCREMENT = 1');
             } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql('create table seq_md_lit_abrangencia (id int(11) identity(1,1), campo char(1))');
+                BancoSEI::getInstance()->executarSql('create table seq_md_lit_abrangencia (id int identity(1,1), campo char(1) null)');
             } else if (BancoSEI::getInstance() instanceof InfraOracle) {
                 BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_abrangencia', 1);
             }
@@ -764,7 +736,7 @@
             if (BancoSEI::getInstance() instanceof InfraMySql) {
                 BancoSEI::getInstance()->executarSql('create table seq_md_lit_servico_integracao (id int(11) not null primary key AUTO_INCREMENT, campo char(1)) AUTO_INCREMENT = 1');
             } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql('create table seq_md_lit_servico_integracao (id int(11) identity(1,1), campo char(1))');
+                BancoSEI::getInstance()->executarSql('create table seq_md_lit_servico_integracao (id int identity(1,1), campo char(1) null)');
             } else if (BancoSEI::getInstance() instanceof InfraOracle) {
                 BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_servico_integracao', 1);
             }
@@ -796,7 +768,7 @@
             if (BancoSEI::getInstance() instanceof InfraMySql) {
                 BancoSEI::getInstance()->executarSql('create table seq_md_lit_servico (id int(11) not null primary key AUTO_INCREMENT, campo char(1)) AUTO_INCREMENT = 1');
             } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql('create table seq_md_lit_servico (id int(11) identity(1,1), campo char(1))');
+                BancoSEI::getInstance()->executarSql('create table seq_md_lit_servico (id int identity(1,1), campo char(1) null)');
             } else if (BancoSEI::getInstance() instanceof InfraOracle) {
                 BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_servico', 1);
             }
@@ -858,7 +830,7 @@
             if (BancoSEI::getInstance() instanceof InfraMySql) {
                 BancoSEI::getInstance()->executarSql('create table seq_md_lit_dado_interessado (id int(11) not null primary key AUTO_INCREMENT, campo char(1)) AUTO_INCREMENT = 1');
             } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql('create table seq_md_lit_dado_interessado (id int(11) identity(1,1), campo char(1))');
+                BancoSEI::getInstance()->executarSql('create table seq_md_lit_dado_interessado (id int identity(1,1), campo char(1) null)');
             } else if (BancoSEI::getInstance() instanceof InfraOracle) {
                 BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_dado_interessado', 1);
             }
@@ -890,7 +862,7 @@
             if (BancoSEI::getInstance() instanceof InfraMySql) {
                 BancoSEI::getInstance()->executarSql('create table seq_md_lit_nome_funcional (id int(11) not null primary key AUTO_INCREMENT, campo char(1)) AUTO_INCREMENT = 1');
             } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql('create table seq_md_lit_nome_funcional (id int(11) identity(1,1), campo char(1))');
+                BancoSEI::getInstance()->executarSql('create table seq_md_lit_nome_funcional (id int identity(1,1), campo char(1) null)');
             } else if (BancoSEI::getInstance() instanceof InfraOracle) {
                 BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_nome_funcional', 1);
             }
@@ -923,7 +895,7 @@
             if (BancoSEI::getInstance() instanceof InfraMySql) {
                 BancoSEI::getInstance()->executarSql('create table seq_md_lit_param_interessado (id int(11) not null primary key AUTO_INCREMENT, campo char(1)) AUTO_INCREMENT = 1');
             } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql('create table seq_md_lit_param_interessado (id int(11) identity(1,1), campo char(1))');
+                BancoSEI::getInstance()->executarSql('create table seq_md_lit_param_interessado (id int identity(1,1), campo char(1) null)');
             } else if (BancoSEI::getInstance() instanceof InfraOracle) {
                 BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_param_interessado', 1);
             }
@@ -961,7 +933,7 @@
             if (BancoSEI::getInstance() instanceof InfraMySql) {
                 BancoSEI::getInstance()->executarSql('create table seq_md_lit_funcionalidade (id int(11) not null primary key AUTO_INCREMENT, campo char(1)) AUTO_INCREMENT = 1');
             } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql('create table seq_md_lit_funcionalidade (id int(11) identity(1,1), campo char(1))');
+                BancoSEI::getInstance()->executarSql('create table seq_md_lit_funcionalidade (id int identity(1,1), campo char(1) null)');
             } else if (BancoSEI::getInstance() instanceof InfraOracle) {
                 BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_param_interessado', 1);
             }
@@ -992,7 +964,7 @@
             if (BancoSEI::getInstance() instanceof InfraMySql) {
                 BancoSEI::getInstance()->executarSql('create table seq_md_lit_integracao (id int(11) not null primary key AUTO_INCREMENT, campo char(1)) AUTO_INCREMENT = 1');
             } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql('create table seq_md_lit_integracao (id int(11) identity(1,1), campo char(1))');
+                BancoSEI::getInstance()->executarSql('create table seq_md_lit_integracao (id int identity(1,1), campo char(1) null)');
             } else if (BancoSEI::getInstance() instanceof InfraOracle) {
                 BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_integracao', 1);
             }
@@ -1023,7 +995,7 @@
             if (BancoSEI::getInstance() instanceof InfraMySql) {
                 BancoSEI::getInstance()->executarSql('create table seq_md_lit_mapea_param_saida (id int(11) not null primary key AUTO_INCREMENT, campo char(1)) AUTO_INCREMENT = 1');
             } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql('create table seq_md_lit_mapea_param_saida (id int(11) identity(1,1), campo char(1))');
+                BancoSEI::getInstance()->executarSql('create table seq_md_lit_mapea_param_saida (id int identity(1,1), campo char(1) null)');
             } else if (BancoSEI::getInstance() instanceof InfraOracle) {
                 BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_mapea_param_saida', 1);
             }
@@ -1055,7 +1027,7 @@
             if (BancoSEI::getInstance() instanceof InfraMySql) {
                 BancoSEI::getInstance()->executarSql('create table seq_md_lit_mapea_param_entrada (id int(11) not null primary key AUTO_INCREMENT, campo char(1)) AUTO_INCREMENT = 1');
             } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql('create table seq_md_lit_mapea_param_entrada (id int(11) identity(1,1), campo char(1))');
+                BancoSEI::getInstance()->executarSql('create table seq_md_lit_mapea_param_entrada (id int identity(1,1), campo char(1) null)');
             } else if (BancoSEI::getInstance() instanceof InfraOracle) {
                 BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_mapea_param_entrada', 1);
             }
@@ -1207,7 +1179,7 @@
                 array('idMdLitFuncionalidade' => 7, 'nome' => 'Arrecadação Denegar Recurso'),
                 array('idMdLitFuncionalidade' => 8, 'nome' => 'Arrecadação Cancelar Recurso'),
                 array('idMdLitFuncionalidade' => 9, 'nome' => 'Arrecadação Listar Motivos de Cancelamento de Lançamento'),
-                array('idMdLitFuncionalidade' => 10, 'nome' => 'Gerar Fistel para Entidade não Outorgada')
+                array('idMdLitFuncionalidade' => 10, 'nome' => 'Gerar Número do interessado para Entidade não Outorgada')
             );
 
             $objMdLitFuncionalidadeRN = new MdLitFuncionalidadeRN();
@@ -1222,7 +1194,7 @@
             $arrDados = array(
                 #Arrecadação Lançamento de Crédito
                   //Entrada
-                    array('idMdLitCampoIntegracao' => 1, 'idMdLitFuncionalidade' => 2, 'nomeCampo'  => 'Número de Complemento do Interessado', 'staParametro' => 'E'), //fistel
+                    array('idMdLitCampoIntegracao' => 1, 'idMdLitFuncionalidade' => 2, 'nomeCampo'  => 'Número de Complemento do Interessado', 'staParametro' => 'E'),
                     array('idMdLitCampoIntegracao' => 2, 'idMdLitFuncionalidade' => 2, 'nomeCampo'  => 'Data de aplicação da Sanção', 'staParametro' => 'E'),
                     array('idMdLitCampoIntegracao' => 3, 'idMdLitFuncionalidade' => 2, 'nomeCampo'  => 'Data de Vencimento', 'staParametro' => 'E'),
                     array('idMdLitCampoIntegracao' => 4, 'idMdLitFuncionalidade' => 2, 'nomeCampo'  => 'Valor Total', 'staParametro' => 'E'),
@@ -1232,12 +1204,13 @@
                     array('idMdLitCampoIntegracao' => 8, 'idMdLitFuncionalidade' => 2, 'nomeCampo'  => 'Usuário de Inclusão', 'staParametro' => 'E'),
                     array('idMdLitCampoIntegracao' => 9, 'idMdLitFuncionalidade' => 2, 'nomeCampo'  => 'Sistema de Origem', 'staParametro' => 'E'),
                     array('idMdLitCampoIntegracao' => 10, 'idMdLitFuncionalidade' => 2, 'nomeCampo' => 'Validar Majoração', 'staParametro' => 'E'),
+                    array('idMdLitCampoIntegracao' => 78, 'idMdLitFuncionalidade' => 2, 'nomeCampo' => 'CNPJ/CPF', 'staParametro' => 'E'),
 
                  //Saida
                     array('idMdLitCampoIntegracao' => 11, 'idMdLitFuncionalidade' => 2, 'nomeCampo' => 'Sequencial', 'staParametro' => 'S'),
                     array('idMdLitCampoIntegracao' => 12, 'idMdLitFuncionalidade' => 2, 'nomeCampo' => 'Link para Boleto', 'staParametro' => 'S'),
                     array('idMdLitCampoIntegracao' => 13, 'idMdLitFuncionalidade' => 2, 'nomeCampo' => 'Código da Receita', 'staParametro' => 'S'),
-                    array('idMdLitCampoIntegracao' => 14, 'idMdLitFuncionalidade' => 2, 'nomeCampo' => 'Número de Complemento do Interessado', 'staParametro' => 'S'),//fistel
+                    array('idMdLitCampoIntegracao' => 14, 'idMdLitFuncionalidade' => 2, 'nomeCampo' => 'Número de Complemento do Interessado', 'staParametro' => 'S'),
 
                 #Arrecadação Consulta Lançamento
                   //Entrada
@@ -1330,7 +1303,14 @@
                 #Arrecadação Listar Motivos de Cancelamento de Lançamento
                  //Saída
                     array('idMdLitCampoIntegracao' => 74, 'idMdLitFuncionalidade' => 9, 'nomeCampo' => 'ID Motivo', 'staParametro' => 'S'),
-                    array('idMdLitCampoIntegracao' => 75, 'idMdLitFuncionalidade' => 9, 'nomeCampo' => 'Descrição Motivo', 'staParametro' => 'S')
+                    array('idMdLitCampoIntegracao' => 75, 'idMdLitFuncionalidade' => 9, 'nomeCampo' => 'Descrição Motivo', 'staParametro' => 'S'),
+
+                #Gerar Numero de interessado para Entidade não Outorgada
+                 //Entrada
+                    array('idMdLitCampoIntegracao' => 76, 'idMdLitFuncionalidade' => 10, 'nomeCampo' => 'Sistema de Origem', 'staParametro' => 'E'),
+
+                 //Saída
+                    array('idMdLitCampoIntegracao' => 77, 'idMdLitFuncionalidade' => 10, 'nomeCampo' => 'Número de Complemento do Interessado', 'staParametro' => 'S'),
             );
 
             $objMdLitCampoIntegracaoRN = new MdLitCampoIntegracaoRN();
@@ -1386,7 +1366,7 @@
             if (BancoSEI::getInstance() instanceof InfraMySql) {
                 BancoSEI::getInstance()->executarSql('create table seq_md_lit_processo_situacao (id int(11) not null primary key AUTO_INCREMENT, campo char(1)) AUTO_INCREMENT = 1');
             } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql('create table seq_md_lit_processo_situacao (id int(11) identity(1,1), campo char(1))');
+                BancoSEI::getInstance()->executarSql('create table seq_md_lit_processo_situacao (id int identity(1,1), campo char(1) null)');
             } else if (BancoSEI::getInstance() instanceof InfraOracle) {
                 BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_processo_situacao', 1);
             }
@@ -1427,7 +1407,7 @@
             if (BancoSEI::getInstance() instanceof InfraMySql) {
                 BancoSEI::getInstance()->executarSql('create table seq_md_lit_decisao (id int(11) not null primary key AUTO_INCREMENT, campo char(1)) AUTO_INCREMENT = 1');
             } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql('create table seq_md_lit_decisao (id int(11) identity(1,1), campo char(1))');
+                BancoSEI::getInstance()->executarSql('create table seq_md_lit_decisao (id int identity(1,1), campo char(1) null)');
             } else if (BancoSEI::getInstance() instanceof InfraOracle) {
                 BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_decisao', 1);
             }
@@ -1494,7 +1474,7 @@
                     vlr_saldo_devedor ' . $objInfraMetaBD->tipoNumeroDecimal(19, 2) . ' NULL,
                     dth_inclusao ' . $objInfraMetaBD->tipoDataHora() . ' NULL,
                     link_boleto ' . $objInfraMetaBD->tipoTextoVariavel(2083) . ' NULL,
-                    fistel ' . $objInfraMetaBD->tipoTextoVariavel(999) . ' NULL,
+                    numero_interessado ' . $objInfraMetaBD->tipoTextoVariavel(999) . ' NULL,
                     sin_constituicao_definitiva ' . $objInfraMetaBD->tipoTextoVariavel(1) . ' NULL,
                     sin_renuncia_recorrer ' . $objInfraMetaBD->tipoTextoVariavel(1) . ' NULL,
                     dta_intimacao_definitiva ' . $objInfraMetaBD->tipoDataHora() . ' NULL,
@@ -1523,7 +1503,7 @@
             if (BancoSEI::getInstance() instanceof InfraMySql) {
                 BancoSEI::getInstance()->executarSql('create table seq_md_lit_lancamento (id int(11) not null primary key AUTO_INCREMENT, campo char(1)) AUTO_INCREMENT = 1');
             } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql('create table seq_md_lit_lancamento (id int(11) identity(1,1), campo char(1))');
+                BancoSEI::getInstance()->executarSql('create table seq_md_lit_lancamento (id int identity(1,1), campo char(1) null)');
             } else if (BancoSEI::getInstance() instanceof InfraOracle) {
                 BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_lancamento', 1);
             }
@@ -1549,7 +1529,7 @@
                     vlr_saldo_devedor ' . $objInfraMetaBD->tipoNumeroDecimal(19, 2) . ' NULL,
                     dth_inclusao ' . $objInfraMetaBD->tipoDataHora() . ' NULL,
                     link_boleto ' . $objInfraMetaBD->tipoTextoVariavel(2083) . ' NULL,
-                    fistel ' . $objInfraMetaBD->tipoTextoVariavel(999) . ' NULL,
+                    numero_interessado ' . $objInfraMetaBD->tipoTextoVariavel(999) . ' NULL,
                     sin_constituicao_definitiva ' . $objInfraMetaBD->tipoTextoVariavel(1) . ' NULL,
                     sin_renuncia_recorrer ' . $objInfraMetaBD->tipoTextoVariavel(1) . ' NULL,
                     dta_intimacao_definitiva ' . $objInfraMetaBD->tipoDataHora() . ' NULL,
@@ -1579,7 +1559,7 @@
             if (BancoSEI::getInstance() instanceof InfraMySql) {
                 BancoSEI::getInstance()->executarSql('create table seq_md_lit_historic_lancamento (id int(11) not null primary key AUTO_INCREMENT, campo char(1)) AUTO_INCREMENT = 1');
             } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql('create table seq_md_lit_historic_lancamento (id int(11) identity(1,1), campo char(1))');
+                BancoSEI::getInstance()->executarSql('create table seq_md_lit_historic_lancamento (id int identity(1,1), campo char(1) null)');
             } else if (BancoSEI::getInstance() instanceof InfraOracle) {
                 BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_historic_lancamento', 1);
             }
@@ -1607,7 +1587,7 @@
             if (BancoSEI::getInstance() instanceof InfraMySql) {
                 BancoSEI::getInstance()->executarSql('create table seq_md_lit_cancela_lancamento (id int(11) not null primary key AUTO_INCREMENT, campo char(1)) AUTO_INCREMENT = 1');
             } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
-                BancoSEI::getInstance()->executarSql('create table seq_md_lit_cancela_lancamento (id int(11) identity(1,1), campo char(1))');
+                BancoSEI::getInstance()->executarSql('create table seq_md_lit_cancela_lancamento (id int identity(1,1), campo char(1) null)');
             } else if (BancoSEI::getInstance() instanceof InfraOracle) {
                 BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_cancela_lancamento', 1);
             }
@@ -1635,9 +1615,9 @@
 
             $infraAgendamentoDTO = new InfraAgendamentoTarefaDTO();
             $infraAgendamentoDTO->retTodos();
-            $infraAgendamentoDTO->setStrDescricao('Script para Atualizar os lanamentos com o sistema de Arrecadao');
+            $infraAgendamentoDTO->setStrDescricao('Script para Atualizar os lançamentos com o sistema de Arrecadao');
 
-            $infraAgendamentoDTO->setStrComando('MdLitConsultarLancamentoRN::consultarAgendamento');
+            $infraAgendamentoDTO->setStrComando('MdLitAgendamentoAutomaticoRN::consultarLancamento');
 
             $infraAgendamentoDTO->setStrSinAtivo('S');
             $infraAgendamentoDTO->setStrStaPeriodicidadeExecucao( InfraAgendamentoTarefaRN::$PERIODICIDADEEXECUCAO_DIA );
@@ -1653,6 +1633,20 @@
 
             //===========================================
             //FIM - Cadastrar "cronjob" para Atualizar os lanamentos com o sistema de Arrecadao
+            //===========================================
+
+            //===========================================
+            //INICIO - INICIANDO CADASTRO DE TIPO DE CONTROLE TESTE COM A PARAMETRIZAÇÃO DE SITUAÇÕES
+            //===========================================
+            $this->logar(' INICIANDO CADASTRO DE TIPO DE CONTROLE TESTE COM A PARAMETRIZAÇÃO DE SITUAÇÕES');
+
+            $objMdLitTipoControleRN = new MdLitTipoControleRN();
+            $objMdLitTipoControleRN->cadastrarExemplo();
+
+
+
+            //===========================================
+            //FIM - INICIANDO CADASTRO DE TIPO DE CONTROLE TESTE COM A PARAMETRIZAÇÃO DE SITUAÇÕES
             //===========================================
 
             //============================== atualizando parametro para controlar versao do modulo

@@ -56,7 +56,7 @@ class MdLitMapearParamSaidaINT extends InfraINT {
             $strResultadoParamSaida .= '<table width="90%" id="tableParametroSaida" class="infraTable" summary="' . $strSumarioTabela . '">' . "\n";
             $strResultadoParamSaida .= '<tr>';
 
-            $strResultadoParamSaida .= '<th class="infraTh" width="20%">&nbsp;Dados de Saída&nbsp;</th>' . "\n";
+            $strResultadoParamSaida .= '<th class="infraTh" width="20%">&nbsp;Dados de Saída no Webservice&nbsp;</th>' . "\n";
             $strResultadoParamSaida .= '<th class="infraTh" width="20%">&nbsp;Campo de Destino no SEI&nbsp;</th>' . "\n";
             $strResultadoParamSaida .= '<th class="infraTh" width="5%">&nbsp;Chave Única da Integração&nbsp;</th>' . "\n";
             $strResultadoParamSaida .= '</tr>' . "\n";

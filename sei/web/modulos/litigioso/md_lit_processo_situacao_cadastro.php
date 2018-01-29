@@ -61,8 +61,10 @@ require_once('md_lit_processo_situacao_cadastro_bloco_situacoes_js.php');
 //Fieldset Decisões
 require_once('md_lit_processo_situacao_cadastro_bloco_decisoes_js.php');
 
-//Fieldset Gestão de Multa
-require_once('md_lit_processo_situacao_cadastro_bloco_multa_js.php');
+if($objMdLitTipoControleDTO->getStrSinParamModalComplInteressado() == 'S'){
+    //Fieldset Gestão de Multa
+    require_once('md_lit_processo_situacao_cadastro_bloco_multa_js.php');
+}
 
 // ======================= FIM JS PADRÃO
 
@@ -86,14 +88,16 @@ require_once('md_lit_processo_situacao_cadastro_bloco_situacoes.php');
 // ======================= INICIO Bloco Decisões
 require_once('md_lit_processo_situacao_cadastro_bloco_decisoes.php');
 // ======================= FIM Bloco Decisões
-
-// ======================= INICIO Bloco Gestão de Multa
-require_once('md_lit_processo_situacao_cadastro_bloco_multa.php');
-// ======================= FIM Bloco Gestão de Multa
+if($objMdLitTipoControleDTO->getStrSinParamModalComplInteressado() == 'S') {
+    // ======================= INICIO Bloco Gestão de Multa
+        require_once('md_lit_processo_situacao_cadastro_bloco_multa.php');
+    // ======================= FIM Bloco Gestão de Multa
+}
 ?>
 
 <?php
 PaginaSEI::getInstance()->fecharAreaDados();
+PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
 ?>
 </form>
 <?

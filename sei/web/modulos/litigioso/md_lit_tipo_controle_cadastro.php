@@ -102,14 +102,15 @@ PaginaSEI::getInstance()->abrirAreaDados('68em');
     <select id="selGestores" name="selGestores" size="4" multiple="multiple" class="infraSelect">
     	<?=$strItensSelGestores?>
     </select>
-    
-    <img id="imgLupaGestores" onclick="objLupaGestores.selecionar(700,500);" src="/infra_css/imagens/lupa.gif" alt="Selecionar Gestor" title="Selecionar Gestor" class="infraImg" />	
-    
-    <a id="btAjuda" <?=PaginaSEI::montarTitleTooltip('Para o funcionamento correto deste parâmetro, no SIP deve ser concedido o Perfil “Gestor de Controle Litigioso” aos usuários selecionados.')?> tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
-    <img border="0" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/ajuda.gif" class="infraImg"/>
-    </a>
-    
-    <img id="imgExcluirGestores" onclick="objLupaGestores.remover();" src="/infra_css/imagens/remover.gif" alt="Remover Gestor Selecionado" title="Remover Gestor Selecionado" class="infraImg" />  
+    <div id="divOpcoesGestores">
+        <img id="imgLupaGestores" onclick="objLupaGestores.selecionar(700,500);" src="/infra_css/imagens/lupa.gif" alt="Selecionar Gestor" title="Selecionar Gestor" class="infraImg" />
+
+        <a id="btAjuda" <?=PaginaSEI::montarTitleTooltip('Para o funcionamento correto deste parâmetro, no SIP deve ser concedido o Perfil “Gestor de Controle Litigioso” aos usuários selecionados.')?> tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
+        <img border="0" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/ajuda.gif" class="infraImg"/>
+        </a>
+        <br>
+        <img id="imgExcluirGestores" onclick="objLupaGestores.remover();" src="/infra_css/imagens/remover.gif" alt="Remover Gestor Selecionado" title="Remover Gestor Selecionado" class="infraImg" />
+    </div>
     <input type="hidden" id="hdnIdGestor" name="hdnIdGestor" value="" />
   
   </div>
@@ -123,9 +124,11 @@ PaginaSEI::getInstance()->abrirAreaDados('68em');
     <select id="selTipoProcessos" name="selTipoProcessos" size="4" multiple="multiple" class="infraSelect">
     	<?=$strItensSelTipoProcessos?>
     </select>
-    
-    <img id="imgLupaTipoProcessos" onclick="objLupaTipoProcessos.selecionar(700,500);" src="/infra_css/imagens/lupa.gif" alt="Selecionar Tipo de Processo" title="Selecionar Tipo de Processo" class="infraImg" />	
-    <img id="imgExcluirTipoProcessos" onclick="objLupaTipoProcessos.remover();" src="/infra_css/imagens/remover.gif" alt="Remover Tipo de Processo Selecionado" title="Remover Tipo de Processo Selecionado" class="infraImg" />  
+    <div id="divOpcoesTipoProcessos">
+        <img id="imgLupaTipoProcessos" onclick="objLupaTipoProcessos.selecionar(700,500);" src="/infra_css/imagens/lupa.gif" alt="Selecionar Tipo de Processo" title="Selecionar Tipo de Processo" class="infraImg" />
+        <br>
+        <img id="imgExcluirTipoProcessos" onclick="objLupaTipoProcessos.remover();" src="/infra_css/imagens/remover.gif" alt="Remover Tipo de Processo Selecionado" title="Remover Tipo de Processo Selecionado" class="infraImg" />
+    </div>
     <input type="hidden" id="hdnIdTipoProcesso" name="hdnIdTipoProcesso" value="" />
   
   </div>
@@ -139,9 +142,11 @@ PaginaSEI::getInstance()->abrirAreaDados('68em');
     <select id="selUnidades" name="selUnidades" size="4" multiple="multiple" class="infraSelect">
     	<?=$strItensSelUnidades?>
     </select>
-    
-    <img id="imgLupaUnidades" onclick="objLupaUnidades.selecionar(700,500);" src="/infra_css/imagens/lupa.gif" alt="Selecionar Unidade" title="Selecionar Unidade" class="infraImg" />	
-    <img id="imgExcluirUnidades" onclick="objLupaUnidades.remover();" src="/infra_css/imagens/remover.gif" alt="Remover Unidade Selecionada" title="Remover Unidade Selecionada" class="infraImg" />  
+    <div id="divOpcoesUnidades">
+        <img id="imgLupaUnidades" onclick="objLupaUnidades.selecionar(700,500);" src="/infra_css/imagens/lupa.gif" alt="Selecionar Unidade" title="Selecionar Unidade" class="infraImg" />
+        <br>
+        <img id="imgExcluirUnidades" onclick="objLupaUnidades.remover();" src="/infra_css/imagens/remover.gif" alt="Remover Unidade Selecionada" title="Remover Unidade Selecionada" class="infraImg" />
+    </div>
     <input type="hidden" id="hdnIdUnidade" name="hdnIdUnidade" value="" />
   
   </div>
@@ -185,9 +190,11 @@ PaginaSEI::getInstance()->abrirAreaDados('68em');
 	    <select id="selTipoProcessosSobrestados" name="selTipoProcessosSobrestados" size="4" multiple="multiple" class="infraSelect">
 	    	<?=$strItensSelTipoProcessosSobrestados?>
 	    </select>
-	    
-	    <img id="imgLupaTipoProcessosSobrestados" onclick="objLupaTipoProcessosSobrestados.selecionar(700,500);" src="/infra_css/imagens/lupa.gif" alt="Selecionar Tipo de Processo" title="Selecionar Tipo de Processo" class="infraImg" />	
-	    <img id="imgExcluirTipoProcessosSobrestados" onclick="objLupaTipoProcessosSobrestados.remover();" src="/infra_css/imagens/remover.gif" alt="Remover Tipo de Processo Selecionado" title="Remover Tipo de Processo Selecionado" class="infraImg" />  
+        <div id="divOpcoesSobrestados">
+            <img id="imgLupaTipoProcessosSobrestados" onclick="objLupaTipoProcessosSobrestados.selecionar(700,500);" src="/infra_css/imagens/lupa.gif" alt="Selecionar Tipo de Processo" title="Selecionar Tipo de Processo" class="infraImg" />
+            <br>
+            <img id="imgExcluirTipoProcessosSobrestados" onclick="objLupaTipoProcessosSobrestados.remover();" src="/infra_css/imagens/remover.gif" alt="Remover Tipo de Processo Selecionado" title="Remover Tipo de Processo Selecionado" class="infraImg" />
+        </div>
 	    <input type="hidden" id="hdnIdTipoProcessoSobrestado" name="hdnIdTipoProcessoSobrestado" value="" />
 	    
     </div>

@@ -334,21 +334,6 @@
             return false;
         }
 
-        objsResultadoDecisao = document.getElementsByClassName("resultDecisao");
-        validoRD = false;
-
-        for (var i = 0; i < objsResultadoDecisao.length; i++) {
-            if (objsResultadoDecisao[i].checked === true) {
-                validoRD = true;
-            }
-        }
-
-        if (!validoRD) {
-            alert('Informe o Resultado da Decisão.');
-            document.getElementById('gestaoMulta').focus();
-            return false;
-        }
-
         var indObrigacao = document.getElementById('IndObr').checked;
         if (indObrigacao) {
             //tipos de controle associados  

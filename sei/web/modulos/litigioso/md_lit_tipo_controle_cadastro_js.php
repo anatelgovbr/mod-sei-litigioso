@@ -221,6 +221,7 @@ function selecionarChkSobrestar(){
       //oculta os campos na tela
       divSobrestar.style.display = 'none';
       //divSobrestar.style.visibility = 'hidden';
+	  objLupaTipoProcessosSobrestados.limpar();
    }
    
 }

@@ -36,6 +36,10 @@
                                            'IdControleLitigioso',
                                            'id_md_lit_controle');
 
+            $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_DTA,
+                                            'Infracao',
+                                            'dta_infracao');
+
             $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'Dispositivo', 'dispositivo', 'md_lit_disp_normat');
             $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'Norma', 'norma', 'md_lit_disp_normat');
 

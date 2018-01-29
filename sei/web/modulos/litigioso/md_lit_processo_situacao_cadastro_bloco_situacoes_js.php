@@ -145,8 +145,9 @@
     function limparCamposRelacionadosSituacao(){
         document.getElementById("divCamposExtraJudicial").style.display = 'none';
         document.getElementById("divDataTipoSituacao").style.display = 'none';
-        document.getElementById("divMainPrescricao").style.display = 'none';
-        document.getElementById("divsDatasBdPrescricao").style.display = 'none';
+//        document.getElementById("divMainPrescricao").style.display = 'none';
+        document.getElementById('divRdsPrescricao').style.display = 'none';
+//        document.getElementById("divsDatasBdPrescricao").style.display = 'none';
         document.getElementById('divsDatasPrescricao').style.display = 'none';
         document.getElementById("chkDpExtraJudicial").checked = false;
         document.getElementById("lblDtaTipoSituacao").innerHTML = '';
@@ -206,7 +207,7 @@
                 prepararCamposRecursal(tipoSituacao);
 
                 if (erro == '1') {
-                    document.getElementById('divsDatasBdPrescricao').style.display = 'none';
+//                    document.getElementById('divsDatasBdPrescricao').style.display = 'none';
                     document.getElementById('divsDatasPrescricao').style.display = 'none';
                     document.getElementById("divBtnAdicionar").style.display = 'none';
                     document.getElementById("txtSituacao").style.color = 'red';
@@ -218,7 +219,11 @@
                         document.getElementById("divBtnAdicionar").style.display = '';
                     }else{
                         document.getElementById('divsDatasPrescricao').style.display = '';
-                        document.getElementById("divMainPrescricao").style.display = '';
+//                        document.getElementById('divsDatasBdPrescricao').style.display = '';
+//                        document.getElementById("divMainPrescricao").style.display = '';
+                        document.getElementById('divRdsPrescricao').style.display = '';
+                        document.getElementById('rdNaoAlteraPrescricao').checked = true;
+                        changePrescricao(document.getElementById('rdNaoAlteraPrescricao'), false);
                     }
                 }
 
@@ -292,17 +297,15 @@
 
         if(!chamadaAlt){
             var dtDefault     = document.getElementById('hdnDtUltimaSituacao').value;
-            objTxtInt.value   = dtDefault;
-            objTxtQuinq.value = dtDefault;
+            objTxtInt.value   = objTxtInt.value == '' ?dtDefault:objTxtInt.value;
+            objTxtQuinq.value = objTxtQuinq.value == '' ?dtDefault:objTxtQuinq.value;
         }
 
 
         if (vlRadio == '1' && hdnSinInst != '0') {
             document.getElementById('divDatasSelectPrescricao').style.display = '';
-            document.getElementById('divsDatasBdPrescricao').style.display = '';
         } else {
             document.getElementById('divDatasSelectPrescricao').style.display = 'none';
-            document.getElementById('divsDatasBdPrescricao').style.display = 'none';
         }
 
     }
@@ -410,7 +413,13 @@
                 }
             }
         }
+        if(document.getElementById('hdnIdProcessoSituacao').value == '<?= $idMdLitProcessoSituacaoPrimeiraIntimacao ?>'){
+            var addSituacao = confirm('Após os dados serem salvos, a alteração da Situação da intimação da instauração será recalculado as datas Intercorrente e Quinquenal baseado na data da intimação. Confirma a operação?');
+            if(!addSituacao) {
+                return false;
+            }
 
+        }
 
 
         return true;
@@ -441,7 +450,9 @@
             }
 
             var hdnStrIsGestor  = document.getElementById('hdnIsGestor').value;
-            var isRemoverTabela = hdnStrIsGestor == '1' ? false : true;
+            var hdnIsExcluirSituacao  = '<?= $isExcluirSituacao ? 1 : 0 ?>';
+
+            var isRemoverTabela = hdnStrIsGestor == '1' && hdnIsExcluirSituacao == '1'? false : true;
 
             //Set Campos Alteração
             var idAlteracao = document.getElementById('hdnIdProcessoSituacao').value;
@@ -549,7 +560,8 @@
             //mostrando os fieldset de decisões e de gestão de multa quanto a situação for do tipo decisorio
             if(isTpSitDecisoria && document.getElementById('hdnErroSituacao').value == 0 && document.getElementById('hdnTbDecisao').value == ''){
                 document.getElementById('fieldsetDecisao').style.display = '';
-                document.getElementById('fieldsetMulta').style.display = '';
+                if(document.getElementById('fieldsetMulta') != null)
+                    document.getElementById('fieldsetMulta').style.display = '';
             }
 
             //Corrrigindo o problema do core do Sei que não aceita HTML para alteração (função remover XML)
@@ -698,9 +710,12 @@
     function inicializarGridSituacao(){
         var hdnStrIsGestor  = document.getElementById('hdnIsGestor').value;
         var hdnOpenProcesso = document.getElementById('hdnOpenProcesso').value;
-        var alterar         = hdnStrIsGestor == '1' && hdnOpenProcesso != '1' ? true : false;
+        var hdnIsAlterarSituacao  = '<?= $isAlterarSituacao ? 1 : 0 ?>';
+        var hdnIsExcluirSituacao  = '<?= $isExcluirSituacao ? 1 : 0 ?>';
+        var alterar         = hdnStrIsGestor == '1' && hdnOpenProcesso != '1' && hdnIsAlterarSituacao == '1' ? true : false;
+        var excluir         = hdnStrIsGestor == '1' && hdnOpenProcesso != '1' && hdnIsExcluirSituacao == '1' ? true : false;
 
-        objTabelaDinamicaSituacao = new infraTabelaDinamica('tbSituacao', 'hdnTbSituacoes', alterar, alterar);
+        objTabelaDinamicaSituacao = new infraTabelaDinamica('tbSituacao', 'hdnTbSituacoes', alterar, excluir);
         objTabelaDinamicaSituacao.gerarEfeitoTabela = true;
 
         objTabelaDinamicaSituacao.remover = function (arr) {
@@ -875,8 +890,11 @@
             document.getElementById('hdnSinInstauracaoAlt').value = arr[25];
 
             //Realiza o controle de Prescrição
-            controlarExibicaoPrescricaoAlterar(arr);
+            if(document.getElementById('hdnIdProcessoSituacao').value != '<?= $idMdLitProcessoSituacaoPrimeiraIntimacao ?>'){
+                controlarExibicaoPrescricaoAlterar(arr);
+            }
 
+            document.getElementById('divBtnAdicionar').style.display = '';
             //Situação Recursal
             if(tipoSituacao == 'Recursal'){
                 controlarExibicaoRecursalAlteracao(tipoSituacao, arr);
@@ -925,8 +943,9 @@
 
         var campo = document.getElementById(idCampo);
 
-        document.getElementById('divsDatasBdPrescricao').style.display = '';
-        document.getElementById("divMainPrescricao").style.display = '';
+//        document.getElementById('divsDatasBdPrescricao').style.display = '';
+//        document.getElementById("divMainPrescricao").style.display = '';
+        document.getElementById('divRdsPrescricao').style.display = '';
         document.getElementById("hdnErroSituacao").value = '0';
         document.getElementById('divsDatasPrescricao').style.display = '';
 

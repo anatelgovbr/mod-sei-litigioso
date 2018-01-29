@@ -584,12 +584,631 @@
                 $objMdLitTipoControleDTO = new MdLitTipoControleDTO();
                 $objMdLitTipoControleDTO->setNumIdTipoControleLitigioso($idTipoControle);
                 $objMdLitTipoControleDTO->retStrSigla();
+                $objMdLitTipoControleDTO->retStrSinParamModalComplInteressado();
 
                 return $this->consultar($objMdLitTipoControleDTO);
 
             }catch (Exception $e){
                 throw new InfraException('Erro ao buscar o objeto do Tipo de Controle.', $e);
             }
+        }
+
+
+
+        protected function cadastrarExemploControlado(){
+            $objTipoControleLitigiosoBD = new MdLitTipoControleBD($this->getObjInfraIBanco());
+            $objMdLitFaseBD             = new MdLitFaseBD($this->getObjInfraIBanco());
+            $objMdLitSituacaoBD         = new MdLitSituacaoBD($this->getObjInfraIBanco());
+
+            //verificando se já existe algum tipo de controle cadastrado
+            $objMdLitTipoControleDTO = new MdLitTipoControleDTO();
+            $objMdLitTipoControleDTO->retStrSigla();
+            $arrObjMdLitTipoControleDTO = $objTipoControleLitigiosoBD->listar($objMdLitTipoControleDTO);
+            //se existe para a execução do metodo
+            if(count($arrObjMdLitTipoControleDTO) > 0)
+                return;
+
+            //cadastrando tipo de controle litigioso exemplo
+            $objMdLitTipoControleDTO = new MdLitTipoControleDTO();
+            $objMdLitTipoControleDTO->setStrSigla('CONTROLE DE EXEMPLO');
+            $objMdLitTipoControleDTO->setStrDescricao('Controle de Exemplo');
+            $objMdLitTipoControleDTO->setStrSinAtivo('S');
+
+            $objMdLitTipoControleDTO = $objTipoControleLitigiosoBD->cadastrar($objMdLitTipoControleDTO);
+
+            //cadastrando fase instauração
+            $objMdLitFaseInstauracaoDTO = new MdLitFaseDTO();
+            $objMdLitFaseInstauracaoDTO->setStrNome('Instauração');
+            $objMdLitFaseInstauracaoDTO->setStrDescricao('Agrupa situações afetas às formalidades da instauração do Procedimento');
+            $objMdLitFaseInstauracaoDTO->setStrSinAtivo('S');
+            $objMdLitFaseInstauracaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+
+            //cadastrando fase instrução
+            $objMdLitFaseInstrucaoDTO = new MdLitFaseDTO();
+            $objMdLitFaseInstrucaoDTO->setStrNome('Instrução');
+            $objMdLitFaseInstrucaoDTO->setStrDescricao('Agrupa situações afetas às formalidades da instrução do Procedimento');
+            $objMdLitFaseInstrucaoDTO->setStrSinAtivo('S');
+            $objMdLitFaseInstrucaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+
+            //cadastrando fase Recursal
+            $objMdLitFaseRecursalDTO = new MdLitFaseDTO();
+            $objMdLitFaseRecursalDTO->setStrNome('Recursal');
+            $objMdLitFaseRecursalDTO->setStrDescricao('Agrupa situações afetas às formalidades da fase recursal do Procedimento');
+            $objMdLitFaseRecursalDTO->setStrSinAtivo('S');
+            $objMdLitFaseRecursalDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+
+            //cadastrando fase Conclusiva
+            $objMdLitFaseConclusivaDTO = new MdLitFaseDTO();
+            $objMdLitFaseConclusivaDTO->setStrNome('Conclusiva');
+            $objMdLitFaseConclusivaDTO->setStrDescricao('Agrupa situações afetas às formalidades da conclusão definitiva do Procedimento');
+            $objMdLitFaseConclusivaDTO->setStrSinAtivo('S');
+            $objMdLitFaseConclusivaDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+
+            $objMdLitFaseInstauracaoDTO     = $objMdLitFaseBD->cadastrar($objMdLitFaseInstauracaoDTO);
+            $objMdLitFaseInstrucaoDTO       = $objMdLitFaseBD->cadastrar($objMdLitFaseInstrucaoDTO);
+            $objMdLitFaseRecursalDTO        = $objMdLitFaseBD->cadastrar($objMdLitFaseRecursalDTO);
+            $objMdLitFaseConclusivaDTO      = $objMdLitFaseBD->cadastrar($objMdLitFaseConclusivaDTO);
+
+            //cadastrando situação
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseInstauracaoDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Formalização do Documento de Instauração');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('S');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(1);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseInstauracaoDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Expedição do Ofício de Instauração');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(2);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseInstauracaoDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Cumprimento da Intimação de Instauração');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(3);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('S');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseInstrucaoDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Apresentação da Defesa');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(15);
+            $objMdLitSituacaoDTO->setNumOrdem(4);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('S');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseInstrucaoDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Diligência Requerida');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(5);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseInstrucaoDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Diligência Cumprida');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(6);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseInstrucaoDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Expedição de Ofício para Alegações Finais');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(7);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseInstrucaoDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Cumprimento da Intimação de Alegações Finais');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(8);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('S');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseInstrucaoDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Apresentação das Alegações Finais');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(9);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseInstrucaoDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Consulta à Procuradoria');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(10);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseInstrucaoDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Retorno da Consulta à Procuradoria');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(11);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseInstrucaoDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Informe de Instrução');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(12);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseInstrucaoDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Formalização da Decisão');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(13);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('S');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseInstrucaoDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Expedição do Ofício da Decisão');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(14);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseInstrucaoDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Cumprimento da Intimação da Decisão');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(15);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('S');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseInstrucaoDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Apresentação de Renúncia ao Direito de Recorrer');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(16);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseInstrucaoDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Expedição do Ofício sobre a Renúncia ao Direito de Recorrer');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(17);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseInstrucaoDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Cumprimento da Intimação sobre a Renúncia ao Direito de Recorrer');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(18);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('S');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseRecursalDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Apresentação de Recurso');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(19);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('S');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseRecursalDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Diligência Requerida');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(20);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseRecursalDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Diligência Cumprida');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(21);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseRecursalDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Decisão de Admissibilidade de Recurso');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(22);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseRecursalDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Decisão de Inadmissibilidade de Recurso');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(23);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('S');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseRecursalDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Expedição do Ofício da Inadmissibilidade de Recurso');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(24);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseRecursalDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Cumprimento da Intimação da Inadmissibilidade de Recurso');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(25);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('S');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseRecursalDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Decisão de Admissibilidade de Recurso com Retratação');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(26);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('S');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseRecursalDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Expedição do Ofício da Admissibilidade de Recurso com Retratação');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(27);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseRecursalDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Cumprimento da Intimação da Admissibilidade de Recurso com Retratação');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(28);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('S');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseRecursalDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Consulta à Procuradoria');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(29);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseRecursalDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Retorno da Consulta à Procuradoria');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(30);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseRecursalDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Informe Recursal');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(31);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseRecursalDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Formalização da Decisão Recursal');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(32);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('S');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseRecursalDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Expedição do Ofício da Decisão Recursal');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(33);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseRecursalDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Cumprimento da Intimação da Decisão Recursal');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('N');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(34);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('S');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
+
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->setNumIdFaseLitigioso($objMdLitFaseRecursalDTO->getNumIdFaseLitigioso());
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitTipoControleDTO->getNumIdTipoControleLitigioso());
+            $objMdLitSituacaoDTO->setStrNome('Formalização do Trânsito em Julgado Administrativo');
+            $objMdLitSituacaoDTO->setStrSinAtivo('S');
+            $objMdLitSituacaoDTO->setStrSinInstauracao('N');
+            $objMdLitSituacaoDTO->setStrSinConclusiva('S');
+            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setNumOrdem(35);
+            $objMdLitSituacaoDTO->setStrSinDecisoria('N');
+            $objMdLitSituacaoDTO->setStrSinIntimacao('N');
+            $objMdLitSituacaoDTO->setStrSinDefesa('N');
+            $objMdLitSituacaoDTO->setStrSinRecursal('N');
+            $objMdLitSituacaoDTO->setStrSinOpcional('N');
+            $objMdLitSituacaoBD->cadastrar($objMdLitSituacaoDTO);
         }
 
     }

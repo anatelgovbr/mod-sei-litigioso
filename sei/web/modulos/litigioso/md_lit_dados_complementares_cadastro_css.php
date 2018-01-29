@@ -1,4 +1,4 @@
-button#sbmConsultarFistel {z-index: 1;}
+button#sbmConsultarNumero {z-index: 1;}
 
 #imgAjudaCpf{position: relative;top: 4px;}
 #imgAjudaModalidade{height: 1.3em;width: 1.3em;position: relative;top: 3px;left: 1px;}
@@ -35,9 +35,9 @@ button#sbmConsultarFistel {z-index: 1;}
 #fldModalidadesOutorga {display: inline-block;float:left;}
 #fldAbrangencia {display: inline-block;float:left;}
 #fldAbrangencia label,#fldModalidadesOutorga label{cursor: pointer;}
-#sbmConsultarFistel{position:absolute; left:85%;}
+#sbmConsultarNumero{position:absolute; left:85%;}
 #sbmGravarUsuario{float: right;margin-bottom: 10px;}
 
 fieldset#fldInfoComplementares {margin-bottom: 10px;}
-legend#legendFistel {margin-bottom: 10px;}
+legend#legendNumero {margin-bottom: 10px;}
 #dvDadosComplementaresConsulta {margin-bottom: 15px;}

@@ -503,7 +503,9 @@
                         $objRelDispositivoNormativoCondutaControleLitigiosoRN = new MdLitRelDispositivoNormativoCondutaControleRN();
                         $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retTodos();
                         $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setNumIdControleLitigioso($objControleLitigiosoDTO->getNumIdControleLitigioso());
-                        $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setNumIdDispositivoNormativoNormaCondutaControle($arrChaveDI, InfraDTO::$OPER_NOT_IN);
+                        if(count($arrChaveDI) > 0)
+                            $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setNumIdDispositivoNormativoNormaCondutaControle($arrChaveDI, InfraDTO::$OPER_NOT_IN);
+
                         $objRelDispositivoNormativoCondutaControleLitigiosoDTO = $objRelDispositivoNormativoCondutaControleLitigiosoRN->listar($objRelDispositivoNormativoCondutaControleLitigiosoDTO);
 
                         $objRelDispositivoNormativoCondutaControleLitigiosoRN = new MdLitRelDispositivoNormativoCondutaControleRN();
@@ -523,6 +525,7 @@
                                 if (count($id_documento_infrigido) > 0) {
                                     $id_md_lit_disp_normat = $id_documento_infrigido[0];
                                     $id_md_lit_conduta     = $id_documento_infrigido[1];
+                                    $dtaInfracao           = $DI[7];
 
                                     // CONTROLE LITIGIOSO - DOCUMENTO INSTAURADOR
                                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO = new MdLitRelDispositivoNormativoCondutaControleDTO();
@@ -530,6 +533,7 @@
                                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setNumIdDispositivoNormativoLitigioso($id_md_lit_disp_normat);
                                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setNumIdCondutaLitigioso($id_md_lit_conduta);
                                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setNumIdControleLitigioso($objControleLitigiosoDTO->getNumIdControleLitigioso());
+                                    $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setDtaInfracao($dtaInfracao);
 
                                     if((preg_match('/^novo_/', $DI[0]))){
                                         $objRelDispositivoNormativoCondutaControleLitigiosoRN->cadastrar($objRelDispositivoNormativoCondutaControleLitigiosoDTO);

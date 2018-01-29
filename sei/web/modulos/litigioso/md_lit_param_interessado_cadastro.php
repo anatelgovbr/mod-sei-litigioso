@@ -90,7 +90,7 @@ try {
               $objMdLitParametrizarInteressadoDTO = $objMdLitParametrizarInteressadoRN->cadastrarMultiplos($arrObjParametroSalvar);
           }
 
-          PaginaSEI::getInstance()->adicionarMensagem('Parametrizar dados complementares do interessado cadastrado com sucesso.');
+          PaginaSEI::getInstance()->setStrMensagem('Os dados foram parametrizados com sucesso!',InfraPagina::$TIPO_MSG_AVISO);
           header('Location: '.SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_parametrizar_interessado_cadastrar&acao_origem='.$_GET['acao'].'&id_tipo_processo_litigioso='.$objTipoControleLitigiosoDTO->getNumIdTipoControleLitigioso()));
           die;
         }catch(Exception $e){
@@ -352,7 +352,7 @@ PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
     <div id="divSinParamModalComplInteres" class="infraDivRadio">
 
         <label id="lblSinParamModalComplInteres" for="lblSinParamModalComplInteres" accesskey="" class="infraLabelObrigatorio">Apresenta Modal de Dados Complementares do Interessado:</label>
-        <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/ajuda.gif" name="ajuda" id="imgSinParamModalComplInteres" <?= PaginaSEI::montarTitleTooltip('Este parâmetro define se a modal de Dados Complementares de Interessado será apresentada para os Usuários no cadastro dos processos no Controle Litigioso.') ?> class="infraImg"/>
+        <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/ajuda.gif" name="ajuda" id="imgSinParamModalComplInteres" <?= PaginaSEI::montarTitleTooltip('Este parâmetro define se a modal de Dados Complementares de Interessado será apresentada para os Usuários no cadastro dos processos no Controle Litigioso. Esta opção deve ser marcada caso o órgão queira fazer a Gestão de Multas por integração.') ?> class="infraImg"/>
         <div id="divSinParamModalComplInteresSim" class="infraDivRadio">
             <input type="radio" name="rdoSinParamModalComplInteres" onclick="configurarTabelaDados();" id="optSinParamModalComplInteresSim" <?=PaginaSEI::getInstance()->setRadio($objTipoControleLitigiosoDTO->getStrSinParamModalComplInteressado(), 'S')?> class="infraRadio" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
             <span id="spnSinParamModalComplInteresSim"><label id="lblSinParamModalComplInteresSim" for="optSinParamModalComplInteresSim" class="infraLabelRadio">Sim</label></span>

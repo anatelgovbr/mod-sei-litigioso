@@ -40,6 +40,16 @@
                 'nome',
                 'contato');
 
+            $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_DBL,
+                'CnpjContatoParticipante',
+                'cnpj',
+                'contato');
+
+            $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_DBL,
+                'CpfContatoParticipante',
+                'cpf',
+                'contato');
+
             $this->configurarPK('IdMdLitDadoInteressado', InfraDTO::$TIPO_PK_NATIVA);
 
             $this->configurarFK('IdMdLitControle', 'md_lit_controle', 'id_md_lit_controle');

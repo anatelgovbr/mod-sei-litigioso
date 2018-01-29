@@ -12,10 +12,10 @@ require_once dirname(__FILE__).'/../../../SEI.php';
 class MdLitMapearParamSaidaRN extends InfraRN {
 
   public static $ID_PARAM_LANCAMENTO_CREDITO = array(
-      'SEQUENCIAL' => 11,
+      'SEQUENCIAL'  => 11,
       'LINK_BOLETO' => 12,
       'COD_RECEITA' => 13,
-      'FISTEL' => 14
+      'NUMERO_INTERESSADO' => 14
   );
 
   public static $ID_PARAM_LISTAR_MOTIVOS_LANCAMENTO = array(
@@ -24,7 +24,7 @@ class MdLitMapearParamSaidaRN extends InfraRN {
   );
 
   public static $ID_PARAM_CANCELAR_LANCAMENTO = array(
-      'FISTEL' => 33,
+      'NUMERO_INTERESSADO' => 33,
       'SEQUENCIAL' => 34,
       'VENCIDO' => 35,
   );
@@ -41,15 +41,19 @@ class MdLitMapearParamSaidaRN extends InfraRN {
   );
 
     public static $ID_PARAM_RETIFICAR_LANCAMENTO = array(
-        'COD_RECEITA'      => 48,
-        'SEQUENCIAL'       => 49,
-        'FISTEL'           => 50,
-        'LINK_BOLETO'      => 51,
+        'COD_RECEITA'           => 48,
+        'SEQUENCIAL'            => 49,
+        'NUMERO_INTERESSADO'    => 50,
+        'LINK_BOLETO'           => 51,
     );
 
     public static $ID_PARAM_SUSPENDER_LANCAMENTO = array(
-        'FISTEL'           => 58,
+        'NUMERO_INTERESSADO'           => 58,
         'SEQUENCIAL'       => 59,
+    );
+
+    public static $ID_PARAM_GERAR_NUMERO_NAO_OUTORGADA = array(
+        'NUMERO_INTERESSADO'           => 77
     );
 
   public function __construct(){

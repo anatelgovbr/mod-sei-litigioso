@@ -5,23 +5,23 @@
     var RETIFICAR_DEBITO = 2;
     var SUSPENDER_LANCAMENTO = 3;
     var CANCELAR_LANCAMENTO = 3;
-    var objAjaxFistel;
+    var objAjaxNumeroInteressado;
 
     function carregarDependenciaMulta(){
 
-        objAjaxFistel = new infraAjaxMontarSelectDependente('selInteressado', 'selFistel', '<?=$strLinkComboFistel?>');
+        objAjaxNumeroInteressado = new infraAjaxMontarSelectDependente('selInteressado', 'selNumeroInteressado', '<?=$strLinkComboNumeroInteressado?>');
 
-        objAjaxFistel.prepararExecucao = function(){
-            document.getElementById('selFistel').innerHTML = "";
-            document.getElementById('div-fistel').style.display = '';
+        objAjaxNumeroInteressado.prepararExecucao = function(){
+            document.getElementById('selNumeroInteressado').innerHTML = "";
+            document.getElementById('div-numero').style.display = '';
             return 'id_interessado='+document.getElementById('selInteressado').value+'&id_procedimento='+document.getElementById('hdnIdProcedimento').value;
         };
-        objAjaxFistel.processarResultado = function(itCnt){
-            if(document.getElementById('selFistel').getAttribute('data-numfistel') != ''){
-                selecionarPorNome('selFistel', document.getElementById('selFistel').getAttribute('data-numfistel'));
+        objAjaxNumeroInteressado.processarResultado = function(itCnt){
+            if(document.getElementById('selNumeroInteressado').getAttribute('data-numInteressado') != ''){
+                selecionarPorNome('selNumeroInteressado', document.getElementById('selNumeroInteressado').getAttribute('data-numInteressado'));
             }
-            if(document.getElementById('selFistel').options.length == 2){
-                document.getElementById('selFistel').options[1].selected = true;
+            if(document.getElementById('selNumeroInteressado').options.length == 2){
+                document.getElementById('selNumeroInteressado').options[1].selected = true;
             }
         };
         consultarExtratoMulta();
@@ -30,7 +30,7 @@
             document.getElementById('selInteressado').options[1].selected = true;
         }
         if(document.getElementById('selInteressado').value != 'null'){
-            window.setTimeout(function(){objAjaxFistel.executar()}, 1000);
+            window.setTimeout(function(){objAjaxNumeroInteressado.executar()}, 1000);
         }
 
         houveConstituicao(document.getElementById('chkHouveConstituicao'));
@@ -38,10 +38,9 @@
     }
 
     function selecionarPorNome(select,valor){
-
-        var sel = infraGetElementById(select);
-        for (var i=0; i<sel.length; i++) {
-            if (sel.options[i].text == valor) {
+        var sel = document.getElementById(select);
+        for (var i=0; i<sel.options.length; i++) {
+            if ( sel.options[i].text != '' && sel.options[i].text.indexOf(valor)) {
                 sel.options[i].selected = true;
                 return;
             }
@@ -202,9 +201,9 @@
     function abrirModalJustificativaLancamento(element){
         var url = element.getAttribute('data-url');
 
-        if(document.getElementById('selFistel').value == '' || document.getElementById('selFistel').value == 'null' ){
-            alert('Selecione o fistel!');
-            objAjaxFistel.executar();
+        if(document.getElementById('selNumeroInteressado').value == '' || document.getElementById('selNumeroInteressado').value == 'null' ){
+            alert('Selecione o número de complemento do interessado!');
+            objAjaxNumeroInteressado.executar();
             return false;
         }
 
@@ -217,9 +216,9 @@
     function abrirModalConstituirDefinitivamente(element){
         var url = element.getAttribute('data-url');
 
-        if(document.getElementById('selFistel').value == '' || document.getElementById('selFistel').value == 'null' ){
-            alert('Selecione o fistel!');
-            objAjaxFistel.executar();
+        if(document.getElementById('selNumeroInteressado').value == '' || document.getElementById('selNumeroInteressado').value == 'null' ){
+            alert('Selecione o número de complemento do interessado!');
+            objAjaxNumeroInteressado.executar();
             return false;
         }
 
@@ -254,9 +253,9 @@
 
     function abrirModalCancelarLancamento(){
 
-        if (document.getElementById('selFistel').value == '' || document.getElementById('selFistel').value == 'null') {
-            alert('Selecione o fistel!');
-            objAjaxFistel.executar();
+        if (document.getElementById('selNumeroInteressado').value == '' || document.getElementById('selNumeroInteressado').value == 'null') {
+            alert('Selecione o número de complemento do interessado!');
+            objAjaxNumeroInteressado.executar();
             return false;
         } else {
             infraAbrirJanela('<?=$strLinkModalCancelarLancamento?>', 'janelaHistoricoLancamento', 900, 400);
@@ -299,7 +298,7 @@
 
     function verificarCondicionaisMulta(){
         if(document.getElementById('hdnVlCreditoNaoLancado').value != '0,00' && document.getElementById('hdnJustificativaLancamento').value == '' && document.getElementById('hdnIdMdLitFuncionalidade').value == '' ){
-            alert('Foram identificados valores da Gestão de Multa pendentes de atualização no SIGEC. Verifique se a ação para atualização dos valores foi acionada.');
+            alert('Foram identificados valores da Gestão de Multa pendentes de atualização no SISTEMA DE ARRECADAÇÃO. Verifique se a ação para atualização dos valores foi acionada.');
             return false;
         }
 

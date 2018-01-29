@@ -151,14 +151,14 @@ class MdLitHistoricLancamentoRN extends InfraRN {
     }
   }
 
-  private function validarStrFistel(MdLitHistoricLancamentoDTO $objMdLitHistoricLancamentoDTO, InfraException $objInfraException){
-    if (InfraString::isBolVazia($objMdLitHistoricLancamentoDTO->getStrFistel())){
-      $objMdLitHistoricLancamentoDTO->setStrFistel(null);
+  private function validarStrNumeroInteressado(MdLitHistoricLancamentoDTO $objMdLitHistoricLancamentoDTO, InfraException $objInfraException){
+    if (InfraString::isBolVazia($objMdLitHistoricLancamentoDTO->getStrNumeroInteressado())){
+      $objMdLitHistoricLancamentoDTO->setStrNumeroInteressado(null);
     }else{
-      $objMdLitHistoricLancamentoDTO->setStrFistel(trim($objMdLitHistoricLancamentoDTO->getStrFistel()));
+      $objMdLitHistoricLancamentoDTO->setStrNumeroInteressado(trim($objMdLitHistoricLancamentoDTO->getStrNumeroInteressado()));
 
-      if (strlen($objMdLitHistoricLancamentoDTO->getStrFistel())>999){
-        $objInfraException->adicionarValidacao('fistel possui tamanho superior a 999 caracteres.');
+      if (strlen($objMdLitHistoricLancamentoDTO->getStrNumeroInteressado())>999){
+        $objInfraException->adicionarValidacao('O número de complemento do interessado possui tamanho superior a 999 caracteres.');
       }
     }
   }
@@ -246,7 +246,7 @@ class MdLitHistoricLancamentoRN extends InfraRN {
       $this->validarDblVlrSaldoDevedor($objMdLitHistoricLancamentoDTO, $objInfraException);
       $this->validarDthInclusao($objMdLitHistoricLancamentoDTO, $objInfraException);
       $this->validarStrLinkBoleto($objMdLitHistoricLancamentoDTO, $objInfraException);
-      $this->validarStrFistel($objMdLitHistoricLancamentoDTO, $objInfraException);
+      $this->validarStrNumeroInteressado($objMdLitHistoricLancamentoDTO, $objInfraException);
       $this->validarStrSinRenunciaRecorrer($objMdLitHistoricLancamentoDTO, $objInfraException);
       $this->validarStrJustificativa($objMdLitHistoricLancamentoDTO, $objInfraException);
       $this->validarNumIdUsuario($objMdLitHistoricLancamentoDTO, $objInfraException);
@@ -320,8 +320,8 @@ class MdLitHistoricLancamentoRN extends InfraRN {
       if ($objMdLitHistoricLancamentoDTO->isSetStrLinkBoleto()){
         $this->validarStrLinkBoleto($objMdLitHistoricLancamentoDTO, $objInfraException);
       }
-      if ($objMdLitHistoricLancamentoDTO->isSetStrFistel()){
-        $this->validarStrFistel($objMdLitHistoricLancamentoDTO, $objInfraException);
+      if ($objMdLitHistoricLancamentoDTO->isSetStrNumeroInteressado()){
+        $this->validarStrNumeroInteressado($objMdLitHistoricLancamentoDTO, $objInfraException);
       }
       if ($objMdLitHistoricLancamentoDTO->isSetStrSinConstituicaoDefinitiva()){
         $this->validarStrSinConstituicaoDefinitiva($objMdLitHistoricLancamentoDTO, $objInfraException);
@@ -515,7 +515,7 @@ class MdLitHistoricLancamentoRN extends InfraRN {
     $objMdLitHistLancDTO->setDblVlrSaldoDevedor($objMdLitLancamentoDTO->getDblVlrSaldoDevedor());
     $objMdLitHistLancDTO->setDthInclusao(InfraData::getStrDataHoraAtual());
     $objMdLitHistLancDTO->setStrLinkBoleto($objMdLitLancamentoDTO->getStrLinkBoleto());
-    $objMdLitHistLancDTO->setStrFistel($objMdLitLancamentoDTO->getStrFistel());
+    $objMdLitHistLancDTO->setStrNumeroInteressado($objMdLitLancamentoDTO->getStrNumeroInteressado());
     $objMdLitHistLancDTO->setStrSinConstituicaoDefinitiva($objMdLitLancamentoDTO->getStrSinConstituicaoDefinitiva());
     $objMdLitHistLancDTO->setStrSinRenunciaRecorrer($objMdLitLancamentoDTO->getStrSinRenunciaRecorrer());
     $objMdLitHistLancDTO->setStrJustificativa($objMdLitLancamentoDTO->getStrJustificativa());

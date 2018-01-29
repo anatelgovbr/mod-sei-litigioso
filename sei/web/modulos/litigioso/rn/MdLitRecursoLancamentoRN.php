@@ -49,8 +49,8 @@ class MdLitRecursoLancamentoRN extends InfraRN {
     private function montarParametroEntradaSuspenderLancamento($objMdLitIntegracaoDTO, $post, MdLitLancamentoDTO $objMdLitLancamentoDTO){
         foreach ($objMdLitIntegracaoDTO->getArrObjMdLitMapearParamEntradaDTO() as $objMdLitMapearParamEntradaDTO){
             switch ($objMdLitMapearParamEntradaDTO->getNumIdMdLitCampoIntegracao()){
-                case MdLitMapearParamEntradaRN::$ID_PARAM_SUSPENDER_LANCAMENTO['FISTEL']:
-                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitLancamentoDTO->getStrFistel();
+                case MdLitMapearParamEntradaRN::$ID_PARAM_SUSPENDER_LANCAMENTO['NUMERO_INTERESSADO']:
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitLancamentoDTO->getStrNumeroInteressado();
                     break;
 
                 case MdLitMapearParamEntradaRN::$ID_PARAM_SUSPENDER_LANCAMENTO['SEQUENCIAL']:
@@ -124,8 +124,8 @@ class MdLitRecursoLancamentoRN extends InfraRN {
     private function montarParametroEntradaCancelarRecurso($objMdLitIntegracaoDTO, $post, MdLitLancamentoDTO $objMdLitLancamentoDTO){
         foreach ($objMdLitIntegracaoDTO->getArrObjMdLitMapearParamEntradaDTO() as $objMdLitMapearParamEntradaDTO){
             switch ($objMdLitMapearParamEntradaDTO->getNumIdMdLitCampoIntegracao()){
-                case MdLitMapearParamEntradaRN::$ID_PARAM_CANCELAR_RECURSO['FISTEL']:
-                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitLancamentoDTO->getStrFistel();
+                case MdLitMapearParamEntradaRN::$ID_PARAM_CANCELAR_RECURSO['NUMERO_INTERESSADO']:
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitLancamentoDTO->getStrNumeroInteressado();
                     break;
 
                 case MdLitMapearParamEntradaRN::$ID_PARAM_CANCELAR_RECURSO['SEQUENCIAL']:
@@ -178,8 +178,8 @@ class MdLitRecursoLancamentoRN extends InfraRN {
     private function montarParametroEntradaDenegarRecurso($objMdLitIntegracaoDTO, $post, MdLitLancamentoDTO $objMdLitLancamentoDTO){
         foreach ($objMdLitIntegracaoDTO->getArrObjMdLitMapearParamEntradaDTO() as $objMdLitMapearParamEntradaDTO){
             switch ($objMdLitMapearParamEntradaDTO->getNumIdMdLitCampoIntegracao()){
-                case MdLitMapearParamEntradaRN::$ID_PARAM_DENEGAR_RECURSO['FISTEL']:
-                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitLancamentoDTO->getStrFistel();
+                case MdLitMapearParamEntradaRN::$ID_PARAM_DENEGAR_RECURSO['NUMERO_INTERESSADO']:
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitLancamentoDTO->getStrNumeroInteressado();
                     break;
 
                 case MdLitMapearParamEntradaRN::$ID_PARAM_DENEGAR_RECURSO['SEQUENCIAL']:

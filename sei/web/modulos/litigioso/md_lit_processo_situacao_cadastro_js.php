@@ -26,17 +26,18 @@ var adicionouSit              = false;
     function inicializarGrids(){
        inicializarGridSituacao();
        inicializarGridDecisao();
-       carregarDependenciaMulta();
+        if(typeof carregarDependenciaMulta != "undefined")
+            carregarDependenciaMulta();
     }
 
 function OnSubmitForm() {
-    if (!verificarCondicionaisSituacao()) {
+    if (typeof verificarCondicionaisSituacao != "undefined" && !verificarCondicionaisSituacao()) {
         return false;
     }
-    if(!verificarCondicionaisDecisao()){
+    if(typeof verificarCondicionaisDecisao != "undefined" && !verificarCondicionaisDecisao()){
         return false;
-    }
-    if(!verificarCondicionaisMulta()){
+    }//verifica primeiro se o fieldset foi carregado (existe condicional para carregar o JS)
+    if(typeof verificarCondicionaisMulta != "undefined" && !verificarCondicionaisMulta()){
         return false;
     }
 

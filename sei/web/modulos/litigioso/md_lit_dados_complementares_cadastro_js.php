@@ -216,12 +216,12 @@
 
     function consultarCadastro(){
 
-        var objConsultarFistel = new Object();
-        objConsultarFistel.id_procedimento   = document.getElementById('hdnIdProcedimento').value;
-        objConsultarFistel.id_contato        = document.getElementById('hdnIdContato').value;
-        objConsultarFistel.id_md_lit_controle  = document.getElementById('hdnIdMdLitControle').value;
+        var objConsultarNumero = new Object();
+        objConsultarNumero.id_procedimento   = document.getElementById('hdnIdProcedimento').value;
+        objConsultarNumero.id_contato        = document.getElementById('hdnIdContato').value;
+        objConsultarNumero.id_md_lit_controle  = document.getElementById('hdnIdMdLitControle').value;
 
-        if(objConsultarFistel.IdMdLitControle == '' || objTblDadosComplementares.hdn.value != ''){
+        if(objConsultarNumero.IdMdLitControle == '' || objTblDadosComplementares.hdn.value != ''){
             return;
         }
 
@@ -229,7 +229,7 @@
             type: "POST",
             url: "<?= $strLinkAjaxlistarDadoComplementar ?>",
 //            dataType: "xml",
-            data: objConsultarFistel,
+            data: objConsultarNumero,
             success: function (result) {
                 objTblDadosComplementaresConsulta.limpar();
                 if($(result).find('erro').length > 0){
@@ -314,10 +314,11 @@
                 });
 
                 if(document.getElementById('optOutorgadaNao').checked) {
-                    var arrDadosComplementar = objTblDadosComplementares.obterItens();console.log(arrDadosComplementar);
+                    var arrDadosComplementar = objTblDadosComplementares.obterItens();
                     var arrNomeServico = arrDadosComplementar[0][1].split(",<br> ");
                     var arrIdServico = arrDadosComplementar[0][6].split(",€ ");
                     document.getElementById('hdnIdMdLitDadoInteressadoNaoOutorgado').value = arrDadosComplementar[0][13];
+                    document.getElementById('hdnNumeroNaoOutorgado').value = arrDadosComplementar[0][0];
                     for (var i = 0; i < arrNomeServico.length; i++) {
                         objLupaServicosNaoOutorga.adicionar(arrIdServico[i], arrNomeServico[i]);
                     }
@@ -345,10 +346,11 @@
             var idContato       = document.getElementById('hdnIdContato').value;
             var outorga         = 'N';
             var idMdLitDadoComplementar = document.getElementById('hdnIdMdLitDadoInteressadoNaoOutorgado').value;
+            var numero = document.getElementById('hdnNumeroNaoOutorgado').value == ''? null : document.getElementById('hdnNumeroNaoOutorgado').value;
 
             objTblDadosComplementares.limpar();
             objTblDadosComplementares.adicionar([
-                null,
+                numero,
                 nomeServico,
                 null,
                 null,
@@ -617,37 +619,37 @@
         return false;
     }
 
-    function consultarFistel(){
-        var objConsultarFistel = new Object();
+    function consultarNumero(){
+        var objConsultarNumero = new Object();
         if(verificarPaiFieldSet(document.getElementById('txtNumero')) && document.getElementById('txtNumero').value != ''){
-            objConsultarFistel.numero = document.getElementById('txtNumero').value;
+            objConsultarNumero.numero = document.getElementById('txtNumero').value;
         }
         if(verificarPaiFieldSet(document.getElementById('txtServicos')) && document.getElementById('hdnServicos').value != ''){
-            objConsultarFistel.servico = document.getElementById('hdnServicos').value;
+            objConsultarNumero.servico = document.getElementById('hdnServicos').value;
         }
         if(verificarPaiFieldSet(document.getElementById('txtEstado')) && document.getElementById('hdnEstado').value != ''){
-            objConsultarFistel.estados = document.getElementById('hdnEstado').value;
+            objConsultarNumero.estados = document.getElementById('hdnEstado').value;
         }
         if(verificarPaiFieldSet(document.getElementById('txtCidade')) && document.getElementById('hdnCidade').value != ''){
-            objConsultarFistel.cidades = document.getElementById('hdnCidade').value;
+            objConsultarNumero.cidades = document.getElementById('hdnCidade').value;
         }
         if(verificarPaiFieldSet(document.getElementById('fldAbrangencia')) && getChecboxIdArr(document.getElementsByName('rdoAbrangencia[]')).length != 0 ){
-            objConsultarFistel.abrangencia = getChecboxIdArr(document.getElementsByName('rdoAbrangencia[]'));
+            objConsultarNumero.abrangencia = getChecboxIdArr(document.getElementsByName('rdoAbrangencia[]'));
         }
         if(verificarPaiFieldSet(document.getElementById('fldModalidadesOutorga')) && getChecboxIdArr(document.getElementsByName('rdoOutorga[]')).length != 0 ){
-            objConsultarFistel.modalidade = getChecboxIdArr(document.getElementsByName('rdoOutorga[]'));
+            objConsultarNumero.modalidade = getChecboxIdArr(document.getElementsByName('rdoOutorga[]'));
         }
 
-        objConsultarFistel.cpf_cnpj = document.getElementById('hdnCpfCnpj').value;
+        objConsultarNumero.cpf_cnpj = document.getElementById('hdnCpfCnpj').value;
 
-        if(JSON.stringify(objConsultarFistel) === JSON.stringify({})){
+        if(JSON.stringify(objConsultarNumero) === JSON.stringify({})){
             return false;
         }
         $.ajax({
             type: "POST",
             url: "<?= $strLinkAjaxConsultarIntegracao ?>",
 //            dataType: "xml",
-            data: objConsultarFistel,
+            data: objConsultarNumero,
             beforeSend: function(){
                 infraExibirAviso(false);
             },

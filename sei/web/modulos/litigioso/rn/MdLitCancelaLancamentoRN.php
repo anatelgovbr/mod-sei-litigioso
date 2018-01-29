@@ -321,8 +321,8 @@ class MdLitCancelaLancamentoRN extends InfraRN {
             $idIntegracao = $objMdLitMapearParamEntradaDTO->getNumIdMdLitCampoIntegracao();
             switch ($idIntegracao) {
 
-                case MdLitMapearParamEntradaRN::$ID_PARAM_CANCELAR_LANCAMENTO['FISTEL']:
-                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitLancamentoDTO->getStrFistel();
+                case MdLitMapearParamEntradaRN::$ID_PARAM_CANCELAR_LANCAMENTO['NUMERO_INTERESSADO']:
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitLancamentoDTO->getStrNumeroInteressado();
                     break;
 
                 case MdLitMapearParamEntradaRN::$ID_PARAM_CANCELAR_LANCAMENTO['SEQUENCIAL']:

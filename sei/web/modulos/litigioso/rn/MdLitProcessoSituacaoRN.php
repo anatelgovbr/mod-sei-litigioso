@@ -763,9 +763,9 @@ class MdLitProcessoSituacaoRN extends InfraRN
 
     //Add diferente de Livre
     $objMdLitSituacaoDTO->adicionarCriterio(array('SinInstauracao', 'SinConclusiva', 'SinDecisoria', 'SinIntimacao', 'SinDefesa', 'SinRecursal'),
-        array(InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL),
-        array('S', 'S', 'S', 'S', 'S', 'S', 'S'),
-        array(InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR));
+        array(InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL),
+        array('S', 'S', 'S', 'S', 'S', 'S'),
+        array(InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR));
 
     $objMdLitSituacaoDTO = $objMdLitSituacaoRN->consultar($objMdLitSituacaoDTO);
 
@@ -905,6 +905,10 @@ class MdLitProcessoSituacaoRN extends InfraRN
 
   private function _realizaAlteracaoSituacao($arrDados){
 
+    $objMdLitSituacaoRN = new MdLitSituacaoRN();
+    $dtaIntercorrente = null;
+    $dtaQuinquenal = null;
+
     if ($arrDados[18] != '') {
       $depExtraJud = 'S';
       $vlFormt = str_replace('.', '', $arrDados[18]);
@@ -912,6 +916,16 @@ class MdLitProcessoSituacaoRN extends InfraRN
     }
 
     $sinPrescricao = $arrDados[22] == '1' ? 'S' : 'N';
+      $objMdLitProcessoSitDTOIntimacao = $this->consultarPrimeiraIntimacao($arrDados[2]);
+      $objMdLitSituacaoDTO   = $objMdLitSituacaoRN->getObjSituacaoPorId($arrDados[4]);
+
+      if($objMdLitProcessoSitDTOIntimacao != null && $objMdLitProcessoSitDTOIntimacao->getNumIdMdLitProcessoSituacao() == $arrDados[0] && $objMdLitSituacaoDTO->getStrSinIntimacao() == 'S'){
+          $dtaIntercorrente = InfraData::calcularData(3,InfraData::$UNIDADE_ANOS,InfraData::$SENTIDO_ADIANTE,$arrDados[11]);//Data da Intimação + 3 anos
+          $dtaQuinquenal    = InfraData::calcularData(5,InfraData::$UNIDADE_ANOS,InfraData::$SENTIDO_ADIANTE,$arrDados[11]);//Data da Intimação + 5 anos
+      }elseif($sinPrescricao == 'S'){
+          $dtaIntercorrente = $arrDados[7];
+          $dtaQuinquenal    = $arrDados[8];
+      }
 
     $objMdLitProcessoSitDTO = new MdLitProcessoSituacaoDTO();
     $objMdLitProcessoSitDTO->setNumIdMdLitProcessoSituacao($arrDados[0]);
@@ -925,9 +939,6 @@ class MdLitProcessoSituacaoRN extends InfraRN
     $objMdLitProcessoSitDTO->setDblValorDepositoExtrajudicial($vlFormt);
     $objMdLitProcessoSitDTO->setDtaDtDepositoExtrajudicial($arrDados[19]);
     $objMdLitProcessoSitDTO->setDtaData($arrDados[11]);
-
-    $dtaIntercorrente = $arrDados[25] == '1' ? $arrDados[7] : null;
-    $dtaQuinquenal    = $arrDados[25] == '1' ? $arrDados[8] : null;
     $objMdLitProcessoSitDTO->setDtaIntercorrente($dtaIntercorrente);
     $objMdLitProcessoSitDTO->setDtaQuinquenal($dtaQuinquenal);
     $objMdLitProcessoSitDTO->setStrSinAtivo('S');
@@ -954,7 +965,10 @@ class MdLitProcessoSituacaoRN extends InfraRN
       $objMdLitSituacaoDTO   = $objMdLitSituacaoRN->getObjSituacaoPorId($arrDados[4]);
     $sinPrescricao   = $arrDados[22] == '1' ? 'S' : 'N';
 
-      if(($objMdLitProcessoSitDTOIntimacao == null && $objMdLitSituacaoDTO->getStrSinIntimacao() == 'S') ||$arrDados[25] == '1'){
+      if(($objMdLitProcessoSitDTOIntimacao == null && $objMdLitSituacaoDTO->getStrSinIntimacao() == 'S') && $arrDados[25] == '1'){
+          $dtaIntercorrente = InfraData::calcularData(3,InfraData::$UNIDADE_ANOS,InfraData::$SENTIDO_ADIANTE,$arrDados[11]);//Data da Intimação + 3 anos
+          $dtaQuinquenal    = InfraData::calcularData(5,InfraData::$UNIDADE_ANOS,InfraData::$SENTIDO_ADIANTE,$arrDados[11]);//Data da Intimação + 5 anos
+      }elseif($sinPrescricao == 'S'){
           $dtaIntercorrente = $arrDados[7];
           $dtaQuinquenal    = $arrDados[8];
       }
@@ -1064,8 +1078,12 @@ class MdLitProcessoSituacaoRN extends InfraRN
   protected function getDtMenorInterQuinquenalConectado($arrParams) {
     $idProcedimento         = $arrParams[0];
     $isIntercorrente        = $arrParams[1];
-    $objMdLitSitProcessoDTO = $this->_retornaDadosPrimeiraSituacaoCadastrada($idProcedimento);
-    $dtInstaur              = !is_null($objMdLitSitProcessoDTO) ? $objMdLitSitProcessoDTO->getDtaData() : '';
+    $objMdLitSitProcessoDTO = $this->consultarPrimeiraIntimacao($idProcedimento);
+      $dtInstaur = '';
+      if(!is_null($objMdLitSitProcessoDTO)){
+          $dtInstaur = $isIntercorrente ? $objMdLitSitProcessoDTO->getDtaIntercorrente():$objMdLitSitProcessoDTO->getDtaQuinquenal();
+      }
+
 
     $dtMenorHistorico = $this->getDtIntercorrenteQuinquenal(array($idProcedimento, $isIntercorrente, InfraDTO::$TIPO_ORDENACAO_ASC));
 
@@ -1278,19 +1296,31 @@ class MdLitProcessoSituacaoRN extends InfraRN
     $objMdLitTpCtrlTpProcessoDTO->retNumIdTipoControleLitigioso();
     $objMdLitTpCtrlTpProcessoDTO->setNumIdTipoProcedimento($objProcedimentoAPI->getIdTipoProcedimento());
 
-    $countIsTipoProcesso = $objMdLitTpCtrlTpProcessoRN->contar($objMdLitTpCtrlTpProcessoDTO) > 0;
+
     $objMdLitTpCtrlTpProcessoDTO = $objMdLitTpCtrlTpProcessoRN->consultar($objMdLitTpCtrlTpProcessoDTO);
+    $isTipoProcesso = $objMdLitTpCtrlTpProcessoDTO === null ? false: true;
 
     $possuirPreCadastro = $objMdLitProcessoSituacaoRN->existePreCadastro($objProcedimentoAPI->getIdProcedimento());
     //Busca todos os tipos de controle que possui esse tipo de processo vinculado
 
 
-    if ($countIsTipoProcesso || $possuirPreCadastro) {
-      $idTpControleRel = $countIsTipoProcesso > 0 ? $objMdLitTpCtrlTpProcessoDTO->getNumIdTipoControleLitigioso() : null;
+    if ($isTipoProcesso || $possuirPreCadastro) {
+      $idTpControleRel = $isTipoProcesso ? $objMdLitTpCtrlTpProcessoDTO->getNumIdTipoControleLitigioso() : null;
 
       $idTpControle = $objMdLitProcessoSituacaoRN->verificarTipoControle(array($objProcedimentoAPI->getIdProcedimento(), $idTpControleRel));
 
-      return $idTpControle;
+        if($idTpControle){
+            $objMdLitRelTipoControleUnidadeDTO = new MdLitRelTipoControleUnidadeDTO();
+            $objMdLitRelTipoControleUnidadeDTO->retNumIdTipoControleLitigioso();
+            $objMdLitRelTipoControleUnidadeDTO->setNumIdTipoControleLitigioso($idTpControle);
+            $objMdLitRelTipoControleUnidadeDTO->setNumIdUnidade(SessaoSEI::getInstance()->getNumIdUnidadeAtual());
+
+            $objMdLitRelTipoControleUnidadeRN = new MdLitRelTipoControleUnidadeRN();
+            $countObjMdLitRelTipoControleUnidade = $objMdLitRelTipoControleUnidadeRN->contar($objMdLitRelTipoControleUnidadeDTO);
+
+            return $countObjMdLitRelTipoControleUnidade > 0 ?  $idTpControle :null;
+        }
+
     }
     
     return null;
@@ -1321,15 +1351,17 @@ class MdLitProcessoSituacaoRN extends InfraRN
       $objMdLitProcessoSituacaoDTO->retNumIdMdLitProcessoSituacao();
       $objMdLitProcessoSituacaoDTO->retNumIdMdLitSituacao();
       $objMdLitProcessoSituacaoDTO->retStrSinIntimacaoSit();
+      $objMdLitProcessoSituacaoDTO->retDtaData();
+      $objMdLitProcessoSituacaoDTO->retDtaIntercorrente();
+      $objMdLitProcessoSituacaoDTO->retDtaQuinquenal();
+
 
       $objMdLitProcessoSituacaoDTO->setStrSinIntimacaoSit('S');
       $objMdLitProcessoSituacaoDTO->setDblIdProcedimento($idProcedimento);
 
       $objMdLitProcessoSituacaoDTO->setNumMaxRegistrosRetorno(1);
-
       return $this->consultar($objMdLitProcessoSituacaoDTO);
   }
-
 
 }
 ?>

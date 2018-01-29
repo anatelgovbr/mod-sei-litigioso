@@ -150,14 +150,14 @@ class MdLitLancamentoRN extends InfraRN {
     }
   }
 
-  private function validarStrFistel(MdLitLancamentoDTO $objMdLitLancamentoDTO, InfraException $objInfraException){
-    if (InfraString::isBolVazia($objMdLitLancamentoDTO->getStrFistel())){
-      $objMdLitLancamentoDTO->setStrFistel(null);
+  private function validarStrNumeroInteressado(MdLitLancamentoDTO $objMdLitLancamentoDTO, InfraException $objInfraException){
+    if (InfraString::isBolVazia($objMdLitLancamentoDTO->getStrNumeroInteressado())){
+      $objMdLitLancamentoDTO->setStrNumeroInteressado(null);
     }else{
-      $objMdLitLancamentoDTO->setStrFistel(trim($objMdLitLancamentoDTO->getStrFistel()));
+      $objMdLitLancamentoDTO->setStrNumeroInteressado(trim($objMdLitLancamentoDTO->getStrNumeroInteressado()));
 
-      if (strlen($objMdLitLancamentoDTO->getStrFistel())>999){
-        $objInfraException->adicionarValidacao('fistel possui tamanho superior a 999 caracteres.');
+      if (strlen($objMdLitLancamentoDTO->getStrNumeroInteressado())>999){
+        $objInfraException->adicionarValidacao('Número de complemento do interessado possui tamanho superior a 999 caracteres.');
       }
     }
   }
@@ -244,7 +244,7 @@ class MdLitLancamentoRN extends InfraRN {
       $this->validarDblVlrLancamento($objMdLitLancamentoDTO, $objInfraException);
       $this->validarDthInclusao($objMdLitLancamentoDTO, $objInfraException);
       $this->validarStrLinkBoleto($objMdLitLancamentoDTO, $objInfraException);
-      $this->validarStrFistel($objMdLitLancamentoDTO, $objInfraException);
+      $this->validarStrNumeroInteressado($objMdLitLancamentoDTO, $objInfraException);
       $this->validarStrSinConstituicaoDefinitiva($objMdLitLancamentoDTO, $objInfraException);
       $this->validarStrSinRenunciaRecorrer($objMdLitLancamentoDTO, $objInfraException);
 //      $this->validarStrJustificativa($objMdLitLancamentoDTO, $objInfraException);
@@ -323,8 +323,8 @@ class MdLitLancamentoRN extends InfraRN {
       if ($objMdLitLancamentoDTO->isSetStrLinkBoleto()){
         $this->validarStrLinkBoleto($objMdLitLancamentoDTO, $objInfraException);
       }
-      if ($objMdLitLancamentoDTO->isSetStrFistel()){
-        $this->validarStrFistel($objMdLitLancamentoDTO, $objInfraException);
+      if ($objMdLitLancamentoDTO->isSetStrNumeroInteressado()){
+        $this->validarStrNumeroInteressado($objMdLitLancamentoDTO, $objInfraException);
       }
       if ($objMdLitLancamentoDTO->isSetStrSinConstituicaoDefinitiva()){
         $this->validarStrSinConstituicaoDefinitiva($objMdLitLancamentoDTO, $objInfraException);
@@ -457,7 +457,7 @@ class MdLitLancamentoRN extends InfraRN {
      * @return MdLitLancamentoDTO retorna o objeto se for o lançamento de um novo crédito ao contrario não há retorno
      */
     public function prepararLancamento($post){
-        switch ($post['hdnIdMdLitFuncionalidade']){
+        switch ($post['hdnIdMdLitFuncionalidade']) {
             case MdLitIntegracaoRN::$ARRECADACAO_LANCAMENTO_CREDITO:
                 $objMdLitLancamento = $this->_realizarLancamentoCredito($post);
                 return $objMdLitLancamento;
@@ -602,6 +602,7 @@ class MdLitLancamentoRN extends InfraRN {
         $objMdLitLancamentoNovo->setStrSinConstituicaoDefinitiva('N');
         $objMdLitLancamentoNovo->setDblVlrSaldoDevedor($objMdLitLancamentoNovo->getDblVlrLancamento());
         $objMdLitLancamentoNovo->setStrSinSuspenso('N');
+        $objMdLitLancamentoNovo->setDblVlrPago(0);
 
         $objMdLitLancamentoNovo = $this->cadastrar($objMdLitLancamentoNovo);
     }
@@ -647,28 +648,28 @@ class MdLitLancamentoRN extends InfraRN {
                     $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $dtDecisaoAplicacaoMulta;
                     break;
 
-                case MdLitMapearParamEntradaRN::$ID_PARAM_LANCAMENTO_CREDITO['FISTEL']:
-                    if(empty($post['hdnNumFistel'])){
+                case MdLitMapearParamEntradaRN::$ID_PARAM_LANCAMENTO_CREDITO['NUMERO_INTERESSADO']:
+                    if(empty($post['hdnNumInteressado'])){
                         $objMdLitDadosInteressadoRN = new MdLitDadoInteressadoRN();
-                        $objMdLitDadoInteressadoDTO = $objMdLitDadosInteressadoRN->retornaObjDadoInteressadoPorFistel($post);
+                        $objMdLitDadoInteressadoDTO = $objMdLitDadosInteressadoRN->retornaObjDadoInteressadoPorNumeroInteressado($post);
                         $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitDadoInteressadoDTO->getStrNumero();
                     }else{
-                        $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $post['hdnNumFistel'];
+                        $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $post['hdnNumInteressado'];
                     }
 
                     /**
                      * @todo no SIGEC possui uma validação aonde e obrigatorio o numero do serviço
-                     * foi criado uma demanda para evoluir a procedure, assim ele terá que pegar pelo numero de fistel o serviço no SITARWEB
+                     * foi criado uma demanda para evoluir a procedure, assim ele terá que pegar pelo numero de complemento do interessado o serviço no SITARWEB
                      * assim que a demanda for concluido retirar esse bloco de codigo paliativo
                      */
                     $objMdLitRelDadoInterServicoDTO = new MdLitRelDadoInterServicoDTO();
                     $objMdLitRelDadoInterServicoDTO->retTodos(true);
 
-                    if(!empty($post['hdnNumFistel']))
-                        $objMdLitRelDadoInterServicoDTO->setStrNumeroMdLitDadoInteressado($post['hdnNumFistel']);
+                    if(!empty($post['hdnNumInteressado']))
+                        $objMdLitRelDadoInterServicoDTO->setStrNumeroMdLitDadoInteressado($post['hdnNumInteressado']);
 
-                    if(!empty($post['selFistel']))
-                        $objMdLitRelDadoInterServicoDTO->setNumIdMdLitDadoInteressado($post['selFistel']);
+                    if(!empty($post['selNumeroInteressado']))
+                        $objMdLitRelDadoInterServicoDTO->setNumIdMdLitDadoInteressado($post['selNumeroInteressado']);
 
 
                     $objMdLitRelDadoInterServicoDTO->setNumMaxRegistrosRetorno(1);
@@ -712,6 +713,17 @@ class MdLitLancamentoRN extends InfraRN {
                     $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = false;
                     break;
 
+                case MdLitMapearParamEntradaRN::$ID_PARAM_LANCAMENTO_CREDITO['CNPJ_CPF']:
+                    if(isset($post['selNumeroInteressado'])){
+                        $objMdLitDadosInteressadoRN = new MdLitDadoInteressadoRN();
+                        $objMdLitDadoInteressadoDTO = $objMdLitDadosInteressadoRN->retornaObjDadoInteressadoPorNumeroInteressado($post);
+                        if($objMdLitDadoInteressadoDTO && $objMdLitDadoInteressadoDTO->getDblCnpjContatoParticipante()){
+                            $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitDadoInteressadoDTO->getDblCnpjContatoParticipante();
+                        }elseif($objMdLitDadoInteressadoDTO && $objMdLitDadoInteressadoDTO->getDblCpfContatoParticipante()){
+                            $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitDadoInteressadoDTO->getDblCpfContatoParticipante();
+                        }
+                    }
+                    break;
             }
 
         }
@@ -745,8 +757,8 @@ class MdLitLancamentoRN extends InfraRN {
                     $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $dtDecisaoAplicacaoMulta;
                     break;
 
-                case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['FISTEL']:
-                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitLancamentoDTO->getStrFistel();
+                case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['NUMERO_INTERESSADO']:
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitLancamentoDTO->getStrNumeroInteressado();
                     break;
 
                 case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['VALOR_TOTAL']:
@@ -834,8 +846,8 @@ class MdLitLancamentoRN extends InfraRN {
                         $objMdLitLancamento->setStrCodigoReceita($arrResultado['return'][$objMdLitMapearParamSaidaDTO->getStrCampo()]);
                         break;
 
-                    case MdLitMapearParamSaidaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['FISTEL']:
-                        $objMdLitLancamento->setStrFistel($arrResultado['return'][$objMdLitMapearParamSaidaDTO->getStrCampo()]);
+                    case MdLitMapearParamSaidaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['NUMERO_INTERESSADO']:
+                        $objMdLitLancamento->setStrNumeroInteressado($arrResultado['return'][$objMdLitMapearParamSaidaDTO->getStrCampo()]);
                         break;
                 }
             }
@@ -887,8 +899,8 @@ class MdLitLancamentoRN extends InfraRN {
                         $objMdLitLancamento->setStrCodigoReceita($arrResultado['return'][$objMdLitMapearParamSaidaDTO->getStrCampo()]);
                         break;
 
-                    case MdLitMapearParamSaidaRN::$ID_PARAM_LANCAMENTO_CREDITO['FISTEL']:
-                        $objMdLitLancamento->setStrFistel($arrResultado['return'][$objMdLitMapearParamSaidaDTO->getStrCampo()]);
+                    case MdLitMapearParamSaidaRN::$ID_PARAM_LANCAMENTO_CREDITO['NUMERO_INTERESSADO']:
+                        $objMdLitLancamento->setStrNumeroInteressado($arrResultado['return'][$objMdLitMapearParamSaidaDTO->getStrCampo()]);
                         break;
                 }
             }
@@ -931,7 +943,7 @@ class MdLitLancamentoRN extends InfraRN {
             if($objMdLitLancamentoDTOAntigo){
                 $objMdLitIntegracaoDTO = $objMdLitIntegracaoRN->retornarObjIntegracaoDTOPorFuncionalidade(MdLitIntegracaoRN::$ARRECADACAO_CONSULTAR_LANCAMENTO);
 
-                $post = array('selCreditosProcesso' => $objMdLitLancamentoDTOAntigo->getNumIdMdLitLancamento(),'numFistel' => $objMdLitLancamentoDTOAntigo->getStrFistel(), 'chkReducaoRenuncia' => $objMdLitLancamentoDTOAntigo->getStrSinRenunciaRecorrer());
+                $post = array('selCreditosProcesso' => $objMdLitLancamentoDTOAntigo->getNumIdMdLitLancamento(),'numInteressado' => $objMdLitLancamentoDTOAntigo->getStrNumeroInteressado(), 'chkReducaoRenuncia' => $objMdLitLancamentoDTOAntigo->getStrSinRenunciaRecorrer());
 
                 $objMdLitLancamentoDTO = $objMdLitConsultarLancRN->verificarAtualizarSituacaoLancamentoSIGEC($objMdLitIntegracaoDTO, $post);
             }

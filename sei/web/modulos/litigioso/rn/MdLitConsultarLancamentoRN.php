@@ -140,18 +140,18 @@ class MdLitConsultarLancamentoRN extends InfraRN
         if ($idLancamento != '') {
             foreach ($objMdLitIntegracaoDTO->getArrObjMdLitMapearParamEntradaDTO() as $objMdLitMapearParamEntradaDTO) {
                 switch ($objMdLitMapearParamEntradaDTO->getNumIdMdLitCampoIntegracao()) {
-                    case MdLitMapearParamEntradaRN::$ID_PARAM_CONSULTAR_LANCAMENTO['FISTEL']:
-                        if(array_key_exists('numFistel',$post)){
-                            $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $post['numFistel'];
+                    case MdLitMapearParamEntradaRN::$ID_PARAM_CONSULTAR_LANCAMENTO['NUMERO_INTERESSADO']:
+                        if(array_key_exists('numInteressado',$post)){
+                            $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $post['numInteressado'];
                             break;
                         }
 
-                        if(empty($post['hdnNumFistel'])){
+                        if(empty($post['hdnNumInteressado'])){
                             $objMdLitDadosInteressadoRN = new MdLitDadoInteressadoRN();
-                            $objMdLitDadoInteressadoDTO = $objMdLitDadosInteressadoRN->retornaObjDadoInteressadoPorFistel($post);
+                            $objMdLitDadoInteressadoDTO = $objMdLitDadosInteressadoRN->retornaObjDadoInteressadoPorNumeroInteressado($post);
                             $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitDadoInteressadoDTO->getStrNumero();
                         }else{
-                            $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $post['hdnNumFistel'];
+                            $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $post['hdnNumInteressado'];
                         }
                         break;
 
@@ -170,92 +170,6 @@ class MdLitConsultarLancamentoRN extends InfraRN
 
 
         return $montarParametroEntrada;
-    }
-
-    public function consultarAgendamento(){
-
-        try{
-            ini_set('max_execution_time','0');
-            ini_set('memory_limit','1024M');
-
-            InfraDebug::getInstance()->setBolLigado(true);
-            InfraDebug::getInstance()->setBolDebugInfra(false);
-            InfraDebug::getInstance()->setBolEcho(false);
-            InfraDebug::getInstance()->limpar();
-            InfraDebug::getInstance()->gravar('Atualizando os lançamentos com o sistema de Arrecadação');
-
-            $numSeg = InfraUtil::verificarTempoProcessamento();
-
-            $objMdLitIntegracaoRN = new MdLitIntegracaoRN();
-            $objMdLitIntegracaoDTO = $objMdLitIntegracaoRN->retornarObjIntegracaoDTOPorFuncionalidade(MdLitIntegracaoRN::$ARRECADACAO_CONSULTAR_LANCAMENTO);
-
-            if(is_null($objMdLitIntegracaoDTO)){
-                throw new InfraException('É necessário realizar a integração com a funcionalidade de Consultar Lançamento.');
-            }
-
-            if(empty($objMdLitIntegracaoDTO->getArrObjMdLitMapearParamSaidaDTO()) && empty($objMdLitIntegracaoDTO->getArrObjMdLitMapearParamEntradaDTO())){
-                throw new InfraException('Os parâmetros de entrada e saída não foram parametrizados. Contate o Gestor do Controle.');
-            }
-
-            $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
-            $objMdLitLancamentoDTO->retTodos(false);
-            $objMdLitLancamentoDTO->setNumIdMdLitSituacaoLancamento(array(MdLitSituacaoLancamentoRN::$CANCELADO,MdLitSituacaoLancamentoRN::$QUITADO), InfraDTO::$OPER_NOT_IN);
-
-            $objMdLitLancamentoRN = new MdLitLancamentoRN();
-            $arrObjMdLitLancamentoDTO = $objMdLitLancamentoRN->listar($objMdLitLancamentoDTO);
-
-            if(count($arrObjMdLitLancamentoDTO)){
-                foreach ($arrObjMdLitLancamentoDTO as $objMdLitLancamentoDTO){
-                    try{
-                        $params = array();
-                        $params['numFistel']            = $objMdLitLancamentoDTO->getStrFistel();
-                        $params['selCreditosProcesso']  = $objMdLitLancamentoDTO->getNumIdMdLitLancamento();
-                        $params['chkReducaoRenuncia']   = $objMdLitLancamentoDTO->getStrSinRenunciaRecorrer();
-
-                        $sucesso = $this->verificarAtualizarSituacaoLancamentoSIGEC($objMdLitIntegracaoDTO, $params);
-
-
-                        if ($sucesso === false) {
-                            InfraDebug::getInstance()->gravar('Fistel: ' . $objMdLitLancamentoDTO->getStrFistel());
-                            InfraDebug::getInstance()->gravar('Sequencial: ' . $objMdLitLancamentoDTO->getStrSequencial());
-                            InfraDebug::getInstance()->gravar('Erro ao atualizar o lançamento!');
-                            InfraDebug::getInstance()->gravar('------------------------------------------------------------------------------');
-                        }
-
-                    }catch(Exception $e){
-
-                        InfraDebug::getInstance()->gravar('Fistel: '.$objMdLitLancamentoDTO->getStrFistel());
-                        InfraDebug::getInstance()->gravar('Sequencial: '.$objMdLitLancamentoDTO->getStrSequencial());
-
-                        if ( $e instanceof InfraException ) {
-                            if ($e->contemValidacoes()) {
-                                InfraDebug::getInstance()->gravar('Exception validação: '.$e->__toString());
-                                if($e->getObjException()){
-                                    InfraDebug::getInstance()->gravar('Exception Soap: '.$e->getObjException()->getMessage());
-                                }
-                            }
-                        }else{
-                            InfraDebug::getInstance()->gravar('Erro ao atualizar o lançamento '.$e->getMessage());
-                        }
-                        InfraDebug::getInstance()->gravar('------------------------------------------------------------------------------');
-                    }
-                }
-            }
-
-
-
-            $numSeg = InfraUtil::verificarTempoProcessamento($numSeg);
-            InfraDebug::getInstance()->gravar('TEMPO TOTAL DE EXECUCAO: '.$numSeg.' s');
-            InfraDebug::getInstance()->gravar('FIM');
-
-            LogSEI::getInstance()->gravar(InfraDebug::getInstance()->getStrDebug(),InfraLog::$INFORMACAO);
-        }catch(Exception $e){
-            InfraDebug::getInstance()->setBolLigado(false);
-            InfraDebug::getInstance()->setBolDebugInfra(false);
-            InfraDebug::getInstance()->setBolEcho(false);
-
-            throw new InfraException('Erro removendo dados temporários de auditoria.',$e);
-        }
     }
 
 }

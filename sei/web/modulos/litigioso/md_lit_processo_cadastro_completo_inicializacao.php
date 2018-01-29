@@ -247,6 +247,7 @@
                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retStrNorma();
                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retNumIdCondutaLitigioso();
                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retStrConduta();
+                    $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retDtaInfracao();
                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setNumIdControleLitigioso($objControleLitigiosoDTO->getNumIdControleLitigioso());
 
                     $objRelDispositivoNormativoCondutaControleLitigiosoRN     = new MdLitRelDispositivoNormativoCondutaControleRN();
@@ -262,6 +263,7 @@
                             , $objRelDispositivoNormativoCondutaControleLitigioso->getStrDispositivo()
                             , $objRelDispositivoNormativoCondutaControleLitigioso->getNumIdCondutaLitigioso()
                             , $objRelDispositivoNormativoCondutaControleLitigioso->getStrConduta()
+                            , $objRelDispositivoNormativoCondutaControleLitigioso->getDtaInfracao()
                         );
                     }
                     $hdnListaDIIndicados = PaginaSEI::getInstance()->gerarItensTabelaDinamica($arr);

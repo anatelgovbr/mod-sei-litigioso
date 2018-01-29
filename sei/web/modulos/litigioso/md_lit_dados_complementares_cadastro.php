@@ -96,7 +96,7 @@ PaginaSEI::getInstance()->fecharHead();
 PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 
 ?>
-    <form id="frmMdPetIntimacaoCadastro" method="post" onsubmit="return OnSubmitForm();" action="<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'] . '&id_tp_controle=' .$_GET['id_tp_controle']. '&id_contato=' .$_GET['id_contato']) ?>">
+    <form id="frmMdPetIntimacaoCadastro" method="post" onsubmit="return OnSubmitForm();" action="<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'] . '&id_tp_controle=' .$_GET['id_tp_controle']. '&id_contato=' .$_GET['id_contato']) ?>" autocomplete = "off">
         <? PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
             PaginaSEI::getInstance()->abrirAreaDados(null); ?>
 
@@ -143,8 +143,8 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 <?php if(!$fieldsSetTagAberto){
                     $fieldsSetTagAberto = true;?>
                     <fieldset id="fldInfoComplementares">
-                        <legend class="infraLegend" class="infraLabelObrigatorio" id="legendFistel" > Informações Complementares </legend>
-                        <button type="button" id="sbmConsultarFistel" onclick="consultarFistel()" accesskey="A" name="sbmConsultarFistel" class="infraButton" value="Consultar" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                        <legend class="infraLegend" class="infraLabelObrigatorio" id="legendNumero" > Informações Complementares </legend>
+                        <button type="button" id="sbmConsultarNumero" onclick="consultarNumero()" accesskey="A" name="sbmConsultarNumero" class="infraButton" value="Consultar" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                             Consultar
                         </button>
                 <?}?>
@@ -161,8 +161,8 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     <?php if(!$fieldsSetTagAberto){
                         $fieldsSetTagAberto = true;?>
                         <fieldset id="fldInfoComplementares">
-                            <legend class="infraLegend" class="infraLabelObrigatorio" id="legendFistel" > Informações Complementares </legend>
-                            <button type="button" id="sbmConsultarFistel" onclick="consultarFistel()" accesskey="A" name="sbmConsultarFistel" class="infraButton" value="Consultar" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                            <legend class="infraLegend" class="infraLabelObrigatorio" id="legendNumero" > Informações Complementares </legend>
+                            <button type="button" id="sbmConsultarNumero" onclick="consultarNumero()" accesskey="A" name="sbmConsultarNumero" class="infraButton" value="Consultar" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                                 Consultar
                             </button>
                     <?}?>
@@ -183,8 +183,8 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     <?php if(!$fieldsSetTagAberto){
                         $fieldsSetTagAberto = true;?>
                         <fieldset id="fldInfoComplementares">
-                            <legend class="infraLegend" class="infraLabelObrigatorio" id="legendFistel" > Informações Complementares </legend>
-                            <button type="button" id="sbmConsultarFistel" onclick="consultarFistel()" accesskey="A" name="sbmConsultarFistel" class="infraButton" value="Consultar" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                            <legend class="infraLegend" class="infraLabelObrigatorio" id="legendNumero" > Informações Complementares </legend>
+                            <button type="button" id="sbmConsultarNumero" onclick="consultarNumero()" accesskey="A" name="sbmConsultarNumero" class="infraButton" value="Consultar" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                                 Consultar
                             </button>
                     <?}?>
@@ -211,8 +211,8 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     <?php if(!$fieldsSetTagAberto){
                         $fieldsSetTagAberto = true;?>
                         <fieldset id="fldInfoComplementares">
-                            <legend class="infraLegend" class="infraLabelObrigatorio" id="legendFistel" > Informações Complementares </legend>
-                            <button type="button" id="sbmConsultarFistel" onclick="consultarFistel()" accesskey="A" name="sbmConsultarFistel" class="infraButton" value="Consultar" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                            <legend class="infraLegend" class="infraLabelObrigatorio" id="legendNumero" > Informações Complementares </legend>
+                            <button type="button" id="sbmConsultarNumero" onclick="consultarNumero()" accesskey="A" name="sbmConsultarNumero" class="infraButton" value="Consultar" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                                 Consultar
                             </button>
                     <?}?>
@@ -232,8 +232,8 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     <?php if(!$fieldsSetTagAberto){
                         $fieldsSetTagAberto = true;?>
                         <fieldset id="fldInfoComplementares">
-                            <legend class="infraLegend" class="infraLabelObrigatorio" id="legendFistel" > Informações Complementares </legend>
-                            <button type="button" id="sbmConsultarFistel" onclick="consultarFistel()" accesskey="A" name="sbmConsultarFistel" class="infraButton" value="Consultar" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                            <legend class="infraLegend" class="infraLabelObrigatorio" id="legendNumero" > Informações Complementares </legend>
+                            <button type="button" id="sbmConsultarNumero" onclick="consultarNumero()" accesskey="A" name="sbmConsultarNumero" class="infraButton" value="Consultar" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                                 Consultar
                             </button>
                     <?}?>
@@ -255,15 +255,15 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     <?php if(!$fieldsSetTagAberto){
                         $fieldsSetTagAberto = true;?>
                         <fieldset id="fldInfoComplementares">
-                            <legend class="infraLegend" class="infraLabelObrigatorio" id="legendFistel" > Informações Complementares </legend>
-                            <button type="button" id="sbmConsultarFistel" onclick="consultarFistel()" accesskey="A" name="sbmConsultarFistel" class="infraButton" value="Consultar" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                            <legend class="infraLegend" class="infraLabelObrigatorio" id="legendNumero" > Informações Complementares </legend>
+                            <button type="button" id="sbmConsultarNumero" onclick="consultarNumero()" accesskey="A" name="sbmConsultarNumero" class="infraButton" value="Consultar" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                                 Consultar
                             </button>
                     <?}?>
 
                     <div id="divEstado" class="infraAreaDados" style="height:11em;">
                         <label id="lblEstado" for="txtEstado" accesskey="I" <? if($objMdLitParametrizarInteressadoDTO->getStrSinObrigatorio() == 'S') { ?> class="infraLabelObrigatorio" <? } ?>><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?>:</label>
-                        <input type="text" id="txtEstado" name="txtEstado" class="infraText" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" />
+                        <input type="text" id="txtEstado" name="txtEstado" class="infraText" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" autocomplete="false" role="presentation" />
                         <? if($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda() != '') { ?><img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/ajuda.gif" name="ajuda" id="imgAjudaEstado" <?= PaginaSEI::montarTitleTooltip($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda()) ?> class="infraImg"/> <? } ?>
                         <select id="selEstado" name="selEstado" class="infraSelect" multiple="multiple" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>"  >
                             <?=$strItensSelEstado?>
@@ -283,15 +283,15 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     <?php if(!$fieldsSetTagAberto){
                         $fieldsSetTagAberto = true;?>
                         <fieldset id="fldInfoComplementares">
-                            <legend class="infraLegend" class="infraLabelObrigatorio" id="legendFistel" > Informações Complementares </legend>
-                            <button type="button" id="sbmConsultarFistel" onclick="consultarFistel()" accesskey="A" name="sbmConsultarFistel" class="infraButton" value="Consultar" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                            <legend class="infraLegend" class="infraLabelObrigatorio" id="legendNumero" > Informações Complementares </legend>
+                            <button type="button" id="sbmConsultarNumero" onclick="consultarNumero()" accesskey="A" name="sbmConsultarNumero" class="infraButton" value="Consultar" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                                 Consultar
                             </button>
                     <?}?>
 
                     <div id="divCidade" class="infraAreaDados" style="height:11em;">
                         <label id="lblCidade" for="txtCidade" accesskey="I" <? if($objMdLitParametrizarInteressadoDTO->getStrSinObrigatorio() == 'S') { ?> class="infraLabelObrigatorio" <? } ?>><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?>:</label>
-                        <input type="text" id="txtCidade" name="txtCidade" class="infraText" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" />
+                        <input type="text" id="txtCidade" name="txtCidade" class="infraText" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" autocomplete="off" />
                         <? if($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda() != '') { ?><img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/ajuda.gif" name="ajuda" id="imgAjudaCidade" <?= PaginaSEI::montarTitleTooltip($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda()) ?> class="infraImg"/> <? } ?>
                         <select id="selCidade" name="selCidade" class="infraSelect" multiple="multiple" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>"  >
                             <?=$strItensSelCidade?>
@@ -425,7 +425,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 
                     <div id="divEstado" class="infraAreaDados" style="height:11em;">
                         <label id="lblEstado" for="txtEstado" accesskey="I" class="<? echo $objMdLitParametrizarInteressadoDTO->getStrSinObrigatorio() == 'S'? 'infraLabelObrigatorio':'infraLabelOpcional'  ?>" ><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?>:</label>
-                        <input type="text" id="txtEstado" name="txtEstado" class="infraText" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" />
+                        <input type="text" id="txtEstado" name="txtEstado" class="infraText" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" autocomplete="false" />
                         <? if($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda() != '') { ?><img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/ajuda.gif" name="ajuda" id="imgAjudaEstado" <?= PaginaSEI::montarTitleTooltip($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda()) ?> class="infraImg"/> <? } ?>
                         <select id="selEstado" name="selEstado" class="infraSelect" multiple="multiple" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>"  >
                             <?=$strItensSelEstado?>
@@ -444,7 +444,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 
                     <div id="divCidade" class="infraAreaDados" style="height:11em;">
                         <label id="lblCidade" for="txtCidade" accesskey="I" class="<? echo $objMdLitParametrizarInteressadoDTO->getStrSinObrigatorio() == 'S'? 'infraLabelObrigatorio':'infraLabelOpcional'?>"  ><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?>:</label>
-                        <input type="text" id="txtCidade" name="txtCidade" class="infraText" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" />
+                        <input type="text" id="txtCidade" name="txtCidade" class="infraText" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" autocomplete="off" />
                         <? if($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda() != '') { ?><img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/ajuda.gif" name="ajuda" id="imgAjudaCidade" <?= PaginaSEI::montarTitleTooltip($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda()) ?> class="infraImg"/> <? } ?>
                         <select id="selCidade" name="selCidade" class="infraSelect" multiple="multiple" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>"  >
                             <?=$strItensSelCidade?>
@@ -545,6 +545,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
             <? } ?>
         </div>
         <input type="hidden" id="hdnIdMdLitDadoInteressadoNaoOutorgado" name="hdnIdMdLitDadoInteressadoNaoOutorgado" value="" />
+        <input type="hidden" id="hdnNumeroNaoOutorgado" name="hdnNumeroNaoOutorgado" value="" />
         <input type="hidden" id="hdnIdContato" name="hdnIdContato" class="infraText" value="<?= $objContatoDTO->getNumIdContato() ?>" />
         <input type="hidden" id="hdnIdProcedimento" name="hdnIdProcedimento" class="infraText" value="<?= $_GET['id_procedimento'] ?>" />
         <input type="hidden" id="hdnIdMdLitControle" name="hdnIdMdLitControle" class="infraText" value="<?= $_GET['id_md_lit_controle'] ?>" />
@@ -559,8 +560,9 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         <input type="hidden" id="hdnCidade" name="hdnCidade" value="<?=$_POST['hdnCidade']?>" />
         <input type="hidden" id="hdnListaDadosComplementares" name="hdnListaDadosComplementares" value="<?=$_POST['hdnListaDadosComplementares']?>" />
         <input type="hidden" id="hdnListaDadosComplementaresConsultas" name="hdnListaDadosComplementaresConsultas" value="<?=$_POST['hdnListaDadosComplementaresConsultas']?>" />
+
         <? PaginaSEI::getInstance()->fecharAreaDados(); ?>
-<!--        --><?// PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos); ?>
+        <? PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos); ?>
 
     </form>
 <?

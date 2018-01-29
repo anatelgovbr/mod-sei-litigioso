@@ -203,8 +203,10 @@ if(0){?><script><?}?>
             obj.value = valueNovo;
             window.opener.objTabelaDinamicaDecisao.recarregar();
             window.opener.document.getElementById('tbDecisao').parentNode.style.display = '';
-            window.opener.removerOptionVazio(window.opener.document.getElementById('selCreditosProcesso'));
-            window.opener.consultarExtratoMulta();
+            if(typeof window.opener.carregarDependenciaMulta != 'undefined'){
+                window.opener.removerOptionVazio(window.opener.document.getElementById('selCreditosProcesso'));
+                window.opener.consultarExtratoMulta();
+            }
             window.close();
             return;
 

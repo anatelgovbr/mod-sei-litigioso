@@ -52,7 +52,7 @@
 
         <!--  DOCUMENTO INSTAURADOR DO PROCEDIMENTO LITIGIOSO -->
         <div>
-            <fieldset id="fieldsetDocInstaurador" class="infraFieldset">
+            <fieldset id="fieldsetDocInstaurador" class="infraFieldset" onkeypress="return enterValidarDocumento(event)">
                 <legend class="infraLegend">&nbsp;Documento Instaurador do Procedimento Litigioso&nbsp;</legend>
                 <div style="clear:both;">&nbsp;</div>
                 <div style=" float: left; width: 100%;">
@@ -60,7 +60,6 @@
                         <label id="lblNumeroSei" for="txtNumeroSei" class="infraLabelObrigatorio" style="display: block">Número SEI:</label>
                         <input type="text" id="txtNumeroSei" name="txtNumeroSei" class="infraText NumeroSEIAdicionar"
                                value="<?php echo $txtNumeroSei ?>"
-                               onkeypress="return enterValidarDocumento(event)"
                                onkeyup="removerValidacaoDocInstaurador()" maxlength="11"
                                tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
                         <button type="button" name="sbmValidarNumeroSei" id="sbmValidarNumeroSei" value="Validar"
@@ -202,7 +201,7 @@
                 <div style=" float: left; width: 100%;">
                     <div style=" float: left; width: 100%;">
                         <input onclick="changeInfracoes();" type="radio" name="rdInfracoes[]"
-                               id="rdIndicDisposNormativo"
+                               id="rdIndicDisposNormativo"   onkeypress="return enterAdicionarInfracao(event)"
                                tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                         <label id="lblIndicDisposNormativo" class="infraLabelRadio" for="rdIndicDisposNormativo">Indicar
                             por Dispositivo Normativo</label>
@@ -211,7 +210,7 @@
                     <div style=" float: left; width: 100%;" class="fieldsetClear classDispositivoNormativo"
                          style="display: none">
                         <!--  Dispositivo Normativo -->
-                        <div style=" float: left; width: 45%;">
+                        <div style=" float: left; width: 40%;">
                             <label class="infraLabelObrigatorio">&nbsp;</label>
                             </br><input type="text" id="txtIDNDispNormat" name="txtIDNDispNormat" class="infraText"
                                         value="<?php echo $idnDispositivoNormativo; ?>"
@@ -232,11 +231,24 @@
                                 <?= $strItensSelIDNCondutas ?>
                             </select>
                         </div>
-                        <div style=" float: left; width: 25%;">
+                        <div style=" float: left; width: 15%;margin-left: 10px;" onkeypress="return enterAdicionarInfracao(event)">
+                            <label id="lblDtaInfracaoPorDispositivo" class="infraLabelObrigatorio"
+                                   for="txtDtaInfracaoPorDispositivo">Data da Infração:</label>
+                            <input id="txtDtaInfracaoPorDispositivo" name="txtDtaInfracaoPorDispositivo" type="text" class="infraText"
+                                   onkeypress="return infraMascara(this, event, '##/##/####');"
+                                   autocomplete="off" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" style="width: 60%" >
+
+                            <img id="imgDtaInfracaoPorDispositivo" class="infraImg"
+                                 onclick="infraCalendario('txtDtaInfracaoPorDispositivo',this,false,null);"
+                                 alt="Selecionar Data da Infração" title="Selecionar Data da Infração"
+                                 src="/infra_css/imagens/calendario.gif">
+                        </div>
+                        <div style=" float: left; width: 10%;">
                             <label class="infraLabelObrigatorio">&nbsp;</label>
                             </br>
                             <button type="button" onclick="adicionarDI();" name="sbmIDNAdicionar" id="sbmIDNAdicionar"
-                                    value="Adicionar" class="infraButton">Adicionar
+                                    value="Adicionar" class="infraButton"
+                                    tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">Adicionar
                             </button>
                         </div>
                     </div>
@@ -248,7 +260,7 @@
                 <div style=" float: left; width: 100%;">
                     <div style=" float: left; width: 100%;">
                         <input onclick="changeInfracoes();" type="radio" name="rdInfracoes[]" id="rdIndicConduta"
-                               tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                               tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"   onkeypress="return enterAdicionarInfracao(event)" >
                         <label id="lblIndicConduta" class="infraLabelRadio" for="rdIndicConduta">Indicar por
                             Conduta</label>
                     </div>
@@ -257,7 +269,8 @@
                         <!--  Conduta -->
                         <div style=" float: left; width: 30%;">
                             <label class="infraLabelObrigatorio" style="display: inherit;">&nbsp;</label>
-                            <select id="selICCondutas" name="selICCondutas" onchange="mostrarDispositivoPorConduta()">
+                            <select id="selICCondutas" name="selICCondutas" onchange="mostrarDispositivoPorConduta()"
+                                    onkeypress="return enterAdicionarInfracao(event)" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                                 <?= $strItensSelConduta ?>
                             </select>
                         </div>
@@ -276,11 +289,25 @@
                                  title="Selecionar Dispositivo Normativo" class="infraImg"
                                  tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
                         </div>
-                        <div style=" float: left; width: 25%;">
+
+                        <div style=" float: left; width: 15%;"  onkeypress="return enterAdicionarInfracao(event)">
+                            <label id="lblDtaInfracaoPorConduta" class="infraLabelObrigatorio"
+                                   for="txtDtaInfracaoPorConduta">Data da Infração:</label>
+                            <input id="txtDtaInfracaoPorConduta" name="txtDtaInfracaoPorConduta" type="text" class="infraText"
+                                   onkeypress="return infraMascara(this, event, '##/##/####');"
+                                   autocomplete="off" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" style="width: 60%" >
+
+                            <img id="imgDtaInfracaoPorConduta" class="infraImg"
+                                 onclick="infraCalendario('txtDtaInfracaoPorConduta',this,false,null);"
+                                 alt="Selecionar Data da Infração" title="Selecionar Data da Infração"
+                                 src="/infra_css/imagens/calendario.gif">
+                        </div>
+                        <div style=" float: left; width: 10%;">
                             <label class="infraLabelObrigatorio">&nbsp;</label>
                             </br>
                             <button type="button" onclick="adicionarDI();" name="sbmICAdicionar" id="sbmICAdicionar"
-                                    value="Adicionar" class="infraButton">Adicionar
+                                    value="Adicionar" class="infraButton"
+                                    tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">Adicionar
                             </button>
                         </div>
                     </div>
@@ -306,6 +333,7 @@
                             <th class="infraTh" width="17%" id="tdDescDispositivo">Dispositivo</th>
                             <th class="infraTh" width="1%" style="display: none;">ID Conduta</th>
                             <th class="infraTh" width="35%" id="tdDescConduta">Conduta</th>
+                            <th class="infraTh" width="5%" id="tdDtaInfracao">Data da Infração</th>
                             <th class="infraTh" width="10%" align="center"> Ações</th>
                         </tr>
                         <tbody></tbody>
@@ -351,7 +379,7 @@
                 <div style=" float: left; width: 35%;">
                     <input type="text" id="txtNumeroSeiPS" name="txtNumeroSeiPS" class="infraText" maxlength="11"
                            value="<?= $txtNumeroSeiPS ?>"
-                           onkeypress="if(infraGetCodigoTecla(event)==13){document.getElementById('sbmValidarNumeroSeiPS').onclick();}else{return validarCampo(this, event, 11);}"
+                           onkeypress=" return enterValidarDocumentoSobrestado(event)"
                            tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
                     &nbsp;
                     <button type="button" id="sbmValidarNumeroSeiPS" name="sbmValidarNumeroSeiPS" value="Validar"
@@ -367,11 +395,11 @@
                 </div-->
                 <div style=" float: left; width: 40%;">
                     <input type="text" id="txtNumeroSeiTipoPS" name="txtNumeroSeiTipoPS" class="infraText" value="<?= $txtNumeroSeiTipoPS ?>"
-                           readonly tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
+                      onkeypress="enterAdicionarSobrestado(event)" readonly tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
                 </div>
                 <div style=" float: left; width: 25%;">
                     <input id="txtDtSobrestamentoPS" class="infraText" type="text"
-                           onkeypress="return infraMascara(this, event, '##/##/####');" onblur="validaData(this);"
+                           onkeypress="return infraMascara(this, event, '##/##/####') && enterAdicionarSobrestado(event);" onblur="validaData(this);"
                            value="<?= $txtDtSobrestamentoPS ?>" name="txtDtSobrestamentoPS"
                            tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                     <img id="imgDtSobrestamentoPS" class="infraImg"
@@ -400,7 +428,7 @@
                 <div style=" float: left; width: 35%;">
                     <input type="text" id="txtNumeroProcessoPS" name="txtNumeroProcessoPS" class="infraText"
                            maxlength="20" value=""
-                           onkeypress="if(infraGetCodigoTecla(event)==13){document.getElementById('sbmValidarNumeroProcessoPS').onclick();}else{return infraMascara(this, event, '#####.######/####-##');}"
+                           onkeypress="if(infraGetCodigoTecla(event)==13){ return enterValidarProcessoSobrestado(event);}else{return infraMascara(this, event, '#####.######/####-##');}"
                            tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
                     &nbsp;
                     <button type="button" id="sbmValidarNumeroProcessoPS" name="sbmValidarNumeroProcessoPS"
@@ -416,7 +444,7 @@
                 </div-->
                 <div style=" float: left; width: 40%;">
                     <input type="text" id="txtNumeroProcessoTipoPS" name="txtNumeroProcessoTipoPS" class="infraText"
-                           value="" readonly tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
+                     onkeypress="return enterAdicionarSobrestado(event)" value="" readonly tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
                 </div>
                 <div style=" float: left; width: 25%;">
                     <button type="button" name="sbmAdicionarNumeroSeiPS" onclick="adicionarPS();"

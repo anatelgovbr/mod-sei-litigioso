@@ -56,7 +56,7 @@ class MdLitMapearParamEntradaINT extends InfraINT {
           $strResultadoParamEntrada .= '<table width="90%" id="tableParametroEntrada" class="infraTable" summary="' . $strSumarioTabela . '">' . "\n";
           $strResultadoParamEntrada .= '<tr>';
 
-          $strResultadoParamEntrada .= '<th class="infraTh" width="20%">&nbsp;Dados de Entrada&nbsp;</th>' . "\n";
+          $strResultadoParamEntrada .= '<th class="infraTh" width="20%">&nbsp;Dados de Entrada no Webservice&nbsp;</th>' . "\n";
           $strResultadoParamEntrada .= '<th class="infraTh" width="20%">&nbsp;Campo de Origem no SEI&nbsp;</th>' . "\n";
           $strResultadoParamEntrada .= '<th class="infraTh" width="5%">&nbsp;Chave Única da Integração&nbsp;</th>' . "\n";
           $strResultadoParamEntrada .= '</tr>' . "\n";

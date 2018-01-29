@@ -132,8 +132,41 @@
 
         <div class="clear-margin-1"></div>
 
-        <div id="divMainPrescricao" style="display: none">
-            <div id="divRdsPrescricao" style="margin-top: 20px">
+        <div id="divsDatasBdPrescricao">
+            <?php if ($dtIntercorrente != '') { ?>
+                <!-- Intercorrente -->
+                <div class="grid grid_4">
+                    <label class="infraLabelOpcional lblIntQuinq" name="lblIntercorrenteTxt"
+                           id="lblIntercorrenteTxt">Intercorrente: </label>
+                    <label class="infraLabelOpcional lblIntQuinq" name="lblIntercorrenteDes"
+                           id="lblIntercorrenteDes"> <?php echo $dtIntercorrente; ?> </label>
+
+                    <a href="#" onclick="abrirModalDtIntercorrente()">
+                        <img src="imagens/documentos.gif" title="Histórico de Datas de Prescrição Intercorrente"
+                             alt="Histórico de Datas de Prescrição Intercorrente" class="infraImg"/>
+                    </a>
+                </div>
+            <? } ?>
+
+            <?php if ($dtQuinquenal != '') { ?>
+                <!-- Quinquenal -->
+                <div class="grid grid_4">
+                    <label class="infraLabelOpcional lblIntQuinq" name="lblQuinquenalTxt"
+                           id="lblQuinquenalTxt">Quinquenal: </label>
+                    <label class="infraLabelOpcional lblIntQuinq" name="lblDtQuinquenalDes"
+                           id="lblDtQuinquenalDes"> <?php echo $dtQuinquenal; ?> </label>
+                    <a href="#" onclick="abrirModalDtQuinquenal()">
+                        <img src="imagens/documentos.gif" title="Histórico de Datas de Prescrição Quinquenal"
+                             alt="Histórico de Datas de Prescrição Quinquenal" class="infraImg"/>
+                    </a>
+                </div>
+            <?php } ?>
+
+        </div>
+        <div class="clear-margin-1"></div>
+
+        <div id="divMainPrescricao" style="">
+            <div id="divRdsPrescricao" style="margin-top: 5px;display:none;">
                 <!-- Não Prescrição -->
                 <div class="grid grid_3">
                     <input class="campoFieldsetSituacao" onchange="changePrescricao(this, false);" type="radio"
@@ -151,42 +184,17 @@
                 </div>
             </div>
 
-            <div class="clear-margin-2"></div>
+            <!-- Adicionar -->
+            <div class="grid grid_1" id="divBtnAdicionar" style="display: none">
+                <button type="button" onclick="addSituacao()" accesskey="a" id="btnAdicionar" name="btnAdicionar"
+                        value="Adicionar" class="infraButton"><span
+                        class="infraTeclaAtalho">A</span>dicionar
+                </button>
+            </div>
+
+            <div class="clear-margin-1"></div>
 
             <div id="divsDatasPrescricao" style="display: none">
-
-                <div id="divsDatasBdPrescricao" style="display: none;">
-                    <?php if ($dtIntercorrente != '') { ?>
-                        <!-- Intercorrente -->
-                        <div class="grid grid_4">
-                            <label class="infraLabelOpcional lblIntQuinq" name="lblIntercorrenteTxt"
-                                   id="lblIntercorrenteTxt">Intercorrente: </label>
-                            <label class="infraLabelOpcional lblIntQuinq" name="lblIntercorrenteDes"
-                                   id="lblIntercorrenteDes"> <?php echo $dtIntercorrente; ?> </label>
-
-                            <a href="#" onclick="abrirModalDtIntercorrente()">
-                                <img src="imagens/documentos.gif" title="Histórico de Datas de Prescrição Intercorrente"
-                                     alt="Histórico de Datas de Prescrição Intercorrente" class="infraImg"/>
-                            </a>
-                        </div>
-                    <? } ?>
-
-                    <?php if ($dtQuinquenal != '') { ?>
-                        <!-- Quinquenal -->
-                        <div class="grid grid_4">
-                            <label class="infraLabelOpcional lblIntQuinq" name="lblQuinquenalTxt"
-                                   id="lblQuinquenalTxt">Quinquenal: </label>
-                            <label class="infraLabelOpcional lblIntQuinq" name="lblDtQuinquenalDes"
-                                   id="lblDtQuinquenalDes"> <?php echo $dtQuinquenal; ?> </label>
-                            <a href="#" onclick="abrirModalDtQuinquenal()">
-                                <img src="imagens/documentos.gif" title="Histórico de Datas de Prescrição Quinquenal"
-                                     alt="Histórico de Datas de Prescrição Quinquenal" class="infraImg"/>
-                            </a>
-                        </div>
-                    <?php } ?>
-
-                    <div class="clear-margin-2"></div>
-                </div>
 
                 <!-- Data Intercorrente -->
                 <div id="divDatasSelectPrescricao" style="display: none">
@@ -204,7 +212,7 @@
                             <input class="campoData campoFieldsetSituacao" type="text" id="txtDtIntercorrente"
                                    name="txtDtIntercorrente"
                                    onkeypress="return infraMascara(this, event, '##/##/####');"
-                                   value="<?php echo $dtIntercorrente; ?>"/>
+                                   value="<?php echo $dtCalendariInt; ?>"/>
                             <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/calendario.gif"
                                  title="Selecionar Data Intercorrente" alt="Selecionar Data Intercorrente"
                                  class="infraImg"
@@ -255,13 +263,6 @@
                 </div>
             </div>
             <div class="clear-margin-2"></div>
-        </div>
-        <!-- Adicionar -->
-        <div class="grid grid_1" id="divBtnAdicionar" style="display: none">
-            <button type="button" onclick="addSituacao()" accesskey="a" id="btnAdicionar" name="btnAdicionar"
-                    value="Adicionar" class="infraButton"><span
-                    class="infraTeclaAtalho">A</span>dicionar
-            </button>
         </div>
 
 

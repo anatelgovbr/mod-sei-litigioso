@@ -11,9 +11,9 @@ require_once dirname(__FILE__).'/../../../SEI.php';
 
 class MdLitDadoInteressadoINT extends InfraINT {
 
-  public static function montarSelectIdParticipante($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $numIdMdLitControle='', $numIdParticipante='', $numFistel=null ){
+  public static function montarSelectIdParticipante($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $numIdMdLitControle='', $numIdParticipante='', $numNumeroInteressado=null ){
     $objMdLitDadoInteressadoDTO = new MdLitDadoInteressadoDTO();
-      $objMdLitDadoInteressadoDTO->retTodos(true);
+    $objMdLitDadoInteressadoDTO->retTodos(true);
     $objMdLitDadoInteressadoDTO->retNumIdMdLitDadoInteressado();
     $objMdLitDadoInteressadoDTO->retNumIdParticipante();
 
@@ -25,8 +25,8 @@ class MdLitDadoInteressadoINT extends InfraINT {
       $objMdLitDadoInteressadoDTO->setNumIdParticipante($numIdParticipante);
     }
 
-//      if ($numFistel!==''){
-//          $objMdLitDadoInteressadoDTO->setStrNumero($numFistel);
+//      if ($numNumeroInteressado!==''){
+//          $objMdLitDadoInteressadoDTO->setStrNumero($numNumeroInteressado);
 //      }
 
     $objMdLitDadoInteressadoDTO->setOrdStrNomeContatoParticipante(InfraDTO::$TIPO_ORDENACAO_ASC);
@@ -35,8 +35,8 @@ class MdLitDadoInteressadoINT extends InfraINT {
     $arrObjMdLitDadoInteressadoDTO = $objMdLitDadoInteressadoRN->listar($objMdLitDadoInteressadoDTO);
     $arrObjMdLitDadoInteressadoDTO = self::retirarDuplicado($arrObjMdLitDadoInteressadoDTO,'IdParticipante');
 
-      if($numFistel != null && $strValorItemSelecionado == ''){
-          $arrValorSelecionado = InfraArray::filtrarArrInfraDTO($arrObjMdLitDadoInteressadoDTO, 'Numero',$numFistel);
+      if($numNumeroInteressado != null && $strValorItemSelecionado == ''){
+          $arrValorSelecionado = InfraArray::filtrarArrInfraDTO($arrObjMdLitDadoInteressadoDTO, 'Numero',$numNumeroInteressado);
           $strValorItemSelecionado = count($arrValorSelecionado) ? $arrValorSelecionado[0]->getNumIdParticipante(): '';
       }
 

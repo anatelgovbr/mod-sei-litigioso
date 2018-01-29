@@ -34,6 +34,7 @@ display: inline-block;
 margin-bottom: -3px;
 }
 
+
 #lblTipo{display: block}
 input#txtTipo{width: 85%;}
 <?if(0){?></style><?}?>

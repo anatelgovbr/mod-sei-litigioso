@@ -47,7 +47,7 @@ class MdLitLancamentoDTO extends InfraDTO {
 
     $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'LinkBoleto', 'link_boleto');
 
-    $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'Fistel', 'fistel');
+    $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'NumeroInteressado', 'numero_interessado');
 
     $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinConstituicaoDefinitiva', 'sin_constituicao_definitiva');
 

@@ -11,10 +11,6 @@ margin-top: 6px;
 font-size: 14px;
 }*/
 
-#btnAdicionar{
-margin-left: -26px;
-}
-
 #chkReducaoRenuncia{
 margin-top: 10px;
 }
@@ -32,13 +28,11 @@ font-weight: bold;
 }
 
 #divBtnAdicionar{
-margin-left: 91%;
 margin-bottom: 1%;
 }
 
 #divsDatasBdPrescricao{
-margin-top: 20px;
-margin-bottom: 10px;
+margin-top: 5px;
 }
 
 .btnMaisAnos{

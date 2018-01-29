@@ -38,11 +38,11 @@
             $objMdLitSituacaoDTO->setOrdNumOrdem(InfraDTO::$TIPO_ORDENACAO_ASC);
             $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($idTipoControle);
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
-            $objMdLitSituacaoDTO->setDistinct(true);
 
             $objMdLitSituacaoRN = new MdLitSituacaoRN();
             $arrObjMdLitSituacaoDTO      = $objMdLitSituacaoRN->listar($objMdLitSituacaoDTO);
 
+            $arrObjMdLitSituacaoDTO = InfraArray::distinctArrInfraDTO($arrObjMdLitSituacaoDTO, 'NomeFase');
             $html = '<option class="optSelFase" style="display:none" selected="selected" value=""> </option>';
             foreach($arrObjMdLitSituacaoDTO as $objMdLitSituacaoDTO){
                 $html .= '<option class="optSelFase" style="display:none" ';

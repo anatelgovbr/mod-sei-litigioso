@@ -17,22 +17,24 @@ class MdLitMapearParamEntradaRN extends InfraRN {
     public static $PARAM_PRINCIPAL_SIGEC_DENEGAR_RECURSO  = 'denegarRecursosSIGEC';
     public static $PARAM_PRINCIPAL_SIGEC_RETIF_LANCAMENTO = 'lancamentoRetificar';
     public static $PARAM_PRINCIPAL_SIGEC_SUSP_LANCAMENTO  = 'suspenderRecursosSIGEC';
+    public static $PARAM_PRINCIPAL_FILTROS  = 'filtro';
 
     public static $ID_PARAM_LANCAMENTO_CREDITO = array(
         'COD_RECEITA'               => 5,
         'DTA_VENCIMENTO'            => 3,
         'DTA_APLICACAO_SANCAO'      => 2,
-        'FISTEL'                    => 1,
+        'NUMERO_INTERESSADO'        => 1,
         'VALOR_RECEITA'             => 4,
         'JUSTIFICATIVA_LANCAMENTO'  => 7,
         'NUM_PROCESSO'              => 6,
         'USUARIO_INCLUSAO'          => 8,
         'SISTEMA_ORIGEM'            => 9,
-        'VALIDAR_MAJORACAO'         => 10
+        'VALIDAR_MAJORACAO'         => 10,
+        'CNPJ_CPF'                  => 78
     );
 
     public static $ID_PARAM_CANCELAR_LANCAMENTO = array(
-      'FISTEL'                    => 26,
+      'NUMERO_INTERESSADO'        => 26,
       'SEQUENCIAL'                => 27,
       'ID_MOTIVO_CANCELAMENTO'    => 28,
       'NUM_PROCESSO'              => 29,
@@ -42,13 +44,13 @@ class MdLitMapearParamEntradaRN extends InfraRN {
   );
   
   public static $ID_PARAM_CONSULTAR_LANCAMENTO = array(
-      'FISTEL' => 15,
+      'NUMERO_INTERESSADO' => 15,
       'SEQUENCIAL' => 16,
       'RENUNCIA_RECURSO' => 17
   );
 
     public static $ID_PARAM_RETIFICAR_LANCAMENTO = array(
-        'FISTEL'                    => 36,
+        'NUMERO_INTERESSADO'        => 36,
         'DTA_APLICACAO_SANCAO'      => 37,
         'DTA_VENCIMENTO'            => 38,
         'VALOR_TOTAL'               => 39,
@@ -63,7 +65,7 @@ class MdLitMapearParamEntradaRN extends InfraRN {
     );
 
     public static $ID_PARAM_SUSPENDER_LANCAMENTO = array(
-        'FISTEL'                    => 52,
+        'NUMERO_INTERESSADO'        => 52,
         'SEQUENCIAL'                => 53,
         'OBSERVACAO'                => 54,
         'USUARIO_INCLUSAO'          => 55,
@@ -72,7 +74,7 @@ class MdLitMapearParamEntradaRN extends InfraRN {
     );
 
     public static $ID_PARAM_DENEGAR_RECURSO = array(
-        'FISTEL'                    => 60,
+        'NUMERO_INTERESSADO'        => 60,
         'SEQUENCIAL'                => 61,
         'DATA_DENEGACAO'            => 62,
         'OBSERVACAO'                => 63,
@@ -81,10 +83,14 @@ class MdLitMapearParamEntradaRN extends InfraRN {
     );
 
     public static $ID_PARAM_CANCELAR_RECURSO = array(
-        'FISTEL'                    => 68,
+        'NUMERO_INTERESSADO'        => 68,
         'SEQUENCIAL'                => 69,
         'OBSERVACAO'                => 70,
         'SISTEMA_ORIGEM'            => 71
+    );
+
+    public static $ID_PARAM_GERAR_NUMERO_NAO_OUTORGADA = array(
+        'SISTEMA_ORIGEM' => 76
     );
 
   public function __construct(){

@@ -307,9 +307,13 @@ class MdLitSoapClienteRN extends nusoap_client{
             if($nomeArrPrincipal){
                 $montarParametroEntrada = array($nomeArrPrincipal => $montarParametroEntrada);
            }
+           $opData = $this->getOperationData($objMdLitIntegracaoDTO->getStrOperacaWsdl());
 
-            //@todo retirar quanto verificar a configuração do wso2 da anatel
-            $this->forceEndpoint = 'http://sistemasnetds/services/financeiroService.financeiroServiceHttpsSoap11Endpoint';
+            if(!empty($opData['endpoint'])){
+                //@todo retirar quanto verificar a configuração do wso2 da anatel
+                $this->forceEndpoint = str_replace('https', 'http',$opData['endpoint']);
+            }
+
             $this->persistentConnection = false;
             $arrResultado = $this->call($objMdLitIntegracaoDTO->getStrOperacaWsdl(), $montarParametroEntrada);
            
@@ -321,14 +325,25 @@ class MdLitSoapClienteRN extends nusoap_client{
                     $exception = new InfraException();
                     $exception->lancarValidacao('Não foi possível a comunicação com o Webservice da Arrecadação. Contate o Gestor do Controle.', null,new Exception($err));
                 }
+
                 InfraDebug::getInstance()->setBolLigado(true);
                 InfraDebug::getInstance()->setBolDebugInfra(false);
                 InfraDebug::getInstance()->limpar();
                 InfraDebug::getInstance()->gravar($this->request);
-                throw new InfraException('Ocorreu erro ao conectar com a operação('.$objMdLitIntegracaoDTO->getStrOperacaWsdl().').'.$err);
+                InfraDebug::getInstance()->gravar('Ocorreu erro ao conectar com a operação('.$objMdLitIntegracaoDTO->getStrOperacaWsdl().').'.$err);
+
+                LogSEI::getInstance()->gravar(InfraDebug::getInstance()->getStrDebug(),InfraLog::$INFORMACAO);
+
+                $objInfraException = new InfraException();
+                $objInfraException->adicionarValidacao('Ocorreu erro ao conectar com a operação('.$objMdLitIntegracaoDTO->getStrOperacaWsdl().'). '.$err);
+                $objInfraException->lancarValidacoes();
             }
 
         }catch (Exception $e){
+
+            InfraDebug::getInstance()->setBolLigado(false);
+            InfraDebug::getInstance()->setBolDebugInfra(false);
+            InfraDebug::getInstance()->setBolEcho(false);
             throw new InfraException('Ocorreu erro ao executar o serviço de lançamento. ', $e );
         }
 
@@ -338,6 +353,5 @@ class MdLitSoapClienteRN extends nusoap_client{
 
         return false;
     }
-
 
 }

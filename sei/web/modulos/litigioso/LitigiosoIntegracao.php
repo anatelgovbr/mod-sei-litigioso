@@ -87,6 +87,11 @@
 
                     return true;
 
+                case 'md_lit_situacao_orientacao' :
+                    require_once dirname(__FILE__) . '/md_lit_situacao_orientacao.php';
+
+                    return true;
+
                 // fase
                 case 'md_lit_fase_cadastrar' :
                 case 'md_lit_fase_alterar' :
@@ -526,7 +531,7 @@
                 $strAcoesProcedimento = '<a href="' . $strLink . '" class="botaoSEI"><img class="infraCorBarraSistema" src="' . $imgIcone . '" alt="' . $title . '" title="' . $title . '"></a>';
 
                 // ou se já possuir algum controle litigioso já cadastrado
-            } elseif(count($ArrObjRelTipoControleLitigiosoTipoProcedimentoDTO) == 0 && count($arrObjMdLitControleDTO) > 0) {
+            } elseif(count($ArrObjRelTipoControleLitigiosoTipoProcedimentoDTO) == 0 && count($arrObjMdLitControleDTO) > 0 && count($ArrObjRelTipoControleLitigiosoUnidadeDTO) > 0) {
 
                 $strLink = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_processo_cadastro_completo&id_procedimento=' . $idProcedimento);
 

@@ -222,7 +222,7 @@
                 $objFaseDTO = $objFaseRN->consultar($objFaseDTO);
 
                 $strItensSelFase = MdLitFaseINT::montarSelectNome(null, null, $objSituacaoLitigiosoDTO->getNumIdFaseLitigioso(), $objFaseDTO->getNumIdTipoControleLitigioso());
-                $arrComandos[]   = '<button type="button" accesskey="F" name="btnFechar" value="Fechar" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?id_tipo_processo_litigioso=' . $objFaseDTO->getNumIdTipoControleLitigioso() . '&acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'] . PaginaSEI::getInstance()->montarAncora($_GET['id_fase_litigioso']))) . '\';" class="infraButton"><span class="infraTeclaAtalho">F</span>echar</button>';
+                $arrComandos[]   = '<button type="button" accesskey="F" name="btnFechar" value="Fechar" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?id_situacao_litigioso='.$objSituacaoLitigiosoDTO->getNumIdSituacaoLitigioso().'&id_tipo_processo_litigioso=' . $objFaseDTO->getNumIdTipoControleLitigioso() . '&acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'] .  PaginaSEI::getInstance()->montarAncora($objSituacaoLitigiosoDTO->getNumIdSituacaoLitigioso()))) . '\';" class="infraButton"><span class="infraTeclaAtalho">F</span>echar</button>';
 
                 $objSituacaoLitigiosoSerieDTO = new MdLitRelSituacaoSerieDTO();
                 $objSituacaoLitigiosoSerieDTO->retTodos();

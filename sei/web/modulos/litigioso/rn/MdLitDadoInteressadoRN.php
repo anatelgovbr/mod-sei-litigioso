@@ -49,7 +49,7 @@ class MdLitDadoInteressadoRN extends InfraRN {
 
 
     /**
-     * @param $arrPostDadosComplementares[0] Número
+     * @param $arrPostDadosComplementares[0] Número de complemento do interessado
      * @param $arrPostDadosComplementares[1] Serviço
      * @param $arrPostDadosComplementares[2] Modalidade
      * @param $arrPostDadosComplementares[3] Abrangências
@@ -116,6 +116,11 @@ class MdLitDadoInteressadoRN extends InfraRN {
 
         foreach ($arrPostDadosComplementares as $dadosComplementares){
 
+            //se o numero de complemento do interessado não estiver vazio e o sin_outorga estiver como N(ão)
+            if($dadosComplementares[0] == 'null' && $dadosComplementares[12] == 'N'){
+                $dadosComplementares[0] = $this->gerarNumeroComplementar();
+            }
+
             $objParticipanteDTO = new ParticipanteDTO();
             $objParticipanteDTO->retNumIdParticipante();
             $objParticipanteDTO->retNumIdContato();
@@ -132,7 +137,7 @@ class MdLitDadoInteressadoRN extends InfraRN {
             $objMdLitDadoInteressadoDTO->setStrNumero($dadosComplementares[0]);
             $objMdLitDadoInteressadoDTO->setStrSinOutorgado($dadosComplementares[12]);
 
-            if($dadosComplementares[13] != 'null'){
+            if($dadosComplementares[13] != 'null' && !empty($dadosComplementares[13])){
                 $objMdLitDadoInteressadoDTO->setNumIdMdLitDadoInteressado($dadosComplementares[13]);
                 $objMdLitDadoInteressadoBD->alterar($objMdLitDadoInteressadoDTO);
 
@@ -166,6 +171,38 @@ class MdLitDadoInteressadoRN extends InfraRN {
     }
   }
 
+  private function gerarNumeroComplementar(){
+      $numeroComplementar = null;
+      $objMdLitIntegracaoRN   = new MdLitIntegracaoRN();
+
+      $objMdLitIntegracaoDTO  = $objMdLitIntegracaoRN->retornarObjIntegracaoDTOPorFuncionalidade(MdLitIntegracaoRN::$GERAR_NUMERO_COMPLEMENTAR_ENTIDADE_NAO_OUTORGADA);
+
+      $objMdLitSoapClienteRN  = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(),'wsdl');
+
+      //monta os parametros de entrada do web-service
+      $montarParametroEntrada = array();
+      foreach ($objMdLitIntegracaoDTO->getArrObjMdLitMapearParamEntradaDTO() as $objMdLitMapearParamEntradaDTO){
+          switch ($objMdLitMapearParamEntradaDTO->getNumIdMdLitCampoIntegracao()){
+              case MdLitMapearParamEntradaRN::$ID_PARAM_GERAR_NUMERO_NAO_OUTORGADA['SISTEMA_ORIGEM']:
+                  $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = MdLitLancamentoRN::$SISTEMA_ORIGEM;
+                  break;
+          }
+
+      }
+
+      $arrResultado = $objMdLitSoapClienteRN->enviarDadosSigecLancamento($objMdLitIntegracaoDTO, $montarParametroEntrada, MdLitMapearParamEntradaRN::$PARAM_PRINCIPAL_FILTROS);
+
+
+      foreach ($objMdLitIntegracaoDTO->getArrObjMdLitMapearParamSaidaDTO() as $objMdLitMapearParamSaidaDTO){
+          switch ($objMdLitMapearParamSaidaDTO->getNumIdMdLitCampoIntegracao()){
+              case MdLitMapearParamSaidaRN::$ID_PARAM_GERAR_NUMERO_NAO_OUTORGADA['NUMERO_INTERESSADO']:
+                  $numeroComplementar = $arrResultado['return'][$objMdLitMapearParamSaidaDTO->getStrCampo()];
+                  break;
+          }
+      }
+      return $numeroComplementar;
+
+  }
     private function cadastrarRel(InfraRN $objRN, InfraDTO $objDTO, $arrId, $idMdLitDadoInteressado, $strAtributo){
         if($arrId){
             foreach ($arrId as $id){
@@ -361,17 +398,17 @@ class MdLitDadoInteressadoRN extends InfraRN {
         }
     }
 
-    public function retornaObjDadoInteressadoPorFistel($post)
+    public function retornaObjDadoInteressadoPorNumeroInteressado($post)
     {
         $objMdLitDadoInteressadoDTO = new MdLitDadoInteressadoDTO();
-        $objMdLitDadoInteressadoDTO->retTodos(false);
-        $objMdLitDadoInteressadoDTO->setNumIdMdLitDadoInteressado($post['selFistel']);
+        $objMdLitDadoInteressadoDTO->retTodos(true);
+        $objMdLitDadoInteressadoDTO->setNumIdMdLitDadoInteressado($post['selNumeroInteressado']);
 
         $objMdLitDadoInteressadoRN = new MdLitDadoInteressadoRN();
         $objMdLitDadoInteressadoDTO = $objMdLitDadoInteressadoRN->consultar($objMdLitDadoInteressadoDTO);
 
         if (!$objMdLitDadoInteressadoDTO) {
-            throw new InfraException('O Fistel não foi selecionado.');
+            throw new InfraException('O Número de Complemento do Interessado não foi selecionado.');
         }
 
         return $objMdLitDadoInteressadoDTO;

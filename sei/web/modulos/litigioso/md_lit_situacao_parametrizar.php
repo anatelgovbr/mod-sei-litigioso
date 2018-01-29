@@ -387,6 +387,7 @@ try {
     if ($bolAcaoCadastrar) {
         $arrComandos[] = '<button type="button" accesskey="N" id="btnNovo" value="Nova Situação" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_situacao_cadastrar&id_tipo_processo_litigioso=' . $_GET['id_tipo_processo_litigioso'] . '&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'])) . '\'" class="infraButton"><span class="infraTeclaAtalho">N</span>ova Situação</button>';
     }
+    $arrComandos[] = '<button type="button" id="btnOrientacoes" value="Orientações" onclick="modalOrientacoes()" class="infraButton">Orientações</button>';
 
     $objSituacaoLitigiosoDTO = new MdLitSituacaoDTO();
 
@@ -472,70 +473,20 @@ try {
         $strResultado .= '<tr>';
 
 
-        function montarTooltip($msg)
-        {
-            $strTooltip = '<a ' . PaginaSEI::montarTitleTooltip($msg) . '>';
-            $strTooltip .= '<img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/ajuda.gif" class="infraImg imagemAjuda"/></a>';
-            return $strTooltip;
-        }
-
-
-        //Tooltip Ordem
-        $strMsg       = 'As Situações cadastradas deverão seguir a Ordem Cronológica em que acontecem.';
-        $tooltipOrdem = montarTooltip($strMsg);
-
-        //Tooltip Instauração
-        $strMsg             = "Situação única que identifica a Instauração do Processo.";
-        $strMsg             .= " É obrigatoriamente a primeira Situação a acontecer. Após a Instauração deverá existir uma Decisão, independente da apresentação da Defesa..";
-        $tooltipInstauracao = montarTooltip($strMsg);
-
-        //Tooltip Intimação
-        $strMsg           = "Deve ser indicada a situação que registra a intimação devidamente cumprida, ou seja, ";
-        $strMsg           .= "do documento com o devido registro da data da intimação efetivada e não do documento de comunicação em si. ";
-        $strMsg           .= "Exemplo: do Aviso de Recebimento com sucesso ou da Certidão de Intimação Cumprida; não devendo indicar a formalização do Ofício ou sua expedição.";
-        $tooltipIntimacao = montarTooltip($strMsg);
-
-        //Tooltip Decisória
-        $strMsg           = 'Deverão existir Decisões após as seguintes Situações:\n';
-        $strMsg           .= '1. Após a Instauração (independente da apresentação da Defesa);\n';
-        $strMsg           .= '2. Após Situação Recursal, caso existam.';
-        $tooltipDecisoria = montarTooltip($strMsg);
-
-        //Tooltip Defesa
-        $strMsg        = 'Após a Instauração do Processo, poderá ou não existir a apresentação da Defesa. Esta Situação também poderá ser utilizada no caso de Impugnação.';
-        $tooltipDefesa = montarTooltip($strMsg);
-
-        //Tooltip Recursal
-        $strMsg          = 'Após a Intimação referente a Decisão da Instauração, poderão existir Situações Recursais. Para cada Recurso será obrigatório indicar uma Situação de Decisão e outra de Intimação';
-        $tooltipRecursal = montarTooltip($strMsg);
-
-        //Tooltip Conclusão
-        $strMsg           = 'A Situação de Conclusão deverá ser antecedida SEMPRE por uma Intimação, ou seja, não deverá existir uma conclusão, sem que tenha existido uma Intimação imediatamente anterior.';
-        $tooltipConclusao = montarTooltip($strMsg);
-
-        //Tooltip Prazo
-        $strMsg       = 'Para a Situação de Defesa, o prazo informado será controlado. Após a Intimação o prazo será iniciado.';
-        $tooltipPrazo = montarTooltip($strMsg);
-
-        //tooltip opcional
-        $strMsg      = 'A situação opcional define os documentos que não serão obrigatórios no cadastro de Situações(no Processo). Deverá ser do tipo recursal, defesa e intimação, sendo que a intimação será apenas a partir da segunda cadastrada.';
-        $tooltipOpcional = montarTooltip($strMsg);
-
-
         $strResultado .= '<th class="infraTh" width="0%" style="display: none">Ordem</th>' . "\n";
         $strResultado .= '<th class="infraTh" width="12%"><span style="font-size: 1em; font-weight: bold;text-align: center;">Fase</span></th>' . "\n";
         $strResultado .= '<th class="infraTh" width="12%">Situação</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="7%"><label class="labelTH">Ordem</label>' . $tooltipOrdem . '</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="10%" name="rdInstConcl[]"><label class="labelTH">Instauração</label>' . $tooltipInstauracao . '</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="9%"><label class="labelTH">Intimação</label>' . $tooltipIntimacao . '</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="9%"><label class="labelTH">Decisão</label>' . $tooltipDecisoria . '</th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="7%"><label class="labelTH">Ordem</label></th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="10%" name="rdInstConcl[]"><label class="labelTH">Instauração</label></th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="9%"><label class="labelTH">Intimação</label></th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="7%"><label class="labelTH">Defesa</label></th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="9%"><label class="labelTH">Decisão</label></th>' . "\n";
 //            $strResultado .= '<th class="infraTh" width="5%">&nbsp;Suspensiva&nbsp;</th>' . "\n";
 //            $strResultado .= '<th class="infraTh" width="5%">&nbsp;Livre&nbsp;</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="7%"><label class="labelTH">Defesa</label>' . $tooltipDefesa . '</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="8%"><label class="labelTH">Recurso</label>' . $tooltipRecursal . '</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="9%" name="rdInstConcl[]"><label class="labelTH">Conclusão</label>' . $tooltipConclusao . '</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="8%"><label class="labelTH">Opcional</label>' . $tooltipOpcional . '</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="8%" style="text-align: left"> '.$tooltipPrazo.' <label class="labelTH" style="width: 71% !important;">Prazo (dias)</label></th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="8%"><label class="labelTH">Recurso</label></th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="9%" name="rdInstConcl[]"><label class="labelTH">Conclusão</label></th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="8%"><label class="labelTH">Opcional</label></th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="8%" style="text-align: left"> <label class="labelTH" style="width: 71% !important;">Prazo (dias)</label></th>' . "\n";
         $strResultado .= '<th class="infraTh" width="20%;" style="min-width: 60px;">Ações</th>' . "\n";
         $strResultado .= '</tr>' . "\n";
         $strResultado .= '</thead>';
@@ -584,6 +535,7 @@ try {
             $conclusiva = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinConclusiva() === 'S' ? 'checked="checked"' : '';
             $disabled   = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinAtivo() === 'N' ? 'disabled="disabled"' : '';
             $opcional   = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinOpcional() === 'S' ? 'checked="checked"' : '';
+            $readOnlyPrazo = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinDefesa() === 'S' ? '' : 'readonly';
 
             $strResultado .= $strCssTr;
             $strResultado .= '<td style="display: none"><input type="hidden" value="' . ($i + 1) . '" name="ordem_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '"> </td>';
@@ -592,14 +544,14 @@ try {
             $strResultado .= '<td align="center">' . $strImagem . '</td>';
             $strResultado .= '<td align="center"><input ' . $instauracao . ' ' . $disabled . ' type="radio" class="instauracao" onchange="controlarRadios(this)" id="instauracao_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" name="instauracao_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '[]"> </input> </td>';
             $strResultado .= '<td align="center"><input type="checkbox" ' . $intimacao . ' ' . $disabled . ' onchange="controlarRadios(this)" name="intimacao_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" > </input> </td>';
+            $strResultado .= '<td align="center"><input ' . $defesa . ' ' . $disabled . ' type="radio" class="defesa" onchange="controlarRadios(this)" id="defesa_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" name="defesa_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '[]"> </input> </td>';
             $strResultado .= '<td align="center"><input type="checkbox"' . $decisoria . ' ' . $disabled . ' onchange="controlarRadios(this)" name="decisoria_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '"> </input> </td>';
 //                $strResultado .= '<td align="center"><input type="checkbox" ' . $suspensiva . ' ' . $disabled . ' name="suspensiva_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" > </input> </td>';
 //                $strResultado .= '<td align="center"><input type="checkbox"' . $livre . ' ' . $disabled . ' name="livre_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '"> </input> </td>';
-            $strResultado .= '<td align="center"><input ' . $defesa . ' ' . $disabled . ' type="radio" class="defesa" onchange="controlarRadios(this)" id="defesa_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" name="defesa_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '[]"> </input> </td>';
             $strResultado .= '<td align="center"><input type="checkbox"' . $recursal . ' ' . $disabled . ' onchange="controlarRadios(this)" name="recursal_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '"> </input> </td>';
             $strResultado .= '<td align="center"><input type="radio" ' . $conclusiva . ' ' . $disabled . '  class="conclusao" name="conclusiva_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" class="conclusiva" onchange="controlarRadios(this)" id="conclusiva_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" name="conclusiva_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '[]"> </input> </td>';
-            $strResultado .= '<td align="center"><input type="checkbox"' . $opcional . ' ' . $disabled . ' name="opcional_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '"> </input> </td>';
-            $strResultado .= '<td align="center"> <input maxlength="3" size="1" ' . $disabled . '  onkeypress="return SomenteNumero(event)"  name="prazo_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" type="text"  value="' . PaginaSEI::tratarHTML($arrObjSituacaoLitigiosoDTO[$i]->getNumPrazo()) . '"></td>';
+            $strResultado .= '<td align="center"><input type="checkbox"' . $opcional . ' ' . $disabled . ' onclick="selecionarOpcionalObrigatorio(this)" name="opcional_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '"> </input> </td>';
+            $strResultado .= '<td align="center"> <input maxlength="3" size="1" ' . $disabled . ' '.$readOnlyPrazo.'   onkeypress="return SomenteNumero(event)"  name="prazo_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" type="text"  value="' . PaginaSEI::tratarHTML($arrObjSituacaoLitigiosoDTO[$i]->getNumPrazo()) . '"></td>';
             $strResultado .= '<td align="center">';
 
             $strResultado .= PaginaSEI::getInstance()->getAcaoTransportarItem($i, $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso());
@@ -777,26 +729,6 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
     PaginaSEI::getInstance()->fecharAreaDados();
     ?>
 
-    <label>Orientações:
-        <ol>
-            <li>A Parametrização das Situações deverá seguir a Ordem Cronológica obedecendo as seguintes
-                obrigatoriedades:
-                <ol>
-                    <li>Entre a Instauração e outros tipos de situação deverá existir uma Situação de Intimação.</li>
-                    <li>Após a Situação Decisória da Instauração, deverá existir Situação de Intimação, independente da
-                        apresentação ou não de Defesa.
-                    </li>
-                    <li>Entre uma Situação Decisória e outros tipos de Situação deverá existir pelo menos uma Situação
-                        de Intimação.
-                    </li>
-                    <li>Após Situação Recursal é obrigatória a existência de pelo menos uma Situação Decisória.</li>
-                    <li>Apenas poderá seguir para Situação de Conclusão, a partir de um Situação de Intimação.</li>
-                </ol>
-            </li>
-        </ol>
-        Exemplo: Instauração >> Intimação >> Defesa >> Decisória >> Intimação >> Recursal >> Decisória >> Intimação >>
-        Conclusão</label>
-
     <?php PaginaSEI::getInstance()->montarAreaTabela($strResultado, $numRegistros);
     PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos);
     ?>
@@ -947,7 +879,7 @@ PaginaSEI::getInstance()->fecharHtml();
         var tr = table.getElementsByTagName('tr');
 
         var tdInstauracao = 4, tdIntimacao = 5,
-            tdDecisoria = 6, tdDefesa = 7,
+            tdDecisoria = 7, tdDefesa = 6,
             tdRecursal = 8, tdConclusao = 9;
 
         var instauracao = false, intimacao = false,
@@ -1032,7 +964,6 @@ PaginaSEI::getInstance()->fecharHtml();
                         continue;
                     }
                     if (!tdChecked(tr[i], tdDecisoria)) {
-                        console.log('tdDecisoria break');
                         break;
                     } else {
                         decisaoRecurso = true;
@@ -1046,42 +977,41 @@ PaginaSEI::getInstance()->fecharHtml();
 
         //msgs
         if (!instauracao) {
-            alert('A Situação marcada como Instauração deverá ser a primeira a acontecer. ' +
-                'Para inserir Situações que antecedam a Instauração, elas devem estar sem marcação.');
+            alert('A Situação marcada como Instauração deverá ser a primeira a acontecer. ');
             salvar = false;
             return;
         }
 
         if (instauracao && !intimacao) {
             alert('Após a Instauração é obrigatória a existência de ao menos uma Situação de Intimação. ' +
-                'Para inserir Situações que antecedam a Intimação, elas devem estar sem marcação.');
+                'Para inserir Situações que antecedam a Intimação, elas devem estar sem marcação de parâmetros especiais.');
             salvar = false;
             return;
         }
 
         if (!decisoria) {
             alert('Após a Intimação da Instauração e/ou a apresentação da Defesa é obrigatória a existência de ao menos uma ' +
-                'Decisão. Para inserir Situações que antecedam a Decisão, elas devem estar sem marcação.');
+                'Decisão, mesmo que uma Intimação a anteceda. Para inserir Situações que antecedam a Decisão, elas devem estar sem marcação.');
             salvar = false;
             return;
         }
 
         if (!intimacaoDecisao) {
             alert('Após qualquer Decisão é obrigatória a existência de ao menos uma Intimação. ' +
-                'Para inserir Situações que antecedam a Intimação, elas devem estar sem marcação.');
+                'Para inserir Situações que antecedam a Intimação, elas devem estar sem marcação de parâmetros especiais.');
             salvar = false;
             return;
         }
 
         if (!conclusao && !recurso) {
-            alert('Após Intimação da Decisão é obrigatório a existência de ao menos um Recursal ou Conclusão.');
+            alert('A Conclusão só pode ser realizada caso tenha existido uma Intimação imediatamente anterior a ela. Para inserir Situações entre a Conclusão e a Intimação, elas devem estar sem marcação de parâmetros especiais.');
             salvar = false;
             return;
         }
 
         if (recurso && !decisaoRecurso) {
-            alert('Após cada Recurso é obrigatória a existência de ao menos uma Decisão. ' +
-                'Para inserir Situações que antecedam a Decisão, elas devem estar sem marcação.');
+            alert('Após cada Recurso é obrigatória a existência de ao menos uma Decisão, mesmo que uma Intimação a anteceda. ' +
+                'Para inserir Situações que antecedam a Decisão, elas devem ser do tipo Intimação, ou estar sem marcação de parâmetros especiais.');
             salvar = false;
             return;
         }
@@ -1147,6 +1077,30 @@ PaginaSEI::getInstance()->fecharHtml();
 
         //verificar se opcional pode ser checked
         controlarCheckboxOpcional();
+
+        //verificar se o prazo pode ser preenchido
+        controlarImputPrazo();
+    }
+
+    function controlarImputPrazo(){
+        var table = document.getElementById('tbSituacao');
+        if (table == null) {
+            return false;
+        }debugger;
+
+        var tr = table.getElementsByTagName('tr');
+        for(var i = 1; i < tr.length; i++) {
+            var td = tr[i].getElementsByTagName('td');
+            //verificar se input prazo pode ser preenchido
+            //so pode se for defesa
+            if ( td[6].children[0].checked ) {
+                td[11].children[0].readOnly = false;
+            }else{
+                td[11].children[0].readOnly = true;
+                td[11].children[0].value = '';
+            }
+        }
+
     }
 
     function controlarCheckboxOpcional(){
@@ -1161,10 +1115,14 @@ PaginaSEI::getInstance()->fecharHtml();
             var td = tr[i].getElementsByTagName('td');
             //verificar se opcional pode ser checked
             //so pode se for defesa ou recursal ou a partir da segunda intimação
-            if(td[7].children[0].checked || td[7].children[0].checked || (td[5].children[0].checked && !primeiraIntimacao)){
+            if(td[6].children[0].checked || td[8].children[0].checked){
+                td[10].children[0].disabled = false;
+                td[10].children[0].checked = true;
+            }else if( td[5].children[0].checked && !primeiraIntimacao ){
                 td[10].children[0].disabled = false;
             }else{
                 td[10].children[0].disabled = true;
+                td[10].children[0].checked = false;
             }
 
             //passou da primeira intimação
@@ -1307,6 +1265,27 @@ PaginaSEI::getInstance()->fecharHtml();
             data: {idMdLitSituacao: id},
             dataType: 'XML'
         });
+    }
+
+    function modalOrientacoes(){
+        infraAbrirJanela('<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_situacao_orientacao') ?>',
+            'orientacoes',
+            780,
+            300);
+    }
+
+    function selecionarOpcionalObrigatorio(element){
+        var tr = element.parentNode.parentNode;
+        var td = tr.getElementsByTagName('td');
+        if(td[6].children[0].checked){
+            alert("A situação defesa e obrigatório ser opcional!");
+            element.checked = true;
+        }
+        if(td[8].children[0].checked){
+            alert("A situação recurso e obrigatório ser opcional!");
+            element.checked = true;
+        }
+        return true;
     }
 
 

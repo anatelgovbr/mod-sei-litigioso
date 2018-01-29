@@ -28,12 +28,12 @@ $dataDecisaoAplicacaoMulta  = null;
 $dataDecursoPrazoDefesa     = null;
 $dataIntimacaoDecisao       = null;
 $dataVencimento             = null;
-$numFistel                  = null;
+$numInteressado             = null;
 $txtDtConstituicao          = null;
 $txtDtIntimacaoConstituicao = null;
-$numFistel                  = null;
 $dtaConstituicaoDefinitiva  = null;
 $dtaIntimacaoDefinitiva     = null;
+$idMdLitProcessoSituacaoPrimeiraIntimacao = null;
 
 //Rns
 $objMdLitTipoControleRN     = new MdLitTipoControleRN();
@@ -61,8 +61,8 @@ $strLinkModalDtIntercorrente      = SessaoSEI::getInstance()->assinarLink('contr
 //Url Modal Quinquenal
 $strLinkModalDtQuinquenal         = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_processo_situacao_cadastro_hist_quin_listar&id_procedimento='.$idProcedimento);
 
-//Url Modal combo fistel
-$strLinkComboFistel               = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_buscar_numero');
+//Url Modal combo Numero do complemento do interessado
+$strLinkComboNumeroInteressado    = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_buscar_numero');
 
 //URL consulta extrato da multa
 $strLinkAjaxConsultarExtratoMulta = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_consulta_extrato_multa');
@@ -120,10 +120,14 @@ switch($_GET['acao']) {
         $objMdLitControleDTO = $objMdLitControleRN->consultar($objMdLitControleDTO);
 
         if($objMdLitControleDTO){
-            $diferencaEntreDias = MdLitProcessoSituacaoINT::diferencaEntreDias($objMdLitControleDTO->getDtaDataInstauracao());
             $urlCadastrarDecisao = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_decisao_cadastrar&id_md_lit_controle='.$objMdLitControleDTO->getNumIdControleLitigioso().'&id_procedimento='.$idProcedimento);
             $urlHistoricoDecisao = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_decisao_historico&id_md_lit_controle='.$objMdLitControleDTO->getNumIdControleLitigioso());
         }
+
+        //buscando a intimação da instauração( a intimação da instauração será sempre a primeira situação de intimação depois da instauração)
+        $objMdLitProcessoSituacaoIntimacaoInstauracao = $objMdLitProcessoSituacaoRN->consultarPrimeiraIntimacao($idProcedimento);
+        if($objMdLitProcessoSituacaoIntimacaoInstauracao)
+            $diferencaEntreDias = MdLitProcessoSituacaoINT::diferencaEntreDias($objMdLitProcessoSituacaoIntimacaoInstauracao->getDtaData());
 
         $dadosSituacao = $objMdLitProcessoSituacaoRN->buscarDadosDocumento(array($idDocumento));
 
@@ -149,6 +153,9 @@ switch($_GET['acao']) {
         //Get Gestor
         $isGestor = $objMdLitPermissaoLitRN->isUsuarioGestorTipoControleDTO(array(SessaoSEI::getInstance()->getNumIdUsuario(), $idTpControle));
         $strIsGestor = $isGestor ? '1' : '0';
+        $isExcluirSituacao = SessaoSEI::getInstance()->verificarPermissao('md_lit_processo_situacao_excluir');
+        $isAlterarSituacao = SessaoSEI::getInstance()->verificarPermissao('md_lit_processo_situacao_alterar');
+
         $isIntInstauracao = $objMdLitProcessoSituacaoRN->getIsInstauracaoIntimacaoPorTipoControle(array($idTpControle, $idProcedimento));
 
         $strComboCreditoProcesso = MdLitLancamentoINT::montarSelectCreditosProcesso($idProcedimento);
@@ -163,8 +170,8 @@ switch($_GET['acao']) {
         }
 
         //combo interessado
-        $numFistel = $objMdLitLancamentoDTO ? $objMdLitLancamentoDTO->getStrFistel(): null;
-        $strComboInteressado = MdLitDadoInteressadoINT::montarSelectIdParticipante('null', '&nbsp;', '', $objMdLitControleDTO->getNumIdControleLitigioso(), '', $numFistel);
+        $numInteressado = $objMdLitLancamentoDTO ? $objMdLitLancamentoDTO->getStrNumeroInteressado(): null;
+        $strComboInteressado = MdLitDadoInteressadoINT::montarSelectIdParticipante('null', '&nbsp;', '', $objMdLitControleDTO->getNumIdControleLitigioso(), '', $numInteressado);
 
 
 
@@ -185,6 +192,10 @@ switch($_GET['acao']) {
             $dataVencimento = InfraData::calcularData(40, InfraData::$UNIDADE_DIAS, InfraData::$SENTIDO_ADIANTE, $dataDecisaoAplicacaoMulta);
         }
 
+        //buscar a primeira intimação para alterar a situação
+        $objMdLitProcessoSituacaoPrimeiraIntimacaoDTO = $objMdLitProcessoSituacaoRN->consultarPrimeiraIntimacao($idProcedimento);
+        if($objMdLitProcessoSituacaoPrimeiraIntimacaoDTO)
+            $idMdLitProcessoSituacaoPrimeiraIntimacao = $objMdLitProcessoSituacaoPrimeiraIntimacaoDTO->getNumIdMdLitProcessoSituacao();
 
     break;
 

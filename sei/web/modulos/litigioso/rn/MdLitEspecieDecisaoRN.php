@@ -37,7 +37,7 @@
                 $objInfraException = new InfraException();
 
                 $this->_validarStrNomeEspecie($objEspecieLitigiosoDTO, $objInfraException);
-                $this->_validarResultadoDecisao($objEspecieLitigiosoDTO, $objInfraException);
+//                $this->_validarResultadoDecisao($objEspecieLitigiosoDTO, $objInfraException);
                 $this->_validarObrigacao($objEspecieLitigiosoDTO, $objInfraException);
 
                 $objInfraException->lancarValidacoes();
@@ -223,7 +223,7 @@
                 $objInfraException = new InfraException();
 
                 $this->_validarStrNomeEspecie($objEspecieLitigiosoDTO, $objInfraException);
-                $this->_validarResultadoDecisao($objEspecieLitigiosoDTO, $objInfraException);
+//                $this->_validarResultadoDecisao($objEspecieLitigiosoDTO, $objInfraException);
                 $this->_validarObrigacao($objEspecieLitigiosoDTO, $objInfraException);
 
                 $objInfraException->lancarValidacoes();
