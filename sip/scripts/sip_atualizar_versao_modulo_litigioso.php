@@ -54,121 +54,6 @@ class MdLitAtualizadorSipRN extends InfraRN {
         flush();
     }
 
-    protected function atualizarVersaoConectado(){
-
-        try {
-            $this->inicializar('INICIANDO A INSTALAÇÃO/ATUALIZAÇÃO DO '.$this->nomeDesteModulo.' NO SIP VERSÃO '.SIP_VERSAO);
-
-            //testando versao do framework
-            $numVersaoInfraRequerida = '1.385';
-            $versaoInfraFormatada = (int) str_replace('.','', VERSAO_INFRA);
-            $versaoInfraReqFormatada = (int) str_replace('.','', $numVersaoInfraRequerida);
-
-            if ($versaoInfraFormatada < $versaoInfraReqFormatada){
-                $this->finalizar('VERSÃO DO FRAMEWORK PHP INCOMPATÍVEL (VERSÃO ATUAL '.VERSAO_INFRA.', SENDO REQUERIDA VERSÃO IGUAL OU SUPERIOR A '.$numVersaoInfraRequerida.')',true);
-            }
-
-            //checando BDs suportados
-            if (!(BancoSip::getInstance() instanceof InfraMySql) &&
-                !(BancoSip::getInstance() instanceof InfraSqlServer) &&
-                !(BancoSip::getInstance() instanceof InfraOracle)) {
-                $this->finalizar('BANCO DE DADOS NÃO SUPORTADO: ' . get_parent_class(BancoSip::getInstance()), true);
-            }
-
-            //checando permissoes na base de dados
-            $objInfraMetaBD = new InfraMetaBD(BancoSip::getInstance());
-
-            if (count($objInfraMetaBD->obterTabelas('sip_teste'))==0){
-                BancoSip::getInstance()->executarSql('CREATE TABLE sip_teste (id '.$objInfraMetaBD->tipoNumero().' null)');
-            }
-
-            BancoSip::getInstance()->executarSql('DROP TABLE sip_teste');
-
-            $objInfraParametro = new InfraParametro(BancoSip::getInstance());
-
-            $strVersaoModuloLitigioso = $objInfraParametro->getValor($this->nomeParametroModulo, false);
-
-            //VERIFICANDO QUAL VERSAO DEVE SER INSTALADA NESTA EXECUCAO
-            //se nao tem nenhuma versao instalada, instalar todas
-            if (InfraString::isBolVazia($strVersaoModuloLitigioso)) {
-                $this->instalarv001();
-                $this->instalarv002();
-                $this->instalarv003();
-                $this->instalarv004();
-                $this->instalarv100();
-
-                //adicionando parametro para controlar versao do modulo
-                $this->logar('ADICIONANDO PARÂMETRO '. $this->nomeParametroModulo .' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
-                BancoSip::getInstance()->executarSql('INSERT INTO infra_parametro (valor, nome ) VALUES( \'' . $this->versaoAtualDesteModulo . '\',  \'' . $this->nomeParametroModulo . '\' )');
-                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
-                $this->finalizar('FIM', false);
-            }
-
-            else if ($strVersaoModuloLitigioso == '0.0.1') {
-
-                //instalar apenas a v.002 e a v003
-                $this->instalarv002();
-                $this->instalarv003();
-                $this->instalarv004();
-                $this->instalarv100();
-
-                //atualizando versao do parametro para controlar versao do modulo
-                BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'' . $this->versaoAtualDesteModulo . '\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
-            }
-
-            else if ($strVersaoModuloLitigioso == '0.0.2') {
-                $this->instalarv003();
-                $this->instalarv004();
-                $this->instalarv100();
-
-                //atualizando versao do parametro para controlar versao do modulo
-                BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'' . $this->versaoAtualDesteModulo . '\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
-            }
-
-            else if ($strVersaoModuloLitigioso == '0.0.3') {
-                $this->instalarv004();
-                $this->instalarv100();
-
-                //atualizando versao do parametro para controlar versao do modulo
-                BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'' . $this->versaoAtualDesteModulo . '\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
-            }
-
-            else if($strVersaoModuloLitigioso == '0.0.4') {
-                $this->instalarv100();
-
-                //atualizando versao do parametro para controlar versao do modulo
-                BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'' . $this->versaoAtualDesteModulo . '\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
-            }
-
-            //se a versão instalada já é a atual, então não instala nada e avisa
-            else {
-                //se a versão instalada já é a atual, então não instala nada e avisa
-                $this->logar('A VERSÃO MAIS ATUAL DO '.$this->nomeDesteModulo.' (v'.$this->versaoAtualDesteModulo.') JÁ ESTÁ INSTALADA.');
-                $this->finalizar('FIM', false);
-            }
-
-            InfraDebug::getInstance()->setBolLigado(false);
-            InfraDebug::getInstance()->setBolDebugInfra(false);
-            InfraDebug::getInstance()->setBolEcho(false);
-
-        } catch (Exception $e) {
-
-            InfraDebug::getInstance()->setBolLigado(false);
-            InfraDebug::getInstance()->setBolDebugInfra(false);
-            InfraDebug::getInstance()->setBolEcho(false);
-            throw new InfraException('Erro atualizando versão.', $e);
-        }
-
-    }
-
     private function finalizar($strMsg=null, $bolErro){
 
         if (!$bolErro) {
@@ -230,8 +115,6 @@ class MdLitAtualizadorSipRN extends InfraRN {
             $objPerfilDTOGestorLitigioso = $objPerfilRN->cadastrar($objPerfilDTOGestorLitigioso);
 
         }
-
-
 
         $objPerfilDTO = new PerfilDTO();
         $objPerfilDTO->retNumIdPerfil();
@@ -409,12 +292,6 @@ class MdLitAtualizadorSipRN extends InfraRN {
             'Situações do Lançamento de Crédito',
             60);
 
-        //$this->removerRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiInformatica, 'atributo_consultar');
-
-        //$this->adicionarRecursoPerfil($numIdSistemaSei,$numIdPerfilSeiAdministrador,'usuario_alterar');
-
-        //$this->removerRecurso($numIdSistemaSei,'rel_unidade_serie_alterar');
-
         $objRegraAuditoriaDTO = new RegraAuditoriaDTO();
         $objRegraAuditoriaDTO->retNumIdRegraAuditoria();
         $objRegraAuditoriaDTO->setNumIdSistema($numIdSistemaSei);
@@ -431,7 +308,6 @@ class MdLitAtualizadorSipRN extends InfraRN {
       \'md_lit_tipo_processo_excluir\')'
         );
 
-
         //CRIANDO REGRA DE AUDITORIA PARA NOVOS RECURSOS RECEM ADICIONADOS
         foreach ($rs as $recurso) {
             BancoSip::getInstance()->executarSql('INSERT INTO rel_regra_auditoria_recurso (id_regra_auditoria, id_sistema, id_recurso) values (' . $objRegraAuditoriaDTO->getNumIdRegraAuditoria() . ', ' . $numIdSistemaSei . ', ' . $recurso['id_recurso'] . ')');
@@ -446,10 +322,7 @@ class MdLitAtualizadorSipRN extends InfraRN {
 
     }
 
-    /* Contem atualizaçoes da versao 0.0.3 do modulo */
-
-    private function adicionarRecursoPerfil($numIdSistema, $numIdPerfil, $strNome, $strCaminho = null)
-    {
+    private function adicionarRecursoPerfil($numIdSistema, $numIdPerfil, $strNome, $strCaminho = null){
 
         $objRecursoDTO = new RecursoDTO();
         $objRecursoDTO->retNumIdRecurso();
@@ -493,12 +366,7 @@ class MdLitAtualizadorSipRN extends InfraRN {
         return $objRecursoDTO;
     }
 
-    //v004 - INICIO
-
-    /* Contem atualizaçoes da versao 0.0.4 do modulo */
-
-    private function adicionarItemMenu($numIdSistema, $numIdPerfil, $numIdMenu, $numIdItemMenuPai, $numIdRecurso, $strRotulo, $numSequencia)
-    {
+    private function adicionarItemMenu($numIdSistema, $numIdPerfil, $numIdMenu, $numIdItemMenuPai, $numIdRecurso, $strRotulo, $numSequencia){
 
         $objItemMenuDTO = new ItemMenuDTO();
         $objItemMenuDTO->retNumIdItemMenu();
@@ -1748,8 +1616,127 @@ class MdLitAtualizadorSipRN extends InfraRN {
         $objSistemaRN->replicarRegraAuditoria($objReplicacaoRegraAuditoriaDTO);
     }
 
-    private function removerRecursoPerfil($numIdSistema, $strNome, $numIdPerfil)
-    {
+
+    protected function atualizarVersaoConectado(){
+
+        try {
+            $this->inicializar('INICIANDO A INSTALAÇÃO/ATUALIZAÇÃO DO '.$this->nomeDesteModulo.' NO SIP VERSÃO '.SIP_VERSAO);
+
+            //testando versao do framework
+            $numVersaoInfraRequerida = '1.385';
+            $versaoInfraFormatada = (int) str_replace('.','', VERSAO_INFRA);
+            $versaoInfraReqFormatada = (int) str_replace('.','', $numVersaoInfraRequerida);
+
+            if ($versaoInfraFormatada < $versaoInfraReqFormatada){
+                $this->finalizar('VERSÃO DO FRAMEWORK PHP INCOMPATÍVEL (VERSÃO ATUAL '.VERSAO_INFRA.', SENDO REQUERIDA VERSÃO IGUAL OU SUPERIOR A '.$numVersaoInfraRequerida.')',true);
+            }
+
+            //checando BDs suportados
+            if (!(BancoSip::getInstance() instanceof InfraMySql) &&
+                !(BancoSip::getInstance() instanceof InfraSqlServer) &&
+                !(BancoSip::getInstance() instanceof InfraOracle)) {
+                $this->finalizar('BANCO DE DADOS NÃO SUPORTADO: ' . get_parent_class(BancoSip::getInstance()), true);
+            }
+
+            //checando permissoes na base de dados
+            $objInfraMetaBD = new InfraMetaBD(BancoSip::getInstance());
+
+            if (count($objInfraMetaBD->obterTabelas('sip_teste'))==0){
+                BancoSip::getInstance()->executarSql('CREATE TABLE sip_teste (id '.$objInfraMetaBD->tipoNumero().' null)');
+            }
+
+            BancoSip::getInstance()->executarSql('DROP TABLE sip_teste');
+
+            $objInfraParametro = new InfraParametro(BancoSip::getInstance());
+
+            $strVersaoModuloLitigioso = $objInfraParametro->getValor($this->nomeParametroModulo, false);
+
+            //VERIFICANDO QUAL VERSAO DEVE SER INSTALADA NESTA EXECUCAO
+            //se nao tem nenhuma versao instalada, instalar todas
+            if (InfraString::isBolVazia($strVersaoModuloLitigioso)) {
+                $this->instalarv001();
+                $this->instalarv002();
+                $this->instalarv003();
+                $this->instalarv004();
+                $this->instalarv100();
+
+                //adicionando parametro para controlar versao do modulo
+                $this->logar('ADICIONANDO PARÂMETRO '. $this->nomeParametroModulo .' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+                BancoSip::getInstance()->executarSql('INSERT INTO infra_parametro (valor, nome ) VALUES( \'' . $this->versaoAtualDesteModulo . '\',  \'' . $this->nomeParametroModulo . '\' )');
+                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
+                $this->finalizar('FIM', false);
+            }
+
+            else if ($strVersaoModuloLitigioso == '0.0.1') {
+
+                //instalar apenas a v.002 e a v003
+                $this->instalarv002();
+                $this->instalarv003();
+                $this->instalarv004();
+                $this->instalarv100();
+
+                //atualizando versao do parametro para controlar versao do modulo
+                BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'' . $this->versaoAtualDesteModulo . '\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+
+                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
+                $this->finalizar('FIM', false);
+            }
+
+            else if ($strVersaoModuloLitigioso == '0.0.2') {
+                $this->instalarv003();
+                $this->instalarv004();
+                $this->instalarv100();
+
+                //atualizando versao do parametro para controlar versao do modulo
+                BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'' . $this->versaoAtualDesteModulo . '\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+
+                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
+                $this->finalizar('FIM', false);
+            }
+
+            else if ($strVersaoModuloLitigioso == '0.0.3') {
+                $this->instalarv004();
+                $this->instalarv100();
+
+                //atualizando versao do parametro para controlar versao do modulo
+                BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'' . $this->versaoAtualDesteModulo . '\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+
+                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
+                $this->finalizar('FIM', false);
+            }
+
+            else if($strVersaoModuloLitigioso == '0.0.4') {
+                $this->instalarv100();
+
+                //atualizando versao do parametro para controlar versao do modulo
+                BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'' . $this->versaoAtualDesteModulo . '\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+
+                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
+                $this->finalizar('FIM', false);
+            }
+
+            //se a versão instalada já é a atual, então não instala nada e avisa
+            else {
+                //se a versão instalada já é a atual, então não instala nada e avisa
+                $this->logar('A VERSÃO MAIS ATUAL DO '.$this->nomeDesteModulo.' (v'.$this->versaoAtualDesteModulo.') JÁ ESTÁ INSTALADA.');
+                $this->finalizar('FIM', false);
+            }
+
+            InfraDebug::getInstance()->setBolLigado(false);
+            InfraDebug::getInstance()->setBolDebugInfra(false);
+            InfraDebug::getInstance()->setBolEcho(false);
+
+        } catch (Exception $e) {
+
+            InfraDebug::getInstance()->setBolLigado(false);
+            InfraDebug::getInstance()->setBolDebugInfra(false);
+            InfraDebug::getInstance()->setBolEcho(false);
+            throw new InfraException('Erro atualizando versão.', $e);
+        }
+
+    }
+
+    private function removerRecursoPerfil($numIdSistema, $strNome, $numIdPerfil){
 
         $objRecursoDTO = new RecursoDTO();
         $objRecursoDTO->setBolExclusaoLogica(false);
@@ -1781,8 +1768,7 @@ class MdLitAtualizadorSipRN extends InfraRN {
         }
     }
 
-    private function desativarRecurso($numIdSistema, $strNome)
-    {
+    private function desativarRecurso($numIdSistema, $strNome){
         $objRecursoDTO = new RecursoDTO();
         $objRecursoDTO->retNumIdRecurso();
         $objRecursoDTO->setNumIdSistema($numIdSistema);
@@ -1796,8 +1782,7 @@ class MdLitAtualizadorSipRN extends InfraRN {
         }
     }
 
-    private function removerRecurso($numIdSistema, $strNome)
-    {
+    private function removerRecurso($numIdSistema, $strNome){
 
         $objRecursoDTO = new RecursoDTO();
         $objRecursoDTO->setBolExclusaoLogica(false);
@@ -1842,8 +1827,7 @@ class MdLitAtualizadorSipRN extends InfraRN {
         }
     }
 
-    private function removerItemMenu($numIdSistema, $numIdMenu, $numIdItemMenu)
-    {
+    private function removerItemMenu($numIdSistema, $numIdMenu, $numIdItemMenu){
 
         $objItemMenuDTO = new ItemMenuDTO();
         $objItemMenuDTO->retNumIdMenu();
@@ -1870,8 +1854,7 @@ class MdLitAtualizadorSipRN extends InfraRN {
         }
     }
 
-    private function removerPerfil($numIdSistema, $strNome)
-    {
+    private function removerPerfil($numIdSistema, $strNome){
 
         $objPerfilDTO = new PerfilDTO();
         $objPerfilDTO->retNumIdPerfil();
@@ -1935,12 +1918,9 @@ try {
     $objVersaoRN = new MdLitAtualizadorSipRN();
     $objVersaoRN->atualizarVersao();
 
-} catch (Exception $e) {
+}catch(Exception $e){
     echo(nl2br(InfraException::inspecionar($e)));
-    try {
-        LogSip::getInstance()->gravar(InfraException::inspecionar($e));
-    } catch (Exception $e) {
-    }
+    try{LogSip::getInstance()->gravar(InfraException::inspecionar($e));}catch(Exception $e){}
 }
 
 //========================== FIM SCRIPT EXECUÇÂO ====================
