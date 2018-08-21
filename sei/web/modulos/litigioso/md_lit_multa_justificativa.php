@@ -31,32 +31,41 @@ try {
     $arrTabela          = array();
     $bolHouveMudanca    = true;
     $idUltimaSituacaoDecisoria = null;
+    $txtJustificativaPadrao    = '';
 
     //colocando a pagina sem menu e titulo inicial
     PaginaSEI::getInstance()->setTipoPagina(InfraPagina::$TIPO_PAGINA_SIMPLES);
     switch ($_GET['acao']) {
         case 'md_lit_multa_justificativa':
 
-
             //Switch case para definir o titulo da pagina conforme o id funcionalidade
             switch ($_GET['id_md_lit_funcionalidade']){
                 case MdLitIntegracaoRN::$ARRECADACAO_LANCAMENTO_CREDITO:
                     $strTitulo = 'Incluir Lançamento';
+                    $txtJustificativaPadrao = 'Multa aplicada com base no Processo nº ';
                     break;
                 case MdLitIntegracaoRN::$ARRECADACAO_RETIFICAR_LANCAMENTO:
                     $strTitulo = 'Retificar Lançamento';
+                    if(isset($_GET['constituir_definitivamente']) && $_GET['constituir_definitivamente'] == 1){
+                        $strTitulo .= ' - Constituição Definitiva';
+                    }
+                    $txtJustificativaPadrao = 'Multa retificada com base no Processo nº ';
                     break;
                 case MdLitIntegracaoRN::$ARRECADACAO_SUSPENDER_LANCAMENTO:
-                    $strTitulo = 'Suspender recurso';
+                    $strTitulo = 'Suspender Exigibilidade em Razão de Recurso';
+                    $txtJustificativaPadrao = 'Multa com exigibilidade suspensa em razão de Recurso com base no Processo nº ';
                     break;
                 case MdLitIntegracaoRN::$ARRECADACAO_CANCELAR_RECURSO:
-                    $strTitulo = 'Cancelar recurso';
+                    $strTitulo = 'Cancelar Recurso e Restabelecer Exigibilidade';
+                    $txtJustificativaPadrao = 'Multa com exigibilidade restabelecida em razão de cancelamento de Recurso com base no Processo nº ';
                     break;
                 case MdLitIntegracaoRN::$ARRECADACAO_DENEGAR_RECURSO:
-                    $strTitulo = 'Denegar recurso';
+                    $strTitulo = 'Denegar Recurso e Restabelecer Exigibilidade';
+                    $txtJustificativaPadrao = 'Multa com exigibilidade restabelecida em razão de denegação de Recurso com base no Processo nº ';
                     break;
                 default:
                     $strTitulo = '';
+                    $txtJustificativaPadrao = '';
                     break;
             }
 
@@ -67,6 +76,19 @@ try {
 
         default:
             throw new InfraException("Ação '" . $_GET['acao'] . "' não reconhecida.");
+    }
+
+    if($_GET['id_procedimento']){
+        $objProtocoloDTO = new ProtocoloDTO();
+        $objProtocoloDTO->setDblIdProtocolo($_GET['id_procedimento']);
+        $objProtocoloDTO->retTodos(false);
+        $objProtocoloDTO->setNumMaxRegistrosRetorno(1);
+
+        $objProtocoloRN = new ProtocoloRN();
+        $objProtocoloDTO = $objProtocoloRN->consultarRN0186($objProtocoloDTO);
+        $numProcesso = $objProtocoloDTO->getStrProtocoloFormatado();
+
+        $txtJustificativaPadrao.= $numProcesso;
     }
 
 
@@ -92,7 +114,7 @@ if(0){?><script><?}?>
 
     function validar(){
         if(document.getElementById('txtJustificativaLancamento').value == ''){
-            alert('A Justificativa é obrigatório!');
+            alert('A Justificativa é obrigatória!');
             return false;
         }
 
@@ -124,9 +146,9 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
     <?php PaginaSEI::getInstance()->abrirAreaDados(null); ?>
     <div>
         <label class="infraLabelObrigatorio" >
-            Justificativa do <?= strtolower($strTitulo) ?> :
+            Justificativa:
         </label>
-        <textarea rows="8" style="width: 100%" name="txtJustificativaLancamento" id="txtJustificativaLancamento" ></textarea>
+        <textarea rows="8" style="width: 100%" name="txtJustificativaLancamento" id="txtJustificativaLancamento" disabled="disabled" ><?= $txtJustificativaPadrao ?></textarea>
     </div>
 
     <input type="hidden" name="hdnIdMdLitFuncionalidade" id="hdnIdMdLitFuncionalidade" value="<?= $_GET['id_md_lit_funcionalidade'] ?>">

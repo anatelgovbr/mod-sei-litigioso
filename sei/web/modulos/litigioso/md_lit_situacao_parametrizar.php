@@ -19,6 +19,8 @@ try {
     SessaoSEI::getInstance()->validarPermissao($_GET['acao']);
     $ajaxUrlVerificarVinculo = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_verificar_vinculo');
 
+    $arrComandos = array();
+
     switch ($_GET['acao']) {
         case 'md_lit_situacao_excluir':
             try {
@@ -138,8 +140,19 @@ try {
             }
             break;
 
-        case 'md_lit_situacao_selecionar':
-            $strTitulo = PaginaSEI::getInstance()->getTituloSelecao('Selecionar Situação', 'Selecionar Situação');
+        case 'md_lit_situacao_visualizar_parametrizar':
+            $strTitulo = PaginaSEI::getInstance()->getTituloSelecao('Parametrização de Situação', 'Parametrização de Situação');
+            PaginaSEI::getInstance()->setTipoPagina(InfraPagina::$TIPO_PAGINA_SIMPLES);
+
+            $objTipoControleLitigiosoDTO = new MdLitTipoControleDTO();
+            $objTipoControleLitigiosoDTO->retTodos();
+            $objTipoControleLitigiosoDTO->setNumIdTipoControleLitigioso($_GET['id_tipo_processo_litigioso']);
+            $objTipoControleLitigiosoRN  = new MdLitTipoControleRN();
+            $objTipoControleLitigiosoDTO = $objTipoControleLitigiosoRN->consultar($objTipoControleLitigiosoDTO);
+
+            $sigla = $objTipoControleLitigiosoDTO->getStrSigla() ? $objTipoControleLitigiosoDTO->getStrSigla() : '';
+
+            $strTitulo = 'Parametrizar Situações - ' . PaginaSEI::tratarHTML($sigla);
 
             //Se cadastrou alguem
             if ($_GET['acao_origem'] == 'md_lit_situacao_cadastrar') {
@@ -147,10 +160,12 @@ try {
                     PaginaSEI::getInstance()->adicionarSelecionado($_GET['id_situacao_litigioso']);
                 }
             }
+            $arrComandos[] = '<button type="button" id="btnOrientacoes" value="Orientações" onclick="modalOrientacoes()" class="infraButton">Orientações</button>';
+            $arrComandos[] = '<button type="button" accesskey="C" id="btnFechar" value="Fechar" onclick="window.close()" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
+
             break;
 
         case 'md_lit_situacao_parametrizar':
-
             $objTipoControleLitigiosoDTO = new MdLitTipoControleDTO();
             $objTipoControleLitigiosoDTO->retTodos();
             $objTipoControleLitigiosoDTO->setNumIdTipoControleLitigioso($_GET['id_tipo_processo_litigioso']);
@@ -369,25 +384,25 @@ try {
                 }
             }
 
+            $bolAcaoFase = SessaoSEI::getInstance()->verificarPermissao('md_lit_fase_listar');
+            if ($bolAcaoFase) {
+                $arrComandos[] = '<button type="button" accesskey="A" id="btnFase" value="Fase" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_fase_listar&acao_origem=' . $_GET['acao'] . '&id_tipo_processo_litigioso=' . $_GET['id_tipo_processo_litigioso'] . '&acao_retorno=' . $_GET['acao'])) . '\'" class="infraButton">F<span class="infraTeclaAtalho">a</span>ses</button>';
+            }
+            $bolAcaoCadastrar = SessaoSEI::getInstance()->verificarPermissao('md_lit_situacao_cadastrar');
+            if ($bolAcaoCadastrar) {
+                $arrComandos[] = '<button type="button" accesskey="N" id="btnNovo" value="Nova Situação" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_situacao_cadastrar&id_tipo_processo_litigioso=' . $_GET['id_tipo_processo_litigioso'] . '&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'])) . '\'" class="infraButton"><span class="infraTeclaAtalho">N</span>ova Situação</button>';
+            }
+
+            $arrComandos[] = '<button type="button" id="btnOrientacoes" value="Orientações" onclick="modalOrientacoes()" class="infraButton">Orientações</button>';
+
+            $arrComandos[] = '<button type="button" accesskey="S" name="sbmCadastrarSituacaoLitigioso" id="sbmCadastrarSituacaoLitigioso" onclick="salvar()" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
+            $arrComandos[] = '<button type="button" accesskey="C" id="btnFechar" value="Fechar" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'])) . '\'" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
+
             break;
 
         default:
             throw new InfraException("Ação '" . $_GET['acao'] . "' não reconhecida.");
     }
-
-    $arrComandos = array();
-
-
-    $bolAcaoFase = SessaoSEI::getInstance()->verificarPermissao('md_lit_fase_listar');
-    if ($bolAcaoFase) {
-        $arrComandos[] = '<button type="button" accesskey="A" id="btnFase" value="Fase" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_fase_listar&acao_origem=' . $_GET['acao'] . '&id_tipo_processo_litigioso=' . $_GET['id_tipo_processo_litigioso'] . '&acao_retorno=' . $_GET['acao'])) . '\'" class="infraButton">F<span class="infraTeclaAtalho">a</span>ses</button>';
-    }
-
-    $bolAcaoCadastrar = SessaoSEI::getInstance()->verificarPermissao('md_lit_situacao_cadastrar');
-    if ($bolAcaoCadastrar) {
-        $arrComandos[] = '<button type="button" accesskey="N" id="btnNovo" value="Nova Situação" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_situacao_cadastrar&id_tipo_processo_litigioso=' . $_GET['id_tipo_processo_litigioso'] . '&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'])) . '\'" class="infraButton"><span class="infraTeclaAtalho">N</span>ova Situação</button>';
-    }
-    $arrComandos[] = '<button type="button" id="btnOrientacoes" value="Orientações" onclick="modalOrientacoes()" class="infraButton">Orientações</button>';
 
     $objSituacaoLitigiosoDTO = new MdLitSituacaoDTO();
 
@@ -425,7 +440,7 @@ try {
 
         $bolCheck = false;
 
-        if ($_GET['acao'] == 'md_lit_situacao_selecionar') {
+        if ($_GET['acao'] == 'md_lit_situacao_selecionar' || $_GET['acao'] == 'md_lit_situacao_visualizar_parametrizar' ) {
             $bolAcaoReativar  = false;
             $bolAcaoConsultar = SessaoSEI::getInstance()->verificarPermissao('md_lit_situacao_consultar');
             $bolAcaoExcluir   = false;
@@ -519,11 +534,14 @@ try {
             $boolDesabilitarSubir  = $i === 0 ? '1' : '0';
             $boolDesabilitarDescer = ($totalRegistros - 1) === $i ? '1' : '0';
 
-            $strImagem = '<a onclick="moverAcima(this)"><img src="'
-                . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/seta_acima.gif" style="margin: 2px -7px 12px 2px;" /></a>';
+            $strImagem = '';
+            if($_GET['acao'] != 'md_lit_situacao_visualizar_parametrizar' ){
+                $strImagem = '<a onclick="moverAcima(this)"><img src="'
+                    . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/seta_acima.gif" style="margin: 2px -7px 12px 2px;" /></a>';
 
-            $strImagem .= '<a onclick="moverAbaixo(this)" "><img src="'
-                . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/seta_abaixo.gif" /> </a>';
+                $strImagem .= '<a onclick="moverAbaixo(this)" "><img src="'
+                    . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/seta_abaixo.gif" /> </a>';
+            }
 
             $instauracao = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinInstauracao() === 'S' ? 'checked="checked"' : '';
             $intimacao   = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinIntimacao() === 'S' ? 'checked="checked"' : '';
@@ -542,16 +560,16 @@ try {
             $strResultado .= '<td style="word-break:break-all">' . PaginaSEI::tratarHTML($arrObjSituacaoLitigiosoDTO[$i]->getStrNomeFase()) . '</td>';
             $strResultado .= '<td style="word-break:break-all">' . PaginaSEI::tratarHTML($arrObjSituacaoLitigiosoDTO[$i]->getStrNome()) . '</td>';
             $strResultado .= '<td align="center">' . $strImagem . '</td>';
-            $strResultado .= '<td align="center"><input ' . $instauracao . ' ' . $disabled . ' type="radio" class="instauracao" onchange="controlarRadios(this)" id="instauracao_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" name="instauracao_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '[]"> </input> </td>';
-            $strResultado .= '<td align="center"><input type="checkbox" ' . $intimacao . ' ' . $disabled . ' onchange="controlarRadios(this)" name="intimacao_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" > </input> </td>';
-            $strResultado .= '<td align="center"><input ' . $defesa . ' ' . $disabled . ' type="radio" class="defesa" onchange="controlarRadios(this)" id="defesa_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" name="defesa_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '[]"> </input> </td>';
-            $strResultado .= '<td align="center"><input type="checkbox"' . $decisoria . ' ' . $disabled . ' onchange="controlarRadios(this)" name="decisoria_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '"> </input> </td>';
+            $strResultado .= '<td align="center" title="Instauração"><input ' . $instauracao . ' ' . $disabled . ' type="radio" class="instauracao" onchange="controlarRadios(this)" id="instauracao_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" name="instauracao_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '[]"> </input> </td>';
+            $strResultado .= '<td align="center" title="Intimação"><input type="checkbox" ' . $intimacao . ' ' . $disabled . ' onchange="controlarRadios(this)" name="intimacao_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" > </input> </td>';
+            $strResultado .= '<td align="center" title="Defesa"><input ' . $defesa . ' ' . $disabled . ' type="radio" class="defesa" onchange="controlarRadios(this)" id="defesa_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" name="defesa_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '[]"> </input> </td>';
+            $strResultado .= '<td align="center" title="Decisão"><input type="checkbox"' . $decisoria . ' ' . $disabled . ' onchange="controlarRadios(this)" name="decisoria_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '"> </input> </td>';
 //                $strResultado .= '<td align="center"><input type="checkbox" ' . $suspensiva . ' ' . $disabled . ' name="suspensiva_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" > </input> </td>';
 //                $strResultado .= '<td align="center"><input type="checkbox"' . $livre . ' ' . $disabled . ' name="livre_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '"> </input> </td>';
-            $strResultado .= '<td align="center"><input type="checkbox"' . $recursal . ' ' . $disabled . ' onchange="controlarRadios(this)" name="recursal_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '"> </input> </td>';
-            $strResultado .= '<td align="center"><input type="radio" ' . $conclusiva . ' ' . $disabled . '  class="conclusao" name="conclusiva_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" class="conclusiva" onchange="controlarRadios(this)" id="conclusiva_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" name="conclusiva_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '[]"> </input> </td>';
-            $strResultado .= '<td align="center"><input type="checkbox"' . $opcional . ' ' . $disabled . ' onclick="selecionarOpcionalObrigatorio(this)" name="opcional_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '"> </input> </td>';
-            $strResultado .= '<td align="center"> <input maxlength="3" size="1" ' . $disabled . ' '.$readOnlyPrazo.'   onkeypress="return SomenteNumero(event)"  name="prazo_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" type="text"  value="' . PaginaSEI::tratarHTML($arrObjSituacaoLitigiosoDTO[$i]->getNumPrazo()) . '"></td>';
+            $strResultado .= '<td align="center" title="Recurso"><input type="checkbox"' . $recursal . ' ' . $disabled . ' onchange="controlarRadios(this)" name="recursal_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '"> </input> </td>';
+            $strResultado .= '<td align="center" title="Conclusão"><input type="radio" ' . $conclusiva . ' ' . $disabled . '  class="conclusao" name="conclusiva_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" class="conclusiva" onchange="controlarRadios(this)" id="conclusiva_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" name="conclusiva_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '[]"> </input> </td>';
+            $strResultado .= '<td align="center" title="Opcional"><input type="checkbox"' . $opcional . ' ' . $disabled . ' onclick="selecionarOpcionalObrigatorio(this)" name="opcional_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '"> </input> </td>';
+            $strResultado .= '<td align="center" title="Prazo (dias)"> <input maxlength="3" size="1" ' . $disabled . ' '.$readOnlyPrazo.'   onkeypress="return SomenteNumero(event)"  name="prazo_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" type="text"  value="' . PaginaSEI::tratarHTML($arrObjSituacaoLitigiosoDTO[$i]->getNumPrazo()) . '"></td>';
             $strResultado .= '<td align="center">';
 
             $strResultado .= PaginaSEI::getInstance()->getAcaoTransportarItem($i, $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso());
@@ -572,7 +590,7 @@ try {
             if ($bolAcaoDesativar && $arrObjSituacaoLitigiosoDTO[$i]->getStrSinAtivo() == 'S') {
 //                $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($strId) . '" onclick="acaoDesativar(\'' . $strId . '\',\'' . $strDescricao . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/desativar.gif" title="Desativar Situação" alt="Desativar Situação" class="infraImg" /></a>&nbsp;';
                 $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($strId) . '" onclick="acaoDesativar(this,\'' . $strId . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/desativar.gif" title="Desativar Situação" alt="Desativar Situação" class="infraImg"  id="imgDesativar_' . $strId . '"/></a>&nbsp;';
-            } else {
+            } elseif($bolAcaoReativar) {
                 $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($strId) . '" onclick="acaoReativar(this,\'' . $strId . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/reativar.gif" title="Reativar Situação" alt="Reativar Situação" class="infraImg" /></a>&nbsp;';
             }
 
@@ -586,9 +604,6 @@ try {
         }
         $strResultado .= '</table>';
     }
-
-    $arrComandos[] = '<button type="button" accesskey="S" name="sbmCadastrarSituacaoLitigioso" id="sbmCadastrarSituacaoLitigioso" onclick="salvar()" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
-    $arrComandos[] = '<button type="button" accesskey="C" id="btnFechar" value="Fechar" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'])) . '\'" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
 
 } catch (Exception $e) {
     PaginaSEI::getInstance()->processarExcecao($e);
@@ -682,7 +697,7 @@ PaginaSEI::getInstance()->montarJavaScript();
     <? } ?>
 
     function acaoReativar(el, id) {
-        var tr = el.parentNode.parentNode
+        var tr = el.parentNode.parentNode;
         var td = tr.getElementsByTagName('td');
         var descricao = td[2].innerText;
         if (confirm("Confirma reativação da Situação \"" + descricao + "\"?")) {
@@ -693,7 +708,7 @@ PaginaSEI::getInstance()->montarJavaScript();
 
     <? if ($bolAcaoExcluir) { ?>
     function acaoExcluir(el, id) {
-        var tr = el.parentNode.parentNode
+        var tr = el.parentNode.parentNode;
         var td = tr.getElementsByTagName('td');
         var descricao = td[2].innerText;
         if (confirm("Confirma exclusão da Situação \"" + descricao + "\"?")) {
@@ -759,6 +774,26 @@ PaginaSEI::getInstance()->fecharHtml();
     function inicializar() {
         //infraEfeitoTabelas();
         controlarCheckboxOpcional();
+
+        if ('<?= $_GET['acao'] ?>'=='md_lit_situacao_visualizar_parametrizar'){
+            //desabilitando somente os inputs da tabela, o infraDesabilitarCamposDiv remove a imagem de consultar situação
+            var el,els, e = 0;
+            els = document.getElementById('divInfraAreaTabela').getElementsByTagName('input');
+            while (el = els.item(e++)){
+                if (el.type != 'hidden'){
+                    if (INFRA_IE > 0){
+                        el.disabled=true;
+                    }else{
+                        if (el.type == 'checkbox' || el.type == 'radio'){
+                            el.disabled=true;
+                        }else{
+                            el.readOnly = true;
+                        }
+                    }
+                }
+            }
+
+        }
     }
 
     function validarCadastro() {
@@ -1114,11 +1149,11 @@ PaginaSEI::getInstance()->fecharHtml();
         for(var i = 1; i < tr.length; i++) {
             var td = tr[i].getElementsByTagName('td');
             //verificar se opcional pode ser checked
-            //so pode se for defesa ou recursal ou a partir da segunda intimação
+            //so pode se for defesa ou recursal ou decisão ou a partir da segunda intimação
             if(td[6].children[0].checked || td[8].children[0].checked){
                 td[10].children[0].disabled = false;
                 td[10].children[0].checked = true;
-            }else if( td[5].children[0].checked && !primeiraIntimacao ){
+            }else if( td[5].children[0].checked && !primeiraIntimacao || td[7].children[0].checked  ){
                 td[10].children[0].disabled = false;
             }else{
                 td[10].children[0].disabled = true;
@@ -1271,7 +1306,7 @@ PaginaSEI::getInstance()->fecharHtml();
         infraAbrirJanela('<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_situacao_orientacao') ?>',
             'orientacoes',
             780,
-            300);
+            580);
     }
 
     function selecionarOpcionalObrigatorio(element){

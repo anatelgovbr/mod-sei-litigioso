@@ -80,7 +80,7 @@
             $objCondutaLitigiosoBD = new MdLitCondutaBD ($this->getObjInfraIBanco());
 
             // Valida Quantidade de Caracteres
-            if (strlen($objCondutaLitigiosoDTO->getStrNome()) > 100) {
+            if (strlen($objCondutaLitigiosoDTO->getStrNome()) > 500) {
                 $objInfraException->adicionarValidacao('Conduta possui tamanho superior a 100 caracteres.');
             }
 

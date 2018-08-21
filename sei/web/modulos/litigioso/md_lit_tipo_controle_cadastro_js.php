@@ -1,9 +1,16 @@
+<?php if(0){ ?>
+<script>
+    <?php } ?>
+
 //variaveis globais - declarar fora do escopo das funçoes da pagina
 var objLupaUnidades = null;
 var objAutoCompletarUnidade = null;
 
 var objLupaGestores = null;
 var objAutoCompletarGestor = null;
+
+var objLupaMotivos = null;
+var objAutoCompletarMotivos = null;
 
 var objLupaTipoProcessos = null;
 var objAutoCompletarTipoProcesso = null;
@@ -69,6 +76,54 @@ function inicializar(){
     
     // ================= FIM - JS para selecao de gestores ================================
 
+    // ================= INICIO - JS para selecao de Motivos ==============================
+
+    objAutoCompletarMotivos = new infraAjaxAutoCompletar('hdnIdMotivos','txtMotivos','<?=$strLinkAjaxMotivos?>');
+    objAutoCompletarMotivos.limparCampo = true;
+
+    objAutoCompletarMotivos.prepararExecucao = function(){
+        return 'palavras_pesquisa='+document.getElementById('txtMotivos').value;
+    };
+
+    objAutoCompletarMotivos.processarResultado = function(id,descricao,complemento){
+
+    if (id!=''){
+        var options = document.getElementById('selMotivos').options;
+
+        for(var i=0;i < options.length;i++){
+        if (options[i].value == id){
+        alert('Motivo já consta na lista.');
+        break;
+        }
+    }
+
+    if (i==options.length){
+
+        for(i=0;i < options.length;i++){
+        options[i].selected = false;
+        }
+
+        /*console.log(descricao);
+        console.log(complemento);
+        strDescricaoFull = descricao + '(' + complemento + ')';
+        alert( strDescricaoFull );*/
+        opt = infraSelectAdicionarOption(document.getElementById('selMotivos'), descricao ,id);
+
+        objLupaMotivos.atualizar();
+
+        opt.selected = true;
+    }
+
+    document.getElementById('txtMotivos').value = '';
+    document.getElementById('txtMotivos').focus();
+
+    }
+    };
+
+    objLupaMotivos = new infraLupaSelect('selMotivos','hdnMotivos','<?=$strLinkMotivosSelecao?>');
+
+    // ================= FIM - JS para selecao de motivos =================================
+
    // =================== INICIO - JS para selecao de tipos de processos associados
    
    objAutoCompletarTipoProcesso = new infraAjaxAutoCompletar('hdnIdTipoProcesso','txtTipoProcesso','<?=$strLinkAjaxTipoProcesso?>');
@@ -77,6 +132,8 @@ function inicializar(){
 	objAutoCompletarTipoProcesso.prepararExecucao = function(){
 	    return 'palavras_pesquisa='+document.getElementById('txtTipoProcesso').value;
 	};
+
+
 	  
 	objAutoCompletarTipoProcesso.processarResultado = function(id,descricao,complemento){
 	    
@@ -239,11 +296,17 @@ function validarCadastro() {
     document.getElementById('txaDescricao').focus();
     return false;
   }
-  
+
+    if (infraTrim(document.getElementById('txtDtCorte').value)=='') {
+        alert('Informe a data de corte.');
+        document.getElementById('txtDtCorte').focus();
+        return false;
+    }
   //alert('teste');
      
   var checkboxSobrestar = document.getElementById("chkPodeSobrestar");
   var optionsGestores = document.getElementById('selGestores').options;
+  var optionsMotivos = document.getElementById('selMotivos').options;
   var optionsProcessos = document.getElementById('selTipoProcessos').options;
   var optionsUnidades = document.getElementById('selUnidades').options;
   var optionsSobrestados = document.getElementById('selTipoProcessosSobrestados').options;
@@ -253,7 +316,7 @@ function validarCadastro() {
     document.getElementById('selGestores').focus();
     return false;
   }
-  
+
   if( optionsProcessos.length == 0 ){
     alert('Informe ao menos um tipo de processo associado.');
     document.getElementById('selTipoProcessos').focus();
@@ -283,3 +346,7 @@ function OnSubmitForm() {
   
   return ret;
 }
+
+    <?php if(0){ ?>
+<script>
+        <?php } ?>

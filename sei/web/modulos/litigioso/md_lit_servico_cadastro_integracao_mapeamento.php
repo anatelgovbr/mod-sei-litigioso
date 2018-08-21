@@ -104,11 +104,11 @@ function validarCadastro(){
 }
 function salvar(){
 
-    ret = validarCadastro();console.log(ret);
+    ret = validarCadastro();
     if(!ret)
         return ret;
 
-    var jsonArr = [];console.log('passou if');
+    var jsonArr = [];
     for (var i = 0; i < document.getElementById('tableParametroSaida').rows.length -1; i++){
         var selectCampo = document.getElementById('campoDestino_'+(i));
         if(selectCampo.value != ''){
@@ -118,7 +118,7 @@ function salvar(){
                 value:selectCampo.value,
                 chaveUnica:rdChaveUnica.checked
             });
-            console.log(document.getElementById('campoDestino_'+(i)).name, i);
+
         }
     }
     window.opener.hdnMapeamentoJson.value = JSON.stringify(jsonArr);

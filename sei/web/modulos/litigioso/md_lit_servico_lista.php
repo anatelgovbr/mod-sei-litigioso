@@ -163,7 +163,7 @@ if ($numRegistros > 0) {
 
     $strResultado .= '<table width="99%" class="infraTable" summary="Serviços">';
     $strResultado .= '<caption class="infraCaption">';
-    $strResultado .= PaginaSEI::getInstance()->gerarCaptionTabela('Serviços', $numRegistros);
+    $strResultado .= PaginaSEI::getInstance()->gerarCaptionTabela('Serviços Outorgados', $numRegistros);
     $strResultado .= '</caption>';
 
     $strResultado .= '<tr>';

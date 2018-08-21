@@ -31,7 +31,7 @@ class MdLitMapearParamSaidaINT extends InfraINT {
 
     return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $arrObjMdLitMapearParamSaidaDTO, 'IdMdLitMapearParamSaida', 'IdMdLitIntegracao');
   }
-    public static function montarTabelaParamSaida($objMdLitSoapClienteRN, $idMdLitFuncionalidade, $operacao, $idMdLitIntegracao){
+    public static function montarTabelaParamSaida(MdLitSoapClienteRN $objMdLitSoapClienteRN, $idMdLitFuncionalidade, $operacao, $idMdLitIntegracao){
         $objMdLitMapearParamSaidaDTO = new MdLitMapearParamSaidaDTO();
         $arrParametroSaida = $objMdLitSoapClienteRN->getParamsOutput($operacao);
         $strResultadoParamSaida = '';

@@ -156,7 +156,7 @@
     <!-- Salvo devedor atualizado  -->
     <div class="grid grid_4">
         <label id="lblSaldoDevAtualizado" name="lblSaldoDevAtualizado" class="infraLabelOpcional">
-         Salvo Devedor Atualizado:
+         Saldo Devedor Atualizado:
         </label>
     </div>
 
@@ -184,149 +184,184 @@
 
  <div class="clear-margin-5"></div>
 
-        <!--Data do Decurso do Prazo para Defesa -->
-        <div class="grid grid_8">
-            <div class="grid grid_6">
-                <label class="infraLabelObrigatorio" id="lblDtDecursoPrazo" name="lblDtDecursoPrazo" for="txtDtDecursoPrazo">Data do
-                    Decurso do Prazo para Defesa:</label>
+        <div style="float: left;width: 520px" id="divDataGestaoMulta">
+            <!--Data do Decurso do Prazo para Defesa -->
+            <div class="grid grid_8">
+                <div class="grid grid_6">
+                    <label class="infraLabelObrigatorio" id="lblDtDecursoPrazo" name="lblDtDecursoPrazo" for="txtDtDecursoPrazo">Data do
+                        Decurso do Prazo para Defesa:</label>
+                </div>
+
+                <div class="grid grid_3">
+                    <input class="campoData" onchange="verificarMudancaMulta();" type="text" id="txtDtDecursoPrazo" name="txtDtDecursoPrazo" disabled="disabled"
+                           onkeypress="return infraMascara(this, event, '##/##/####');" value="<?= $dataDecursoPrazoDefesa ?>" data-valor-antigo="<?= $dataDecursoPrazoDefesa ?>"/>
+                    <a style="margin-left: 5px;" id="btAjudaDtDecursoPrazo" <?=PaginaSEI::montarTitleTooltip('A Data do Decurso do Prazo para Defesa é calculada automaticamente a partir da Data da Intimação da Instauração, em quantidade de dias previamente definida na Parametrização de Situações, não podendo ser alterada.')?>
+                       tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
+                        <img id="imgAjudaDtDecursoPrazo" border="0" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/ajuda.gif" class="infraImg imgAjudaCtrlProcLit"/>
+                    </a>
+                </div>
+
             </div>
 
-            <div class="grid grid_3">
-                <input class="campoData" type="text" id="txtDtDecursoPrazo" name="txtDtDecursoPrazo" disabled="disabled"
-                       onkeypress="return infraMascara(this, event, '##/##/####');" value="<?= $dataDecursoPrazoDefesa ?>"/>
+            <div class="clear-margin-1"></div>
+
+            <!--Data da Decisão de Aplicação de Multa -->
+            <div class="grid grid_8">
+                <div class="grid grid_6">
+                    <label class="infraLabelObrigatorio" id="lblDtDecisaoAplicacaoMulta" name="lblDtDecisaoAplicacaoMulta" for="txtDecisaoAplicacaoMulta">Data da Decisão de Aplicação da Multa:</label>
+                </div>
+
+                <div class="grid grid_3">
+                    <input onchange="verificarMudancaMulta();return validarFormatoData(this)" class="campoData" type="text" id="txtDecisaoAplicacaoMulta" name="txtDecisaoAplicacaoMulta"
+                           onkeypress="return infraMascara(this, event, '##/##/####');" value="<?= $dataDecisaoAplicacaoMulta ?>"/>
+                    <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/calendario.gif"
+                         title="Selecionar Data da Decisão de Aplicação da Multa" alt="Selecionar Data da Decisão de Aplicação da Multa"
+                         class="infraImg"
+                         onclick="infraCalendario('txtDecisaoAplicacaoMulta',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>
+                    <a style="margin-left: 5px;" id="btAjudaDtDecisaoAplicacaoMulta" <?=PaginaSEI::montarTitleTooltip('Deve informar a data correspondente à primeira Situação Decisória que aplicou Multa. \n \n O sistema faz uma sugestão automática que deve ser conferida e ajustada se for o caso.')?>
+                       tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
+                        <img id="imgAjudaDtDecisaoAplicacaoMulta" border="0" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/ajuda.gif" class="infraImg imgAjudaCtrlProcLit"/>
+                    </a>
+                </div>
+
             </div>
 
+
+            <!--Data da Intimação da Decisão de Aplicação de Multa -->
+            <div class="grid grid_8">
+                <div class="grid grid_6">
+                    <label class="infraLabelOpcional" id="lblDtIntimacaoAplMulta" name="lblDtIntimacaoAplMulta" for="txtDtIntimacaoAplMulta">Data da Intimação da Decisão de Aplicação da Multa:</label>
+                </div>
+
+                <div class="grid grid_3">
+                    <input onchange="verificarMudancaMulta();return validarFormatoData(this);" class="campoData" type="text" id="txtDtIntimacaoAplMulta" name="txtDtIntimacaoAplMulta"
+                           onkeypress="return infraMascara(this, event, '##/##/####');" value=""/>
+                    <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/calendario.gif"
+                         title="Selecionar Data da Intimação da Decisão de Aplicação da Multa" alt="Selecionar Data da Intimação da Decisão de Aplicação da Multa"
+                         class="infraImg"
+                         onclick="infraCalendario('txtDtIntimacaoAplMulta',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>
+                    <a style="margin-left: 5px;" id="btAjudaDtIntimacaoAplMulta" <?=PaginaSEI::montarTitleTooltip('Deve informar a data correspondente à Intimação da primeira Situação Decisória que aplicou Multa. Esta data não é de informação obrigatória no início, mas deve ser informada assim que confirmada a Intimação, para realização da Retificação pertinente junto ao sistema de arrecadação.\n \n O sistema faz uma sugestão automática que deve ser conferida e ajustada se for o caso.')?>
+                       tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
+                        <img id="imgAjudaDtIntimacaoAplMulta" border="0" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/ajuda.gif" class="infraImg imgAjudaCtrlProcLit"/>
+                    </a>
+                </div>
+
+            </div>
+            <!--Data de Vencimento -->
+            <div class="grid grid_8">
+                <div class="grid grid_6">
+                    <label class="infraLabelObrigatorio" id="lblDtVencimento" name="lblDtVencimento" for="txtDtVencimento">Data de Vencimento:</label>
+                </div>
+
+                <div class="grid grid_3">
+                    <input onchange="verificarMudancaMulta();return validarFormatoData(this);" class="campoData" type="text" id="txtDtVencimento" name="txtDtVencimento"
+                           onkeypress="return infraMascara(this, event, '##/##/####');" value="<?= $dataVencimento ?>"/>
+                    <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/calendario.gif"
+                         title="Selecionar Data de Vencimento" alt="Selecionar Data de Vencimento"
+                         class="infraImg"
+                         onclick="infraCalendario('txtDtVencimento',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>
+
+                    <a style="margin-left: 5px;" id="btAjudaDtVencimento" <?=PaginaSEI::montarTitleTooltip('Deve ser informada a Data de Vencimento para o pagamento da Multa. \n \n O sistema faz uma sugestão automática a partir do que foi sugerido para o campo de Data da Decisão de Aplicação da Multa acrescido de 40 dias, mas que deve ser conferida e ajustada se for o caso.')?>
+                       tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
+                        <img id="imgAjudaDtVencimento" border="0" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/ajuda.gif" class="infraImg imgAjudaCtrlProcLit"/>
+                    </a>
+                </div>
+
+            </div>
+            <!--Interessado -->
+            <div class="grid grid_8">
+                <div class="grid grid_6">
+                    <label class="infraLabelObrigatorio" id="lblInteressado" name="lblInteressado" for="txtDtVencimento">Interessado:</label>
+                </div>
+
+                <div class="grid grid_6">
+                    <select class="infraSelect" name="selInteressado" id="selInteressado" <?= $objMdLitLancamentoDTO? 'disabled="disabled"':''  ?> >
+                        <?= $strComboInteressado ?>
+                    </select>
+                </div>
+
+            </div>
+
+            <!--Numero do interessado -->
+            <div class="grid grid_8" id="div-numero" style="display: none">
+                <div class="grid grid_6">
+                    <label class="infraLabelObrigatorio" id="lbNumeroInteressado" name="lblNumeroInteressado" for="txtDtVencimento">Número de Complemento do Interessado:</label>
+                </div>
+
+                <div class="grid grid_6">
+                    <select class="infraSelect" name="selNumeroInteressado" id="selNumeroInteressado" data-id-dado-interessado="<?= $objMdLitLancamentoDTO? $objMdLitLancamentoDTO->getNumIdMdLitNumeroInteressado():'' ?>"  <?= $objMdLitLancamentoDTO? 'disabled="disabled"':''  ?>>
+                    </select>
+
+                </div>
+
+            </div>
         </div>
-
-<!-- Houve constituição -->
-            <div class="grid grid_5">
-                    <input type="checkbox" name="chkHouveConstituicao" id="chkHouveConstituicao" value="S" onchange="houveConstituicao(this)">
-                    <label class="infraLabelOpcional" id="lblHouveConstituicao" name="lblHouveConstituicao" for="chkHouveConstituicao">Houve constituição definitiva do crédito?</label>
+        <div style="float:left;width: 300px" id="divHouveConstituicao">
+            <!-- Houve constituição -->
+            <div class="grid grid_5" id="divHouveConstituicaoChk">
+                <input type="checkbox" name="chkHouveConstituicao" id="chkHouveConstituicao" value="S" onchange="houveConstituicao(this);verificarMudancaMulta()">
+                <label class="infraLabelOpcional" id="lblHouveConstituicao" name="lblHouveConstituicao" for="chkHouveConstituicao">Houve constituição definitiva do crédito?</label>
+                <a style="margin-left: 5px;" id="btAjudaHouveConstituicao" <?=PaginaSEI::montarTitleTooltip('A Constituição Definitiva do Crédito ficará disponível somente a partir do cadastro da Situação de Trânsito em Julgado (Conclusiva).')?>
+                   tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
+                    <img id="imgAjudaHouveConstituicao" border="0" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/ajuda.gif" class="infraImg imgAjudaCtrlProcLit"/>
+                </a>
             </div>
 
-        <div class="clear-margin-1"></div>
+            <!--Data da Constituição -->
+            <div class="grid grid_4 nao-tem-constituicao">
+                <div class="grid grid_4">
+                    <label class="infraLabelObrigatorio" id="lblDtConstituicao" name="lblDtConstituicao" for="txtDtConstituicao">Data da Constituição Definitiva:</label>
+                </div>
 
-        <!--Data da Decisão de Aplicação de Multa -->
-        <div class="grid grid_8">
-            <div class="grid grid_6">
-                <label class="infraLabelObrigatorio" id="lblDtDecisaoAplicacaoMulta" name="lblDtDecisaoAplicacaoMulta" for="txtDecisaoAplicacaoMulta">Data da Decisão de Aplicação da Multa:</label>
+                <div class="grid grid_3">
+                    <input  disabled="disabled" class="campoData" type="text" id="txtDtConstituicao" name="txtDtConstituicao"
+                           onkeypress="return infraMascara(this, event, '##/##/####');" value="<?=$dtaConstituicaoDefinitiva?>"/>
+
+                    <a style="margin-left: 5px;" id="btAjudaDtConstDef" <?=PaginaSEI::montarTitleTooltip('Corresponde à Data do Trânsito em Julgado indicada na Situação Conclusiva, que é replicada automaticamente para este campo.')?>
+                       tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
+                        <img id="btAjudaDtConstDef" border="0" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/ajuda.gif" class="infraImg imgAjudaCtrlProcLit"/>
+                    </a>
+                </div>
+
             </div>
 
-            <div class="grid grid_3">
-                <input class="campoData" type="text" id="txtDecisaoAplicacaoMulta" name="txtDecisaoAplicacaoMulta"
-                       onkeypress="return infraMascara(this, event, '##/##/####');" value="<?= $dataDecisaoAplicacaoMulta ?>"/>
-                <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/calendario.gif" 
-                     title="Selecionar Data da Decisão de Aplicação da Multa" alt="Selecionar Data da Decisão de Aplicação da Multa"
-                     class="infraImg"
-                     onclick="infraCalendario('txtDecisaoAplicacaoMulta',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>
+
+            <!--Data da Intimação da Constituição -->
+            <div class="grid grid_4  nao-tem-constituicao">
+                <div class="grid grid_5">
+                    <label class="infraLabelObrigatorio" id="lblDtIntimacaoConstituicao" name="lblDtIntimacaoConstituicao" for="txtDtIntimacaoConstituicao">Data da Intimação da Constituição Definitiva:</label>
+                </div>
+
+                <div class="grid grid_4">
+                    <input style="width: 52%" type="text" id="txtDtIntimacaoConstituicao" name="txtDtIntimacaoConstituicao" onchange="return validarFormatoData(this)"
+                           onkeypress="return infraMascara(this, event, '##/##/####');" value="<?=$dtaIntimacaoDefinitiva?>"/>
+                    <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/calendario.gif"
+                         title="Selecionar Data da Intimação da Constituição Definitiva" alt="Selecionar Data da Intimação da Constituição Definitiva"
+                         class="infraImg"
+                         onclick="infraCalendario('txtDtIntimacaoConstituicao',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>
+                    <a style="margin-left: 5px;" id="btAjudaDtIntConstDef" <?=PaginaSEI::montarTitleTooltip('Corresponde à Data do Trânsito em Julgado indicada na Situação Conclusiva, que é replicada automaticamente para este campo. \n \n Somente em casos excepcionais, como trânsito em julgado em última instância, esta data da intimação poderá ser distinta da Data do Trânsito em Julgado.')?>
+                       tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
+                        <img id="imgAjudaDtIntConstDef" border="0" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/ajuda.gif" class="infraImg imgAjudaCtrlProcLit"/>
+                    </a>
+
+                </div>
+
             </div>
 
-        </div>
+            <!-- Redução pela renúncia ao direito de recorrer -->
+            <div class="grid grid_5-5  nao-tem-constituicao">
+                <input type="checkbox" name="chkReducaoRenuncia" id="chkReducaoRenuncia" value="S" >
+                <label class="infraLabelOpcional" id="lblReducaoRenuncia" name="lblReducaoRenuncia" for="chkReducaoRenuncia">Redução pela renúncia ao direito de recorrer</label>
+                <a style="margin-left: 5px;" id="btAjudaHouveConstituicao" <?=PaginaSEI::montarTitleTooltip('Esta opção deve ser marcada somente se o Interessado apresentou formalmente e tenha sido aceito pedido de Renúncia ao Direito de Recorrer, obtendo dessa forma a redução no valor da Multa, conforme regulamentação.\n \n Após a Constituição Definitiva ser realizada, apenas o Gestor do Controle Litigioso poderá efetivar correções materiais.')?>
+                   tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
+                    <img id="imgAjudaHouveConstituicao" border="0" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/ajuda.gif" class="infraImg imgAjudaCtrlProcLit"/>
+                </a>
 
-        <!--Data da Constituição -->
-        <div class="grid grid_4 nao-tem-constituicao">
-            <div class="grid grid_3">
-                <label class="infraLabelObrigatorio" id="lblDtConstituicao" name="lblDtConstituicao" for="txtDtConstituicao">Data da Constituição:</label>
-            </div>
-
-            <div class="grid grid_3">
-                <input class="campoData" type="text" id="txtDtConstituicao" name="txtDtConstituicao"
-                       onkeypress="return infraMascara(this, event, '##/##/####');" value="<?=$dtaConstituicaoDefinitiva?>"/>
-                <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/calendario.gif" 
-                     title="Selecionar Data da Constituição" alt="Selecionar Data da Constituição"
-                     class="infraImg"
-                     onclick="infraCalendario('txtDtConstituicao',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>
-            </div>
-
-        </div>
-
-        <!--Data da Intimação da Decisão de Aplicação de Multa -->
-        <div class="grid grid_8">
-            <div class="grid grid_6">
-                <label class="infraLabelOpcional" id="lblDtIntimacaoAplMulta" name="lblDtIntimacaoAplMulta" for="txtDtIntimacaoAplMulta">Data da Intimação da Decisão de Aplicação da Multa:</label>
-            </div>
-
-            <div class="grid grid_3">
-                <input class="campoData" type="text" id="txtDtIntimacaoAplMulta" name="txtDtIntimacaoAplMulta"
-                       onkeypress="return infraMascara(this, event, '##/##/####');" value=""/>
-                <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/calendario.gif" 
-                     title="Selecionar Data da Intimação da Decisão de Aplicação da Multa" alt="Selecionar Data da Intimação da Decisão de Aplicação da Multa"
-                     class="infraImg"
-                     onclick="infraCalendario('txtDtIntimacaoAplMulta',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>
-            </div>
-
-        </div>
-
-        <!--Data da Intimação da Constituição -->
-        <div class="grid grid_4  nao-tem-constituicao">
-            <div class="grid grid_4">
-                <label class="infraLabelObrigatorio" id="lblDtIntimacaoConstituicao" name="lblDtIntimacaoConstituicao" for="txtDtIntimacaoConstituicao">Data da Intimação da Constituição:</label>
-            </div>
-
-            <div class="grid grid_3">
-                <input class="campoData" type="text" id="txtDtIntimacaoConstituicao" name="txtDtIntimacaoConstituicao"
-                       onkeypress="return infraMascara(this, event, '##/##/####');" value="<?=$dtaIntimacaoDefinitiva?>"/>
-                <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/calendario.gif" 
-                     title="Selecionar Data da Intimação da Constituição" alt="Selecionar Data da Intimação da Constituição"
-                     class="infraImg"
-                     onclick="infraCalendario('txtDtIntimacaoConstituicao',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>
-            </div>
-
-        </div>
-
-        <!--Data de Vencimento -->
-        <div class="grid grid_8">
-            <div class="grid grid_6">
-                <label class="infraLabelObrigatorio" id="lblDtVencimento" name="lblDtVencimento" for="txtDtVencimento">Data de Vencimento:</label>
-            </div>
-
-            <div class="grid grid_3">
-                <input class="campoData" type="text" id="txtDtVencimento" name="txtDtVencimento"
-                       onkeypress="return infraMascara(this, event, '##/##/####');" value="<?= $dataVencimento ?>"/>
-                <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/calendario.gif"
-                     title="Selecionar Data de Vencimento" alt="Selecionar Data de Vencimento"
-                     class="infraImg"
-                     onclick="infraCalendario('txtDtVencimento',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>
-            </div>
-
-        </div>
-
-        <!-- Redução pela renúncia ao direito de recorrer -->
-        <div class="grid grid_5  nao-tem-constituicao">
-            <input type="checkbox" name="chkReducaoRenuncia" id="chkReducaoRenuncia" value="S" onclick="mostraBotaoContituirDefinitivamente(this)" >
-            <label class="infraLabelOpcional" id="lblReducaoRenuncia" name="lblReducaoRenuncia" for="chkReducaoRenuncia">Redução pela renúncia ao direito de recorer</label>
-
-            <button id="btnConstituirDefinitivamente" type="button" name="btnConstituirDefinitivamente" value="Constituir Definitivamente"
-                    onclick="abrirModalConstituirDefinitivamente(this)" style="display: none;"
-                    data-url="<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_multa_justificativa&id_procedimento='.$idProcedimento.'&id_md_lit_funcionalidade='.MdLitIntegracaoRN::$ARRECADACAO_RETIFICAR_LANCAMENTO); ?>"
-                    class="infraButton">Constituir Definitivamente
-            </button>
-        </div>
-
-        <!--Interessado -->
-        <div class="grid grid_8">
-            <div class="grid grid_6">
-                <label class="infraLabelObrigatorio" id="lblInteressado" name="lblInteressado" for="txtDtVencimento">Interessado:</label>
-            </div>
-
-            <div class="grid grid_6">
-                <select class="infraSelect" name="selInteressado" id="selInteressado" <?= $objMdLitLancamentoDTO? 'disabled="disabled"':''  ?> >
-                    <?= $strComboInteressado ?>
-                </select>
-            </div>
-
-        </div>
-
-        <!--Numero do interessado -->
-        <div class="grid grid_8" id="div-numero" style="display: none">
-            <div class="grid grid_6">
-                <label class="infraLabelObrigatorio" id="lbNumeroInteressado" name="lblNumeroInteressado" for="txtDtVencimento">Número de Complemento do Interessado:</label>
-            </div>
-
-            <div class="grid grid_6">
-                <select class="infraSelect" name="selNumeroInteressado" id="selNumeroInteressado" data-numInteressado="<?= $numInteressado ?>"  <?= $objMdLitLancamentoDTO? 'disabled="disabled"':''  ?>>
-                </select>
-
+                <button id="btnConstituirDefinitivamente" type="button" name="btnConstituirDefinitivamente" value="Constituir Definitivamente"
+                        onclick="abrirModalConstituirDefinitivamente(this)" style="display: none;"
+                        data-url="<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_multa_justificativa&id_procedimento='.$idProcedimento.'&id_md_lit_funcionalidade='.MdLitIntegracaoRN::$ARRECADACAO_RETIFICAR_LANCAMENTO.'&constituir_definitivamente=1'); ?>"
+                        class="infraButton">Constituir Definitivamente
+                </button>
             </div>
 
         </div>
@@ -340,6 +375,7 @@
         <input type="hidden" name="hdnVlDtUltimoPagamento" id="hdnVlDtUltimoPagamento" value=""  />
         <input type="hidden" name="hdnVlSaldoDevAtualizado" id="hdnVlSaldoDevAtualizado"  value="" />
         <input type="hidden" name="hdnVlCredConstituidoDef" id="hdnVlCredConstituidoDef" value=""  />
+        <input type="hidden" name="hdnDtDecursoPrazo" id="hdnDtDecursoPrazo" value="<?=$dataDecursoPrazoDefesa?>" />
 
         <!-- Hidden id da Funcionalidade que está sendo manipulada -->
         <input type="hidden" name="hdnIdMdLitFuncionalidade" id="hdnIdMdLitFuncionalidade" value="" />

@@ -51,8 +51,9 @@ class MdLitProcessoSituacaoINT extends InfraINT {
 
       $data1 = InfraData::getTimestamp($data1);
       $data2 = InfraData::getTimestamp($data2);
+      $dias =($data2 - $data1 ) / 86400;
 
-      return ( $data2 - $data1 ) / 86400;
+      return (int)$dias;
   }
 
   public static function validarNumeroSei($numeroSei, $idTpControle, $idProcedimento, $idDocAlterar){

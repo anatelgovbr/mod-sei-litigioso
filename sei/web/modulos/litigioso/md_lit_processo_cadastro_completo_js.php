@@ -3,6 +3,9 @@
 
     var hdnIdMdLitControle = '<?= $hdnIdMdLitControle ?>';
 
+    var objLupaMotivos = null;
+    var objAutoCompletarMotivos = null;
+
     objLupaICDispositivoNormativo = null;
     objAutoCompletarICDispositivoNormativo = null;
 
@@ -96,7 +99,6 @@
         } else {
             document.getElementById('btnCancelar').focus();
         }
-
         /*
          objTabelaPS.recarregar();
          //acoes
@@ -175,6 +177,8 @@
                 iLen = elements.length;
             }
             mostrarTabelaPS(true);
+        }else{
+            document.getElementById('txtNumeroSei').focus();
         }
 
         //registro existente Processos a serem Sobrestados
@@ -185,6 +189,9 @@
 
         //redimensiona o iframe
         //autoResize('ifrVisualizacao');
+        if ('<?=$_GET['acao']?>'=='md_lit_processo_cadastro_consultar'){
+            infraDesabilitarCamposDiv(document.getElementById('frmCadastroProcesso'))
+        }
     }
     function sair() {
         //autoResizeSair('ifrVisualizacao');
@@ -356,6 +363,12 @@
 //                return false;
 //            }
 //        }
+        var optionsMotivos = document.getElementById('selMotivos').options;
+        if(optionsMotivos != null && optionsMotivos.length == 0 && document.getElementById('lblMotivos').className.match(/infraLabelOpcional/)  == null ){
+            alert('Informe ao menos um Motivo para Instauração.');
+            document.getElementById('selMotivos').focus();
+            return false;
+        }
 
         return true;
     }
@@ -373,6 +386,7 @@
             arrValidaSEI["GeracaoProtocolo"] = '';
             arrValidaSEI["SinInterno"] = '';
             arrValidaSEI["Assinatura"] = '';
+            arrValidaSEI['DescricaoUnidadeGeradoraProtocolo'] = '';
         } else if (tipo == 'p') {
             arrValidaSEI["NomeTipoProcedimento"] = '';
             arrValidaSEI["IdProcedimento"] = '';
@@ -406,6 +420,7 @@
                     arrValidaSEI["SinInterno"] = $(result).find('SinInterno').text();
                     //Documento Externo - data primeira assinatura
                     arrValidaSEI["Assinatura"] = $(result).find('Assinatura').text();
+                    arrValidaSEI['DescricaoUnidadeGeradoraProtocolo'] = $(result).find('DescricaoUnidadeGeradoraProtocolo').text();
                 } else if (tipo == 'p') {
                     arrValidaSEI["IdProcedimento"] = $(result).find('IdProcedimento').text();
                     arrValidaSEI["NomeTipoProcedimento"] = $(result).find('NomeTipoProcedimento').text();
@@ -506,18 +521,6 @@
 
                     document.getElementById('sbmAdicionarNumeroSei').className = document.getElementById('sbmAdicionarNumeroSei').className.replace('NumeroSEINaoValidado', '');
                     document.getElementById('sbmAdicionarNumeroSei').style.display='';
-                    //[RN3]	O formulário completo somente será apresentado, caso os campos “Número SEI” e o “Tipo de Documentos” seja válido.
-                    //      habilitando
-//                    var elements = document.getElementsByClassName('NumeroSEINaoValidado');
-//                    var iLen = elements.length;
-//                    while (iLen > 0) {
-//                        elements[iLen - 1].className = elements[iLen - 1].className.replace('NumeroSEINaoValidado', 'NumeroSEIValidado');
-//                        elements = document.getElementsByClassName('NumeroSEINaoValidado');
-//                        iLen = elements.length;
-//                    }
-//                    if (objTabelaDocInstaurador.tbl.rows.length==2){
-//                        objTabelaDocInstaurador.removerLinha(1);
-//                    }
 
                     if (hdnIdMdLitControle!=''){
                         mostrarTabelaDI(true);
@@ -530,7 +533,7 @@
                     document.getElementById('hdnIdDocumento').value = arrValidaSEI["IdDocumento"];
                     document.getElementById('hdnNumeroSei').value = arrValidaSEI["NumeroSei"];
                     document.getElementById('hdnNumero').value = arrValidaSEI["Numero"];
-                    document.getElementById('hdnUnidade').value = arrValidaSEI["SiglaUnidadeGeradoraProtocolo"];
+                    document.getElementById('hdnUnidade').value = '<a alt="'+arrValidaSEI['DescricaoUnidadeGeradoraProtocolo']+'" title="'+arrValidaSEI['DescricaoUnidadeGeradoraProtocolo']+'" class="ancoraSigla" > '+arrValidaSEI["SiglaUnidadeGeradoraProtocolo"]+'</a>';
                     document.getElementById('hdnData').value = arrValidaSEI["GeracaoProtocolo"];
                     document.getElementById('txtTipo').value = arrValidaSEI["NomeSerie"];
 
@@ -543,7 +546,6 @@
             }else{
                 mensagem = 'Este documento não está vinculado ao Tipo de Controle deste processo na situação Instauração.';
             }
-            //return SEIvalido;
 
 
         } else {
@@ -815,10 +817,10 @@
 //        objTabelaDI.removerLinha(objTabelaDI.procuraLinha(arr[1])); por causa da validação de registro vinculado.
 //        objTabelaDI.tbl.deleteRow(objTabelaDI.procuraLinha(arr[1]));
 //        objTabelaDI.atualizaHdn();
-        if(arr[5] != ''){
+        if(arr[5] != '' && arr[5] != 'null'){
             document.getElementById('rdIndicConduta').checked = true;
             changeInfracoes();
-            document.getElementById('txtICDispNormat').value = arr[2]+' - '+arr[4];
+            document.getElementById('txtICDispNormat').value = arr[2].replace(/<.*?>/g, '')+' - '+arr[4].replace(/<\/?span[^>]*>/g, '');
             document.getElementById('hdnIdICDispNormat').value = arr[3];
             document.getElementById('selICCondutas').value = arr[5];
             document.getElementById('divDispositivoPorConduta').style.display = '';
@@ -826,7 +828,7 @@
         }else{
             document.getElementById('rdIndicDisposNormativo').checked = true;
             changeInfracoes();
-            document.getElementById('txtIDNDispNormat').value = arr[2]+' - '+arr[4];
+            document.getElementById('txtIDNDispNormat').value = arr[2].replace(/<.*?>/g, '')+' - '+arr[4].replace(/<\/?span[^>]*>/g, '');
             document.getElementById('hdnIdIDNDispNormat').value = arr[3];
             document.getElementById('txtDtaInfracaoPorDispositivo').value = arr[7];
         }
@@ -960,6 +962,7 @@
             }
         }
 
+        var obj = consultarDispositivoNormativo(dispositivoid, norma,dispositivo);
         var arrDadosDIValido = [];
 
         arrDadosDIValido[0] = idDispositivoNormativoNormaCondutaControle;
@@ -973,10 +976,47 @@
 
         var bolDICustomizado = hdnCustomizado;
 
-
         receberDI(arrDadosDIValido, bolDICustomizado);
+
+        var row = objTabelaDI.procuraLinha(arrDadosDIValido[1]);
+
+        //@todo Corrrigindo o problema do core(tabela dinâmica) do Sei que não aceita tag HTML para alteração (função remover XML)
+        document.getElementById('tbDispositivosInfrigidos').rows[row].cells[2].innerHTML = '<div>' + obj.norma + '</div>';
+        document.getElementById('tbDispositivosInfrigidos').rows[row].cells[4].innerHTML = '<div style="text-align:center;">' + obj.dispositivo + '</div>';
         document.getElementById('hdnIdDispositivoNormativoNormaCondutaControle').value = '';
         document.getElementById('divDispositivoPorConduta').style.display = 'none';
+    }
+
+    function  consultarDispositivoNormativo(dispositivoid, norma,dispositivo) {
+
+        $.ajax({
+            type: "POST",
+            url: "<?= $strLinkAjaxConsultarDispositivo ?>",
+            //dataType: "json",
+            dataType: "xml",
+            async: false,
+            data: {
+                id_md_lit_disp_normat : dispositivoid
+            },
+            success: function (result) {
+                var url = $(result).find('[nome="Url"]').text();
+                var descricao = $(result).find('[nome="Descricao"]').text();
+
+                if(url != ''){
+                    norma = '<a href="'+url+'" style="font-size: inherit !important;" target="_blank" title="Acesse a Norma">'+norma+'</a>';
+                }
+                if(descricao != ''){
+                    dispositivo = '<span style="font-size: inherit !important;" title="'+descricao+'">'+dispositivo+'</span>';
+                }
+            },
+            error: function (msgError) {
+                msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;
+                alert(msgCommit);
+            }
+        });
+        var obj = {norma: norma, dispositivo:dispositivo};
+        return obj;
+
     }
 
     function receberDI(arrDadosDI, DICustomizado) {
@@ -1113,14 +1153,20 @@
         }
 
         var arrDadosValido = [];
+        objTabelaDocInstaurador.hdn.value = objTabelaDocInstaurador.hdn.value.replace(/<\/?[^>]+(>|$)/g, "");
+        document.getElementById('hdnListaDocInstauradores').value = objTabelaDocInstaurador.hdn.value.replace(/<\/?[^>]+(>|$)/g, "");
 
+        if(document.getElementById('tbDocInstaurador').rows.length > 1) {
+            var htmlUnidade = document.getElementById('tbDocInstaurador').rows[1].cells[6].innerHTML.replace(/<\/?[^>]+(>|$)/g, "");
+            document.getElementById('tbDocInstaurador').rows[1].cells[6].innerHTML = '<div style="text-align:center">' + htmlUnidade + '</div>';
+        }
         arrDadosValido[0] = 1;
         arrDadosValido[1] = IdDocumento;
         arrDadosValido[2] = NumeroSei;
         arrDadosValido[3] = Numero;
         arrDadosValido[4] = Tipo;
-        arrDadosValido[5] = Tipo + ' nº ' + Numero + ' (' + NumeroSei + ')';
-        arrDadosValido[6] = Unidade;
+        arrDadosValido[5] = Tipo + ' ' + Numero + ' (' + NumeroSei + ')';
+        arrDadosValido[6] = Unidade.replace(/<\/?[^>]+(>|$)/g, "");
         arrDadosValido[7] = Data;
 
         var bolCustomizado = hdnCustomizado;
@@ -1151,6 +1197,10 @@
             iLen = elements.length;
         }
 
+        if(document.getElementById('tbDocInstaurador').rows.length > 1){
+            document.getElementById('tbDocInstaurador').rows[1].cells[6].innerHTML = '<div style="text-align:center">'+Unidade+'</div>';
+        }
+
     }
 
     function receberDocInstaurador(arrDados, Customizado) {
@@ -1162,8 +1212,7 @@
             arrDados[4],
             arrDados[5],
             arrDados[6],
-            arrDados[7],
-            '']);
+            arrDados[7]]);
         //Linha adicionada, adiciona as ações
         //if (qtd < objTabelaDocInstaurador.tbl.rows.length){
         //	objTabelaDocInstaurador.adicionarAcoes(arrDados[0], "", true, true);
@@ -1241,6 +1290,7 @@
             if (confirm('Deseja remover o Interessado: ' + arr[8] + '?')) {
                 return true;
             }
+
         }
 
     }
@@ -1257,7 +1307,8 @@
             contato.nomeTipoContato,
             contato.nomeContato,
             contato.cpfCnpj,
-            contato.paramModal
+            contato.paramModal,
+            contato.contarLancamento
         ]);
 
 
@@ -1274,7 +1325,15 @@
         var acaoAlterar = "<img onclick=\"alterarInteressado('" + contato.idContato + "','" + contato.urlAlterar + "')\" " +
             "style='width: 16px; height: 16px;' title='Alterar Interessado' src='imagens/alterar.gif' class='infraImg'/>&nbsp;";
 
-        objTabelaInteressado.adicionarAcoes(contato.idContato, acaoAlterar + acaoDadosComplementares, false, true);
+        var mostrarExcluir = true;
+        if(contato.contarLancamento > 0){
+            mostrarExcluir = false;
+        }
+        objTabelaInteressado.adicionarAcoes(contato.idContato, acaoAlterar + acaoDadosComplementares, false, mostrarExcluir);
+
+        if ('<?=$_GET['acao']?>'=='md_lit_processo_cadastro_consultar'){
+            infraDesabilitarCamposDiv(document.getElementById('frmCadastroProcesso'));
+        }
     }
 
     function buscarInteressado(arrIdContato) {
@@ -1361,6 +1420,7 @@
             contato.idCidade = $('IdCidade', this).text();
             contato.idUf = $('IdUf', this).text();
             contato.paramModal = $('SinParamModal', r).text();
+            contato.contarLancamento = $('ContarLancamento', this).text();
             adicionarInteressado(contato);
         });
     }
@@ -1488,5 +1548,48 @@
             document.getElementById('divDispositivoPorConduta').style.display = '';
         }
     }
+
+    // ================= INICIO - JS para selecao de Motivos ==============================
+    if(document.getElementById('hdnIdMotivos') != null){
+        objAutoCompletarMotivos = new infraAjaxAutoCompletar('hdnIdMotivos','txtMotivos','<?=$strLinkAjaxMotivos?>');
+        objAutoCompletarMotivos.limparCampo = true;
+
+        objAutoCompletarMotivos.prepararExecucao = function(){
+            return 'palavras_pesquisa='+document.getElementById('txtMotivos').value+'&idTipoControle=<?=$idMdRelTipoCntroleTipoProcedimento?>';
+        };
+
+        objAutoCompletarMotivos.processarResultado = function(id,descricao,complemento){
+
+            if (id!=''){
+                var options = document.getElementById('selMotivos').options;
+
+                for(var i=0;i < options.length;i++){
+                    if (options[i].value == id){
+                        alert('Motivo já consta na lista.');
+                        break;
+                    }
+                }
+
+                if (i==options.length){
+
+                    for(i=0;i < options.length;i++){
+                        options[i].selected = false;
+                    }
+
+                    opt = infraSelectAdicionarOption(document.getElementById('selMotivos'), descricao ,id);
+                    objLupaMotivos.atualizar();
+
+                    opt.selected = true;
+                }
+
+                document.getElementById('txtMotivos').value = '';
+                document.getElementById('txtMotivos').focus();
+
+            }
+        };
+
+        objLupaMotivos = new infraLupaSelect('selMotivos','hdnMotivos','<?=$strLinkMotivosSelecao?>');
+    }
+    // ================= FIM - JS para selecao de motivos =================================
 
 </script>

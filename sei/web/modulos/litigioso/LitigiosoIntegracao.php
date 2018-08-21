@@ -10,7 +10,7 @@
 
         public function getVersao()
         {
-            return '0.0.4';
+            return '1.0.0';
         }
 
         public function getInstituicao()
@@ -76,6 +76,7 @@
                 case 'md_lit_situacao_desativar':
                 case 'md_lit_situacao_reativar':
                 case 'md_lit_situacao_excluir':
+                case 'md_lit_situacao_visualizar_parametrizar':
                     require_once dirname(__FILE__) . '/md_lit_situacao_parametrizar.php';
 
                     return true;
@@ -191,6 +192,7 @@
                 //tela 3 "CADASTRAR PROCESSO DE CONTROLE LITIGIOSO – FORMULARIO COMPLETO"
                 case 'md_lit_processo_cadastro_completo':
                 case 'md_lit_processo_cadastro_cadastrar':
+                case 'md_lit_processo_cadastro_consultar':
                     require_once dirname(__FILE__) . '/md_lit_processo_cadastro_completo.php';
 
                     return true;
@@ -272,6 +274,50 @@
 
                 case 'md_lit_multa_cancelar':
                     require_once dirname(__FILE__).'/md_lit_multa_cancelar.php';
+                    return true;
+
+                /*
+                 * EU9390 Reincidência Específicas e Antecedentes
+                 */
+                case 'md_lit_reinciden_anteceden_alterar':
+                case 'md_lit_reinciden_anteceden_cadastrar':
+
+                    require_once dirname(__FILE__).'/md_lit_reinciden_anteceden_cadastro.php';
+                    return true;
+
+                    /*
+                     * EU17475 Manter Motivo
+                     */
+                case 'md_lit_motivo_listar':
+                case 'md_lit_motivo_selecionar':
+                case 'md_lit_motivo_desativar':
+                case 'md_lit_motivo_excluir':
+                case 'md_lit_motivo_reativar':
+                    require_once dirname(__FILE__).'/md_lit_motivo_lista.php';
+                    return true;
+
+                case 'md_lit_motivo_cadastrar':
+                case 'md_lit_motivo_consultar':
+                case 'md_lit_motivo_alterar':
+                    require_once dirname(__FILE__).'/md_lit_motivo_cadastro.php';
+                    return true;
+
+                case 'md_lit_situacao_lancamento_listar':
+                case 'md_lit_situacao_lancamento_reativar':
+                case 'md_lit_situacao_lancamento_excluir':
+                case 'md_lit_situacao_lancamento_selecionar':
+                case 'md_lit_situacao_lancamento_desativar':
+                    require_once dirname(__FILE__).'/md_lit_situacao_lancamento_lista.php';
+                    return true;
+
+                case 'md_lit_situacao_lancamento_cadastrar':
+                case 'md_lit_situacao_lancamento_alterar':
+                case 'md_lit_situacao_lancamento_consultar':
+                    require_once dirname(__FILE__).'/md_lit_situacao_lancamento_cadastro.php';
+                    return true;
+
+                case 'md_lit_situacao_lancamento_integracao_mapear':
+                    require_once dirname(__FILE__) . '/md_lit_situacao_lancamento_integracao_mapeamento.php';
                     return true;
             }
 
@@ -379,7 +425,7 @@
                     $idProcedimento      = $_POST['idProcedimento'];
                     $idMdLitControle     = $_POST['idMdLitControle'];
                     $idMdLitTipoControle = $_POST['idMdLitTipoControle'];
-                    $arrIdContato        = isset($_POST['arrIdContato']) ? $_POST['arrIdContato'] : '';
+                    $arrIdContato        = isset($_POST['arrIdContato']) ? $_POST['arrIdContato'] : array();
                     $xml                 = MdLitControleINT::montarXmlInteressadoProcesso($idProcedimento, $idMdLitControle, $idMdLitTipoControle, $arrIdContato);
                     break;
 
@@ -456,21 +502,27 @@
                     $resultHtml = MdLitDecisaoINT::existeInfracao($_POST['id_md_lit_rel_dis_nor_con_ctr']);
                     $xml        = $resultHtml;
                     break;
+
+                case 'md_lit_dispositivo_consultar':
+                    $xml = MdLitDispositivoNormativoINT::consultaDispositivo($_POST['id_md_lit_disp_normat']);
+                    $xml = InfraAjax::gerarXMLComplementosArrInfraDTO($xml);
+                    break;
+
+                case 'motivo_auto_completar':
+                    $dto = MdLitMotivoINT::consultarMotivoAjax($_POST);
+                    $xml = InfraAjax::gerarXMLItensArrInfraDTO($dto, 'IdMdLitMotivo', 'Descricao');
+                    break;
             }
 
             return $xml;
 
         }
 
-        public function montarMenuUsuarioExterno()
-        {
-            $arrMenu[] = '-^processo_acesso_externo_consulta.php^^Acesso Externo^';
-
-            return $arrMenu;
-        }
-
         public function montarBotaoProcesso(ProcedimentoAPI $objProcedimentoAPI)
         {
+            if(!SessaoSEI::getInstance()->verificarPermissao('md_lit_tipo_controle_consultar') && $objProcedimentoAPI->getCodigoAcesso() > 0)
+                return array();
+
             $strAcoesProcedimento = null;
             $arrRetorno           = null;
             $strBotao             = null;
@@ -521,7 +573,7 @@
 
             //RN1 - botão “Cadastrar/Alterar Controle Litigioso” somente será apresentado caso o tipo de processo e unidade,
             //estejam associados ao tipo de controle litigioso.
-            if (count($ArrObjRelTipoControleLitigiosoTipoProcedimentoDTO) > 0 && count($ArrObjRelTipoControleLitigiosoUnidadeDTO) > 0) {
+            if (count($ArrObjRelTipoControleLitigiosoTipoProcedimentoDTO) > 0 && count($ArrObjRelTipoControleLitigiosoUnidadeDTO) > 0 && $objProcedimentoAPI->getSinAberto() == 'S') {
 
                 //$strLink = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_processo_validar_numero_sei&id_procedimento='.$idProcedimento);
                 $strLink = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_processo_cadastro_completo&id_procedimento=' . $idProcedimento);
@@ -531,7 +583,7 @@
                 $strAcoesProcedimento = '<a href="' . $strLink . '" class="botaoSEI"><img class="infraCorBarraSistema" src="' . $imgIcone . '" alt="' . $title . '" title="' . $title . '"></a>';
 
                 // ou se já possuir algum controle litigioso já cadastrado
-            } elseif(count($ArrObjRelTipoControleLitigiosoTipoProcedimentoDTO) == 0 && count($arrObjMdLitControleDTO) > 0 && count($ArrObjRelTipoControleLitigiosoUnidadeDTO) > 0) {
+            } elseif(count($ArrObjRelTipoControleLitigiosoTipoProcedimentoDTO) == 0 && count($arrObjMdLitControleDTO) > 0 && count($ArrObjRelTipoControleLitigiosoUnidadeDTO) > 0 && $objProcedimentoAPI->getSinAberto() == 'S') {
 
                 $strLink = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_processo_cadastro_completo&id_procedimento=' . $idProcedimento);
 
@@ -539,8 +591,16 @@
                 $title                = "Cadastrar/Alterar Controle Litigioso";
                 $strAcoesProcedimento = '<a href="' . $strLink . '" class="botaoSEI"><img class="infraCorBarraSistema" src="' . $imgIcone . '" alt="' . $title . '" title="' . $title . '"></a>';
 
-            }
+            }elseif(count($arrObjMdLitControleDTO) > 0){
 
+                //ação se o processo não estiver aberto será somente de consulta
+                $imgIcone             = "modulos/litigioso/imagens/cadastro-ctrl-litigioso.svg";
+                $title                = 'Consultar Controle Litigioso';
+                $strLink              = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_processo_cadastro_consultar&id_procedimento=' . $objProcedimentoAPI->getIdProcedimento());
+
+                $strAcoesProcedimento = '<a href="' . $strLink . '" class="botaoSEI"><img class="infraCorBarraSistema" src="' . $imgIcone . '" alt="' . $title . '" title="' . $title . '"></a>';
+
+            }
 
             //Add botão no processo quando já existe Situação Cadastrada
             $existePermissao = SessaoSEI::getInstance()->verificarPermissao('md_lit_processo_situacao_listar');
@@ -557,6 +617,8 @@
                     $idTpControle = $objMdLitProcessoSituacaoRN->retornaTipoControle($objProcedimentoAPI);
                     if (!is_null($idTpControle)) {
                         $strBotao = $objMdLitProcessoSituacaoRN->addBotaoProcessoSituacao(false, $idTpControle, $objProcedimentoAPI->getIdProcedimento());
+                    }elseif (count($arrIdTipoControleLitigioso) == 1){
+                        $strBotao = $objMdLitProcessoSituacaoRN->addBotaoProcessoSituacao(false, $arrIdTipoControleLitigioso[0], $objProcedimentoAPI->getIdProcedimento());
                     }
                 }
             }
@@ -573,14 +635,12 @@
                 $arrRetorno = array($strBotao);
             }
 
-
             return $arrRetorno;
 
         }
 
         public function montarBotaoDocumento(ProcedimentoAPI $objProcedimentoAPI, $arrObjDocumentoAPI)
         {
-
             /*
              * Estando em Processo já cadastrado em Controle Litigioso e em tipos de documentos associados a Situações, aparece o botão "Controle Litigioso - Cadastro de Situações".
              * */
@@ -598,7 +658,7 @@
             $existePermissao = SessaoSEI::getInstance()->verificarPermissao('md_lit_processo_situacao_listar');
             $existePermiConsulta = SessaoSEI::getInstance()->verificarPermissao('md_lit_processo_situacao_consultar');
 
-            if ($existePermissao && $existePermiConsulta) {
+            if ($existePermissao && $existePermiConsulta && $objProcedimentoAPI->getSinAberto() == 'S' && $objProcedimentoAPI->getCodigoAcesso() > 0) {
                 $idTpControle = $objMdLitProcessoSituacaoRN->retornaTipoControle($objProcedimentoAPI);
 
                 if (!is_null($idTpControle)) {
@@ -641,5 +701,163 @@
             return $arrBotoes;
         }
 
+        public function montarIconeControleProcessos($arrObjProcedimentoAPI){
+            if(SessaoSEI::getInstance()->verificarPermissao('md_lit_processo_situacao_consultar')){
+                $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+                $arrParam = $objMdLitProcessoSituacaoRN->montarIconeProcesso($arrObjProcedimentoAPI);
+
+                $objMdLitTipoControleRN = new MdLitTipoControleRN();
+                $arrParam = $objMdLitTipoControleRN->montarIconeControleProcessoSinalizarPendencia($arrObjProcedimentoAPI, $arrParam);
+
+
+                return $arrParam;
+            }
+        }
+
+        public function montarIconeAcompanhamentoEspecial($arrObjProcedimentoAPI){
+            if(SessaoSEI::getInstance()->verificarPermissao('md_lit_processo_situacao_consultar')) {
+                $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+                $arrParam = $objMdLitProcessoSituacaoRN->montarIconeProcesso($arrObjProcedimentoAPI);
+
+                $objMdLitTipoControleRN = new MdLitTipoControleRN();
+                $arrParam = $objMdLitTipoControleRN->montarIconeControleProcessoSinalizarPendencia($arrObjProcedimentoAPI, $arrParam);
+
+                return $arrParam;
+            }
+        }
+
+        public function montarIconeProcesso(ProcedimentoAPI $objProcedimentoAPI){
+
+            $arrObjArvoreAcaoItemAPI = array();
+
+            if (SessaoSEI::getInstance()->verificarPermissao('md_lit_processo_situacao_consultar') && $objProcedimentoAPI->getCodigoAcesso() > 0 ) {
+
+                $dblIdProcedimento          = $objProcedimentoAPI->getIdProcedimento();
+                $diferencaEntreDias         = '';
+                $titulo                     = 'Controle Litigioso: ';
+                $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+
+                $objMdLitProcessoSituacaoDTO = new MdLitProcessoSituacaoDTO();
+                $objMdLitProcessoSituacaoDTO->retTodos(true);
+                $objMdLitProcessoSituacaoDTO->setDblIdProcedimento($dblIdProcedimento);
+                $objMdLitProcessoSituacaoDTO->setOrdNumIdMdLitProcessoSituacao(InfraDTO::$TIPO_ORDENACAO_DESC);
+                $objMdLitProcessoSituacaoDTO->setNumMaxRegistrosRetorno(1);
+                $objMdLitProcessoSituacaoDTO = $objMdLitProcessoSituacaoRN->consultar($objMdLitProcessoSituacaoDTO);
+                if(!$objMdLitProcessoSituacaoDTO){
+                    $objMdLitTipoControleRN = new MdLitTipoControleRN();
+                    $arrParam = $objMdLitTipoControleRN->montarIconeProcessoSinalizarPendencia($objProcedimentoAPI, $arrObjArvoreAcaoItemAPI);
+                    return $arrParam;
+                }
+
+                //buscando a intimação da instauração( a intimação da instauração será sempre a primeira situação de intimação depois da instauração)
+                $objMdLitProcessoSituacaoIntimacaoInstauracao = $objMdLitProcessoSituacaoRN->consultarPrimeiraIntimacao($objProcedimentoAPI->getIdProcedimento());
+
+                if($objMdLitProcessoSituacaoIntimacaoInstauracao){
+                    $diferencaEntreDias = MdLitProcessoSituacaoINT::diferencaEntreDias($objMdLitProcessoSituacaoIntimacaoInstauracao->getDtaData());
+
+                    if($diferencaEntreDias > 1){
+                        $diferencaEntreDias = '\n Tempo desde a Intimação: ' . $diferencaEntreDias . ' dias';
+                    }else{
+                        $diferencaEntreDias = '\n Tempo desde a Intimação: ' . $diferencaEntreDias . ' dia';
+                    }
+                }
+                $titulo .= $objMdLitProcessoSituacaoDTO->getStrSiglaTipoControleLitigioso().'\n';
+                $tipoSituacao = $objMdLitProcessoSituacaoDTO->getStrTipoSituacao();
+                $tipoSituacao = $tipoSituacao['nome'] != '' ? " ({$tipoSituacao['nome']})" : '';
+                $titulo         .= 'Fase: '. $objMdLitProcessoSituacaoDTO->getStrNomeFase(). ' \n\n Situação: '. $objMdLitProcessoSituacaoDTO->getStrNomeSituacao() . $tipoSituacao.' \n ' . $diferencaEntreDias;
+
+                $objArvoreAcaoItemAPI = new ArvoreAcaoItemAPI();
+                $objArvoreAcaoItemAPI->setTipo('MD_LIT_PROCESSO');
+                $objArvoreAcaoItemAPI->setId('MD_LIT_PROC_' . $dblIdProcedimento);
+                $objArvoreAcaoItemAPI->setIdPai($dblIdProcedimento);
+                $objArvoreAcaoItemAPI->setTitle($titulo);
+                $objArvoreAcaoItemAPI->setIcone('modulos/litigioso/imagens/scales.png');
+
+                $objArvoreAcaoItemAPI->setTarget(null);
+                $objArvoreAcaoItemAPI->setHref('#');
+
+                $objArvoreAcaoItemAPI->setSinHabilitado('S');
+
+                $arrObjArvoreAcaoItemAPI[] = $objArvoreAcaoItemAPI;
+            }
+
+
+            return $arrObjArvoreAcaoItemAPI;
+        }
+
+        public function excluirDocumento(DocumentoAPI $objDocumentoAPI){
+
+            if (SessaoSEI::getInstance()->verificarPermissao('md_lit_processo_situacao_consultar')) {
+                $objMdLitProcessoSituacaoDTO = new MdLitProcessoSituacaoDTO();
+                $objMdLitProcessoSituacaoDTO->retTodos();
+                $objMdLitProcessoSituacaoDTO->retStrNomeFase();
+                $objMdLitProcessoSituacaoDTO->retStrNomeSituacao();
+                $objMdLitProcessoSituacaoDTO->setDblIdDocumento($objDocumentoAPI->getIdDocumento());
+                $objMdLitProcessoSituacaoDTO->setOrdDthInclusao(InfraDTO::$TIPO_ORDENACAO_DESC);
+                $objMdLitProcessoSituacaoDTO->setNumMaxRegistrosRetorno(1);
+
+                $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+                $objMdLitProcessoSituacaoDTO = $objMdLitProcessoSituacaoRN->consultar($objMdLitProcessoSituacaoDTO);
+
+                if($objMdLitProcessoSituacaoDTO){
+                    $msg = 'Não é permitido excluir este documento, pois ele está relacionado com a Fase/Situação '.$objMdLitProcessoSituacaoDTO->getStrNomeFase().'/'.$objMdLitProcessoSituacaoDTO->getStrNomeSituacao().' no Módulo de Controle Litigioso.';
+                    $objInfraException = new InfraException();
+                    $objInfraException->adicionarValidacao($msg);
+                    $objInfraException->lancarValidacoes();
+                }
+            }
+            return null;
+        }
+
+        public function cancelarDocumento(DocumentoAPI $objDocumentoAPI){
+
+            if (SessaoSEI::getInstance()->verificarPermissao('md_lit_processo_situacao_consultar')) {
+                $objMdLitProcessoSituacaoDTO = new MdLitProcessoSituacaoDTO();
+                $objMdLitProcessoSituacaoDTO->retTodos();
+                $objMdLitProcessoSituacaoDTO->retStrNomeFase();
+                $objMdLitProcessoSituacaoDTO->retStrNomeSituacao();
+                $objMdLitProcessoSituacaoDTO->setDblIdDocumento($objDocumentoAPI->getIdDocumento());
+                $objMdLitProcessoSituacaoDTO->setOrdDthInclusao(InfraDTO::$TIPO_ORDENACAO_DESC);
+                $objMdLitProcessoSituacaoDTO->setNumMaxRegistrosRetorno(1);
+
+                $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+                $objMdLitProcessoSituacaoDTO = $objMdLitProcessoSituacaoRN->consultar($objMdLitProcessoSituacaoDTO);
+
+                if($objMdLitProcessoSituacaoDTO){
+                    $msg = 'Não é permitido cancelar este documento, pois ele está relacionado com a Fase/Situação '.$objMdLitProcessoSituacaoDTO->getStrNomeFase().'/'.$objMdLitProcessoSituacaoDTO->getStrNomeSituacao().' no Módulo de Controle Litigioso.';
+                    $objInfraException = new InfraException();
+                    $objInfraException->adicionarValidacao($msg);
+                    $objInfraException->lancarValidacoes();
+                }
+            }
+            return null;
+        }
+
+        public function excluirContato($arrObjContatoAPI)
+        {
+;
+            if (SessaoSEI::getInstance()->verificarPermissao('md_lit_dado_interessado_listar')) {
+                $arrIdContato = array();
+                foreach ($arrObjContatoAPI as $objContatoAPI){
+                    $arrIdContato[] = $objContatoAPI->getIdContato();
+                }
+
+                $objMdLitDadoInteressadoDTO = new MdLitDadoInteressadoDTO();
+                $objMdLitDadoInteressadoDTO->retTodos(false);
+                $objMdLitDadoInteressadoDTO->setNumIdContato($arrIdContato, InfraDTO::$OPER_IN);
+
+                $objMdLitDadoInteressadoRN = new MdLitDadoInteressadoRN();
+                $arrObjMdLitDadoInteressadoDTO = $objMdLitDadoInteressadoRN->listar($objMdLitDadoInteressadoDTO);
+
+                if(count($arrObjMdLitDadoInteressadoDTO)){
+                    $msg = 'Não é permitido excluir este Contato, pois ele é utilizado pelo Módulo Litigioso.';
+                    $objInfraException = new InfraException();
+                    $objInfraException->adicionarValidacao($msg);
+                    $objInfraException->lancarValidacoes();
+                }
+
+            }
+            return parent::excluirContato($arrObjContatoAPI);
+        }
 
     }

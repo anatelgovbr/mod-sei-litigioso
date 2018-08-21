@@ -28,7 +28,7 @@
 
             case 'md_lit_tipo_controle_tipo_decisao_consultar':
                 $strItensSelTipoDecisaoLitigioso = "";
-                $strTitulo                       = 'Associar Tipos de Decisão - Tipo de Controle Litigioso: ' . $_GET['sigla_tipo_controle_litigioso'];
+                $strTitulo                       = 'Associar Tipos de Decisão - ' . $_GET['sigla_tipo_controle_litigioso'];
 
                 $arrComandos[] = '<button type="submit" accesskey="S" name="sbmCadastrarTipoDecisaoLitigioso" id="sbmCadastrarTipoDecisaoLitigioso" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
                 $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&id_tipo_processo_litigioso=' . $_GET['id_tipo_processo_litigioso'] . '&acao_origem=' . $_GET['acao'])) . '\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
@@ -110,17 +110,13 @@
 ?>
 
 #lblTipoDecisaoLitigioso {position:absolute;left:0%;top:0%;width:50%;}
-#txtTipoDecisaoLitigioso {position:absolute;left:0%;top:40%;width:50%;}
+#txtTipoDecisaoLitigioso {position:absolute;left:0%;top:5%;width:50%;}
 
-#lblDescricaoTipoDecisaoLitigioso {position:absolute;left:0%;top:0%;width:50%;}
-#txtDescricaoTipoDecisaoLitigioso {position:absolute;left:0%;top:20%;width:75%;}
+#txtTipoDecisaoLitigioso {position:absolute;left:0%;top:5%;width:50%;}
+#selDescricaoTipoDecisaoLitigioso{position:absolute;left:0%;top:10%;width:75%;}
 
-#lblDescricaoTipoDecisaoLitigioso {position:absolute;left:0%;top:0%;width:50%;}
-#txtTipoDecisaoLitigioso {position:absolute;left:0%;top:15%;width:50%;}
-#selDescricaoTipoDecisaoLitigioso{position:absolute;left:0%;top:35%;width:75%;}
-
-#imgLupaTipoDecisao {position:absolute;left:76%;top:35%;}
-#imgExcluirTipoDecisao {position:absolute;left:76%;top:55%;}
+#imgLupaTipoDecisao {position:absolute;left:76%;top:10%;}
+#imgExcluirTipoDecisao {position:absolute;left:76%;top:15%;}
 
 <?
     PaginaSEI::getInstance()->fecharStyle();
@@ -138,11 +134,11 @@
       action="<?= PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao_origem'])) ?>">
     <?
         PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
-        PaginaSEI::getInstance()->abrirAreaDados('15.5em');
+        PaginaSEI::getInstance()->abrirAreaDados('55.5em');
     ?>
 
     <!--  Componente TipoDecisao  -->
-    <div id="divUn1" class="infraAreaDados" style="height:11.5em;">
+    <div id="divUn1" class="infraAreaDados" style="height:51.5em;">
 
         <label id="lblDescricaoTipoDecisao" for="txtTipoDecisao" accesskey="q" class="infraLabelObrigatorio">Tipos de
             Decisão associados:</label>
@@ -150,7 +146,7 @@
         <input type="text" id="txtTipoDecisaoLitigioso" name="txtTipoDecisaoLitigioso" class="infraText"
                tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
 
-        <select id="selDescricaoTipoDecisaoLitigioso" name="selDescricaoTipoDecisaoLitigioso" size="4"
+        <select id="selDescricaoTipoDecisaoLitigioso" name="selDescricaoTipoDecisaoLitigioso" size="30"
                 multiple="multiple" class="infraSelect">
             <?= $strItensSelTipoDecisao ?>
         </select>

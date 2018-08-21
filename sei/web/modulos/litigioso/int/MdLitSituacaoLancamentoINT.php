@@ -23,5 +23,28 @@ class MdLitSituacaoLancamentoINT extends InfraINT {
 
     return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $arrObjMdLitSituacaoLancamentoDTO, 'IdMdLitSituacaoLancamento', 'IdMdLitSituacaoLancamento');
   }
+
+
+    public static function montarRadioCancelamento($sinCancelamento)
+    {
+        $sinCancelamento = $sinCancelamento? $sinCancelamento : 'N';
+        $arrRadio = array('S'=>'Sim', 'N'=>'Nao');
+
+        $strRadio = '<div>';
+
+        foreach ($arrRadio as $strValue=>$strNome) {
+            $strChecked = $strValue == $sinCancelamento ? "checked='checked'" : '';
+            $strRadio .= '<label class="radio-label infraLabelRadio" for="rdoSinCancelamento_' . $strValue . '">';
+            $strRadio .= '<input type ="radio" name="rdoSinCancelamento" value="' . $strValue . '" id="rdoSinCancelamento_' . $strValue . '"' . $strChecked . '  />';
+            $strRadio .= $strNome . '</label>';
+        }
+        $strRadio .= '</div>';
+        return $strRadio;
+    }
+
+    public static function montarSelectCor($strValorItemSelecionado = 'black'){
+        $arrCores = array('blue'=>'Azul', 'black'=>'Preto', 'green'=>'Verde', 'red'=>'Vermelho');
+        return parent::montarSelectArray('&nbsp','&nbsp;',$strValorItemSelecionado, $arrCores);
+    }
 }
 ?>

@@ -108,10 +108,13 @@ class MdLitDecisaoINT extends InfraINT {
           $infracaoArr[$index][] = $objMdLitEspecieDecisaoDTO ? $objMdLitEspecieDecisaoDTO->getStrNome() : null;
 
           $infracaoArr[$index][] = $decisao['data'] != ''? $decisao['data'] : InfraData::getStrDataHoraAtual();
-          $infracaoArr[$index][] = $decisao['nome_usuario'] != ''? $decisao['nome_usuario'] : SessaoSEI::getInstance()->getStrNomeUsuario();
-          $infracaoArr[$index][] = $decisao['sigla_unidade'] != ''? $decisao['sigla_unidade'] : SessaoSEI::getInstance()->getStrSiglaUnidadeAtual();
+          $nomeUsuario = $decisao['nome_usuario'] != ''? strip_tags($decisao['nome_usuario']) : SessaoSEI::getInstance()->getStrNomeUsuario();
+          $siglaUsuario = $decisao['sigla_usuario'] != ''? strip_tags($decisao['sigla_usuario']) : SessaoSEI::getInstance()->getStrSiglaUsuario();
+          $infracaoArr[$index][] = '<a alt="'.$nomeUsuario.'" title="'.$nomeUsuario.'" class="ancoraSigla"> '.$siglaUsuario.' </a>';
+          $siglaUnidade = $decisao['sigla_unidade'] != ''? strip_tags($decisao['sigla_unidade']) : SessaoSEI::getInstance()->getStrSiglaUnidadeAtual();
+          $descricaoUnidade = $decisao['descricao_unidade'] != ''? strip_tags($decisao['descricao_unidade']) : SessaoSEI::getInstance()->getStrDescricaoUnidadeAtual();
+          $infracaoArr[$index][] = '<a alt="'.$descricaoUnidade.'" title="'.$descricaoUnidade.'" class="ancoraSigla"> '.$siglaUnidade.' </a>';
           $index++;
-
       }
       return PaginaSEI::getInstance()->gerarItensTabelaDinamica($infracaoArr);
   }

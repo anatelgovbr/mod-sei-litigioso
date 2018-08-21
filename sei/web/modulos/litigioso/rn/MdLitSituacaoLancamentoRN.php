@@ -10,24 +10,8 @@
 require_once dirname(__FILE__). '/../../../SEI.php';
 
 class MdLitSituacaoLancamentoRN extends InfraRN {
-
-    public static $DEVEDOR = 0;
-    public static $QUITADO = 1;
-    public static $CANCELADO = 2;
-    public static $PARCIAL = 3;
-    public static $PAGO_A_MAIOR = 4;
-    public static $RESTITUIDO = 7;
-    public static $COMPENSADO = 8;
-    public static $ESTORNADO = 9;
-    public static $REPOSICIONADO = 10;
-    public static $RESTITUIDO_BB = 11;
-    public static $CONSOLIDADO_DEVEDOR = 12;
-    public static $CONSOLIDADO_QUITADO = 13;
-    public static $CHEQUE_DEVOLVIDO = 14;
-    public static $REDIRECIONADO = 15;
-    public static $SEM_MOVIMENTO = 16;
-    public static $REPASSADO_PARA_AGU = 17;
-    public static $PRESCRITO = 18;
+    public static $STA_ORIGEM_MANUAL     = 'M';
+    public static $STA_ORIGEM_INTEGRACAO = 'I';
 
   public function __construct(){
     parent::__construct();
@@ -49,6 +33,60 @@ class MdLitSituacaoLancamentoRN extends InfraRN {
     }
   }
 
+    private function validarNumCodigo(MdLitSituacaoLancamentoDTO $objMdLitSituacaoLancamentoDTO, InfraException $objInfraException){
+        if (InfraString::isBolVazia($objMdLitSituacaoLancamentoDTO->getNumCodigo()) && is_numeric($objMdLitSituacaoLancamentoDTO->getNumCodigo())){
+            $objInfraException->adicionarValidacao('Código não informado.');
+        }else{
+            $objMdLitSituacaoLancamentoDTO->setNumCodigo(trim($objMdLitSituacaoLancamentoDTO->getNumCodigo()));
+
+            if (strlen($objMdLitSituacaoLancamentoDTO->getNumCodigo())>11){
+                $objInfraException->adicionarValidacao('Código possui tamanho superior a 11 caracteres.');
+            }
+
+            if($this->verificarSituacaoLancamentoDuplicado($objMdLitSituacaoLancamentoDTO) > 0){
+                $objInfraException->adicionarValidacao("Situação com o código '{$objMdLitSituacaoLancamentoDTO->getNumCodigo()}' já foi cadastrado!");
+            }
+
+        }
+    }
+
+    private function validarStrSinCancelamento(MdLitSituacaoLancamentoDTO $objMdLitSituacaoLancamentoDTO, InfraException $objInfraException){
+        if (InfraString::isBolVazia($objMdLitSituacaoLancamentoDTO->getStrSinCancelamento())){
+            $objInfraException->adicionarValidacao('Selecione a situação de cancelamento não informado.');
+        }elseif($objMdLitSituacaoLancamentoDTO->getStrSinCancelamento() == 'S'){
+            $objMdLitSituacaoLancamentoDTO->setStrSinCancelamento(trim($objMdLitSituacaoLancamentoDTO->getStrSinCancelamento()));
+
+            $objConsultaMdLitSituacaoLancamentoDTO = new MdLitSituacaoLancamentoDTO();
+            $objConsultaMdLitSituacaoLancamentoDTO->retNumIdMdLitSituacaoLancamento();
+            $objConsultaMdLitSituacaoLancamentoDTO->retNumCodigo();
+            $objConsultaMdLitSituacaoLancamentoDTO->setStrSinCancelamento('S');
+            $objConsultaMdLitSituacaoLancamentoDTO->setStrSinAtivoIntegracao('S');
+            if ($objMdLitSituacaoLancamentoDTO->isSetNumIdMdLitSituacaoLancamento()) {
+                $objConsultaMdLitSituacaoLancamentoDTO->setNumIdMdLitSituacaoLancamento($objMdLitSituacaoLancamentoDTO->getNumIdMdLitSituacaoLancamento(), InfraDTO::$OPER_DIFERENTE);
+            }
+            $objConsultaMdLitSituacaoLancamentoDTO = $this->consultar($objConsultaMdLitSituacaoLancamentoDTO);
+
+            if($objConsultaMdLitSituacaoLancamentoDTO){
+                $objInfraException->adicionarValidacao("Situação com o código '{$objConsultaMdLitSituacaoLancamentoDTO->getNumCodigo()}' já foi cadastrado com a situação de cancelamento!");
+            }
+
+        }
+    }
+
+    private function verificarSituacaoLancamentoDuplicado($objMdLitSituacaoLancamentoDTO)
+    {
+        $objConsultaMdLitSituacaoLancamentoDTO = new MdLitSituacaoLancamentoDTO();
+        $objConsultaMdLitSituacaoLancamentoDTO->retNumIdMdLitSituacaoLancamento();
+        $objConsultaMdLitSituacaoLancamentoDTO->setNumCodigo($objMdLitSituacaoLancamentoDTO->getNumCodigo());
+        $objConsultaMdLitSituacaoLancamentoDTO->setStrSinAtivoIntegracao('S');
+        if ($objMdLitSituacaoLancamentoDTO->isSetNumIdMdLitSituacaoLancamento()) {
+            $objConsultaMdLitSituacaoLancamentoDTO->setNumIdMdLitSituacaoLancamento($objMdLitSituacaoLancamentoDTO->getNumIdMdLitSituacaoLancamento(), InfraDTO::$OPER_DIFERENTE);
+        }
+
+        return $this->contar($objConsultaMdLitSituacaoLancamentoDTO);
+
+    }
+
   private function validarStrCorSituacao(MdLitSituacaoLancamentoDTO $objMdLitSituacaoLancamentoDTO, InfraException $objInfraException){
     if (InfraString::isBolVazia($objMdLitSituacaoLancamentoDTO->getStrCorSituacao())){
       $objMdLitSituacaoLancamentoDTO->setStrCorSituacao(null);
@@ -59,6 +97,20 @@ class MdLitSituacaoLancamentoRN extends InfraRN {
         $objInfraException->adicionarValidacao('cor possui tamanho superior a 50 caracteres.');
       }
     }
+  }
+
+  private function validarLancamentoComSituacao($arrObjMdLitSituacaoLancamentoDTO, InfraException $objInfraException){
+      $arrIdSituacaoLancamento = InfraArray::converterArrInfraDTO($arrObjMdLitSituacaoLancamentoDTO, 'IdMdLitSituacaoLancamento');
+      $objMdlitLancamentoDTO = new MdLitLancamentoDTO();
+      $objMdlitLancamentoDTO->retTodos(false);
+      $objMdlitLancamentoDTO->setNumIdMdLitSituacaoLancamento($arrIdSituacaoLancamento, InfraDTO::$OPER_IN);
+
+      $objMdLitLancamentoRN = new MdLitLancamentoRN();
+      $countObjMdlitLancamentoDTO = $objMdLitLancamentoRN->contar($objMdlitLancamentoDTO);
+
+      if($countObjMdlitLancamentoDTO > 0){
+          $objInfraException->adicionarValidacao('Possui lançamento vinculado com a situação do lançamento.');
+      }
   }
 
   protected function cadastrarControlado(MdLitSituacaoLancamentoDTO $objMdLitSituacaoLancamentoDTO) {
@@ -72,8 +124,18 @@ class MdLitSituacaoLancamentoRN extends InfraRN {
 
       $this->validarStrNome($objMdLitSituacaoLancamentoDTO, $objInfraException);
       $this->validarStrCorSituacao($objMdLitSituacaoLancamentoDTO, $objInfraException);
+        $this->validarNumCodigo($objMdLitSituacaoLancamentoDTO, $objInfraException);
+        $this->validarStrSinCancelamento($objMdLitSituacaoLancamentoDTO, $objInfraException);
 
       $objInfraException->lancarValidacoes();
+
+        if(!$objMdLitSituacaoLancamentoDTO->isSetStrSinCancelamento()){
+            $objMdLitSituacaoLancamentoDTO->setStrSinCancelamento('N');
+        }
+
+        if(!$objMdLitSituacaoLancamentoDTO->isSetStrSinAtivoIntegracao()){
+            $objMdLitSituacaoLancamentoDTO->setStrSinAtivoIntegracao('S');
+        }
 
       $objMdLitSituacaoLancamentoBD = new MdLitSituacaoLancamentoBD($this->getObjInfraIBanco());
       $ret = $objMdLitSituacaoLancamentoBD->cadastrar($objMdLitSituacaoLancamentoDTO);
@@ -102,6 +164,11 @@ class MdLitSituacaoLancamentoRN extends InfraRN {
       if ($objMdLitSituacaoLancamentoDTO->isSetStrCorSituacao()){
         $this->validarStrCorSituacao($objMdLitSituacaoLancamentoDTO, $objInfraException);
       }
+        if ($objMdLitSituacaoLancamentoDTO->isSetStrSinCancelamento()){
+            $this->validarStrSinCancelamento($objMdLitSituacaoLancamentoDTO, $objInfraException);
+        }
+
+      $this->validarNumCodigo($objMdLitSituacaoLancamentoDTO, $objInfraException);
 
       $objInfraException->lancarValidacoes();
 
@@ -122,9 +189,10 @@ class MdLitSituacaoLancamentoRN extends InfraRN {
       SessaoSEI::getInstance()->validarPermissao('md_lit_situacao_lancamento_excluir');
 
       //Regras de Negocio
-      //$objInfraException = new InfraException();
+      $objInfraException = new InfraException();
+      $this->validarLancamentoComSituacao($arrObjMdLitSituacaoLancamentoDTO, $objInfraException);
 
-      //$objInfraException->lancarValidacoes();
+      $objInfraException->lancarValidacoes();
 
       $objMdLitSituacaoLancamentoBD = new MdLitSituacaoLancamentoBD($this->getObjInfraIBanco());
       for($i=0;$i<count($arrObjMdLitSituacaoLancamentoDTO);$i++){
@@ -205,20 +273,19 @@ class MdLitSituacaoLancamentoRN extends InfraRN {
     }
   }
 
-  public function verificaSituacaoExiste($idSituacao){
-    $objMdLitSitLancamentoRN  = new MdLitSituacaoLancamentoRN();
+  public function verificaSituacaoExiste($codigoSituacao){
     $objMdLitSitLancamentoDTO = new MdLitSituacaoLancamentoDTO();
-    $objMdLitSitLancamentoDTO->setNumIdMdLitSituacaoLancamento($idSituacao);
+    $objMdLitSitLancamentoDTO->setNumCodigo($codigoSituacao);
+    $objMdLitSitLancamentoDTO->setStrSinAtivoIntegracao('S');
+    $objMdLitSitLancamentoDTO->setNumMaxRegistrosRetorno(1);
     $objMdLitSitLancamentoDTO->retTodos();
-    $countSit = $objMdLitSitLancamentoRN->contar($objMdLitSitLancamentoDTO);
 
-    /*if($countSit <= 0){
-        new InfraException('A Situação do Cancelamento não está cadastrada. Contate o Administrador.');
-    }*/
+    $objMdLitSitLancamentoRN  = new MdLitSituacaoLancamentoRN();
+    $objMdLitSitLancamentoDTO = $objMdLitSitLancamentoRN->consultar($objMdLitSitLancamentoDTO);
 
-    return $countSit > 0;
+    return $objMdLitSitLancamentoDTO;
   }
-/* 
+
   protected function desativarControlado($arrObjMdLitSituacaoLancamentoDTO){
     try {
 
@@ -264,7 +331,39 @@ class MdLitSituacaoLancamentoRN extends InfraRN {
       throw new InfraException('Erro reativando situação do lançamento.',$e);
     }
   }
+    protected function consultarSituacaoCancelamentoConectado(MdLitSituacaoLancamentoDTO $objMdLitSituacaoLancamentoDTO){
+        try {
+            $objMdLitSituacaoLancamentoDTO->setStrSinCancelamento('S');
+            $objMdLitSituacaoLancamentoDTO->setStrSinAtivoIntegracao('S');
+            $objMdLitSituacaoLancamentoDTO->setNumMaxRegistrosRetorno(1);
 
+            $objMdLitSituacaoLancamentoBD = new MdLitSituacaoLancamentoBD($this->getObjInfraIBanco());
+            $ret = $objMdLitSituacaoLancamentoBD->consultar($objMdLitSituacaoLancamentoDTO);
+
+            //Auditoria
+
+            return $ret;
+        }catch(Exception $e){
+            throw new InfraException('Erro consultando situação do lançamento.',$e);
+        }
+    }
+
+    protected function excluirIntegracaoControlado($arrObjMdLitSituacaoLancamentoDTO)
+    {
+        try {
+            $objMdLitSituacaoLancamentoBD = new MdLitSituacaoLancamentoBD ($this->getObjInfraIBanco());
+
+            for ($i = 0; $i < count($arrObjMdLitSituacaoLancamentoDTO); $i++) {
+                $arrObjMdLitSituacaoLancamentoDTO[$i]->setStrSinAtivoIntegracao('N');
+                $objMdLitSituacaoLancamentoBD->alterar($arrObjMdLitSituacaoLancamentoDTO[$i]);
+            }
+
+        } catch (Exception $e) {
+            throw new InfraException ('Erro excluindo Situação de lançamento.', $e);
+        }
+    }
+
+/*
   protected function bloquearControlado(MdLitSituacaoLancamentoDTO $objMdLitSituacaoLancamentoDTO){
     try {
 

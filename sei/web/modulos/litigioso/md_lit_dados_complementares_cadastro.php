@@ -62,6 +62,9 @@ try {
     $strLinkAjaxConsultarIntegracao = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_dado_complementar_consulta');
     $strLinkAjaxlistarDadoComplementar = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_dado_complementar_listar');
 
+    $strLinkEstadoSelecaoNaoOutorgado = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=uf_selecionar&tipo_selecao=2&id_object=objLupaEstadoNaoOutorgado');
+    $strLinkCidadeSelecaoNaoOutorgado = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=cidade_selecionar&tipo_selecao=2&id_object=objLupaCidadeNaoOutorgado');
+
     $objContatoRN = new ContatoRN();
     $objContatoDTO = new ContatoDTO();
     $objContatoDTO->retTodos();
@@ -96,7 +99,7 @@ PaginaSEI::getInstance()->fecharHead();
 PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 
 ?>
-    <form id="frmMdPetIntimacaoCadastro" method="post" onsubmit="return OnSubmitForm();" action="<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'] . '&id_tp_controle=' .$_GET['id_tp_controle']. '&id_contato=' .$_GET['id_contato']) ?>" autocomplete = "off">
+    <form id="frmMdPetIntimacaoCadastro" method="post" onsubmit="return OnSubmitForm();" action="<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'] . '&id_tp_controle=' .$_GET['id_tp_controle']. '&id_contato=' .$_GET['id_contato']) ?>" autocomplete = "false">
         <? PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
             PaginaSEI::getInstance()->abrirAreaDados(null); ?>
 
@@ -122,7 +125,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 <? if($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda() != '') { ?><img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/ajuda.gif" name="ajuda" id="imgAjudaOutorgada" <?= PaginaSEI::montarTitleTooltip($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda()) ?> class="infraImg"/> <? } ?> <br>
                 <div id="divOptOutorgada" class="infraDivRadio">
                     <label class="infraLabelRadio"><input type="radio" name="rdoOutorgada" <?=$readonlyRdoOutorgada?> <?=$checkedRdoOutorgadaSim ?>  id="optOutorgadaSim" onclick="outorgada(this)" value="S" class="infraRadio" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" />Sim</label>
-                    <label class="infraLabelRadio"><input type="radio" name="rdoOutorgada"  <?=$readonlyRdoOutorgada?> <?=$checkedRdoOutorgadaNao ?> id="optOutorgadaNao" onclick="outorgada(this)" value="N" class="infraRadio" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" />Não</label> <br/>
+                    <label class="infraLabelRadio"><input type="radio" name="rdoOutorgada"  <?=$readonlyRdoOutorgada?> <?=$checkedRdoOutorgadaNao ?> id="optOutorgadaNao" onclick="outorgada(this)" value="N" class="infraRadio" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" <?= $objMdLitParametrizarInteressadoDTO->getStrSinCampoMapeado() == 'S' ? 'onchange="consultarNumero()"': '' ?> campo-mapeado="<?=$objMdLitParametrizarInteressadoDTO->getStrSinCampoMapeado()?>" />Não</label> <br/>
                 </div>
                 <? break; ?>
             <?php } //endifOutorga ?>
@@ -425,7 +428,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 
                     <div id="divEstado" class="infraAreaDados" style="height:11em;">
                         <label id="lblEstado" for="txtEstado" accesskey="I" class="<? echo $objMdLitParametrizarInteressadoDTO->getStrSinObrigatorio() == 'S'? 'infraLabelObrigatorio':'infraLabelOpcional'  ?>" ><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?>:</label>
-                        <input type="text" id="txtEstado" name="txtEstado" class="infraText" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" autocomplete="false" />
+                        <input type="text" id="txtEstado" name="txtEstado" class="infraText" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" autocomplete="off" />
                         <? if($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda() != '') { ?><img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/ajuda.gif" name="ajuda" id="imgAjudaEstado" <?= PaginaSEI::montarTitleTooltip($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda()) ?> class="infraImg"/> <? } ?>
                         <select id="selEstado" name="selEstado" class="infraSelect" multiple="multiple" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>"  >
                             <?=$strItensSelEstado?>
@@ -444,7 +447,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 
                     <div id="divCidade" class="infraAreaDados" style="height:11em;">
                         <label id="lblCidade" for="txtCidade" accesskey="I" class="<? echo $objMdLitParametrizarInteressadoDTO->getStrSinObrigatorio() == 'S'? 'infraLabelObrigatorio':'infraLabelOpcional'?>"  ><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?>:</label>
-                        <input type="text" id="txtCidade" name="txtCidade" class="infraText" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" autocomplete="off" />
+                        <input type="text" id="txtCidade" name="txtCidade" class="infraText" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" autocomplete="false"  />
                         <? if($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda() != '') { ?><img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/ajuda.gif" name="ajuda" id="imgAjudaCidade" <?= PaginaSEI::montarTitleTooltip($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda()) ?> class="infraImg"/> <? } ?>
                         <select id="selCidade" name="selCidade" class="infraSelect" multiple="multiple" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>"  >
                             <?=$strItensSelCidade?>
@@ -466,89 +469,199 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 </button>
             </div><? //enddiv#outorgada ?>
             <br>
-            <div id="dvTblDadosComplementares">
-                <table id="tblDadosComplementares" width="100%" class="infraTable">
-                    <tr>
-                        <? foreach ($arrObjMdLitParametrizarInteressadoDTO as $objMdLitParametrizarInteressadoDTO){ ?>
-
-                            <?php if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$NUMERO
-                                && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S' ){ ?>
-                                <th class="infraTh" width="5%"><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?></th>
-                                <? continue; }elseif($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$NUMERO){?>
-                                <th class="infraTh" style="display: none">Número</th>
-                                <? continue;} ?>
-
-                            <?php if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$SERVICO
-                                && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S' ){ ?>
-                                <th class="infraTh" width="10%"><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?></th>
-                                <? continue; }elseif($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$SERVICO){?>
-                                <th class="infraTh" style="display: none">Serviço</th>
-                                <? continue;} ?>
-
-                            <?php if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$MODALIDADE
-                                && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S' ){ ?>
-                                <th class="infraTh" width="10%"><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?></th>
-                                <? continue; }elseif($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$MODALIDADE){?>
-                                <th class="infraTh" style="display: none">Modalidade de Outorga</th>
-                                <? continue;} ?>
-
-                            <?php if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$ABRANGENCIA
-                                && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S' ){ ?>
-                                <th class="infraTh" width="10%"><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?></th>
-                                <? continue; }elseif($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$ABRANGENCIA){?>
-                                <th class="infraTh" style="display: none">Abrangências</th>
-                                <? continue;} ?>
-
-                            <?php if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$ESTADO
-                                && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S' ){ ?>
-                                <th class="infraTh" width="10%"><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?></th>
-                                <? continue; }elseif($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$ESTADO){?>
-                                <th class="infraTh" style="display: none">Estados</th>
-                                <? continue;} ?>
-
-                            <?php if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$CIDADE
-                                && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S' ){ ?>
-                                <th class="infraTh" width="10%"><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?></th>
-                                <? continue; }elseif($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$CIDADE){?>
-                                <th class="infraTh" style="display: none">Cidades</th>
-                                <? continue;} ?>
-                        <? } //endForeach table ?>
-                        <th class="infraTh" style="display: none">ID Serviços</th>
-                        <th class="infraTh" style="display: none">ID Modalidades</th>
-                        <th class="infraTh" style="display: none">ID Abrangencias</th>
-                        <th class="infraTh" style="display: none">ID Estados</th>
-                        <th class="infraTh" style="display: none">ID Cidades</th>
-                        <th class="infraTh" style="display: none">ID Contato</th>
-                        <th class="infraTh" style="display: none">outorga</th>
-                        <th class="infraTh" style="display: none">ID dado complementar</th>
-                        <th class="infraTh" width="1%">Ações</th>
-                    </tr>
-                </table>
-            </div>
         <div id="naoOutorgada">
 
-            <? foreach ($arrObjMdLitParametrizarInteressadoDTO as $objMdLitParametrizarInteressadoDTO){ ?>
-                <? if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$SERVICO && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S'){ ?>
-                    <div id="divServicosNaoOutorga" class="infraAreaDados" style="height:11em;">
-                        <label id="lblServicos" for="txtServicosNaoOutorga" accesskey="I" class="infraLabelObrigatorio"><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?>:</label>
-                        <input type="text" id="txtServicosNaoOutorga" name="txtServicosNaoOutorga" class="infraText" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" />
-                        <? if($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda() != '') { ?><img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/ajuda.gif" name="ajuda" id="imgAjudaServicosNaoOutorga" <?= PaginaSEI::montarTitleTooltip($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda()) ?> class="infraImg"/> <? } ?>
-                        <select id="selServicosNaoOutorga" name="selServicosNaoOutorga" class="infraSelect" multiple="multiple" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>"  >
-                            <?=$strItensSelServicos?>
-                        </select>
-                        <div id="divOpcoesServicosNaoOutorga">
-                            <img id="imgSelecionarServicosNaoOutorga" onclick="objLupaServicosNaoOutorga.selecionar(700,500);" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/lupa.gif" title="Selecionar Serviços" alt="Selecionar Serviços" class="infraImg" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" /><br>
-                            <img id="imgRemoverServicosNaoOutorga" onclick="objLupaServicosNaoOutorga.remover();" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/remover.gif" alt="Remover Serviços" title="Remover Serviços" class="infraImg" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>"/>
+            <fieldset id="fldInfoComplementares">
+                <legend class="infraLegend" class="infraLabelObrigatorio" id="legendNumero" > Informações Complementares </legend>
+
+                <? foreach ($arrObjMdLitParametrizarInteressadoDTO as $objMdLitParametrizarInteressadoDTO){ ?>
+
+
+                    <?php if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$CNPJ_CPF
+                        && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S'){ ?>
+                        <label><?=$objMdLitParametrizarInteressadoDTO->getStrLabelCampo() ?>:  <?=$objContatoDTO->getStrNome()." - ".InfraUtil::formatarCpfCnpj($contatoCpfCnpj) ?></label>
+                        <? if($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda() != '') { ?><img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/ajuda.gif" name="ajuda" id="imgAjudaCpf" <?= PaginaSEI::montarTitleTooltip($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda()) ?> class="infraImg"/> <? } ?>
+                        <br> <br>
+
+                        <div id="dvDadosComplementaresConsultaNaoOutorgado">
+                            <table id="tblDadosComplementaresConsultasNaoOutorgado" width="100%" class="infraTable">
+                                <tr>
+                                    <th width="1%" class="infraTh" style="text-align:center"></th>
+                                    <th class="infraTh" style="display: none">ID Serviços</th>
+                                    <th class="infraTh" style="display: none">ID Modalidades</th>
+                                    <th class="infraTh" style="display: none">ID Abrangencias</th>
+                                    <th class="infraTh" style="display: none">ID Estados</th>
+                                    <th class="infraTh" style="display: none">ID Cidades</th>
+                                    <? foreach ($arrObjMdLitParametrizarInteressadoDTO as $objMdLitParametrizarInteressadoDTO){ ?>
+
+                                        <?php if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$NUMERO
+                                            && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S'
+                                            && $objMdLitParametrizarInteressadoDTO->getStrSinCampoMapeado() == 'S'){ ?>
+                                            <th class="infraTh" width="5%"><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?></th>
+                                            <? break; }elseif($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$NUMERO){?>
+                                            <th class="infraTh" style="display: none">Número</th>
+                                            <? break;} ?>
+                                    <? } //endForeach table ?>
+                                </tr>
+                            </table>
                         </div>
-                    </div>
-                <? break;} ?>
-            <? } ?>
+                        <br>
+            </fieldset>
+
+                    <?php } ?>
+
+                    <? if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$SERVICO 
+                       && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S'){ ?>
+                        <div id="divServicosNaoOutorga" class="infraAreaDados" style="height:11em;">
+                            <label id="lblServicosNaoOutorgado" for="txtServicosNaoOutorga" accesskey="I" class="<? echo $objMdLitParametrizarInteressadoDTO->getStrSinObrigatorio() == 'S'? 'infraLabelObrigatorio':'infraLabelOpcional' ?>"><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?>:</label>
+                            <input type="text" id="txtServicosNaoOutorga" name="txtServicosNaoOutorga" class="infraText" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" />
+                            <? if($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda() != '') { ?><img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/ajuda.gif" name="ajuda" id="imgAjudaServicosNaoOutorga" <?= PaginaSEI::montarTitleTooltip($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda()) ?> class="infraImg"/> <? } ?>
+                            <select id="selServicosNaoOutorga" name="selServicosNaoOutorga" class="infraSelect" multiple="multiple" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>"  >
+                                <?=$strItensSelServicos?>
+                            </select>
+                            <div id="divOpcoesServicosNaoOutorga">
+                                <img id="imgSelecionarServicosNaoOutorga" onclick="objLupaServicosNaoOutorga.selecionar(700,500);" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/lupa.gif" title="Selecionar Serviços" alt="Selecionar Serviços" class="infraImg" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" /><br>
+                                <img id="imgRemoverServicosNaoOutorga" onclick="objLupaServicosNaoOutorga.remover();" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/remover.gif" alt="Remover Serviços" title="Remover Serviços" class="infraImg" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>"/>
+                            </div>
+                        </div>
+                        <? continue ?>
+                    <? } //finaliza o serviço ?>
+
+
+                    <?php if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$MODALIDADE 
+                          && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S' ){ ?>
+                        <fieldset id="fldModalidadesNaoOutorgada">
+                            <legend id="lgdModalidadesNaoOutorga" class="infraLegend" <? if($objMdLitParametrizarInteressadoDTO->getStrSinObrigatorio() == 'S') { ?> class="infraLabelObrigatorio" <? } ?>><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?><? if($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda() != '') { ?><img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/ajuda.gif" name="ajuda" id="imgAjudaModalidadeNaoOutorga" <?= PaginaSEI::montarTitleTooltip($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda()) ?> class="infraImg"/> <? } ?> </legend>
+                            <label <? if($objMdLitParametrizarInteressadoDTO->getStrSinObrigatorio() == 'S') { ?> class="infraLabelObrigatorio" <? } ?>> <input type="checkbox" id="optAutorizacaoNaoOutorga" name="rdoModalidadeNaoOutorga[]" value="1" class="infraCheckbox" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/> Autorização</label><br>
+                            <label <? if($objMdLitParametrizarInteressadoDTO->getStrSinObrigatorio() == 'S') { ?> class="infraLabelObrigatorio" <? } ?>> <input type="checkbox" id="optConsessaoNaoOutorga" name="rdoModalidadeNaoOutorga[]" value="2" class="infraCheckbox" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/> Consessão</label>
+                        </fieldset>
+
+                        <? continue; ?>
+                    <?php } //endif$MODALIDADE Nao outorgado ?>
+
+                    <?php if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$ABRANGENCIA
+                        && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S'){ ?>
+
+                        <fieldset id="fldAbrangenciaNaoOutorgado">
+                            <legend id="lgdAbrangenciaNaoOutorgado" class="infraLegend" <? if($objMdLitParametrizarInteressadoDTO->getStrSinObrigatorio() == 'S') { ?> class="infraLabelObrigatorio" <? } ?>><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?><? if($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda() != '') { ?><img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/ajuda.gif" name="ajuda" id="imgAjudaAbrangenciaNaoOutorgado" <?= PaginaSEI::montarTitleTooltip($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda()) ?> class="infraImg"/> <? } ?> </legend>
+                            <label <? if($objMdLitParametrizarInteressadoDTO->getStrSinObrigatorio() == 'S') { ?> class="infraLabelObrigatorio" <? } ?>> <input type="checkbox" id="optNacionalNaoOutorgado" name="rdoAbrangenciaNaoOutorgado[]" value="1" class="infraCheckbox" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/> Nacional</label><br>
+                            <label <? if($objMdLitParametrizarInteressadoDTO->getStrSinObrigatorio() == 'S') { ?> class="infraLabelObrigatorio" <? } ?>> <input type="checkbox" id="optRegionalNaoOutorgado" name="rdoAbrangenciaNaoOutorgado[]" value="2" class="infraCheckbox" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/> Regional</label><br>
+                            <label <? if($objMdLitParametrizarInteressadoDTO->getStrSinObrigatorio() == 'S') { ?> class="infraLabelObrigatorio" <? } ?>> <input type="checkbox" id="optEstadualNaoOutorgado" name="rdoAbrangenciaNaoOutorgado[]" value="3" class="infraCheckbox" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/> Estadual</label>
+                        </fieldset>
+                        <br>
+
+                        <? continue; ?>
+                    <?php } //endif$ABRANGENCIA não outorgado ?>
+                    <?php if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$ESTADO
+                        && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S'){ ?>
+
+
+                        <div id="divEstadoNaoOutorgado" class="infraAreaDados" style="height:11em;">
+                            <label id="lblEstadoNaoOutorgado" for="txtEstadoNaoOutorgado" class="<? echo $objMdLitParametrizarInteressadoDTO->getStrSinObrigatorio() == 'S'? 'infraLabelObrigatorio':'infraLabelOpcional'  ?>" ><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?>:</label>
+                            <input type="text" id="txtEstadoNaoOutorgado" name="txtEstadoNaoOutorgado" class="infraText" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" autocomplete="false" />
+                            <? if($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda() != '') { ?><img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/ajuda.gif" name="ajuda" id="imgAjudaEstadoNaoOutorgado" <?= PaginaSEI::montarTitleTooltip($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda()) ?> class="infraImg"/> <? } ?>
+                            <select id="selEstadoNaoOutorgado" name="selEstadoNaoOutorgado" class="infraSelect" multiple="multiple" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>"  >
+                                <?=$strItensSelEstado?>
+                            </select>
+                            <div id="divOpcoesEstadoNaoOutorgado">
+                                <img id="imgSelecionarEstadoNaoOutorgado" onclick="objLupaEstadoNaoOutorgado.selecionar(700,500);" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/lupa.gif" title="Selecionar Estados" alt="Selecionar Estados" class="infraImg" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" /><br>
+                                <img id="imgRemoverEstadoNaoOutorgado" onclick="objLupaEstadoNaoOutorgado.remover();" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/remover.gif" alt="Remover Estados" title="Remover Estados" class="infraImg" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>"/>
+                            </div>
+                        </div>
+
+                        <? continue; ?>
+                    <?php } //endif$ESTADO NaoOutorgado ?>
+                    <?php if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$CIDADE
+                        && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S' ){ ?>
+
+                        <div id="divCidadeNaoOutorgado" class="infraAreaDados" style="height:11em;">
+                            <label id="lblCidadeNaoOutorgado" for="txtCidadeNaoOutorgado" accesskey="I" class="<? echo $objMdLitParametrizarInteressadoDTO->getStrSinObrigatorio() == 'S'? 'infraLabelObrigatorio':'infraLabelOpcional'?>"  ><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?>:</label>
+                            <input type="text" id="txtCidadeNaoOutorgado" name="txtCidadeNaoOutorgado" class="infraText" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" autocomplete="off" />
+                            <? if($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda() != '') { ?><img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/ajuda.gif" name="ajuda" id="imgAjudaCidadeNaoOutorgado" <?= PaginaSEI::montarTitleTooltip($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda()) ?> class="infraImg"/> <? } ?>
+                            <select id="selCidadeNaoOutorgado" name="selCidadeNaoOutorgado" class="infraSelect" multiple="multiple" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>"  >
+                                <?=$strItensSelCidade?>
+                            </select>
+                            <div id="divOpcoesCidadeNaoOutorgado">
+                                <img id="imgSelecionarCidadeNaoOutorgado" onclick="objLupaCidadeNaoOutorgado.selecionar(700,500);" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/lupa.gif" title="Selecionar Cidades" alt="Selecionar Cidades" class="infraImg" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" /><br>
+                                <img id="imgRemoverCidadeNaoOutorgado" onclick="objLupaCidadeNaoOutorgado.remover();" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/remover.gif" alt="Remover Cidades" title="Remover Cidades" class="infraImg" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>"/>
+                            </div>
+                        </div>
+
+                        <? continue; ?>
+                    <?php } //endif$CIDADE NaoOutorgado ?>
+                <? } ?>
+
+                <button type="button" id="AdicionarNaoOutorgado" name="AdicionarNaoOutorgado" class="infraButton" value="Adicionar" onclick="adicionarDadosComplementaresNaoOutorgado()" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                    Adicionar
+                </button>
+        </div>
+
+        <div id="dvTblDadosComplementares">
+            <table id="tblDadosComplementares" width="100%" class="infraTable">
+                <tr>
+                    <? foreach ($arrObjMdLitParametrizarInteressadoDTO as $objMdLitParametrizarInteressadoDTO){ ?>
+
+                        <?php if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$NUMERO
+                            && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S' ){ ?>
+                            <th class="infraTh" width="5%"><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?></th>
+                            <? continue; }elseif($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$NUMERO){?>
+                            <th class="infraTh" style="display: none">Número</th>
+                            <? continue;} ?>
+
+                        <?php if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$SERVICO
+                            && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S' ){ ?>
+                            <th class="infraTh" width="10%"><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?></th>
+                            <? continue; }elseif($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$SERVICO){?>
+                            <th class="infraTh" style="display: none">Serviço</th>
+                            <? continue;} ?>
+
+                        <?php if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$MODALIDADE
+                            && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S' ){ ?>
+                            <th class="infraTh" width="10%"><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?></th>
+                            <? continue; }elseif($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$MODALIDADE){?>
+                            <th class="infraTh" style="display: none">Modalidade de Outorga</th>
+                            <? continue;} ?>
+
+                        <?php if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$ABRANGENCIA
+                            && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S' ){ ?>
+                            <th class="infraTh" width="10%"><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?></th>
+                            <? continue; }elseif($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$ABRANGENCIA){?>
+                            <th class="infraTh" style="display: none">Abrangências</th>
+                            <? continue;} ?>
+
+                        <?php if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$ESTADO
+                            && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S' ){ ?>
+                            <th class="infraTh" width="10%"><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?></th>
+                            <? continue; }elseif($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$ESTADO){?>
+                            <th class="infraTh" style="display: none">Estados</th>
+                            <? continue;} ?>
+
+                        <?php if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$CIDADE
+                            && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S' ){ ?>
+                            <th class="infraTh" width="10%"><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?></th>
+                            <? continue; }elseif($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$CIDADE){?>
+                            <th class="infraTh" style="display: none">Cidades</th>
+                            <? continue;} ?>
+                    <? } //endForeach table ?>
+                    <th class="infraTh" style="display: none">ID Serviços</th>
+                    <th class="infraTh" style="display: none">ID Modalidades</th>
+                    <th class="infraTh" style="display: none">ID Abrangencias</th>
+                    <th class="infraTh" style="display: none">ID Estados</th>
+                    <th class="infraTh" style="display: none">ID Cidades</th>
+                    <th class="infraTh" style="display: none">ID Contato</th>
+                    <th class="infraTh" style="display: none">outorga</th>
+                    <th class="infraTh" style="display: none">ID Numero interessado</th>
+                    <th class="infraTh" style="display: none">Quantidade Lancamento</th>
+                    <th class="infraTh" width="1%">Ações</th>
+                </tr>
+            </table>
         </div>
         <input type="hidden" id="hdnIdMdLitDadoInteressadoNaoOutorgado" name="hdnIdMdLitDadoInteressadoNaoOutorgado" value="" />
         <input type="hidden" id="hdnNumeroNaoOutorgado" name="hdnNumeroNaoOutorgado" value="" />
         <input type="hidden" id="hdnIdContato" name="hdnIdContato" class="infraText" value="<?= $objContatoDTO->getNumIdContato() ?>" />
         <input type="hidden" id="hdnIdProcedimento" name="hdnIdProcedimento" class="infraText" value="<?= $_GET['id_procedimento'] ?>" />
         <input type="hidden" id="hdnIdMdLitControle" name="hdnIdMdLitControle" class="infraText" value="<?= $_GET['id_md_lit_controle'] ?>" />
+        <input type="hidden" id="hdnIdMdLitTipoControle" name="hdnIdMdLitTipoControle" class="infraText" value="<?= $_GET['id_tp_controle'] ?>" />
         <input type="hidden" id="hdnCpfCnpj" name="hdnCpfCnpj" class="infraText" value="<?= $contatoCpfCnpj ?>" />
         <input type="hidden" id="hdnIdServicos" name="hdnIdServicos" class="infraText" value="" />
         <input type="hidden" id="hdnServicos" name="hdnServicos" value="<?=$_POST['hdnServicos']?>" />
@@ -556,10 +669,15 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         <input type="hidden" id="hdnServicosNaoOutorga" name="hdnServicosNaoOutorga" value="<?=$_POST['hdnServicosNaoOutorga']?>" />
         <input type="hidden" id="hdnIdEstado" name="hdnIdEstado" class="infraText" value="" />
         <input type="hidden" id="hdnEstado" name="hdnEstado" value="<?=$_POST['hdnEstado']?>" />
+        <input type="hidden" id="hdnEstadoNaoOutorgado" name="hdnEstadoNaoOutorgado" value="<?=$_POST['hdnEstadoNaoOutorgado']?>" />
+        <input type="hidden" id="hdnIdEstadoNaoOutorgado" name="hdnIdEstadoNaoOutorgado" value="" />
         <input type="hidden" id="hdnIdCidade" name="hdnIdCidade" class="infraText" value="" />
         <input type="hidden" id="hdnCidade" name="hdnCidade" value="<?=$_POST['hdnCidade']?>" />
+        <input type="hidden" id="hdnCidadeNaoOutorgado" name="hdnCidadeNaoOutorgado" value="<?=$_POST['hdnCidadeNaoOutorgado']?>" />
+        <input type="hidden" id="hdnIdCidadeNaoOutorgada" name="hdnIdCidadeNaoOutorgada" value="" />
         <input type="hidden" id="hdnListaDadosComplementares" name="hdnListaDadosComplementares" value="<?=$_POST['hdnListaDadosComplementares']?>" />
         <input type="hidden" id="hdnListaDadosComplementaresConsultas" name="hdnListaDadosComplementaresConsultas" value="<?=$_POST['hdnListaDadosComplementaresConsultas']?>" />
+        <input type="hidden" id="hdnListaDadosComplementaresConsultasNaoOutorgado" name="hdnListaDadosComplementaresConsultasNaoOutorgado" value="<?=$_POST['hdnListaDadosComplementaresConsultasNaoOutorgado']?>" />
 
         <? PaginaSEI::getInstance()->fecharAreaDados(); ?>
         <? PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos); ?>

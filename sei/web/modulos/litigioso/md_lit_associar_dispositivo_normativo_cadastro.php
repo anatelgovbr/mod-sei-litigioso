@@ -28,7 +28,7 @@
 
             case 'md_lit_associar_dispositivo_normativo_consultar':
                 $strItensSelDispositivoNormativos = "";
-                $strTitulo                        = 'Dispositivos Normativos Associados';
+                $strTitulo                        = 'Dispositivos Normativos Associados - ';
 
                 $arrComandos[] = '<button type="submit" accesskey="S" name="sbmCadastrarDispositivoNormativoLitigioso" id="sbmCadastrarDispositivoNormativoLitigioso" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
                 $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&id_tipo_processo_litigioso=' . $_GET['id_tipo_processo_litigioso'] . '&acao_origem=' . $_GET['acao'])) . '\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
@@ -86,6 +86,16 @@
                     }
 
                 }
+                //chamando o objeto do MdLitTipoControleRN
+                $objTipoControleLitigiosoDTO = new MdLitTipoControleDTO();
+                $objTipoControleLitigiosoDTO->retTodos();
+                $objTipoControleLitigiosoDTO->setNumIdTipoControleLitigioso($idTipoControle);
+
+
+                $objTipoControleLitigiosoRN  = new MdLitTipoControleRN();
+                $objTipoControleLitigiosoDTO = $objTipoControleLitigiosoRN->consultar($objTipoControleLitigiosoDTO);
+
+                $strTitulo .= $objTipoControleLitigiosoDTO->getStrSigla();
 
                 break;
 

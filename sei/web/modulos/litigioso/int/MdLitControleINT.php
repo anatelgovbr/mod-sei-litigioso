@@ -23,6 +23,7 @@ class MdLitControleINT extends InfraINT
             $objDocumentoDTO->retDblIdDocumento();
             $objDocumentoDTO->retStrNumero();
             $objDocumentoDTO->retStrSiglaUnidadeGeradoraProtocolo();
+            $objDocumentoDTO->retStrDescricaoUnidadeGeradoraProtocolo();
             $objDocumentoDTO->retNumIdSerie();
             $objDocumentoDTO->retStrNomeSerie();
             $objDocumentoDTO->retStrStaProtocoloProtocolo();
@@ -236,12 +237,21 @@ class MdLitControleINT extends InfraINT
         return $xml;
     }
 
-    public static function montarXmlInteressadoProcesso($idProcedimento, $idMdLitControle, $idMdLitTipoControle, $arrIdContato)
+    public static function montarXmlInteressadoProcesso($idProcedimento, $idMdLitControle, $idMdLitTipoControle, $arrIdContato= array())
     {
         $objMdLitControleRN               = new MdLitControleRN();
         $arrParametros['idProcedimento']  = $idProcedimento;
         $arrParametros['idMdLitControle'] = $idMdLitControle;
-        $arrParametros['arrIdContato']    = $arrIdContato;
+
+        $objMdlItDadoInteressadoDTO = new MdLitDadoInteressadoDTO();
+        $objMdlItDadoInteressadoDTO->retTodos(false);
+        $objMdlItDadoInteressadoDTO->setNumIdMdLitControle($idMdLitControle);
+
+        $objMdlItDadoInteressadoRN = new MdLitDadoInteressadoRN();
+        $arrObjMdlItDadoInteressadoDTO = $objMdlItDadoInteressadoRN->listar($objMdlItDadoInteressadoDTO);
+        $arrIdContatoDadoInteressado   = InfraArray::converterArrInfraDTO($arrObjMdlItDadoInteressadoDTO, 'IdContato');
+
+        $arrParametros['arrIdContato'] = array_merge($arrIdContatoDadoInteressado, $arrIdContato);
 
         $arrObjContatoDTO = $objMdLitControleRN->listarInteressadoProcesso($arrParametros);
 
@@ -264,6 +274,7 @@ class MdLitControleINT extends InfraINT
                 $bairro     = $objContatoDTO->isSetStrBairro() ? $objContatoDTO->getStrBairro() : '';
                 $idCidade   = $objContatoDTO->isSetNumIdCidade() ? $objContatoDTO->getNumIdCidade() : '';
                 $idUf       = $objContatoDTO->isSetNumIdUf() ? $objContatoDTO->getNumIdUf() : '';
+                $contarLancamento = 0;
 
                 if($objContatoDTO->isSetNumIdTipoContatoAssociado() && $objContatoDTO->getNumIdTipoContatoAssociado() != ''){
 
@@ -271,6 +282,16 @@ class MdLitControleINT extends InfraINT
                     $bairro     = $objContatoDTO->isSetStrBairroContatoAssociado() ? $objContatoDTO->getStrBairroContatoAssociado() : '';
                     $idCidade   = $objContatoDTO->isSetNumIdCidadeContatoAssociado() ? $objContatoDTO->getNumIdCidadeContatoAssociado() : '';
                     $idUf       = $objContatoDTO->isSetNumIdUfContatoAssociado() ? $objContatoDTO->getNumIdUfContatoAssociado() : '';
+                }
+
+                if($idMdLitControle){
+                    $objMdLitNumeroInteressadoDTO = new MdLitNumeroInteressadoDTO();
+                    $objMdLitNumeroInteressadoDTO->setNumIdContatoMdLitDadoInteressado($objContatoDTO->getNumIdContato());
+                    $objMdLitNumeroInteressadoDTO->setNumIdMdLitControleMdLitDadoInteressado($idMdLitControle);
+                    $objMdLitNumeroInteressadoDTO->retTodos(false);
+
+                    $objMdLitNumeroInteressadoRN = new MdLitNumeroInteressadoRN();
+                    $contarLancamento = $objMdLitNumeroInteressadoRN->contarLancamento($objMdLitNumeroInteressadoDTO);
                 }
 
                 $xml .= "<Contato>\n";
@@ -322,6 +343,10 @@ class MdLitControleINT extends InfraINT
                 $xml .= '<IdUf>';
                 $xml .= $idUf;
                 $xml .= "</IdUf>\n";
+
+                $xml .= '<ContarLancamento>';
+                $xml .= $contarLancamento;
+                $xml .= "</ContarLancamento>\n";
 
                 $xml .= "</Contato>\n";
 

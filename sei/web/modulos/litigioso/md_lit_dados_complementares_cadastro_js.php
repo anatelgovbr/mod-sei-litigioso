@@ -5,6 +5,11 @@
     var objLupaServicosNaoOutorga = null;
     var objTblDadosComplementares = null;
     var objTblDadosComplementaresConsulta = null;
+    var objTblDadosComplementaresConsultaNaoOutorgado = null;
+    var objLupaEstadoNaoOutorgado = null;
+    var objAutoCompletarEstadoNaoOutorgado = null;
+    var objLupaCidadeNaoOutorgado = null;
+    var objAutoCompletarCidadeNaoOutorgado = null;
 
     function inicializar(){
 
@@ -15,6 +20,7 @@
         document.getElementById('outorgada').style.display = "none";
         document.getElementById('naoOutorgada').style.display = "none";
         document.getElementById('dvDadosComplementaresConsulta').style.display = "none";
+        document.getElementById('dvDadosComplementaresConsultaNaoOutorgado').style.display = 'none';
         document.getElementById('dvTblDadosComplementares').style.display = "none";
 
         //Servicos
@@ -120,6 +126,36 @@
             }
         }
 
+        //Estados Não outorgado
+        if(document.getElementById('selEstadoNaoOutorgado') != null) {
+            objLupaEstadoNaoOutorgado = new infraLupaSelect('selEstadoNaoOutorgado', 'hdnEstadoNaoOutorgado', '<?=$strLinkEstadoSelecaoNaoOutorgado?>');
+            objAutoCompletarEstadoNaoOutorgado = new infraAjaxAutoCompletar('hdnIdEstadoNaoOutorgado', 'txtEstadoNaoOutorgado', '<?=$strLinkAjaxEstado?>');
+            objAutoCompletarEstadoNaoOutorgado.limparCampo = true;
+            objAutoCompletarEstadoNaoOutorgado.prepararExecucao = function () {
+                return 'palavras_pesquisa=' + document.getElementById('txtEstadoNaoOutorgado').value;
+            };
+            objAutoCompletarEstadoNaoOutorgado.processarResultado = function (id, descricao, complemento) {
+                if (id != '') {
+                    objLupaEstadoNaoOutorgado.adicionar(id, descricao, document.getElementById('txtEstadoNaoOutorgado'));
+                }
+            };
+        }
+
+
+        //Cidades Não Outorgado
+        if(document.getElementById('selCidadeNaoOutorgado') != null){
+            objLupaCidadeNaoOutorgado = new infraLupaSelect('selCidadeNaoOutorgado','hdnCidadeNaoOutorgado','<?=$strLinkCidadeSelecaoNaoOutorgado?>');
+            objAutoCompletarCidadeNaoOutorgado = new infraAjaxAutoCompletar('hdnIdCidadeNaoOutorgada','txtCidadeNaoOutorgado','<?=$strLinkAjaxCidade?>');
+            objAutoCompletarCidadeNaoOutorgado.limparCampo = true;
+            objAutoCompletarCidadeNaoOutorgado.prepararExecucao = function(){
+                return 'palavras_pesquisa='+document.getElementById('txtCidadeNaoOutorgado').value+'&idsUf='+document.getElementById('hdnEstadoNaoOutorgado').value;
+            };
+            objAutoCompletarCidadeNaoOutorgado.processarResultado = function(id,descricao,complemento){
+                if (id!=''){
+                    objLupaCidadeNaoOutorgado.adicionar(id,descricao,document.getElementById('txtCidadeNaoOutorgado'));
+                }
+            };
+        }
 
         //Cidades
         if(document.getElementById('selCidade') != null){
@@ -182,6 +218,15 @@
         objTblDadosComplementares.gerarEfeitoTabela = true;
         objTblDadosComplementares.inserirNoInicio = false;
         objTblDadosComplementares.exibirMensagens = true;
+        objTblDadosComplementares.remover = function (arrLinha){
+            //verifica se possui lançamento para o interessado responsável
+            if(arrLinha[14] != 'null' && arrLinha[14] > 0){
+                var nomeCampo = infraTrim(document.getElementById('lblNumero').textContent).replace(':', '');
+                alert("Este "+nomeCampo+" foi utilizado no Lançamento de Multa no Sistema de Arrecadação, por este motivo a sua exclusão não é permitida.");
+                return false;
+            }
+            return true;
+        }
 
         //tabela dados complementares consulta
         objTblDadosComplementaresConsulta = new infraTabelaDinamica('tblDadosComplementaresConsultas', 'hdnListaDadosComplementaresConsultas', false, false);
@@ -189,8 +234,13 @@
         objTblDadosComplementaresConsulta.inserirNoInicio = false;
         objTblDadosComplementaresConsulta.exibirMensagens = false;
 
-        infraEfeitoTabelas();
+        //tabela dos dados complementares consulta não outorgado
+        objTblDadosComplementaresConsultaNaoOutorgado = new infraTabelaDinamica('tblDadosComplementaresConsultasNaoOutorgado', 'hdnListaDadosComplementaresConsultasNaoOutorgado', false, false);
+        objTblDadosComplementaresConsultaNaoOutorgado.gerarEfeitoTabela = false;
+        objTblDadosComplementaresConsultaNaoOutorgado.inserirNoInicio = false;
+        objTblDadosComplementaresConsultaNaoOutorgado.exibirMensagens = false;
 
+        infraEfeitoTabelas();
 
         if(document.getElementById('optOutorgadaSim').checked){
             document.getElementById('outorgada').style.display = "block";
@@ -199,14 +249,10 @@
                 document.getElementById('dvTblDadosComplementares').style.display = "block";
         }else if(document.getElementById('optOutorgadaNao').checked){
             document.getElementById('naoOutorgada').style.display = "block";
-            var arrDadosComplementar = objTblDadosComplementares.obterItens();
-            if(arrDadosComplementar[0][10] == 'N'){
-                var arrNomeServico  = arrDadosComplementar[0][1].split(",<br> ");
-                var arrIdServico    = arrDadosComplementar[0][4].split(",<br> ");
-                for(var i = 0; i <arrNomeServico.length; i++ ){
-                    objLupaServicosNaoOutorga.adicionar(arrIdServico[i],arrNomeServico[i] );
-                }
-                objTblDadosComplementares.limpar();
+
+            if(objTblDadosComplementares.hdn.value != ''){
+                document.getElementById('dvTblDadosComplementares').style.display = "block";
+                consultarNumero();
             }
         }
 
@@ -232,6 +278,7 @@
             data: objConsultarNumero,
             success: function (result) {
                 objTblDadosComplementaresConsulta.limpar();
+                objTblDadosComplementaresConsultaNaoOutorgado.limpar();
                 if($(result).find('erro').length > 0){
                     alert($(result).find('erro').attr('descricao'));
                     return;
@@ -251,7 +298,8 @@
                 objDadosComplementares[10] = null;//idCidade
                 objDadosComplementares[11] = null;//idContato
                 objDadosComplementares[12] = null;//outorga
-                objDadosComplementares[13] = null;//idMdLitDadoInteressado
+                objDadosComplementares[13] = null;//idMdLitNumeroInteressado
+                objDadosComplementares[14] = null;//ContarLancamento
 
                 var count = 0;
 
@@ -264,6 +312,9 @@
 
                     if($(this).attr('numero') != undefined)
                         objDadosComplementares[0] = $(this).attr('numero');
+
+                    if($(this).attr('numero') == '')
+                        objDadosComplementares[0] = 'Número a ser gerado';
 
                     if($(this).attr('nome_modalidade') != undefined)
                         objDadosComplementares[2] = $(this).attr('nome_modalidade');
@@ -289,15 +340,18 @@
                     if($(this).attr('outorgado') != undefined)
                         objDadosComplementares[12] = $(this).attr('outorgado');
 
-                    if($(this).attr('id_md_lit_dado_interessado') != undefined)
-                        objDadosComplementares[13] = $(this).attr('id_md_lit_dado_interessado');
+                    if($(this).attr('id_md_lit_numero_interessado') != undefined)
+                        objDadosComplementares[13] = $(this).attr('id_md_lit_numero_interessado');
 
                     if($(this).attr('nome_cidade') != undefined)
                         objDadosComplementares[5] = $(this).attr('nome_cidade');
 
                     if($(this).attr('nome_estado') != undefined){
                         objDadosComplementares[4] = $(this).attr('nome_estado');
+                    }
 
+                    if($(this).attr('contar_lancamento') != undefined){
+                        objDadosComplementares[14] = $(this).attr('contar_lancamento');
                     }
 
                     if($(this).attr('outorgado') == 'S'){
@@ -306,24 +360,14 @@
                     }else if($(this).attr('outorgado') == 'N'){
                         document.getElementById('optOutorgadaNao').checked = true;
                         document.getElementById('naoOutorgada').style.display = "block";
+                        consultarNumero();
                     }
 
                     objTblDadosComplementares.adicionar(objDadosComplementares, false);
                     infraEfeitoTabelas();
                     count++;
                 });
-
-                if(document.getElementById('optOutorgadaNao').checked) {
-                    var arrDadosComplementar = objTblDadosComplementares.obterItens();
-                    var arrNomeServico = arrDadosComplementar[0][1].split(",<br> ");
-                    var arrIdServico = arrDadosComplementar[0][6].split(",€ ");
-                    document.getElementById('hdnIdMdLitDadoInteressadoNaoOutorgado').value = arrDadosComplementar[0][13];
-                    document.getElementById('hdnNumeroNaoOutorgado').value = arrDadosComplementar[0][0];
-                    for (var i = 0; i < arrNomeServico.length; i++) {
-                        objLupaServicosNaoOutorga.adicionar(arrIdServico[i], arrNomeServico[i]);
-                    }
-                    objTblDadosComplementares.limpar();
-                }else if(document.getElementById('optOutorgadaSim').checked){
+                if(objTblDadosComplementares.hdn.value != ''){
                     document.getElementById('dvTblDadosComplementares').style.display = "block";
                 }
             },
@@ -334,38 +378,21 @@
         });
     }
 
+    function validarNumeroVazio(){
+        var dadosInteressadosArr = objTblDadosComplementares.tbl;
+        for(var i = 0; i < dadosInteressadosArr.rows.length; i++){console.log(objTblDadosComplementares.tbl.rows[i].cells[0].textContent);
+            if(dadosInteressadosArr.rows[i].cells[0].textContent =="Número a ser gerado" ){
+                dadosInteressadosArr.rows[i].cells[0].innerHTML = '<div></div>';
+            }
+        }
+        objTblDadosComplementares.atualizaHdn();
+    }
     function OnSubmitForm(formulario) {
         objTblDadosComplementares.atualizaHdn();
         if(!validarCadastro(formulario)){
             return false;
         }
-
-        if(document.getElementById('optOutorgadaNao').checked){
-            var idServico   = getOptionsId(document.getElementById('selServicosNaoOutorga'));
-            var nomeServico = getOptionsString(document.getElementById('selServicosNaoOutorga')) ;
-            var idContato       = document.getElementById('hdnIdContato').value;
-            var outorga         = 'N';
-            var idMdLitDadoComplementar = document.getElementById('hdnIdMdLitDadoInteressadoNaoOutorgado').value;
-            var numero = document.getElementById('hdnNumeroNaoOutorgado').value == ''? null : document.getElementById('hdnNumeroNaoOutorgado').value;
-
-            objTblDadosComplementares.limpar();
-            objTblDadosComplementares.adicionar([
-                numero,
-                nomeServico,
-                null,
-                null,
-                null,
-                null,
-                idServico,
-                null,
-                null,
-                null,
-                null,
-                idContato,
-                outorga,
-                idMdLitDadoComplementar], true);
-        }
-
+        validarNumeroVazio();
         var idContato = document.getElementById('hdnIdContato').value;
         var hdnTbDadoInteressado = eval('window.opener.hdnTbDadoInteressado_'+idContato);
         var checkedOutorgado = document.getElementById('optOutorgadaSim').checked? 'S':'N';
@@ -398,12 +425,12 @@
                 alert('Adicione ao menos um dado complementar do interessado!');
                 return false;
             }
-        }else if(document.getElementById('optOutorgadaNao').checked){
-            if(document.getElementById('hdnServicosNaoOutorga') != null && document.getElementById('hdnServicosNaoOutorga').value == ''){
-                alert('Selecione ao menos um serviço!');
-                return false;
-            }
-        }
+        }//else if(document.getElementById('optOutorgadaNao').checked){
+            // if(document.getElementById('hdnServicosNaoOutorga') != null && document.getElementById('hdnServicosNaoOutorga').value == ''){
+            //     alert('Selecione ao menos um serviço!');
+            //     return false;
+            // }
+        //}
 
         return true;
     }
@@ -414,6 +441,7 @@
             document.getElementById('outorgada').style.display = "block";
             document.getElementById('naoOutorgada').style.display = "none";
             objLupaServicosNaoOutorga.limpar();
+            document.getElementById('dvTblDadosComplementares').style.display = "none";
         }else{
             document.getElementById('outorgada').style.display = "none";
             document.getElementById('naoOutorgada').style.display = "block";
@@ -518,6 +546,7 @@
                             idCidade,
                             idContato,
                             outorga,
+                            null,
                             null], true);
                     }
                 }
@@ -547,6 +576,134 @@
             objLupaCidade.limpar();
             objLupaEstado.limpar();
             document.getElementById('txtNumero').value = '';
+        }
+    }
+
+    function adicionarDadosComplementaresNaoOutorgado(){
+        if(document.getElementById('optOutorgadaNao').checked){
+            if( document.getElementById('txtNumeroNaoOutorgado') != null && document.getElementById('lblNumeroNaoOutorgado').className == 'infraLabelObrigatorio' && infraTrim(document.getElementById('txtNumeroNaoOutorgado').value) == ''){
+                var nomeCampo = infraTrim(document.getElementById('lblNumero').textContent).replace(':', '');
+                alert("O "+nomeCampo+" é obrigatório!");
+                return false;
+            }
+
+            if(document.getElementById('txtServicosNaoOutorga') != null && document.getElementById('lblServicosNaoOutorgado').className == 'infraLabelObrigatorio' && infraTrim(document.getElementById('hdnServicosNaoOutorga').value) == '' ){
+                var nomeCampo = infraTrim(document.getElementById('lblServicosNaoOutorgado').textContent).replace(':', '');
+                alert("selecione ao menos um "+nomeCampo+"!");
+                return false;
+            }
+
+            if(document.getElementById('optAutorizacaoNaoOutorga') != null && document.getElementById('optAutorizacaoNaoOutorga').parentNode.className == 'infraLabelObrigatorio'){
+                if(!document.getElementById('optAutorizacaoNaoOutorga').checked && !document.getElementById('optConsessaoNaoOutorga').checked){
+                    var nomeCampo = infraTrim(document.getElementById('lgdModalidadesNaoOutorga').textContent).replace(':', '');
+                    alert("selecione ao menos uma "+nomeCampo+"!");
+                    return false;
+                }
+            }
+
+            if(!verificarPaiFieldSet(document.getElementById('optNacionalNaoOutorgado')) && document.getElementById('optNacionalNaoOutorgado') != null && document.getElementById('optNacionalNaoOutorgado').parentNode.className == 'infraLabelObrigatorio'){
+                if(!document.getElementById('optNacionalNaoOutorgado').checked && !document.getElementById('optRegionalNaoOutorgado').checked && !document.getElementById('optEstadualNaoOutorgado').checked){
+                    var nomeCampo = infraTrim(document.getElementById('lgdAbrangenciaNaoOutorgado').textContent).replace(':', '');
+                    alert("selecione ao menos uma "+nomeCampo+"!");
+                    return false;
+                }
+            }
+
+            if(document.getElementById('txtEstadoNaoOutorgado') != null && document.getElementById('lblEstadoNaoOutorgado').className == 'infraLabelObrigatorio' && infraTrim(document.getElementById('hdnEstadoNaoOutorgado').value) == '' ){
+                var nomeCampo = infraTrim(document.getElementById('lblEstadoNaoOutorgado').textContent).replace(':', '');
+                alert("selecione ao menos um "+nomeCampo+"!");
+                return false;
+            }
+
+            if(document.getElementById('txtCidadeNaoOutorgado') != null && document.getElementById('lblCidadeNaoOutorgado').className == 'infraLabelObrigatorio' && infraTrim(document.getElementById('hdnCidadeNaoOutorgado').value) == '' ){
+                var nomeCampo = infraTrim(document.getElementById('lblCidadeNaoOutorgado').textContent).replace(':', '');
+                alert("selecione ao menos um "+nomeCampo+"!");
+                return false;
+            }
+            // if(document.getElementById('optOutorgadaNao').getAttribute('campo-mapeado') == 'S' && objTblDadosComplementaresConsultaNaoOutorgado.tbl.rows.length > 1){
+            //     alert("Consultar as informações complementares antes de adicionar!");
+            //     return false;
+            // }
+
+            var numero      = document.getElementById('txtNumeroNaoOutorgado') == null? null: document.getElementById('txtNumeroNaoOutorgado').value;
+            var idServico   = getOptionsId(document.getElementById('selServicosNaoOutorga'));
+            var nomeServico = getOptionsString(document.getElementById('selServicosNaoOutorga')) ;
+            var idEstado    = getOptionsId(document.getElementById('selEstadoNaoOutorgado'));
+            var idCidade    = getOptionsId(document.getElementById('selCidadeNaoOutorgado'));
+            var nomeEstado  = getOptionsString(document.getElementById('selEstadoNaoOutorgado'));
+            var nomeCidade  = getOptionsString(document.getElementById('selCidadeNaoOutorgado'));
+            // sair do padrão pois não imaginei forma de pegar o radio dinamico
+            var nomeModalidade  = document.getElementById('fldModalidadesNaoOutorgada') ? getChecboxString(document.getElementById('fldModalidadesNaoOutorgada').getElementsByTagName('input')): '';
+            var idModalidade    = document.getElementById('fldModalidadesNaoOutorgada') ? getChecboxId(document.getElementById('fldModalidadesNaoOutorgada').getElementsByTagName('input')): '';
+            var nomeAbrangencia = document.getElementById('fldAbrangenciaNaoOutorgado') ? getChecboxString(document.getElementById('fldAbrangenciaNaoOutorgado').getElementsByTagName('input')): '';
+            var idAbrangencia   = document.getElementById('fldAbrangenciaNaoOutorgado') ? getChecboxId(document.getElementById('fldAbrangenciaNaoOutorgado').getElementsByTagName('input')): '';
+            var idContato       = document.getElementById('hdnIdContato').value;
+            var outorga         = 'N';
+
+            document.getElementById('dvTblDadosComplementares').style.display = "block";
+
+            if(objTblDadosComplementaresConsultaNaoOutorgado.tbl.rows.length > 1){
+                var inputCheckbox = document.getElementById('dvDadosComplementaresConsultaNaoOutorgado').getElementsByTagName('input');
+                for(var i = 0;i < inputCheckbox.length; i++){
+                    if(document.getElementById('dvDadosComplementaresConsultaNaoOutorgado').getElementsByTagName('input')[i].checked){
+                        var arrResultado = objTblDadosComplementaresConsultaNaoOutorgado.obterItens().reverse()[i];
+
+                        numero          = arrResultado[6] == 'null' ? numero :arrResultado[6];
+//                        nomeEstado      = nomeEstado;
+//                        nomeCidade      = nomeCidade;
+
+                        objTblDadosComplementares.adicionar([
+                            numero,
+                            nomeServico,
+                            nomeModalidade,
+                            nomeAbrangencia,
+                            nomeEstado,
+                            nomeCidade,
+                            idServico,
+                            idModalidade,
+                            idAbrangencia,
+                            idEstado,
+                            idCidade,
+                            idContato,
+                            outorga,
+                            null,
+                            null], true);
+                    }
+                }
+                if(objTblDadosComplementares.obterItens().length == 0 && objTblDadosComplementaresConsultaNaoOutorgado.obterItens().length > 0){
+                    document.getElementById('dvTblDadosComplementares').style.display = "none";
+                    var nomeCampo = infraTrim(document.getElementById('lblNumero').textContent).replace(':', '');
+                    alert('Selecione ao menos um '+nomeCampo);
+                }
+                return;
+            }
+
+            if(numero == null || numero == 'null'){
+                numero = 'Número a ser gerado';
+            }
+
+            objTblDadosComplementares.adicionar([
+                numero,
+                nomeServico,
+                nomeModalidade,
+                nomeAbrangencia,
+                nomeEstado,
+                nomeCidade,
+                idServico,
+                idModalidade,
+                idAbrangencia,
+                idEstado,
+                idCidade,
+                idContato,
+                outorga,
+                null], true);
+
+            infraEfeitoTabelas();
+
+            //limpando os campos
+            objLupaServicosNaoOutorga.limpar();
+            objLupaCidadeNaoOutorgado.limpar();
+            objLupaEstadoNaoOutorgado.limpar();
         }
     }
 
@@ -621,26 +778,34 @@
 
     function consultarNumero(){
         var objConsultarNumero = new Object();
-        if(verificarPaiFieldSet(document.getElementById('txtNumero')) && document.getElementById('txtNumero').value != ''){
-            objConsultarNumero.numero = document.getElementById('txtNumero').value;
-        }
-        if(verificarPaiFieldSet(document.getElementById('txtServicos')) && document.getElementById('hdnServicos').value != ''){
-            objConsultarNumero.servico = document.getElementById('hdnServicos').value;
-        }
-        if(verificarPaiFieldSet(document.getElementById('txtEstado')) && document.getElementById('hdnEstado').value != ''){
-            objConsultarNumero.estados = document.getElementById('hdnEstado').value;
-        }
-        if(verificarPaiFieldSet(document.getElementById('txtCidade')) && document.getElementById('hdnCidade').value != ''){
-            objConsultarNumero.cidades = document.getElementById('hdnCidade').value;
-        }
-        if(verificarPaiFieldSet(document.getElementById('fldAbrangencia')) && getChecboxIdArr(document.getElementsByName('rdoAbrangencia[]')).length != 0 ){
-            objConsultarNumero.abrangencia = getChecboxIdArr(document.getElementsByName('rdoAbrangencia[]'));
-        }
-        if(verificarPaiFieldSet(document.getElementById('fldModalidadesOutorga')) && getChecboxIdArr(document.getElementsByName('rdoOutorga[]')).length != 0 ){
-            objConsultarNumero.modalidade = getChecboxIdArr(document.getElementsByName('rdoOutorga[]'));
+        if(document.getElementById('optOutorgadaSim').checked){
+            objConsultarNumero.outorga = 'S';
+            if(verificarPaiFieldSet(document.getElementById('txtNumero')) && document.getElementById('txtNumero').value != ''){
+                objConsultarNumero.numero = document.getElementById('txtNumero').value;
+            }
+            if(verificarPaiFieldSet(document.getElementById('txtServicos')) && document.getElementById('hdnServicos').value != ''){
+                objConsultarNumero.servico = document.getElementById('hdnServicos').value;
+            }
+            if(verificarPaiFieldSet(document.getElementById('txtEstado')) && document.getElementById('hdnEstado').value != ''){
+                objConsultarNumero.estados = document.getElementById('hdnEstado').value;
+            }
+            if(verificarPaiFieldSet(document.getElementById('txtCidade')) && document.getElementById('hdnCidade').value != ''){
+                objConsultarNumero.cidades = document.getElementById('hdnCidade').value;
+            }
+            if(verificarPaiFieldSet(document.getElementById('fldAbrangencia')) && getChecboxIdArr(document.getElementsByName('rdoAbrangencia[]')).length != 0 ){
+                objConsultarNumero.abrangencia = getChecboxIdArr(document.getElementsByName('rdoAbrangencia[]'));
+            }
+            if(verificarPaiFieldSet(document.getElementById('fldModalidadesOutorga')) && getChecboxIdArr(document.getElementsByName('rdoOutorga[]')).length != 0 ){
+                objConsultarNumero.modalidade = getChecboxIdArr(document.getElementsByName('rdoOutorga[]'));
+            }
+
+        }else if(document.getElementById('optOutorgadaNao').checked){
+            objConsultarNumero.outorga = 'N';
         }
 
         objConsultarNumero.cpf_cnpj = document.getElementById('hdnCpfCnpj').value;
+        objConsultarNumero.id_contato = document.getElementById('hdnIdContato').value;
+        objConsultarNumero.id_tp_controle = document.getElementById('hdnIdMdLitTipoControle').value;
 
         if(JSON.stringify(objConsultarNumero) === JSON.stringify({})){
             return false;
@@ -655,6 +820,7 @@
             },
             success: function (result) {
                 objTblDadosComplementaresConsulta.limpar();
+                objTblDadosComplementaresConsultaNaoOutorgado.limpar();
                 if($(result).find('erro').length > 0){
                     alert($(result).find('erro').attr('descricao'));
                     return;
@@ -684,11 +850,19 @@
                     if($(this).attr('numero') != undefined)
                         objDadosComplementares[6] = $(this).attr('numero');
 
-                    objTblDadosComplementaresConsulta.adicionar(objDadosComplementares, false);
+
+                    if(document.getElementById('optOutorgadaSim').checked){
+                        objTblDadosComplementaresConsulta.adicionar(objDadosComplementares, false);
+                    }else if(document.getElementById('optOutorgadaNao').checked){
+                        objTblDadosComplementaresConsultaNaoOutorgado.adicionar(objDadosComplementares, false);
+                    }
                     count++;
                 });
-
-                document.getElementById('dvDadosComplementaresConsulta').style.display = "block";
+                if(document.getElementById('optOutorgadaSim').checked) {
+                    document.getElementById('dvDadosComplementaresConsulta').style.display = "block";
+                }else if(document.getElementById('optOutorgadaNao').checked){
+                    document.getElementById('dvDadosComplementaresConsultaNaoOutorgado').style.display = 'block';
+                }
             },
             error: function (msgError) {
                 msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;

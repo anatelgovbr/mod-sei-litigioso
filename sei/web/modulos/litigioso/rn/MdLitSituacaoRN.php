@@ -433,21 +433,16 @@
 
                 // Regras de Negocio
                 $idUsuario   = SessaoSEI::getInstance()->getNumIdUsuario();
-                $permissaoRN = new MdLitPermissaoLitigiosoRN();
-                $isAdm       = $permissaoRN->isAdm();
 
                 $arrParam = array();
                 array_push($arrParam, $idUsuario);
                 array_push($arrParam, $idTipoControle);
 
-                $isGestor = $permissaoRN->isUsuarioGestorTipoControle($arrParam);
                 $ret      = null;
 
                 //so executa a consulta se o usuario for ou Administrador OU gestor do tipo de controle informado
-                if ($isAdm || $isGestor) {
-                    $objSituacaoLitigiosoBD = new MdLitSituacaoBD($this->getObjInfraIBanco());
-                    $ret                    = $objSituacaoLitigiosoBD->listar($objSituacaoLitigiosoDTO);
-                }
+                $objSituacaoLitigiosoBD = new MdLitSituacaoBD($this->getObjInfraIBanco());
+                $ret                    = $objSituacaoLitigiosoBD->listar($objSituacaoLitigiosoDTO);
 
                 return $ret;
 
@@ -590,7 +585,7 @@
 
             if($objMdLitSituacaoDTO->getStrSinConclusiva() == 'S'){
                 $dados['tipoSituacao'] = 'Conclusiva';
-                $dados['nomeLabel']    = 'da Conclusão';
+                $dados['nomeLabel']    = 'do Trânsito em Julgado';
                 $dados['nome']         = 'Conclusiva';
             }
             

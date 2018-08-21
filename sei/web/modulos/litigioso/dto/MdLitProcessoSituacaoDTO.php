@@ -84,6 +84,7 @@ class MdLitProcessoSituacaoDTO extends InfraDTO {
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'SinDefesaSit', 'ms.sin_defesa', 'md_lit_situacao ms');
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'SinRecursalSit', 'ms.sin_recursal', 'md_lit_situacao ms');
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'SinConclusivaSit', 'ms.sin_conclusiva', 'md_lit_situacao ms');
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'SinOpcionalSit', 'ms.sin_opcional', 'md_lit_situacao ms');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'PrazoSituacao', 'ms.prazo', 'md_lit_situacao ms');
 
     //Get Dados Fases
@@ -97,10 +98,60 @@ class MdLitProcessoSituacaoDTO extends InfraDTO {
 
     //Get Dados Usuario
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeUsuario','usu.nome','usuario usu');
+    $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'SiglaUsuario','usu.sigla','usuario usu');
+
+      //GET tipo de controle litigioso
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'SiglaTipoControleLitigioso','sigla','md_lit_tipo_controle');
 
 
-    
-    
+  }
+
+  public function getStrTipoSituacao(){
+      $dados = array();
+
+      if($this->getStrSinInstauracaoSit() == 'S'){
+          $dados['tipoSituacao'] = 'Instauracao';
+          $dados['nomeLabel']    = 'da Instauração';
+          $dados['nome']         = 'Instauração';
+      }
+
+      if($this->getStrSinIntimacaoSit() == 'S'){
+          $dados['tipoSituacao'] = 'Intimacao';
+          $dados['nomeLabel']    = 'da Intimação';
+          $dados['nome']         = 'Intimação';
+      }
+
+      if($this->getStrSinDecisoriaSit() == 'S'){
+          $dados['tipoSituacao'] = 'Decisoria';
+          $dados['nomeLabel']    = 'da Decisão';
+          $dados['nome']         = 'Decisória';
+      }
+
+      if($this->getStrSinDefesaSit() == 'S'){
+          $dados['tipoSituacao'] = 'Defesa';
+          $dados['nomeLabel']    = 'da Defesa';
+          $dados['nome']         = 'Defesa';
+      }
+
+      if($this->getStrSinRecursalSit() == 'S'){
+          $dados['tipoSituacao'] = 'Recursal';
+          $dados['nomeLabel']    = 'do Recurso';
+          $dados['nome']         = 'Recursal';
+      }
+
+      if($this->getStrSinConclusivaSit() == 'S'){
+          $dados['tipoSituacao'] = 'Conclusiva';
+          $dados['nomeLabel']    = 'do Trânsito em Julgado';
+          $dados['nome']         = 'Conclusiva';
+      }
+
+      if(!array_key_exists('tipoSituacao', $dados)){
+          $dados['tipoSituacao'] = 'Livre';
+          $dados['nomeLabel']    = '';
+          $dados['nome']         = '';
+      }
+
+      return $dados;
   }
 }
 ?>

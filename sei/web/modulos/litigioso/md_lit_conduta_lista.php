@@ -135,7 +135,7 @@
         $objCondutaLitigiosoDTO->retTodos();
 
         PaginaSEI::getInstance()->prepararOrdenacao($objCondutaLitigiosoDTO, 'Nome', InfraDTO::$TIPO_ORDENACAO_ASC);
-        PaginaSEI::getInstance()->prepararPaginacao($objCondutaLitigiosoDTO, 200);
+        PaginaSEI::getInstance()->prepararPaginacao($objCondutaLitigiosoDTO, 100);
 
         $objCondutaLitigiosoRN = new MdLitCondutaRN();
 
@@ -245,16 +245,16 @@
 
             //Coluna Nome
             if ($_GET['acao'] == 'md_lit_conduta_selecionar') {
-                $strResultado .= '<th class="infraTh" width="70%">' . PaginaSEI::getInstance()->getThOrdenacao($objCondutaLitigiosoDTO, 'Nome', 'Nome', $arrObjCondutaLitigiosoDTO) . '</th>' . "\n";
+                $strResultado .= '<th class="infraTh" width="72%">' . PaginaSEI::getInstance()->getThOrdenacao($objCondutaLitigiosoDTO, 'Nome', 'Nome', $arrObjCondutaLitigiosoDTO) . '</th>' . "\n";
             } else {
-                $strResultado .= '<th class="infraTh" width="83%">' . PaginaSEI::getInstance()->getThOrdenacao($objCondutaLitigiosoDTO, 'Nome', 'Nome', $arrObjCondutaLitigiosoDTO) . '</th>' . "\n";
+                $strResultado .= '<th class="infraTh" width="86%">' . PaginaSEI::getInstance()->getThOrdenacao($objCondutaLitigiosoDTO, 'Nome', 'Nome', $arrObjCondutaLitigiosoDTO) . '</th>' . "\n";
             }
 
             //coluna Ações
             if ($_GET['acao'] == 'md_lit_conduta_selecionar') {
-                $strResultado .= '<th class="infraTh" width="15%">Ações</th>' . "\n";
+                $strResultado .= '<th class="infraTh" width="25px">Ações</th>' . "\n";
             } else {
-                $strResultado .= '<th class="infraTh" width="25%">Ações</th>' . "\n";
+                $strResultado .= '<th class="infraTh" width="20px">Ações</th>' . "\n";
             }
 
             $strResultado .= '</tr>' . "\n";
@@ -522,9 +522,7 @@
         ?>
         <div style="height:4.5em; margin-top: 11px;" class="infraAreaDados" id="divInfraAreaDados">
             <label id="lblConduta" for="txtConduta" accesskey="S" class="infraLabelOpcional">Conduta:</label>
-            <input type="text" id="txtConduta" name="txtConduta" class="infraText"
-                   value="<?php echo isset($_POST['txtConduta']) ? $_POST['txtConduta'] : '' ?>" maxlength="100"
-                   tabindex="502">
+            <input type="text" id="txtConduta" name="txtConduta" class="infraText" value="<?php echo isset($_POST['txtConduta']) ? $_POST['txtConduta'] : '' ?>" maxlength="500" tabindex="502">
         </div>
         <?php
 

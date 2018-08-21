@@ -36,18 +36,39 @@ $params = array();
 $params['idProcedimento'] = $idProcedimento;
 $params['idLancamento'] = $_GET['id_lancamento'];
 
-$dados = $objMdLitHistLancamentoRN->getDadosHistoricoLancamento($params);
-$objMdLitHistLancamentoDTO = $dados[0];
+$objMdLitHistLancamentoDTO = new MdLitHistoricLancamentoDTO();
+$objMdLitHistLancamentoDTO->setDblIdProcedimento($idProcedimento);
+$objMdLitHistLancamentoDTO->retNumIdMdLitHistoricLancamento();
+$objMdLitHistLancamentoDTO->retStrTipoLancamento();
+$objMdLitHistLancamentoDTO->retStrNomeSituacao();
+$objMdLitHistLancamentoDTO->retStrSequencial();
+$objMdLitHistLancamentoDTO->retStrNomeSituacao();
+$objMdLitHistLancamentoDTO->retDthInclusao();
+$objMdLitHistLancamentoDTO->retDtaUltimoPagamento();
+$objMdLitHistLancamentoDTO->retStrLinkBoleto();
+$objMdLitHistLancamentoDTO->retStrNomeUsuario();
+$objMdLitHistLancamentoDTO->retStrSiglaUsuario();
+$objMdLitHistLancamentoDTO->retStrSiglaUnidade();
+$objMdLitHistLancamentoDTO->retStrDescricaoUnidade();
+$objMdLitHistLancamentoDTO->retStrSinSuspenso();
+$objMdLitHistLancamentoDTO->retDblVlrDesconto();
+$objMdLitHistLancamentoDTO->retDblVlrPago();
+$objMdLitHistLancamentoDTO->retStrIntegracaoNome();
+$objMdLitHistLancamentoDTO->retNumIdMdLitIntegracao();
+$objMdLitHistLancamentoDTO->retDblVlrLancamento();
+
+$objMdLitHistLancamentoDTO->setNumIdMdLitLancamento($_GET['id_lancamento']);
+
+
 
 //Configuração da Paginação
-PaginaSEI::getInstance()->prepararOrdenacao($objMdLitHistLancamentoDTO, 'Inclusao', InfraDTO::$TIPO_ORDENACAO_ASC);
+PaginaSEI::getInstance()->prepararOrdenacao($objMdLitHistLancamentoDTO, 'Inclusao', InfraDTO::$TIPO_ORDENACAO_DESC);
 PaginaSEI::getInstance()->prepararPaginacao($objMdLitHistLancamentoDTO);
 PaginaSEI::getInstance()->processarPaginacao($objMdLitHistLancamentoDTO);
 
 $titulo = 'Orientações:';
-$texto = '- As informações apresentadas estão atualizadas, de acordo com a data da consulta.';
 
-$arrObjs = $dados[1];
+$arrObjs = $objMdLitHistLancamentoRN->listar($objMdLitHistLancamentoDTO);
 
 $numRegistros = count($arrObjs);
 
@@ -55,7 +76,7 @@ $numRegistros = count($arrObjs);
 if ($numRegistros > 0) {
     $strResultado .= '<table width="99%" class="infraTable" summary="Histórico de Lançamentos">';
     $strResultado .= '<caption class="infraCaption">';
-    $strResultado .= PaginaSEI::getInstance()->gerarCaptionTabela('Histórico de Boletos', $numRegistros);
+    $strResultado .= PaginaSEI::getInstance()->gerarCaptionTabela('Histórico de Lançamentos', $numRegistros);
     $strResultado .= '</caption>';
 
     $strResultado .= '<tr>';
@@ -78,6 +99,10 @@ if ($numRegistros > 0) {
     $strResultado .= '</th>';
 
     $strResultado .= '<th class="infraTh" width="15%">';
+    $strResultado .= PaginaSEI::getInstance()->getThOrdenacao($objMdLitHistLancamentoDTO, 'Data do Último Pagamento', 'UltimoPagamento', $arrObjs);
+    $strResultado .= '</th>';
+
+    $strResultado .= '<th class="infraTh" width="15%">';
     $strResultado .= PaginaSEI::getInstance()->getThOrdenacao($objMdLitHistLancamentoDTO, 'Usuário', 'NomeUsuario', $arrObjs);
     $strResultado .= '</th>';
 
@@ -85,8 +110,21 @@ if ($numRegistros > 0) {
     $strResultado .= PaginaSEI::getInstance()->getThOrdenacao($objMdLitHistLancamentoDTO, 'Unidade', 'SiglaUnidade', $arrObjs);
     $strResultado .= '</th>';
 
+    $strResultado .= '<th class="infraTh" width="15%">';
+    $strResultado .= PaginaSEI::getInstance()->getThOrdenacao($objMdLitHistLancamentoDTO, 'Credito Lançado ', 'VlrLancamento', $arrObjs);
+    $strResultado .= '</th>';
+
+    $strResultado .= '<th class="infraTh" width="15%">';
+    $strResultado .= PaginaSEI::getInstance()->getThOrdenacao($objMdLitHistLancamentoDTO, 'Valor Arrecadado ', 'VlrPago', $arrObjs);
+    $strResultado .= '</th>';
+
+    $strResultado .= '<th class="infraTh" width="15%">';
+    $strResultado .= PaginaSEI::getInstance()->getThOrdenacao($objMdLitHistLancamentoDTO, 'Desconto  ', 'VlrDesconto', $arrObjs);
+    $strResultado .= '</th>';
+
     $strCssTr = '<tr class="infraTrEscura">';
 
+    $primeiroRegistro = true;
     for ($i = 0; $i < $numRegistros; $i++) {
         $tipoLancamento = $objMdLitHistLancamentoRN->formatarTipoLancamento($arrObjs[$i]->getStrTipoLancamento());
 
@@ -104,7 +142,12 @@ if ($numRegistros > 0) {
         $strResultado .= '</td>';
 
         $strResultado .= '<td>';
-        $strResultado .= $objMdLitHistLancamentoRN->formatarSequencialLink($arrObjs[$i]->getStrSequencial(), $arrObjs[$i]->getStrLinkBoleto());
+            if($primeiroRegistro){
+                $strResultado .= $objMdLitHistLancamentoRN->formatarSequencialLink($arrObjs[$i]->getStrSequencial(), $arrObjs[$i]->getStrLinkBoleto());
+                $primeiroRegistro = false;
+            }else{
+                $strResultado .= '<span style="padding:0 .5em 0 .5em;" >'.$arrObjs[$i]->getStrSequencial().'</span>';
+            }
         $strResultado .= '</td>';
 
         $strResultado .= '<td>';
@@ -120,11 +163,36 @@ if ($numRegistros > 0) {
         $strResultado .= '</td>';
 
         $strResultado .= '<td>';
-        $strResultado .= PaginaSEI::tratarHTML($arrObjs[$i]->getStrNomeUsuario());
+        $strResultado .= $arrObjs[$i]->getDtaUltimoPagamento();
         $strResultado .= '</td>';
 
-        $strResultado .= '<td>';
-        $strResultado .= PaginaSEI::tratarHTML($arrObjs[$i]->getStrSiglaUnidade());
+        $strResultado .= '<td align="center">';
+        if($arrObjs[$i]->getStrNomeUsuario()){
+            $strResultado .= '<a alt="'.$arrObjs[$i]->getStrNomeUsuario().'" title="'.$arrObjs[$i]->getStrNomeUsuario().'" class="ancoraSigla"> '.$arrObjs[$i]->getStrSiglaUsuario().' </a>';
+        }else{
+            $strResultado .= 'Integração - '.$arrObjs[$i]->getStrIntegracaoNome();
+        }
+        $strResultado .= '</td>';
+
+        $strResultado .= '<td align="center">';
+        if($arrObjs[$i]->getStrDescricaoUnidade()){
+            $strResultado .= '<a alt="'.$arrObjs[$i]->getStrDescricaoUnidade().'" title="'.$arrObjs[$i]->getStrDescricaoUnidade().'" class="ancoraSigla"> '.$arrObjs[$i]->getStrSiglaUnidade().' </a>';
+        }else{
+            $strResultado .= ' - ';
+        }
+
+        $strResultado .= '</td>';
+
+        $strResultado .= '<td align="right">';
+        $strResultado .=  InfraUtil::formatarDin(InfraUtil::prepararDbl($arrObjs[$i]->getDblVlrLancamento()),2);
+        $strResultado .= '</td>';
+
+        $strResultado .= '<td align="right">';
+        $strResultado .=  InfraUtil::formatarDin(InfraUtil::prepararDbl($arrObjs[$i]->getDblVlrPago()),2);
+        $strResultado .= '</td>';
+
+        $strResultado .= '<td align="right">';
+        $strResultado .= InfraUtil::formatarDin(InfraUtil::prepararDbl($arrObjs[$i]->getDblVlrDesconto()),2);
         $strResultado .= '</td>';
     }
 
@@ -153,7 +221,7 @@ PaginaSEI::getInstance()->fecharHead();
 PaginaSEI::getInstance()->abrirBody($strTitulo,'onload=""');
 
 ?>
-<form action="<?php /*echo SessaoSEI::getInstance()->assinarLink('controlador_externo.php?acao=md_pet_intimacao_usu_ext_confirmar_aceite&id_procedimento='.$_GET['id_procedimento'].'&id_acesso_externo='.$_GET['id_acesso_externo'].'&id_documento='.$_GET['id_documento']);*/ ?>" method="post" id="frmMdLitHistoricoQuinquenal" name="frmMdLitHistoricoQuinquenal"/>
+<form action="" method="post" id="frmMdLitHistoricoQuinquenal" name="frmMdLitHistoricoQuinquenal"/>
 
     <?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos); ?>
     <?php PaginaSEI::getInstance()->abrirAreaDados('') ?>
@@ -163,7 +231,9 @@ PaginaSEI::getInstance()->abrirBody($strTitulo,'onload=""');
         </div>
 
         <div id="divInformacoes">
-          <label style="margin-left:70px" id="lblInformacoes"><?php echo $texto ?></label>
+          <label style="margin-left:70px" id="lblInformacoes">- É possível visualizar o boleto apenas sobre o último registro, pois o Boleto apresentado é sempre o atualizado.</label>
+            <p style="margin-left:70px;font-size: 1.2em;">- Apenas são apresentadas novas linhas, quando:</p>
+            <p style="margin-left:100px;font-size: 1.2em;text-align:justify;">- Existirem atualizações de valores (inclusive no valor lançado, ou se existirem descontos), data do último pagamento e modificação de situação do lançamento, ou seja, atualizações monetárias (Juros, Multa) realizadas pelo Sistema de Arrecadação, não geram novas linhas neste Histórico.</p>
         </div>
     </div>
 

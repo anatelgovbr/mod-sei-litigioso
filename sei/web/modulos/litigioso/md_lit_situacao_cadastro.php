@@ -204,10 +204,12 @@
                     }
                 }
                 break;
-
             case 'md_lit_situacao_consultar':
 
                 $strTitulo = 'Consultar Situação';
+                if($_GET['acao_origem'] == 'md_lit_situacao_visualizar_parametrizar'){
+                    PaginaSEI::getInstance()->setTipoPagina(InfraPagina::$TIPO_PAGINA_SIMPLES);
+                }
 
                 $objSituacaoLitigiosoDTO->setNumIdSituacaoLitigioso($_GET['id_situacao_litigioso']);
                 $objSituacaoLitigiosoDTO->setBolExclusaoLogica(false);

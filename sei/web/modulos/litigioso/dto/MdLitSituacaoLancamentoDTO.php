@@ -23,7 +23,28 @@ class MdLitSituacaoLancamentoDTO extends InfraDTO {
 
     $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'CorSituacao', 'cor_situacao');
 
-    $this->configurarPK('IdMdLitSituacaoLancamento',InfraDTO::$TIPO_PK_INFORMADO);
+      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM, 'Codigo', 'codigo');
+
+      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinAtivo', 'sin_ativo');
+
+      //exclusão logica da integração apaga o registro de toda lista porém retorna na fk assim mantém os arquivos já cadastradosSE
+      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinAtivoIntegracao', 'sin_ativo_integracao');
+
+      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'StaOrigem', 'sta_origem');
+
+      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinCancelamento', 'sin_cancelamento');
+
+      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM, 'IdMdLitSituacaoLancInt', 'id_md_lit_situacao_lancam_int');
+
+    $this->configurarPK('IdMdLitSituacaoLancamento',InfraDTO::$TIPO_PK_NATIVA);
+
+      $this->configurarFK('IdMdLitSituacaoLancInt', 'md_lit_situacao_lancam_int', 'id_md_lit_situacao_lancam_int', InfraDTO::$TIPO_FK_OPCIONAL);
+
+      //Atributos Relacionados
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeIntegracao', 'nome_integracao', 'md_lit_situacao_lancam_int');
+
+      //atributo para verificação na RN se será auditado no metodo. Ex.: excluirControlado
+      $this->adicionarAtributo(InfraDTO::$PREFIXO_BOL, 'IsAuditoria');
 
   }
 }

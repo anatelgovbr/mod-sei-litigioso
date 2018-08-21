@@ -111,12 +111,12 @@
             <?php $dtCalendTipoSituacao = array_key_exists('dtDocumento', $dadosSituacao) ? $dadosSituacao['dtDocumento'] : InfraData::getStrDataAtual() ?>
             <div class="grid grid_3">
                 <input class="campoFieldsetSituacao campoData" type="text" id="txtDtTipoSituacao"
-                       name="txtDtTipoSituacao"
+                       name="txtDtTipoSituacao" onchange="return validarFormatoData(this)"
                        onkeypress="return infraMascara(this, event, '##/##/####');"
                        value="<?php echo array_key_exists('dtDocumento', $dadosSituacao) ? $dadosSituacao['dtDocumento'] : '' ?>"/>
                 <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/calendario.gif"
-                     title="Selecionar Data de Decisão/Intimação/Defesa/Recurso"
-                     alt="Selecionar Data de Decisão/Intimação/Defesa/Recurso"
+                     title="Selecionar Data"
+                     alt="Selecionar Data"
                      class="infraImg"
                      onclick="infraCalendario('txtDtTipoSituacao',this,false,'<?= $dtCalendTipoSituacao ?>');"/>
             </div>
@@ -126,7 +126,7 @@
         <div class="clear-margin-2"></div>
 
         <!-- Texto Situação -->
-        <div class="grid grid_12" style="display:none" id="divTxtSituacao">
+        <div class="grid grid_12" style="display:none;text-align: justify;" id="divTxtSituacao">
             <label class="infraLabelOpcional" id="txtSituacao"> </label>
         </div>
 
@@ -209,10 +209,11 @@
 
                         <div class="grid grid_3">
                             <?php $dtCalendariInt = $dtIntercorrente != '' ? $dtIntercorrente : InfraData::getStrDataAtual() ?>
-                            <input class="campoData campoFieldsetSituacao" type="text" id="txtDtIntercorrente"
+                            <input onchange="return validarFormatoData(this)" class="campoData campoFieldsetSituacao" type="text" id="txtDtIntercorrente"
                                    name="txtDtIntercorrente"
                                    onkeypress="return infraMascara(this, event, '##/##/####');"
-                                   value="<?php echo $dtCalendariInt; ?>"/>
+                                   value="<?php echo $dtCalendariInt; ?>"
+                                   data-valor-antigo="<?php echo $dtCalendariInt; ?>" />
                             <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/calendario.gif"
                                  title="Selecionar Data Intercorrente" alt="Selecionar Data Intercorrente"
                                  class="infraImg"
@@ -242,10 +243,11 @@
 
                         <div class="grid grid_3">
                             <?php $dtCalendariQuin = $dtQuinquenal != '' ? $dtQuinquenal : InfraData::getStrDataAtual() ?>
-                            <input class="campoData campoFieldsetSituacao" type="text" id="txtDtQuinquenal"
+                            <input onchange="return validarFormatoData(this)" class="campoData campoFieldsetSituacao" type="text" id="txtDtQuinquenal"
                                    name="txtDtQuinquenal"
                                    onkeypress="return infraMascara(this, event, '##/##/####');"
-                                   value="<?php echo $dtQuinquenal; ?>"/>
+                                   value="<?php echo $dtQuinquenal; ?>"
+                                   data-valor-antigo="<?php echo $dtQuinquenal; ?>" />
                             <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/calendario.gif"
                                  id="imgDtQuinquenal"
                                  title="Selecionar Data Quinquenal" alt="Selecionar Data Quinquenal"
@@ -273,7 +275,7 @@
 
 
                 <caption class="infraCaption">
-                    <?= PaginaSEI::getInstance()->gerarCaptionTabela('Situação', 1) ?>
+                    <?= PaginaSEI::getInstance()->gerarCaptionTabela('Situações', 1) ?>
                 </caption>
 
 
@@ -324,15 +326,18 @@
         <!--Id Situação -->
         <input type="hidden" name="hdnIdProcessoSituacao" id="hdnIdProcessoSituacao" value="0"/>
 
+        <!-- Data da Situação Conclusiva  -->
+        <input type="hidden" name="hdnDtSituacaoConclusiva" id="hdnDtSituacaoConclusiva" value="<?php echo $dtUltimaSitConclusiva ?>"/>
+
         <!-- Usuario -->
         <input type="hidden" name="hdnIdUsuario" id="hdnIdUsuario" value="<?php echo $dadosUndUs['idUsuario']; ?>"/>
         <input type="hidden" name="hdnNomeUsuario" id="hdnNomeUsuario"
-               value="<?php echo $dadosUndUs['nomeUsuario']; ?>"/>
+               value='<a alt="<?php echo $dadosUndUs['nomeUsuario']; ?>" title="<?php echo $dadosUndUs['nomeUsuario']; ?>" class="ancoraSigla"> <?php echo $dadosUndUs['siglaUsuario']; ?> </a>'/>
 
         <!-- Unidade -->
         <input type="hidden" name="hdnIdUnidade" id="hdnIdUnidade" value="<?php echo $dadosUndUs['idUnidade']; ?>"/>
         <input type="hidden" name="hdnNomeUnidade" id="hdnNomeUnidade"
-               value="<?php echo $dadosUndUs['nomeUnidade']; ?>"/>
+               value='<a alt="<?php echo $dadosUndUs['nomeUnidade']; ?>" title="<?php echo $dadosUndUs['nomeUnidade']; ?>" class="ancoraSigla"> <?php echo $dadosUndUs['siglaUnidade']; ?> </a>'/>
 
         <!-- Para Situação Recursal -->
         <input type="hidden" name="hdnVlDepExtraJud" id="hdnVlDepExtraJud" value=""/>

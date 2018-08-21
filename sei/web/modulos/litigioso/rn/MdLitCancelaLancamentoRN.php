@@ -287,7 +287,7 @@ class MdLitCancelaLancamentoRN extends InfraRN {
             $montarParametroEntrada = $this->_montarParametroEntradaCancelamentoCredito($objMdLitIntegracaoDTO, $post);
 
             $arrResultado = $objMdLitSoapClienteRN->enviarDadosSigecLancamento($objMdLitIntegracaoDTO, $montarParametroEntrada, MdLitMapearParamEntradaRN::$PARAM_PRINCIPAL_SIGEC_CANC_LANCAMENTO);
-            $sucesso = $objMdLitConsultarLancRN->verificarAtualizarSituacaoLancamentoSIGEC($objMdLitIntegracaoDTOSit, $post);
+            $sucesso = $objMdLitConsultarLancRN->verificarAtualizarSituacaoLancamento($objMdLitIntegracaoDTOSit, $post);
 
             if ($sucesso !== false) {
                 $this->_prepararObjCancelaLancamento($post);
@@ -358,7 +358,7 @@ class MdLitCancelaLancamentoRN extends InfraRN {
 
     public function existeCancelamentoLancamento($idLancamento){
         $objMdLitCancelarLancDTO = new MdLitCancelaLancamentoDTO();
-        $objMdLitCancelarLancDTO->setNumIdMdLitCancelaLancamento($idLancamento);
+        $objMdLitCancelarLancDTO->setNumIdMdLitLancamento($idLancamento);
         $objMdLitCancelarLancDTO->retNumIdMdLitCancelaLancamento();
 
         return $this->contar($objMdLitCancelarLancDTO) > 0;

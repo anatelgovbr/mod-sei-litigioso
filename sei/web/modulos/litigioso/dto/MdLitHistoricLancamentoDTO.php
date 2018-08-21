@@ -71,6 +71,10 @@ class MdLitHistoricLancamentoDTO extends InfraDTO {
 
       $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinSuspenso', 'sin_suspenso');
 
+      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM, 'IdMdLitIntegracao', 'id_md_lit_integracao');
+
+      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM, 'IdMdLitNumeroInteressado', 'id_md_lit_numero_interessado');
+
     //Pk
     $this->configurarPK('IdMdLitHistoricLancamento',InfraDTO::$TIPO_PK_NATIVA);
 
@@ -87,13 +91,18 @@ class MdLitHistoricLancamentoDTO extends InfraDTO {
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdMdLitLancamentoMdLitLancamento', 'id_md_lit_lancamento', 'md_lit_lancamento');
 
     //Get Dados Unidade
-    $this->configurarFK('IdUnidade', 'unidade uni', 'uni.id_unidade');
+    $this->configurarFK('IdUnidade', 'unidade uni', 'uni.id_unidade',InfraDTO::$TIPO_FK_OPCIONAL);
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'SiglaUnidade','uni.sigla','unidade uni');
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'DescricaoUnidade','uni.descricao','unidade uni');
 
     //Get Dados Usuario
-    $this->configurarFK('IdUsuario', 'usuario usu', 'usu.id_usuario');
+    $this->configurarFK('IdUsuario', 'usuario usu', 'usu.id_usuario',InfraDTO::$TIPO_FK_OPCIONAL);
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeUsuario','usu.nome','usuario usu');
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'SiglaUsuario','usu.sigla','usuario usu');
+
+      //relacionamento da tabela md_lit_integracao
+      $this->configurarFK('IdMdLitIntegracao', 'md_lit_integracao', 'id_md_lit_integracao',InfraDTO::$TIPO_FK_OPCIONAL);
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'IntegracaoNome', 'nome', 'md_lit_integracao');
 
   }
 }
