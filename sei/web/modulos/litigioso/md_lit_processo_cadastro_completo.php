@@ -179,6 +179,7 @@
                         <th class="infraTh" width="45%">Interessado</th>
                         <th class="infraTh" width="20%">CNPJ/CPF</th>
                         <th class="infraTh" style="display: none;">Sin param modal</th>
+                        <th class="infraTh" style="display: none;">Contar Lancamento</th>
                         <th class="infraTh" width="10%">Ações</th>
                     </tr>
                     <tbody>
@@ -191,7 +192,7 @@
         <div style="clear:both;">&nbsp;</div>
 
         <!--  INFRAÇÕES -->
-        <div style=" float: left; width: 100%;" \>
+        <div style=" float: left; width: 100%;" class="infraAreaDados" >
             <fieldset id="fieldsetInfracoes" class="infraFieldset NumeroSEINaoValidado">
                 <legend class="infraLegend">&nbsp;Infrações</legend>
 
@@ -320,7 +321,7 @@
                     <input type="hidden" name="hdnCustomizado" id="hdnCustomizado" value=""/>
                     <input type="hidden" name="hdnIdDICadastrado" id="hdnIdDICadastrado" value=""/>
                     <input type="hidden" name="hdnListaDIIndicados" id="hdnListaDIIndicados"
-                           value="<?= $hdnListaDIIndicados ?>"/>
+                           value='<?= $hdnListaDIIndicados ?>'/>
                     <table name="tbDispositivosInfrigidos" id="tbDispositivosInfrigidos" class="infraTable" width="100%"
                            align="left" summary="Lista de Dispositivos Infringidos">
                         <caption
@@ -344,7 +345,32 @@
         <!--  INFRAÇÕES - FIM -->
 
         <div style="clear:both;">&nbsp;</div>
+        <!-- MOTIVOS -->
+        <?php if($existeMotivo || $strItensSelMotivos ):?>
+        <div class="NumeroSEINaoValidado">
+        <fieldset class="infraFieldset" id="fieldMotivo">
+            <legend class="infraLegend">Motivos para Instauração</legend>
+            <div id="divMotivos" class="infraAreaDados" style="height:11.5em;">
 
+
+                <label id="lblMotivos" for="selMotivos" accesskey="" class="<?php echo $existeMotivo ? 'infraLabelObrigatorio' : 'infraLabelOpcional' ?>">Motivos:</label>
+                <input type="text" id="txtMotivos" name="txtMotivos" class="infraText" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" />
+
+                <select id="selMotivos" name="selMotivos" size="4" multiple="multiple" class="infraSelect">
+                    <?=$strItensSelMotivos?>
+                </select>
+                <div id="divOpcoesMotivos">
+                    <img id="imgLupaMotivos" onclick="objLupaMotivos.selecionar();" src="/infra_css/imagens/lupa.gif" alt="Selecionar Motivos" title="Selecionar Motivos" class="infraImg" />
+                    <br>
+                    <img id="imgExcluirMotivos" onclick="objLupaMotivos.remover();" src="/infra_css/imagens/remover.gif" alt="Remover Motivo Selecionado" title="Remover Motivo Selecionado" class="infraImg" />
+                </div>
+                <input type="hidden" id="hdnIdMotivos" name="hdnIdMotivos" value="" />
+
+            </div>
+        </fieldset>
+        </div>
+    <?php  endif; ?>
+        <!-- FIM MOTIVOS -->
         <!--  PROCESSOS A SEREM SOBRESTADOS -->
 
 
@@ -486,11 +512,13 @@
             PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos);
             PaginaSEI::getInstance()->fecharAreaDados();
         ?>
+        <input type="hidden" id="hdnMotivos" name="hdnMotivos" value="<?=$_POST['hdnMotivos']?>" />
     </form>
 
     <form target="alterarContato" method="post" id="frmAlterarContato">
         <input type="hidden" name="hdnContatoIdentificador" id="hdnContatoIdentificador"/>
         <input type="hidden" name="hdnContatoObject" id="hdnContatoObject"/>
+        <input type="hidden" id="hdnMotivos" name="hdnMotivos" value="<?=$_POST['hdnMotivos']?>" />
     </form>
 <?
     PaginaSEI::getInstance()->fecharBody();

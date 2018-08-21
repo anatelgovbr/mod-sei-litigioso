@@ -34,6 +34,7 @@ $txtDtIntimacaoConstituicao = null;
 $dtaConstituicaoDefinitiva  = null;
 $dtaIntimacaoDefinitiva     = null;
 $idMdLitProcessoSituacaoPrimeiraIntimacao = null;
+$idSituacaoConclusivaParametrizada = '';
 
 //Rns
 $objMdLitTipoControleRN     = new MdLitTipoControleRN();
@@ -77,7 +78,6 @@ $strLinkModalCancelarLancamento    = SessaoSEI::getInstance()->assinarLink('cont
 switch($_GET['acao']) {
 
     case 'md_lit_processo_situacao_cadastrar':
-
         $objMdLitDecisaoRN = new MdLitDecisaoRN();
 
         if($openProcesso != '1') {
@@ -103,6 +103,11 @@ switch($_GET['acao']) {
         //Preencher Grid Situação
         $arrGridSitu = $objMdLitProcessoSituacaoRN->retornaDadosSituacoesCadastradas(array($idProcedimento, $idTpControle));
 
+        //Data da última situação conclusiva cadastrada
+        $dtUltimaSitConclusiva = $objMdLitProcessoSituacaoRN->buscarDtSituacaoConclusiva($idProcedimento);
+        $dtaConstituicaoDefinitiva = $dtUltimaSitConclusiva;
+        $dtaIntimacaoDefinitiva    = $dtUltimaSitConclusiva;
+        
       //  $arrGridSit = array();
         $strGridSituacao = PaginaSEI::getInstance()->gerarItensTabelaDinamica($arrGridSitu);
         
@@ -171,7 +176,8 @@ switch($_GET['acao']) {
 
         //combo interessado
         $numInteressado = $objMdLitLancamentoDTO ? $objMdLitLancamentoDTO->getStrNumeroInteressado(): null;
-        $strComboInteressado = MdLitDadoInteressadoINT::montarSelectIdParticipante('null', '&nbsp;', '', $objMdLitControleDTO->getNumIdControleLitigioso(), '', $numInteressado);
+        $numIdMdLitNumeroInteressado = $objMdLitLancamentoDTO ? $objMdLitLancamentoDTO->getNumIdMdLitNumeroInteressado(): null;
+        $strComboInteressado = MdLitDadoInteressadoINT::montarSelectIdContato('null', '&nbsp;', '', $objMdLitControleDTO->getNumIdControleLitigioso(), $numIdMdLitNumeroInteressado);
 
 
 
@@ -199,10 +205,21 @@ switch($_GET['acao']) {
 
     break;
 
-
     //region Erro
     default:
         throw new InfraException("Ação '" . $_GET['acao'] . "' não reconhecida.");
         break;
     //endregion
 }
+//Url Modal Parametrizar Situacao
+$strLinkModalParametrizarSituacao    = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_situacao_visualizar_parametrizar&id_tipo_processo_litigioso='.$idTpControle);
+
+$objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+$objMdLitSituacaoDTO->retTodos();
+$objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($idTpControle);
+$objMdLitSituacaoDTO->setStrSinConclusiva('S');
+$objMdLitSituacaoDTO->setNumMaxRegistrosRetorno(1);
+
+$objMdLitSituacaoRN = new MdLitSituacaoRN();
+$objMdLitSituacaoDTO = $objMdLitSituacaoRN->consultar($objMdLitSituacaoDTO);
+$idSituacaoConclusivaParametrizada = $objMdLitSituacaoDTO ? $objMdLitSituacaoDTO->getNumIdSituacaoLitigioso(): '';

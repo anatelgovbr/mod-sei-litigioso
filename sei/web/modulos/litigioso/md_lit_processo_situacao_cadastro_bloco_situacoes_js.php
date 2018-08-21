@@ -187,7 +187,6 @@
             dataType: 'XML',
             data: paramsAjax,
             success: function (r) {
-
                 //Get Dados Ajax
                 var erro = $.trim($(r).find('Erro').text());
                 var msgExibicao = $.trim($(r).find('MsgExibicao').text());
@@ -217,7 +216,7 @@
                         document.getElementById('rdAlteraPrescricao').checked = true;
                         changePrescricao(document.getElementById('rdAlteraPrescricao'), false);
                         document.getElementById("divBtnAdicionar").style.display = '';
-                    }else{
+                    }else if('<?= $idMdLitProcessoSituacaoPrimeiraIntimacao ?>' != '' ){
                         document.getElementById('divsDatasPrescricao').style.display = '';
 //                        document.getElementById('divsDatasBdPrescricao').style.display = '';
 //                        document.getElementById("divMainPrescricao").style.display = '';
@@ -225,6 +224,7 @@
                         document.getElementById('rdNaoAlteraPrescricao').checked = true;
                         changePrescricao(document.getElementById('rdNaoAlteraPrescricao'), false);
                     }
+                    document.getElementById('divBtnAdicionar').style.display = '';
                 }
 
                 document.getElementById('hdnStrSituacao').value = tipoSituacao;
@@ -412,6 +412,17 @@
                     return false;
                 }
             }
+
+            var houveMotivicacao = false;
+            if(txtQuinquenal != '' && txtQuinquenal !=  document.getElementById('txtDtQuinquenal').getAttribute('data-valor-antigo')){
+                houveMotivicacao = true;
+            }else if(txtIntercorrente != '' && txtIntercorrente !=  document.getElementById('txtDtIntercorrente').getAttribute('data-valor-antigo')){
+                houveMotivicacao = true;
+            }
+            if(!houveMotivicacao){
+                alert('As datas de alteração de prescrição Intercorrente e Quinquenal não podem ser iguais as últimas datas cadastradas.');
+                return false;
+            }
         }
         if(document.getElementById('hdnIdProcessoSituacao').value == '<?= $idMdLitProcessoSituacaoPrimeiraIntimacao ?>'){
             var addSituacao = confirm('Após os dados serem salvos, a alteração da Situação da intimação da instauração será recalculado as datas Intercorrente e Quinquenal baseado na data da intimação. Confirma a operação?');
@@ -487,6 +498,8 @@
             var hdnSinInst    = isAlterarSit ? document.getElementById('hdnSinInstauracaoAlt').value : document.getElementById('hdnSinInstauracao').value;
             var linkDocumento = addLinkExibicaoDocumento(document.getElementById("txtNumeroSei").value);
             var addBranco;
+            var nomeUsuario = document.getElementById('hdnNomeUsuario').value;
+
 
             var arrLinha = [
                 idTabela,
@@ -504,7 +517,7 @@
                 selFases.options[selFases.selectedIndex].text,
                 selSituacoes.options[selSituacoes.selectedIndex].text,
                 dataAtual,
-                document.getElementById('hdnNomeUsuario').value,
+                nomeUsuario,
                 document.getElementById('hdnNomeUnidade').value,
                 document.getElementById('hdnStrSituacao').value,
                 vlTxtValor,
@@ -568,12 +581,38 @@
            var row = objTabelaDinamicaSituacao.procuraLinha(idTabela);
            atualizarTodosLinks(row);
            document.getElementById('tbSituacao').rows[row].cells[9].innerHTML = '<div style="text-align:center;">' + linkDocumento + '</div>';
+           document.getElementById('tbSituacao').rows[row].cells[15].innerHTML = '<div style="text-align:center;">' + nomeUsuario + '</div>';
+           document.getElementById('tbSituacao').rows[row].cells[16].innerHTML = '<div style="text-align:center;">' + document.getElementById('hdnNomeUnidade').value + '</div>';
+
+            if(!isTpSitDecisoria && document.getElementById('hdnErroSituacao').value == 0){
+                if(document.getElementById('fieldsetMulta') != null){
+                    document.getElementById('btnCancelarLancamento').style.display = 'none';
+                    consultarExtratoMulta();
+                }
+            }
 
             //Botão apresentado apenas se a última situação cadastrada for do tipo Recursal(suspender recurso no fieldset multa).
             if(adicionouSit && isTpSitRecursal && !document.getElementById('chkReducaoRenuncia').checked){
                 document.getElementById('btnSuspenderLancamento').style.display = '';
             }
+
+            replicarDataParaFieldsetGestaoMulta();
+
         }
+    }
+
+
+    function replicarDataParaFieldsetGestaoMulta(){
+        var isConclusiva        = $.trim(document.getElementById('hdnStrSituacao').value) == 'Conclusiva';
+        var isVisibleFieldMulta = document.getElementById('fieldsetMulta').style.display != "none";
+
+        if(isConclusiva && isVisibleFieldMulta){
+            var valorDt = document.getElementById('txtDtTipoSituacao').value;
+            document.getElementById('txtDtConstituicao').value = valorDt;
+            document.getElementById('txtDtIntimacaoConstituicao').value = valorDt;
+            document.getElementById('hdnDtSituacaoConclusiva').value = valorDt;
+        }
+
     }
 
     function atualizarTodosLinks(row) {
@@ -775,6 +814,7 @@
                 bloquearTelaParaAdicao(false, false);
                 return true;
             }
+
         }
 
         objTabelaDinamicaSituacao.verificarTabelaVazia = function (){
@@ -792,7 +832,7 @@
             var tbTabelaDinamicaSit = document.getElementById('tbSituacao');
             for (var i = 1; i < tbTabelaDinamicaSit.rows.length; i++) {
                var ordemAtual = tbTabelaDinamicaSit.rows[i].cells[21].innerText.trim();
-                if(ordemLinha < ordemAtual){
+                if(parseInt(ordemLinha) < parseInt(ordemAtual)){
                     ordemLinha = ordemAtual;
                 }
             }
@@ -837,7 +877,6 @@
 
 
         objTabelaDinamicaSituacao.alterar = function(arr){
-
             limparCamposRelacionados();
 
             if(isAlterarSit){
@@ -859,6 +898,7 @@
             //Get Tipo Situação
             var tipoSituacao = verificaSituacao();
 
+            document.getElementById('hdnStrSituacao').value = tipoSituacao;
             //Controlar Exibicao do Sel Fases (Existem dois, um pra alteração, outro pra inserção,
             // pois os dados são manipulados de formas diferentes
             controlarExibicaoCorretaSelFases(true);
@@ -890,7 +930,7 @@
             document.getElementById('hdnSinInstauracaoAlt').value = arr[25];
 
             //Realiza o controle de Prescrição
-            if(document.getElementById('hdnIdProcessoSituacao').value != '<?= $idMdLitProcessoSituacaoPrimeiraIntimacao ?>'){
+            if('<?= $idMdLitProcessoSituacaoPrimeiraIntimacao ?>' != '' && document.getElementById('hdnIdProcessoSituacao').value > '<?= $idMdLitProcessoSituacaoPrimeiraIntimacao ?>'){
                 controlarExibicaoPrescricaoAlterar(arr);
             }
 
@@ -913,6 +953,7 @@
             document.getElementById('hdnIdDocumentoAlterado').value = arr[24];
 
         }
+        document.getElementById('txtNumeroSei').focus();
 
     }
 
@@ -1013,7 +1054,47 @@
         return true;
     }
 
+    function isUltimaSituacaoDecisoria(){
+        var hdnSituacaoIsDecisao = document.getElementById("hdnSituacaoIsDecisao").value;
+        var arrObjTabelaSituacao = objTabelaDinamicaSituacao.obterItens();
+        var decisoria = false;
 
+        if(isTpSitDecisoria && document.getElementById('hdnErroSituacao').value == 0 ){
+            return true;
+        }
+
+        if(hdnSituacaoIsDecisao != ''){
+
+            var ret = JSON.parse(hdnSituacaoIsDecisao);
+            var idUltimaSituacao = arrObjTabelaSituacao[objTabelaDinamicaSituacao.obterItens().length -1][0];
+
+            for (i in ret) {
+                if(ret[i] == idUltimaSituacao){
+                    decisoria = true;
+                    break;
+                }
+            }
+        }
+        return decisoria;
+    }
+
+    function isExisteSituacaoConclusiva(){
+        var hdnSituacaoIsDecisao = document.getElementById("hdnSituacaoIsDecisao").value;
+        var arrObjTabelaSituacao = objTabelaDinamicaSituacao.obterItens();
+        var bolConclusiva = false;
+
+        if(hdnSituacaoIsDecisao != ''){
+
+            var idSituacaoParametrizada = '<?php echo $idSituacaoConclusivaParametrizada ?>';
+            for(var i = 0; i < arrObjTabelaSituacao.length; i++){
+                //o id_md_lit_situacao na parametrização é conclusiva
+                if(idSituacaoParametrizada == arrObjTabelaSituacao[i][4]){
+                    bolConclusiva = true;
+                }
+            }
+        }
+        return bolConclusiva;
+    }
 
 </script>
 

@@ -32,7 +32,7 @@
                 } else {
                     $a = array_fill(0, count($arrPalavrasPesquisa), 'Nome');
                     $c = array_fill(0, count($arrPalavrasPesquisa), InfraDTO::$OPER_LIKE);
-                    $d = array_fill(0, count($arrPalavrasPesquisa) - 1, InfraDTO::$OPER_LOGICO_OR);
+                    $d = array_fill(0, count($arrPalavrasPesquisa) - 1, InfraDTO::$OPER_LOGICO_AND);
                     $objSerieDTO->adicionarCriterio($a, $c, $arrPalavrasPesquisa, $d);
                 }
             }

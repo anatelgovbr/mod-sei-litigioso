@@ -141,7 +141,7 @@
     <label id="lblNome" for="txtNome" accesskey="f" class="infraLabelObrigatorio">Conduta:</label>
     <input type="text" id="txtNome" name="txtNome" class="infraText"
            value="<?= PaginaSEI::tratarHTML($objCondutaLitigiosoDTO->getStrNome()); ?>"
-           onkeypress="return infraMascaraTexto(this,event,100);" maxlength="100"
+           onkeypress="return infraMascaraTexto(this,event,500);" maxlength="500"
            tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
 
     <input type="hidden" id="hdnIdCondutaLitigioso" name="hdnIdCondutaLitigioso"

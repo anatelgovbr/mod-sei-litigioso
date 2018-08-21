@@ -31,6 +31,10 @@
                                            'Descricao',
                                            'descricao');
 
+            $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_DTA,
+                                                    'DtaCorte',
+                                                    'dta_corte');
+
             $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
                                            'SinAtivo',
                                            'sin_ativo');
@@ -40,6 +44,7 @@
                 'sin_param_modal_compl_interes');
 
             $this->adicionarAtributo(InfraDTO::$PREFIXO_ARR, 'ObjRelTipoControleLitigiosoUsuarioDTO');
+            $this->adicionarAtributo(InfraDTO::$PREFIXO_ARR, 'ObjRelTipoControleLitigiosoMotivoDTO');
             $this->adicionarAtributo(InfraDTO::$PREFIXO_ARR, 'ObjRelTipoControleLitigiosoTipoProcedimentoDTO');
             $this->adicionarAtributo(InfraDTO::$PREFIXO_ARR, 'ObjRelTipoControleLitigiosoUnidadeDTO');
             $this->adicionarAtributo(InfraDTO::$PREFIXO_ARR, 'ObjRelTipoControleLitigiosoTipoProcedimentoSobrestadoDTO');

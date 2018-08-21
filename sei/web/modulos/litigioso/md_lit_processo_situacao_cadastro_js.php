@@ -31,6 +31,10 @@ var adicionouSit              = false;
     }
 
 function OnSubmitForm() {
+    if(infraJanelaModal != null){
+        infraJanelaModal.close();
+    }
+    infraFecharJanelaModal();
     if (typeof verificarCondicionaisSituacao != "undefined" && !verificarCondicionaisSituacao()) {
         return false;
     }
@@ -41,13 +45,12 @@ function OnSubmitForm() {
         return false;
     }
 
-    var salvar = confirm('Após os dados serem salvos, a alteração da Situação adicionada será possível apenas pelo Gestor do Controle. Confirma a operação?');
-    if(salvar){
-        //exibe o aviso pois o serviço pode deixar a requisição lenta
-        infraExibirAviso(false);
-        return true;
-    }
-    return false;
+    //exibe o aviso pois o web-service pode deixar a requisição lenta
+    document.getElementById('txtDtConstituicao').disabled = false;
+    document.getElementById('chkHouveConstituicao').disabled = false;
+    document.getElementById('chkReducaoRenuncia').disabled = false;
+    infraExibirAviso(false);
+    return true;
 }
 
 function bloquearTelaOpenProcesso(){
@@ -59,6 +62,10 @@ function bloquearTelaOpenProcesso(){
             objs[i].disabled = true;
         }
     }
+}
+
+function modalParametrizarSituacao(element){
+    infraAbrirJanela('<?= $strLinkModalParametrizarSituacao ?>','janelaParametrizarSituacao',1000,700);
 }
 
 

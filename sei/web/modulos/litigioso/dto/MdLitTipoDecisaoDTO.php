@@ -37,6 +37,8 @@
 
             $this->configurarPK('IdTipoDecisaoLitigioso', InfraDTO::$TIPO_PK_NATIVA);
 
+            $this->configurarExclusaoLogica('SinAtivo','N');
+
             $this->adicionarAtributo(InfraDTO::$PREFIXO_ARR, 'ObjRelEspecieLitigiosoDTO');
 
         }

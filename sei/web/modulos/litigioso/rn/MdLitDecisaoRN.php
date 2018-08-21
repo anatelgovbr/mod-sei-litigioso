@@ -88,16 +88,20 @@ class MdLitDecisaoRN extends InfraRN {
         //Valida Permissao
 //      SessaoSEI::getInstance()->validarPermissao('md_lit_decisao_cadastrar');
 
-        $idMdLitProcessoSituacao = $arrDecisao['id_md_lit_processo_situacao'];
-        if(!$idMdLitProcessoSituacao){
-            $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
-            $objMdLitProcessoSituacaoDTO = $objMdLitProcessoSituacaoRN->buscarUltimaSituacaoDecisoria($arrDecisao['id_procedimento']);
+        $objMdLitProcessoSituacaoDTO = new MdLitProcessoSituacaoDTO();
+        $objMdLitProcessoSituacaoDTO->retTodos();
+        $objMdLitProcessoSituacaoDTO->setStrSinDecisoriaSit('S');
+        $objMdLitProcessoSituacaoDTO->setDblIdProcedimento($arrDecisao['id_procedimento']);
+        $objMdLitProcessoSituacaoDTO->setNumMaxRegistrosRetorno(1);
+        $objMdLitProcessoSituacaoDTO->setOrdDthInclusao(InfraDTO::$TIPO_ORDENACAO_DESC);
 
-            if(!$objMdLitProcessoSituacaoDTO)
-                return null;
+        $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+        $objMdLitProcessoSituacaoDTO = $objMdLitProcessoSituacaoRN->consultar($objMdLitProcessoSituacaoDTO);
 
-            $idMdLitProcessoSituacao = $objMdLitProcessoSituacaoDTO->getNumIdMdLitProcessoSituacao();
-        }
+        if(!$objMdLitProcessoSituacaoDTO)
+            return null;
+
+        $idMdLitProcessoSituacao = $objMdLitProcessoSituacaoDTO->getNumIdMdLitProcessoSituacao();
         $ret = array();
         foreach ($arrDecisao['lista'] as $decisao){
             $decisao[4] = str_replace('.', '',$decisao[4]);
@@ -391,8 +395,8 @@ class MdLitDecisaoRN extends InfraRN {
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getStrNomeMdLitEspecieDecisao();
 
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getDtaInclusao();
-          $infracaoArr[$key][] = $objMdLitDecisaoDTO->getStrNomeUsuario();
-          $infracaoArr[$key][] = $objMdLitDecisaoDTO->getStrSiglaUnidade();
+          $infracaoArr[$key][] = htmlentities('<a alt="'.$objMdLitDecisaoDTO->getStrNomeUsuario().'" title="'.$objMdLitDecisaoDTO->getStrNomeUsuario().'" class="ancoraSigla"> '.$objMdLitDecisaoDTO->getStrSiglaUsuario().' </a>');
+          $infracaoArr[$key][] = htmlentities('<a alt="'.$objMdLitDecisaoDTO->getStrDescricaoUnidade().'" title="'.$objMdLitDecisaoDTO->getStrDescricaoUnidade().'" class="ancoraSigla"> '.$objMdLitDecisaoDTO->getStrSiglaUnidade().' </a>');
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getNumIdMdLitProcessoSituacao();
 
       }

@@ -18,7 +18,7 @@
       $objTipoControleLitigiosoDTO->setNumIdTipoControleLitigioso(null);
       $objTipoControleLitigiosoDTO->setStrSigla($_POST['txtSigla']);
 	  $objTipoControleLitigiosoDTO->setStrDescricao($_POST['txtDescricao']);
-
+	  $objTipoControleLitigiosoDTO->setDtaDtaCorte($_POST['txtDtCorte']);
       if (isset($_POST['sbmCadastrarTipoControleLitigioso'])) {
               	
       	try{
@@ -35,11 +35,24 @@
         		//$objTipoControleLitigiosoUnidadeDTO->setNumSequencia($x);
         		array_push( $arrObjTipoControleLitigiosoGestorDTO, $objTipoControleLitigiosoUsuarioDTO );
         	}
-        	 
+
         	//print_r( $arrObjTipoControleLitigiosoGestorDTO ); die();
         	$objTipoControleLitigiosoDTO->setArrObjRelTipoControleLitigiosoUsuarioDTO($arrObjTipoControleLitigiosoGestorDTO);
-        	$objTipoControleLitigiosoDTO->setArrObjRelTipoControleLitigiosoUsuarioDTO($arrObjTipoControleLitigiosoGestorDTO);
-        	         	
+        	//$objTipoControleLitigiosoDTO->setArrObjRelTipoControleLitigiosoUsuarioDTO($arrObjTipoControleLitigiosoGestorDTO);
+
+            //MOTIVOS
+            $arrObjTipoControleLitigiosoMotivosDTO = array();
+            $arrMotivos = PaginaSEI::getInstance()->getArrValuesSelect($_POST['hdnMotivos']);
+
+            for($x = 0; $x < count($arrMotivos);$x++){
+                $objTipoControleLitigiosoMotivosDTO = new MdLitRelTpControlMotiDTO();
+                $objTipoControleLitigiosoMotivosDTO->setNumIdMdLitMotivo($arrMotivos[$x]);
+
+                array_push($arrObjTipoControleLitigiosoMotivosDTO ,$objTipoControleLitigiosoMotivosDTO );
+            }
+
+            $objTipoControleLitigiosoDTO->setArrObjRelTipoControleLitigiosoMotivoDTO($arrObjTipoControleLitigiosoMotivosDTO);
+
         	//TIPOS DE PROCESSOS ASSOCIADOS
         	$arrObjTipoControleLitigiosoTipoProcedimentoDTO = array();
         	$arrTipoProcessos = PaginaSEI::getInstance()->getArrValuesSelect($_POST['hdnTipoProcessos']);
@@ -162,8 +175,34 @@
         	  $strItensSelGestores .= "<option value='" . $objUsuarioDTO->getNumIdUsuario() .  "'>" . $objUsuarioDTO->getStrNome() . "</option>";
         	}
         }
-        
-        //consultar os tipos de processos relacionados
+
+        //consultar os motivos
+          $objTipoControleLitigiosoMotivosDTO = new MdLitRelTpControlMotiDTO();
+          $objTipoControleLitigiosoMotivosDTO->retTodos();
+          $objTipoControleLitigiosoMotivosDTO->setNumIdMdLitTipoControle($_GET['id_tipo_processo_litigioso']);
+
+          $objTipoControleLitigiosoMotivosRN = new MdLitRelTpControlMotiRN();
+          $arrMotivos = $objTipoControleLitigiosoMotivosRN->listar( $objTipoControleLitigiosoMotivosDTO );
+          $objTipoControleLitigiosoDTO->setArrObjRelTipoControleLitigiosoMotivoDTO( $arrMotivos );
+
+          $strItensSelMotivos = "";
+          $objMotivoRN = new MdLitMotivoRN();
+
+          for($x = 0;$x<count($arrMotivos);$x++){
+
+              $objMotivoDTO = new MdLitMotivoDTO();
+              $objMotivoDTO->retNumIdMdLitMotivo();
+              $objMotivoDTO->retStrDescricao();
+
+              $objMotivoDTO->setNumIdMdLitMotivo($arrMotivos[$x]->getNumIdMdLitMotivo());
+              $objMotivoDTO = $objMotivoRN->consultar( $objMotivoDTO );
+
+              if( $objMotivoDTO != null && is_object( $objMotivoDTO ) ) {
+                  $strItensSelMotivos .= "<option value='" . $objMotivoDTO->getNumIdMdLitMotivo() .  "'>" . $objMotivoDTO->getStrDescricao() . "</option>";
+              }
+          }
+
+          //consultar os tipos de processos relacionados
         $objTipoControleLitigiosoTipoProcedimentoDTO = new MdLitRelTipoControleTipoProcedimentoDTO();
         $objTipoControleLitigiosoTipoProcedimentoDTO->retTodos();
         $objTipoControleLitigiosoTipoProcedimentoDTO->setNumIdTipoControleLitigioso($_GET['id_tipo_processo_litigioso']);
@@ -217,6 +256,7 @@
         $objTipoControleLitigiosoDTO->setNumIdTipoControleLitigioso($_POST['hdnIdTipoControleLitigioso']);
         $objTipoControleLitigiosoDTO->setStrSigla($_POST['txtSigla']);
 		$objTipoControleLitigiosoDTO->setStrDescricao($_POST['txtDescricao']);
+		$objTipoControleLitigiosoDTO->setDtaDtaCorte($_POST['txtDtCorte']);
 		
 		$objTipoControleLitigiosoRN = new MdLitTipoControleRN();
 		
@@ -239,8 +279,25 @@
 		
 		//print_r( $arrObjTipoControleLitigiosoGestorDTO ); die();
 		$objTipoControleLitigiosoDTO->setArrObjRelTipoControleLitigiosoUsuarioDTO($arrObjTipoControleLitigiosoGestorDTO);
-		 
-		//TIPOS DE PROCESSOS ASSOCIADOS
+
+          //MOTIVOS
+          $arrObjTipoControleLitigiosoMotivoDTO = array();
+          $arrMotivos = PaginaSEI::getInstance()->getArrValuesSelect($_POST['hdnMotivos']);
+
+
+          for($x = 0; $x < count($arrMotivos); $x++){
+              //echo $arrGestores[$x]; die();
+              $objTipoControleLitigiosoMotivoDTO = new MdLitRelTpControlMotiDTO();
+              $objTipoControleLitigiosoMotivoDTO->setNumIdMdLitMotivo($arrMotivos[$x]);
+
+              array_push( $arrObjTipoControleLitigiosoMotivoDTO, $objTipoControleLitigiosoMotivoDTO );
+          }
+
+          $objTipoControleLitigiosoDTO->setArrObjRelTipoControleLitigiosoMotivoDTO($arrObjTipoControleLitigiosoMotivoDTO);
+
+
+
+          //TIPOS DE PROCESSOS ASSOCIADOS
 		$arrObjTipoControleLitigiosoTipoProcedimentoDTO = array();
 		$arrTipoProcessos = PaginaSEI::getInstance()->getArrValuesSelect($_POST['hdnTipoProcessos']);
 		 
@@ -356,6 +413,32 @@
       
       	$strItensSelGestores .= "<option value='" . $objUsuarioDTO->getNumIdUsuario() .  "'>" . $objUsuarioDTO->getStrNome() . "</option>";
       }
+
+        //consultar os motivos
+        $objTipoControleLitigiosoMotivosDTO = new MdLitRelTpControlMotiDTO();
+        $objTipoControleLitigiosoMotivosDTO->retTodos();
+        $objTipoControleLitigiosoMotivosDTO->setNumIdMdLitTipoControle($_GET['id_tipo_processo_litigioso']);
+
+        $objTipoControleLitigiosoMotivosRN = new MdLitRelTpControlMotiRN();
+        $arrMotivos = $objTipoControleLitigiosoMotivosRN->listar( $objTipoControleLitigiosoMotivosDTO );
+        $objTipoControleLitigiosoDTO->setArrObjRelTipoControleLitigiosoMotivoDTO( $arrMotivos );
+
+        $strItensSelMotivos = "";
+        $objMotivoRN = new MdLitMotivoRN();
+
+        for($x = 0;$x<count($arrMotivos);$x++){
+
+            $objMotivoDTO = new MdLitMotivoDTO();
+            $objMotivoDTO->retNumIdMdLitMotivo();
+            $objMotivoDTO->retStrDescricao();
+
+            $objMotivoDTO->setNumIdMdLitMotivo($arrMotivos[$x]->getNumIdMdLitMotivo());
+            $objMotivoDTO = $objMotivoRN->consultar( $objMotivoDTO );
+
+            if( $objMotivoDTO != null && is_object( $objMotivoDTO ) ) {
+                $strItensSelMotivos .= "<option value='" . $objMotivoDTO->getNumIdMdLitMotivo() .  "'>" . $objMotivoDTO->getStrDescricao() . "</option>";
+            }
+        }
       
       //consultar os tipos de processos relacionados
       $objTipoControleLitigiosoTipoProcedimentoDTO = new MdLitRelTipoControleTipoProcedimentoDTO();

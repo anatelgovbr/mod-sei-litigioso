@@ -81,8 +81,14 @@
                                            'sin_ativo');
 
 
+            $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
+                                            'SinRevogado',
+                                            'sin_revogado');
+
+
             $this->adicionarAtributo(InfraDTO::$PREFIXO_ARR, 'ObjRelDispositivoNormativoCondutaDTO');
             $this->adicionarAtributo(InfraDTO::$PREFIXO_ARR, 'ObjRelDispositivoNormativoTipoControleDTO');
+            $this->adicionarAtributo(InfraDTO::$PREFIXO_ARR, 'ObjRelMdLitRelDispositivoNormativoRevogadoDTO');
 
             $this->configurarPK('IdDispositivoNormativoLitigioso', InfraDTO::$TIPO_PK_NATIVA);
 

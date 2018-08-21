@@ -21,7 +21,7 @@
 
 
                 <caption class="infraCaption">
-                    <?= PaginaSEI::getInstance()->gerarCaptionTabela('Infrações cadastradas para este Processo', 1) ?>
+                    <?= PaginaSEI::getInstance()->gerarCaptionTabela('Decisões cadastradas para este Processo', 1) ?>
                 </caption>
 
 
@@ -36,11 +36,11 @@
                     <th class="infraTh" style="display: none">ID Usuário</th>
                     <th class="infraTh" style="display: none">ID Unidade</th>
                     <th class="infraTh">Infração</th>
-                    <th class="infraTh">Última decisão</th>
-                    <th class="infraTh">Espécie de decisão</th>
-                    <th class="infraTh">Data da operação</th>
-                    <th class="infraTh">Usuário</th>
-                    <th class="infraTh">Unidade</th>
+                    <th class="infraTh">Última Decisão</th>
+                    <th class="infraTh">Espécie de Decisão</th>
+                    <th class="infraTh">Data da Operação</th>
+                    <th class="infraTh" align="center" >Usuário</th>
+                    <th class="infraTh" align="center" >Unidade</th>
                 </tr>
 
             </table>

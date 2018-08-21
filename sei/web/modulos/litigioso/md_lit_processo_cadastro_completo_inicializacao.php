@@ -11,8 +11,9 @@
     $strLinkAjaxRemoverSobrestamento = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_processo_litigioso_remover_sobrestamento');
     $strLinkDocInstaurador           = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_processo_cadastro_completo&id_procedimento=' . $_GET['id_procedimento']);
     $strLinkAjaxBuscarInteressado    = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_interessado_processo');
-    $strLinkAjaxExisteInfracao      = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_processo_litigioso_existe_infracao');
-    $strLinkAlteraProcesso          = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_alterar&acao_origem='.$_GET['acao'].'&acao_retorno='.$_GET['acao'].'&id_procedimento=' . $_GET['id_procedimento'].'&arvore=1');
+    $strLinkAjaxExisteInfracao       = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_processo_litigioso_existe_infracao');
+    $strLinkAlteraProcesso           = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_alterar&acao_origem='.$_GET['acao'].'&acao_retorno='.$_GET['acao'].'&id_procedimento=' . $_GET['id_procedimento'].'&arvore=1');
+    $strLinkAjaxConsultarDispositivo = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_dispositivo_consultar');
 
     $strMsgTooltipInteressados = 'Caso queira adicionar Interessados, acesse o cadastro do Processo para alterar.';
 
@@ -48,10 +49,12 @@
 
         $idProcedimento = $_REQUEST['idProcedimento'];
 
+        
         switch ($_GET['acao']) {
 
             case 'md_lit_processo_cadastro_cadastrar':
             case 'md_lit_processo_cadastro_completo':
+            case 'md_lit_processo_cadastro_consultar':
 
                 if (count($_POST) > 0) {
 
@@ -95,11 +98,17 @@
                 $ObjRelTipoControleLitigiosoTipoProcedimentoDTO->retTodos();
                 $ObjRelTipoControleLitigiosoTipoProcedimentoDTO->setNumIdTipoProcedimento($procedimentoDTO->getNumIdTipoProcedimento());
                 $ArrObjRelTipoControleLitigiosoTipoProcedimentoDTO = $ObjRelTipoControleLitigiosoTipoProcedimentoRN->listar($ObjRelTipoControleLitigiosoTipoProcedimentoDTO);
+
+
+
                 //id_tipo_procedimento
 
                 $objTipoControleLitigiosoDTO = new MdLitTipoControleDTO();
                 $objTipoControleLitigiosoDTO->retTodos();
                 if(count($ArrObjRelTipoControleLitigiosoTipoProcedimentoDTO) > 0){
+                    //id_MdLitRelTipoControleTipoProcedimentoDTO
+                    $idMdRelTipoCntroleTipoProcedimento = $ArrObjRelTipoControleLitigiosoTipoProcedimentoDTO[0]->getNumIdTipoControleLitigioso();
+
                     $objTipoControleLitigiosoDTO->setNumIdTipoControleLitigioso($ArrObjRelTipoControleLitigiosoTipoProcedimentoDTO[0]->getNumIdTipoControleLitigioso());
                 }else{
                     /*
@@ -115,11 +124,11 @@
                     $objMdLitControleDTO = $objMdLitControleRN->consultar($objMdLitControleDTO);
 
                     $objTipoControleLitigiosoDTO->setNumIdTipoControleLitigioso($objMdLitControleDTO->getNumIdMdLitTipoControle());
+                    $idMdRelTipoCntroleTipoProcedimento = $objMdLitControleDTO->getNumIdMdLitTipoControle();
                 }
 
                 $objTipoControleLitigiosoRN  = new MdLitTipoControleRN();
                 $objTipoControleLitigiosoDTO = $objTipoControleLitigiosoRN->consultar($objTipoControleLitigiosoDTO);
-
                 $strNomeTipoControle = $objTipoControleLitigiosoDTO->getStrSigla();
 
                 //Links Componentes
@@ -140,7 +149,11 @@
                 //Conduta - Select em tela
                 $strItensSelConduta = MdLitCondutaINT::montarSelectConduta(null, null, null, null, $idTpControle);
 
-                // TIPO DE CONTROLE LITIGIOSO - GERAR SOBRESTADOS
+                // Link Motivos
+                $strLinkMotivosSelecao = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_motivo_selecionar&tipo_selecao=2&id_object=objLupaMotivos&idTipoControle='.$idMdRelTipoCntroleTipoProcedimento);
+                $strLinkAjaxMotivos = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=motivo_auto_completar');
+
+            // TIPO DE CONTROLE LITIGIOSO - GERAR SOBRESTADOS
                 // TELA : Alterar Tipo de Controle Litigioso
                 // OPÇÃO: Pode sobrestar a tramitação de outros processos
                 // [RN8] Caso seja um Tipo de Controle Litigioso normal (que não gera Sobrestamento de outros processos),
@@ -200,15 +213,17 @@
                     $objDocumentoDTO->retStrNumero();
                     $objDocumentoDTO->retStrNomeSerie();
                     $objDocumentoDTO->retStrProtocoloDocumentoFormatado();
+                    $objDocumentoDTO->retStrDescricaoUnidadeGeradoraProtocolo();
                     $objDocumentoDTO->retStrSiglaUnidadeGeradoraProtocolo();
                     $objDocumentoDTO->retArrObjAssinaturaDTO();
+                    $objDocumentoDTO->retDtaGeracaoProtocolo();
 
 
                     $objDocumentoRN  = new DocumentoRN();
                     $objDocumentoDTO = $objDocumentoRN->consultarRN0005($objDocumentoDTO);
 
                     //ASSINATURA
-                    $Assinatura    = '';
+                    $dataDocumento    = '';
                     $arrAssinatura = $objDocumentoDTO->getArrObjAssinaturaDTO();
                     if (count($arrAssinatura) > 0) {
                         $objAssinaturaDTO = new AssinaturaDTO();
@@ -217,9 +232,12 @@
                         $objAssinaturaRN     = new AssinaturaRN();
                         $arrObjAssinaturaDTO = $objAssinaturaRN->listarRN1323($objAssinaturaDTO);
                         if (count($arrObjAssinaturaDTO) > 0) {
-                            $Assinatura = explode(' ', $arrObjAssinaturaDTO[0]->getDthAberturaAtividade());
-                            $Assinatura = $Assinatura[0];
+                            $dataDocumento = explode(' ', $arrObjAssinaturaDTO[0]->getDthAberturaAtividade());
+                            $dataDocumento = $dataDocumento[0];
                         }
+                    }
+                    if(!$dataDocumento){
+                        $dataDocumento = $objDocumentoDTO->getDtaGeracaoProtocolo();
                     }
 
                     $arr[] = array(
@@ -228,9 +246,9 @@
                         , $objDocumentoDTO->getStrProtocoloDocumentoFormatado()
                         , $objDocumentoDTO->getStrNumero()
                         , $objDocumentoDTO->getStrNomeSerie()
-                        , $objDocumentoDTO->getStrNomeSerie() . ' nº ' . $objDocumentoDTO->getStrNumero() . ' (' . $objDocumentoDTO->getStrProtocoloDocumentoFormatado() . ')'
-                        , $objDocumentoDTO->getStrSiglaUnidadeGeradoraProtocolo()
-                        , $Assinatura
+                        , $objDocumentoDTO->getStrNomeSerie() . ' ' . $objDocumentoDTO->getStrNumero() . ' (' . $objDocumentoDTO->getStrProtocoloDocumentoFormatado() . ')'
+                        , htmlentities('<a alt="'.$objDocumentoDTO->getStrDescricaoUnidadeGeradoraProtocolo().'" title="'.$objDocumentoDTO->getStrDescricaoUnidadeGeradoraProtocolo().'" class="ancoraSigla" > '.$objDocumentoDTO->getStrSiglaUnidadeGeradoraProtocolo().'</a>')
+                        , $dataDocumento
                     );
 
                     // AÇÕES - serão tratadas no .js
@@ -245,6 +263,8 @@
                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retTodos();
                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retStrDispositivo();
                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retStrNorma();
+                    $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retStrUrlDispositivo();
+                    $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retStrDescricaoDispositivo();
                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retNumIdCondutaLitigioso();
                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retStrConduta();
                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retDtaInfracao();
@@ -255,12 +275,20 @@
 
                     $arr = null;
                     foreach ($arrObjRelDispositivoNormativoCondutaControleLitigiosoDTO as $objRelDispositivoNormativoCondutaControleLitigioso) {
+                        $norma = $objRelDispositivoNormativoCondutaControleLitigioso->getStrNorma();
+                        $dispositivo = $objRelDispositivoNormativoCondutaControleLitigioso->getStrDispositivo();
+                        if($objRelDispositivoNormativoCondutaControleLitigioso->getStrUrlDispositivo() != ''){
+                            $norma = '<a href="'.$objRelDispositivoNormativoCondutaControleLitigioso->getStrUrlDispositivo().'" style="font-size: inherit !important;" target="_blank" title="Acesse a Norma">'.$objRelDispositivoNormativoCondutaControleLitigioso->getStrNorma().'</a>';
+                        }
+                        if($objRelDispositivoNormativoCondutaControleLitigioso->getStrDescricaoDispositivo() != ''){
+                            $dispositivo = '<span style="font-size: inherit !important;" title="'.$objRelDispositivoNormativoCondutaControleLitigioso->getStrDescricaoDispositivo().'">'.$dispositivo.'</span>';
+                        }
                         $arr[] = array(
                             $objRelDispositivoNormativoCondutaControleLitigioso->getNumIdDispositivoNormativoNormaCondutaControle(),
                             $objRelDispositivoNormativoCondutaControleLitigioso->getNumIdDispositivoNormativoLitigioso() . '-' . $objRelDispositivoNormativoCondutaControleLitigioso->getNumIdCondutaLitigioso()
-                            , $objRelDispositivoNormativoCondutaControleLitigioso->getStrNorma()
+                            , $norma
                             , $objRelDispositivoNormativoCondutaControleLitigioso->getNumIdDispositivoNormativoLitigioso()
-                            , $objRelDispositivoNormativoCondutaControleLitigioso->getStrDispositivo()
+                            , $dispositivo
                             , $objRelDispositivoNormativoCondutaControleLitigioso->getNumIdCondutaLitigioso()
                             , $objRelDispositivoNormativoCondutaControleLitigioso->getStrConduta()
                             , $objRelDispositivoNormativoCondutaControleLitigioso->getDtaInfracao()
@@ -346,8 +374,40 @@
 
                     // RECUPERANDO DO BD - FIM
                     $txtNumeroSei = $objDocumentoDTO->getStrProtocoloDocumentoFormatado();
-                }
 
+                    //CONSULTAR os motivos
+                    $objmdLitRelControleMotivoDTO = new MdLitRelControleMotivoDTO();
+                    $objmdLitRelControleMotivoDTO->retTodos();
+                    $objmdLitRelControleMotivoDTO->setNumIdMdLitControle($hdnIdMdLitControle);
+
+                    $objmdLitRelControleMotivoRN = new MdLitRelControleMotivoRN();
+                    $arrMotivos = $objmdLitRelControleMotivoRN->listar( $objmdLitRelControleMotivoDTO );
+
+                   // $objTipoControleLitigiosoDTO->setArrObjRelTipoControleLitigiosoMotivoDTO( $arrMotivos );
+
+                    $strItensSelMotivos = "";
+                    $objMotivoRN = new MdLitMotivoRN();
+
+                    for($x = 0;$x<count($arrMotivos);$x++){
+
+                        $objMotivoDTO = new MdLitMotivoDTO();
+                        $objMotivoDTO->retNumIdMdLitMotivo();
+                        $objMotivoDTO->retStrDescricao();
+
+                        $objMotivoDTO->setNumIdMdLitMotivo($arrMotivos[$x]->getNumIdMdLitMotivo());
+                        $objMotivoDTO = $objMotivoRN->consultar( $objMotivoDTO );
+
+                        if( $objMotivoDTO != null && is_object( $objMotivoDTO ) ) {
+                            $strItensSelMotivos .= "<option value='" . $objMotivoDTO->getNumIdMdLitMotivo() .  "'>" . $objMotivoDTO->getStrDescricao() . "</option>";
+                        }
+                    }
+                }
+                $objMdLitRelTpControlMotiDTO = new MdLitRelTpControlMotiDTO();
+                $objMdLitRelTpControlMotiDTO->retTodos(false);
+                $objMdLitRelTpControlMotiDTO->setNumIdMdLitTipoControle($idTpControle);
+
+                $objMdLitRelTpControlMotiRN = new MdLitRelTpControlMotiRN();
+                $existeMotivo = $objMdLitRelTpControlMotiRN->contar($objMdLitRelTpControlMotiDTO);
 
                 $bolOperacao = 'a';
 
@@ -362,5 +422,7 @@
         PaginaSEI::getInstance()->processarExcecao($e);
     }
 
-    $arrComandos[] = '<button type="submit" accesskey="S" name="sbmCadastrarDispositivoNormativoLitigioso" id="sbmCadastrarDispositivoNormativoLitigioso" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
-    $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=arvore_visualizar&acao_origem=procedimento_visualizar&id_procedimento=' . $_GET['id_procedimento'])) . '\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
+    if($_GET['acao'] != 'md_lit_processo_cadastro_consultar'){
+        $arrComandos[] = '<button type="submit" accesskey="S" name="sbmCadastrarDispositivoNormativoLitigioso" id="sbmCadastrarDispositivoNormativoLitigioso" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
+    }
+$arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=arvore_visualizar&acao_origem=procedimento_visualizar&id_procedimento=' . $_GET['id_procedimento'])) . '\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';

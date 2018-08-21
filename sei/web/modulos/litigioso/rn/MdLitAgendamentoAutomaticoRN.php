@@ -44,9 +44,17 @@ class MdLitAgendamentoAutomaticoRN extends InfraRN {
                     throw new InfraException('Os parâmetros de entrada e saída não foram parametrizados. Contate o Gestor do Controle.');
                 }
 
+                $objMdLitSituacaoLancamentoDTO = new MdLitSituacaoLancamentoDTO();
+                $objMdLitSituacaoLancamentoDTO->retTodos(false);
+
+                $objMdLitSituacaoLancamentoRN = new MdLitSituacaoLancamentoRN();
+                $objMdLitSituacaoLancamentoDTO = $objMdLitSituacaoLancamentoRN->consultarSituacaoCancelamento($objMdLitSituacaoLancamentoDTO);
+
                 $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
                 $objMdLitLancamentoDTO->retTodos(false);
-                $objMdLitLancamentoDTO->setNumIdMdLitSituacaoLancamento(array(MdLitSituacaoLancamentoRN::$CANCELADO, MdLitSituacaoLancamentoRN::$QUITADO), InfraDTO::$OPER_NOT_IN);
+                if($objMdLitSituacaoLancamentoDTO){
+                    $objMdLitLancamentoDTO->adicionarCriterio(array('IdMdLitSituacaoLancamento', 'IdMdLitSituacaoLancamento'), array(InfraDTO::$OPER_DIFERENTE, InfraDTO::$OPER_IGUAL), array($objMdLitSituacaoLancamentoDTO->getNumIdMdLitSituacaoLancamento(), null), array(InfraDTO::$OPER_LOGICO_OR));
+                }
 
                 $objMdLitLancamentoRN = new MdLitLancamentoRN();
                 $arrObjMdLitLancamentoDTO = $objMdLitLancamentoRN->listar($objMdLitLancamentoDTO);
@@ -59,7 +67,7 @@ class MdLitAgendamentoAutomaticoRN extends InfraRN {
                             $params['selCreditosProcesso'] = $objMdLitLancamentoDTO->getNumIdMdLitLancamento();
                             $params['chkReducaoRenuncia'] = $objMdLitLancamentoDTO->getStrSinRenunciaRecorrer();
 
-                            $sucesso = $objMdLitConsultaLancamentoRN->verificarAtualizarSituacaoLancamentoSIGEC($objMdLitIntegracaoDTO, $params);
+                            $sucesso = $objMdLitConsultaLancamentoRN->verificarAtualizarSituacaoLancamento($objMdLitIntegracaoDTO, $params);
 
 
                             if ($sucesso === false) {

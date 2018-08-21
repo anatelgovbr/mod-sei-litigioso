@@ -38,7 +38,7 @@ try {
     PaginaSEI::getInstance()->setTipoPagina(InfraPagina::$TIPO_PAGINA_SIMPLES);
     switch ($_GET['acao']) {
         case 'md_lit_decisao_cadastrar':
-            $strTitulo = 'Cadastro de decisões';
+            $strTitulo = 'Cadastro de Decisões';
 
             $arrComandos[] = '<button type="submit" accesskey="S" name="sbmCadastrarDecisao" id="sbmCadastrarDecisao" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar decisões</button>';
             $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="window.close();" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
@@ -108,8 +108,8 @@ if($numRegistros > 0){
     $strTbCadastroDecisao .= '<tr>';
 
     $strTbCadastroDecisao .= '<th class="infraTh" width="20%">&nbsp;Infração&nbsp;</th>' . "\n";
-    $strTbCadastroDecisao .= '<th class="infraTh" width="20%">&nbsp;Tipo de decisão&nbsp;</th>' . "\n";
-    $strTbCadastroDecisao .= '<th class="infraTh" width="20%">&nbsp;Espécie de decisão&nbsp;</th>' . "\n";
+    $strTbCadastroDecisao .= '<th class="infraTh" width="20%">&nbsp;Tipo de Decisão&nbsp;</th>' . "\n";
+    $strTbCadastroDecisao .= '<th class="infraTh" width="20%">&nbsp;Espécie de Decisão&nbsp;</th>' . "\n";
     $strTbCadastroDecisao .= '<th class="infraTh" width="10%">&nbsp;Multa&nbsp;</th>' . "\n";
     $strTbCadastroDecisao .= '<th class="infraTh" width="20%">&nbsp;Obrigação&nbsp;</th>' . "\n";
     $strTbCadastroDecisao .= '<th class="infraTh" width="5%">&nbsp;Prazo&nbsp;</th>' . "\n";
@@ -160,7 +160,7 @@ PaginaSEI::getInstance()->montarDocType();
 PaginaSEI::getInstance()->abrirHtml();
 PaginaSEI::getInstance()->abrirHead();
 PaginaSEI::getInstance()->montarMeta();
-PaginaSEI::getInstance()->montarTitle(PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo);
+PaginaSEI::getInstance()->montarTitle(':: '.PaginaSEI::getInstance()->getStrNomeSistema().' - '.$strTitulo.' ::');
 PaginaSEI::getInstance()->montarStyle();
 PaginaSEI::getInstance()->abrirStyle();
 //require_once ('md_lit_css_geral.php');
@@ -216,7 +216,9 @@ if(0){?><script><?}?>
             montaResultado();
         }
 
-        if(document.getElementById('hdnIdUltimaSituacaoDecisoria').value == '' && (window.opener.document.getElementById('hdnErroSituacao').value == 1 || !window.opener.isTpSitDecisoria)){
+        //@todo melhorar condição, se a situação for nova msm se a ultima situação cadastrada for decisoria irá desabilitidar o cadastro
+        // ou se não for a ultima situação cadastrada decisoria e a situação nova não for decisorio irá desabilitar tudo
+        if( window.opener.document.getElementById('hdnIsGestor').value == 0 && (verificarSituacaoDecisaoNovo() && document.getElementById('hdnIdUltimaSituacaoDecisoria').value != '' || (document.getElementById('hdnIdUltimaSituacaoDecisoria').value == '' && (window.opener.document.getElementById('hdnErroSituacao').value == 1 || !window.opener.isTpSitDecisoria)))){
             document.getElementById('sbmCadastrarDecisao').style.display = 'none';
             infraDesabilitarCamposDiv(document.getElementById('divInfraAreaGlobal'));
         }
@@ -224,6 +226,11 @@ if(0){?><script><?}?>
 
     function verificarSituacaoDecisaoNovo(){
         var arrSituacaoItens = window.opener.objTabelaDinamicaSituacao.obterItens();
+
+        if(!window.opener.isUltimaSituacaoDecisoria()){
+            return false;
+        }
+
         if(arrSituacaoItens.length > 0){
             for(var i = 0; i < arrSituacaoItens.length; i++ ){
                 if(arrSituacaoItens[i][1] == 'N')
@@ -383,7 +390,9 @@ if(0){?><script><?}?>
         }
 
         objMulta.style.display = 'none';
+        objMulta.value = '';
         objPrazo.style.display = 'none';
+        objPrazo.value = '';
         objObrigacaoSelect.style.display = 'none';
         infraSelectLimpar(objObrigacaoSelect);
         if(element.value != 'null'){
@@ -497,7 +506,7 @@ if(0){?><script><?}?>
     function validar(){
         var numRows=document.getElementById("tableDadosComplementarInteressado").rows.length;
         var table = document.getElementById("tableDadosComplementarInteressado");
-        var msg = '',infracao='', isPreenchido = false;
+        var msg = '',infracao='';
 
         for (var i=1;i<numRows;i++){
 //             verificar se a linha da tabela foi mesclado e se é a primeira opção entra no 1°if.
@@ -521,7 +530,7 @@ if(0){?><script><?}?>
                     msg += "-  O especie decisão\n";
                 }
 
-                if((multa.value == 'null' || multa.value == '') && multa.style.display == ''){
+                if((multa.value == 'null' || multa.value == '' || multa.value == '0,00') && multa.style.display == '' ){
                     msg += "-  A multa\n";
                 }
 
@@ -532,9 +541,8 @@ if(0){?><script><?}?>
                 if((prazo.value == 'null' || prazo.value == '')  && prazo.style.display == ''){
                     msg += "-  O prazo\n";
                 }
-                if(msg == ''){
-                    isPreenchido = true;
-                }
+            }else{
+                msg += "- O tipo de Decisão\n";
             }
 
             if(msg != ''){
@@ -544,11 +552,6 @@ if(0){?><script><?}?>
             }
 
         }
-        if(!isPreenchido){
-            alert("Preencha ao menos uma infração.");
-            return false;
-        }
-
         return true;
     }
 

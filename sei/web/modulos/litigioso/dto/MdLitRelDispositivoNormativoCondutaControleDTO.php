@@ -42,6 +42,8 @@
 
             $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'Dispositivo', 'dispositivo', 'md_lit_disp_normat');
             $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'Norma', 'norma', 'md_lit_disp_normat');
+            $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'UrlDispositivo', 'url', 'md_lit_disp_normat');
+            $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'DescricaoDispositivo', 'descricao', 'md_lit_disp_normat');
 
             $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'Conduta', 'nome', 'md_lit_conduta');
 

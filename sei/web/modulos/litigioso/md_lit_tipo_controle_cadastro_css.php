@@ -5,6 +5,11 @@
 #txtDescricao {position:absolute;left:0%;top:0%;width:40%;}
 #txaDescricao {position:absolute;left:0%;top:20%;width:64.5%;}
 
+#lblDtCorte {position:absolute;left:0%;top:0%;width:50%;}
+#txtDtCorte {position:absolute;left:0%;top:40%;width:10%;}
+#imgCalDthCorte{position:absolute;left:11%;top:40%;}
+#btAjudaDth {position:absolute; left:13%; top:40%;}
+#btAjudaDth>img {max-width: 16px;max-height: 16px;}
 /* width:50%; */
 /* border:.1em solid #666; */
 
@@ -33,6 +38,15 @@
 #imgGestoresAbaixo {position:absolute;left:79%;top:40%;}*/
 div#divOpcoesGestores {position:absolute;left:76%;top:33%;}
 #btAjuda>img {max-width: 16px;max-height: 16px;}
+
+/* Motivos */
+#lblMotivos {position:absolute;left:0%;top:0%;}
+#txtMotivos {position:absolute;left:0%;top:13%;width:50%;}
+#selMotivos {position:absolute;left:0%;top:33%;width:75%;}
+#imgLupaMotivos {position:absolute;left:76%;top:33%;}
+#imgExcluirMotivos {position:absolute;left:76%;top:48%;}
+
+
 
 /* Tipos de Processos */
 #lblTipoProcessos {position:absolute;left:0%;top:0%;}

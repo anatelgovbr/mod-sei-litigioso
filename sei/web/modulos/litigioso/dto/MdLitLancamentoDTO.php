@@ -69,6 +69,10 @@ class MdLitLancamentoDTO extends InfraDTO {
 
       $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinSuspenso', 'sin_suspenso');
 
+      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM, 'IdMdLitIntegracao', 'id_md_lit_integracao');
+
+      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM, 'IdMdLitNumeroInteressado', 'id_md_lit_numero_interessado');
+
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdMdLitSituacaoLancamentoMdLitSituacaoLancamento', 'id_md_lit_situacao_lancamento', 'md_lit_situacao_lancamento');
 
     $this->configurarPK('IdMdLitLancamento',InfraDTO::$TIPO_PK_NATIVA);
@@ -77,8 +81,26 @@ class MdLitLancamentoDTO extends InfraDTO {
     $this->configurarFK('IdUsuario', 'usuario', 'id_usuario');
     $this->configurarFK('IdUnidade', 'unidade', 'id_unidade');
 
+      //relacionamento da tabela md_lit_integracao
+      $this->configurarFK('IdMdLitIntegracao', 'md_lit_integracao', 'id_md_lit_integracao',InfraDTO::$TIPO_FK_OPCIONAL);
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IntegracaoIdMdLitFuncionalidade', 'id_md_lit_funcionalidade', 'md_lit_integracao');
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'IntegracaoNome', 'nome', 'md_lit_integracao');
+
+      //Get dados Situação
+      $this->configurarFK('IdMdLitSituacaoLancamento', 'md_lit_situacao_lancamento', 'id_md_lit_situacao_lancamento',InfraDTO::$TIPO_FK_OPCIONAL);
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdMdLitSituacaoLancamentoMdLitSituacaoLancamento', 'id_md_lit_situacao_lancamento', 'md_lit_situacao_lancamento');
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeSituacao', 'nome', 'md_lit_situacao_lancamento');
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'CorSituacao', 'cor_situacao', 'md_lit_situacao_lancamento');
+
     //Get Dados Procedimento
     $this->configurarFK('IdProcedimento', 'procedimento', 'id_procedimento');
+
+    //GET numero Interessado
+//    $this->configurarFK('IdMdLitNumeroInteressado', 'md_lit_numero_interessado', 'id_md_lit_numero_interessado',InfraDTO::$TIPO_FK_OPCIONAL);
+//    $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdMdLitDadoInteressadoMdLitNumero', 'id_md_lit_dado_interessado', 'md_lit_numero_interessado');
+//      $this->configurarFK('IdMdLitDadoInteressadoMdLitNumero', 'md_lit_dado_interessado', 'id_md_lit_dado_interessado',InfraDTO::$TIPO_FK_OPCIONAL);
+//      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdContatoMdLitDadoInteressado', 'id_contato', 'md_lit_dado_interessado');
+
   }
 
 

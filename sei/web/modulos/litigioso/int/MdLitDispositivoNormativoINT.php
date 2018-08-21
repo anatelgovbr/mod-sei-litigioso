@@ -29,7 +29,7 @@
         }
 
 
-        public static function listarDispositivos($txtConduta = "", $txtNorma = "", $txtDispositivo = "", $selICCondutas = "", $filtro = "", $Ativo = "")
+        public static function listarDispositivos($txtConduta = "", $txtNorma = "", $txtDispositivo = "", $selICCondutas = "", $filtro = "", $Ativo = "", $selTipoControleLitigioso = '', $optRevogado = '')
         {
 
             $objDispositivoNormativoLitigiosoDTO = new MdLitDispositivoNormativoDTO();
@@ -38,43 +38,52 @@
 
             if ($txtConduta != "") {
                 $objDispositivoNormativoLitigiosoDTO->setStrCondutaFiltro($txtConduta);
-            } else {
-                $objDispositivoNormativoLitigiosoDTO->setStrCondutaFiltro("");
             }
 
             if ($txtNorma != "") {
                 $objDispositivoNormativoLitigiosoDTO->setStrNorma($txtNorma, InfraDTO::$OPER_LIKE);
-            } else {
-                $objDispositivoNormativoLitigiosoDTO->setStrNorma("");
             }
 
             if ($txtDispositivo != "") {
                 $objDispositivoNormativoLitigiosoDTO->setStrDispositivo($txtDispositivo, InfraDTO::$OPER_LIKE);
-            } else {
-                $objDispositivoNormativoLitigiosoDTO->setStrDispositivo("");
             }
 
             //CAMPO CONDUTA - ID
             if ($selICCondutas != "") {
                 $objDispositivoNormativoLitigiosoDTO->setIdCondutaFiltro($selICCondutas);
-            } else {
-                $objDispositivoNormativoLitigiosoDTO->setIdCondutaFiltro("");
             }
 
+            //se vier pela modal filtra pelo id do tipo controle litigioso que vem via GET
             if ($filtro != "") {
                 $objDispositivoNormativoLitigiosoDTO->setIdTipoControleLitigiosoFiltro($filtro);
-            } else {
-                $objDispositivoNormativoLitigiosoDTO->setIdTipoControleLitigiosoFiltro("");
+            }
+
+            //se vier pelo filtro do pesquisar irá filtrar id do tipo controle litigioso que vem via POST
+            //@todo refatorar fazer os dois o msm comportamento
+            if($selTipoControleLitigioso != ''){
+                $objDispositivoNormativoLitigiosoDTO->setIdTipoControleLitigiosoFiltro($selTipoControleLitigioso);
             }
 
             if ($Ativo != "") {
                 $objDispositivoNormativoLitigiosoDTO->setStrSinAtivo($Ativo);
-            } else {
-                $objDispositivoNormativoLitigiosoDTO->setStrSinAtivo("");
             }
+
+            if($optRevogado != 'S')
+                $objDispositivoNormativoLitigiosoDTO->setStrSinRevogado("N");
 
             return $objDispositivoNormativoLitigiosoDTO;
 
+        }
+
+        public static function consultaDispositivo($idMdLitDispositivoNormativo){
+            $objMdLitDispositivoNormativoDTO = new MdLitDispositivoNormativoDTO();
+            $objMdLitDispositivoNormativoDTO->retTodos();
+            $objMdLitDispositivoNormativoDTO->setNumIdDispositivoNormativoLitigioso($idMdLitDispositivoNormativo);
+
+            $objMdLitDispositivoNormativoRN = new MdLitDispositivoNormativoRN();
+            $objMdLitDispositivoNormativoDTO = $objMdLitDispositivoNormativoRN->consultar($objMdLitDispositivoNormativoDTO);
+
+            return $objMdLitDispositivoNormativoDTO;
         }
 
 

@@ -52,10 +52,16 @@ margin-bottom: -4px;
 }
 
 .botoesDecisao{
-margin-left: 75%;
+float: right;
 }
 
-.botoesGestaoMulta{float:right;margin-bottom: 10px;}
+.imgAjudaCtrlProcLit{
+max-width: 16px;
+max-height: 16px;
+visibility: visible !important;
+}
+
+.botoesGestaoMulta{float:right;margin-bottom: 10px;margin-right: 0px;}
 .btnLancamento{float: right;margin-left: 10px;}
 .nao-tem-constituicao{display:none;}
 .tem-constituicao{display:block;}

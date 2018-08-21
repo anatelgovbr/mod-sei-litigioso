@@ -80,7 +80,28 @@
 
             $count = $objMdTipoControleRN->contar($objMdTipoControleDTO);
 
-            return $count > 0;
+            return $count > 0 && $this->isGestorControleLitigioso();
+        }
+
+        protected function isGestorControleLitigiosoConectado()
+        {
+            //a partir do id do usuario consultar se ele é Gestor de Controle Litigioso ou nao
+            $idUsuario = SessaoSEI::getInstance()->getNumIdUsuario();
+            $idUnidade = SessaoSEI::getInstance()->getNumIdUnidadeAtual();
+
+            $objInfraSip  = new InfraSip(SessaoSEI::getInstance());
+
+            $arrPerfisSip = $objInfraSip->carregarPerfis(SessaoSEI::getInstance()->getNumIdSistema(), $idUsuario, $idUnidade);
+
+            for ($i = 0; $i < count($arrPerfisSip); $i++) {
+
+                if ($arrPerfisSip[$i][1] == 'Gestor de Controle Litigioso') {
+                    return true;
+                }
+
+            }
+
+            return false;
         }
 
 

@@ -11,6 +11,12 @@
 
         session_start();
 
+        //////////////////////////////////////////////////////////////////////////////
+//        InfraDebug::getInstance()->setBolLigado(true);
+//        InfraDebug::getInstance()->setBolDebugInfra(true);
+//        InfraDebug::getInstance()->limpar();
+        //////////////////////////////////////////////////////////////////////////////
+
         SessaoSEI::getInstance()->validarLink();
 
         PaginaSEI::getInstance()->verificarSelecao('md_lit_dispositivo_normativo_selecionar');
@@ -30,6 +36,12 @@
         $strLinkTipoControleSelecao = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_tipo_controle_selecionar&tipo_selecao=2&id_object=objLupaTipoControle');
         $strLinkAjaxTipoControle    = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_tipo_controle_auto_completar');
 
+        //dispositivo normativo
+        $strLinkDispositivoNormativoSelecao = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_dispositivo_normativo_selecionar&tipo_selecao=2&id_object=objLupaRevogarDispositivo');
+        $strLinkAjaxDispositivoNormativo    = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_dispositivo_auto_completar');
+
+        $revogadoPor = null;
+
 
         switch ($_GET['acao']) {
             case 'md_lit_dispositivo_normativo_cadastrar':
@@ -47,7 +59,6 @@
 
                 if (isset($_POST['sbmCadastrarDispositivoNormativoLitigioso'])) {
                     try {
-
                         //SET CONDUTAS
                         $arrObjDispositivoNormativoCondutaDTO = array();
                         $arrCondutas                          = PaginaSEI::getInstance()->getArrValuesSelect($_POST['hdnConduta']);
@@ -71,8 +82,20 @@
                             array_push($arrObjDispositivoNormativoTipoControleDTO, $objRelDispositivoNormativoTipoControleDTO);
                         }
 
-
                         $objDispositivoNormativoLitigiosoDTO->setArrObjRelDispositivoNormativoTipoControleDTO($arrObjDispositivoNormativoTipoControleDTO);
+
+
+                        //set dipositivo normativo revogado
+                        $arrObjDispositivoNormativoRevogadoDTO = array();
+                        $arrDispositivoRevogado                = PaginaSEI::getInstance()->getArrValuesSelect($_POST['hdnRevogarDispositivo']);
+
+                        for ($x = 0; $x < count($arrDispositivoRevogado); $x++) {
+                            $objMdLitRelDispositivoNormativoRevogadoDTO = new MdLitRelDispositivoNormativoRevogadoDTO();
+                            $objMdLitRelDispositivoNormativoRevogadoDTO->setNumIdMdLitDispositivoNormativoRevogado($arrDispositivoRevogado[$x]);
+                            array_push($arrObjDispositivoNormativoRevogadoDTO, $objMdLitRelDispositivoNormativoRevogadoDTO);
+                        }
+
+                        $objDispositivoNormativoLitigiosoDTO->setArrObjRelMdLitRelDispositivoNormativoRevogadoDTO($arrObjDispositivoNormativoRevogadoDTO);
 
                         // Cadastro
                         $objDispositivoNormativoLitigiosoRN  = new MdLitDispositivoNormativoRN();
@@ -151,6 +174,9 @@
                         $strItensSelTiposControle .= "<option value='" . $objTipoControleDTO->getNumIdTipoControleLitigioso() . "'>" . $objTipoControleDTO->getStrSigla() . "</option>";
                     }
 
+                    //Consultar dispositivos normativos revogados por esse dispositivo
+                    $strItensSelRevogarDispositivo = "";
+                    $strItensSelRevogarDispositivo = MdLitRelDispositivoNormativoRevogadoINT::montarItemSelecionado($_GET['id_dispositivo_normativo_litigioso']);
 
                     if ($objDispositivoNormativoLitigiosoDTO == null) {
                         throw new InfraException("Registro não encontrado.");
@@ -195,6 +221,18 @@
                     }
 
                     $objDispositivoNormativoLitigiosoDTO->setArrObjRelDispositivoNormativoTipoControleDTO($arrObjDispositivoNormativoTipoControleDTO);
+
+                    //set dipositivo normativo revogado
+                    $arrObjDispositivoNormativoRevogadoDTO = array();
+                    $arrDispositivoRevogado                = PaginaSEI::getInstance()->getArrValuesSelect($_POST['hdnRevogarDispositivo']);
+
+                    for ($x = 0; $x < count($arrDispositivoRevogado); $x++) {
+                        $objMdLitRelDispositivoNormativoRevogadoDTO = new MdLitRelDispositivoNormativoRevogadoDTO();
+                        $objMdLitRelDispositivoNormativoRevogadoDTO->setNumIdMdLitDispositivoNormativoRevogado($arrDispositivoRevogado[$x]);
+                        array_push($arrObjDispositivoNormativoRevogadoDTO, $objMdLitRelDispositivoNormativoRevogadoDTO);
+                    }
+
+                    $objDispositivoNormativoLitigiosoDTO->setArrObjRelMdLitRelDispositivoNormativoRevogadoDTO($arrObjDispositivoNormativoRevogadoDTO);
 
 
                 }
@@ -276,6 +314,12 @@
                     $strItensSelTiposControle .= "<option value='" . $objTipoControleDTO->getNumIdTipoControleLitigioso() . "'>" . $objTipoControleDTO->getStrSigla() . "</option>";
                 }
 
+                //Consultar dispositivos normativos revogados por esse dispositivo
+                $strItensSelRevogarDispositivo = "";
+                $strItensSelRevogarDispositivo = MdLitRelDispositivoNormativoRevogadoINT::montarItemSelecionado($_GET['id_dispositivo_normativo_litigioso']);
+
+                //revogadoPor
+                $revogadoPor = MdLitRelDispositivoNormativoRevogadoINT::montarRevogadoPor($_GET['id_dispositivo_normativo_litigioso']);;
 
                 if ($objDispositivoNormativoLitigiosoDTO === null) {
                     throw new InfraException("Registro não encontrado.");
@@ -326,6 +370,16 @@
 #imgLupaTipoControleLitigioso {position:absolute;left:76%;top:35%;}
 #imgExcluirTipoControleLitigioso {position:absolute;left:76%;top:55%;}
 
+#lblRevogarDispositivo {position:absolute;left:0%;top:0%;width:50%;}
+#txtRevogarDispositivo {position:absolute;left:0%;top:15%;width:50%;}
+#selRevogarDispositivo {position:absolute;left:0%;top:35%;width:75%;}
+
+#imgLupaRevogarDispositivo {position:absolute;left:76%;top:35%;}
+#imgExcluirRevogarDispositivo {position:absolute;left:76%;top:55%;}
+
+#lblRevogadoPor {position:absolute;left:0%;top:0%;width:50%;}
+#txtRevogadoPor {position:absolute;left:0%;top:40%;width:50%;}
+
 <?
     PaginaSEI::getInstance()->fecharStyle();
     PaginaSEI::getInstance()->montarJavaScript();
@@ -342,7 +396,7 @@
       action="<?= PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'])) ?>">
     <?
         PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
-        PaginaSEI::getInstance()->abrirAreaDados('46.5em');
+        PaginaSEI::getInstance()->abrirAreaDados('62.5em');
     ?>
     <div class="infraAreaDados" style="height:4.5em;">
 
@@ -379,8 +433,8 @@
         <label id="lblDescricaoDispositivo" for="txtDescricaoDispositivo" accesskey="q" class="infraLabelObrigatorio">Descrição
             do Dispositivo:</label>
 	  <textarea type="text" id="txtDescricaoDispositivo" rows="3" name="txtDescricaoDispositivo" class="infraText"
-                onkeypress="return infraMascaraTexto(this,event,500);"
-                maxlength="500"
+                onkeypress="return infraMascaraTexto(this,event,2000);"
+                maxlength="2000"
                 tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"><?php ?><?= PaginaSEI::tratarHTML($objDispositivoNormativoLitigiosoDTO->getStrDescricao()); ?></textarea>
 
     </div>
@@ -436,6 +490,41 @@
 
     </div>
 
+    <!--  Componente Revogar dispositivo  -->
+    <div id="divRevogarDispositivo" class="infraAreaDados" style="height:11.5em;">
+
+        <label id="lblRevogarDispositivo" for="txtRevogarDispositivo" class="infraLabel">Revogar dispositivo:</label>
+
+        <input type="text" id="txtRevogarDispositivo" name="txtRevogarDispositivo" class="infraText"
+               tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
+
+        <select id="selRevogarDispositivo" name="selRevogarDispositivo" size="4" multiple="multiple"
+                class="infraSelect">
+            <?= $strItensSelRevogarDispositivo ?>
+        </select>
+
+        <img id="imgLupaRevogarDispositivo" onclick="objLupaRevogarDispositivo.selecionar(700,500);"
+             src="/infra_css/imagens/lupa.gif"
+             alt="Localizar Tipo de Controle Associado"
+             title="Localizar Tipo de Controle Associado" class="infraImg"/>
+
+        <img id="imgExcluirRevogarDispositivo" onclick="objLupaRevogarDispositivo.remover();"
+             src="/infra_css/imagens/remover.gif"
+             alt="Remover Dispositivos Revogados"
+             title="Remover Dispositivos Revogados" class="infraImg"/>
+
+        <input type="hidden" id="hdnIdRevogarDispositivo" name="hdnIdRevogarDispositivo" value="<?= $_POST['hdnIdRevogarDispositivo'] ?>"/>
+        <input type="hidden" id="hdnRevogarDispositivo" name="hdnRevogarDispositivo" value="<?= $_POST['hdnRevogarDispositivo'] ?>"/>
+    </div>
+
+    <?php if($revogadoPor){?>
+        <div id="divRevogadoPor" class="infraAreaDados" style="height:4.5em;">
+            <label id="lblRevogadoPor" for="txtRevogadoPor" class="infraLabel">Revogado por:</label>
+            <input type="text" value="<?= $revogadoPor ?>" id="txtRevogadoPor" />
+
+        </div>
+    <?php }?>
+
     <input type="hidden" id="hdnIdTipoControle" name="hdnIdTipoControle" value="<?= $_POST['hdnIdTipoControle'] ?>"/>
     <input type="hidden" id="hdnTipoControle" name="hdnTipoControle" value="<?= $_POST['hdnTipoControle'] ?>"/>
 
@@ -444,6 +533,7 @@
     <?
         PaginaSEI::getInstance()->fecharAreaDados();
     ?>
+<?php //PaginaSEI::getInstance()->montarAreaDebug(); ?>
 </form>
 <?
     PaginaSEI::getInstance()->fecharBody();
@@ -455,11 +545,14 @@
     var objAutoCompletarConduta = null;
     var objLupaTipoControle = null;
     var objAutoCompletarTipoControle = null;
+    var objAutoCompletarRevogarDispositivo = null;
+    var objLupaRevogarDispositivo = null;
 
     function inicializar() {
 
         carregarComponenteConduta();
         carregarComponenteTipoControle();
+        carregarComponenteRevogado();
 
 
         if ('<?=$_GET['acao']?>' == 'md_lit_dispositivo_normativo_cadastrar') {
@@ -584,6 +677,53 @@
         objLupaConduta = new infraLupaSelect('selDescricaoConduta', 'hdnConduta', '<?=$strLinkCondutaSelecao?>');
 
     }
+
+    function carregarComponenteRevogado() {
+
+        objAutoCompletarRevogarDispositivo = new infraAjaxAutoCompletar('hdnIdRevogarDispositivo', 'txtRevogarDispositivo', '<?=$strLinkAjaxDispositivoNormativo?>');
+        objAutoCompletarRevogarDispositivo.limparCampo = true;
+
+        objAutoCompletarRevogarDispositivo.prepararExecucao = function () {
+            return 'palavras_pesquisa=' + document.getElementById('txtRevogarDispositivo').value;
+        };
+
+        objAutoCompletarRevogarDispositivo.processarResultado = function (id, descricao, complemento) {
+
+            if (id != '') {
+                var options = document.getElementById('selRevogarDispositivo').options;
+
+                if (options != null) {
+                    for (var i = 0; i < options.length; i++) {
+                        if (options[i].value == id) {
+                            alert('Dispositivo normativo já consta na lista.');
+                            break;
+                        }
+                    }
+                }
+
+                if (i == options.length) {
+
+                    for (i = 0; i < options.length; i++) {
+                        options[i].selected = false;
+                    }
+
+                    opt = infraSelectAdicionarOption(document.getElementById('selRevogarDispositivo'), descricao, id);
+
+                    objLupaRevogarDispositivo.atualizar();
+
+                    opt.selected = true;
+                }
+
+                document.getElementById('txtRevogarDispositivo').value = '';
+                document.getElementById('txtRevogarDispositivo').focus();
+
+            }
+        };
+
+        objLupaRevogarDispositivo = new infraLupaSelect('selRevogarDispositivo', 'hdnRevogarDispositivo', '<?=$strLinkDispositivoNormativoSelecao?>');
+
+    }
+
 
     function validarCadastro() {
 

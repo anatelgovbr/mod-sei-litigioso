@@ -61,6 +61,17 @@
             $objMdLitSituacaoRN    = new MdLitSituacaoRN();
             $objMdLitProcessoSitRN = new MdLitProcessoSituacaoRN();
 
+            if($idSituacao == ''){
+                $xml = '<Dados>';
+                $xml .= '<IdSituacao></IdSituacao>';
+                $xml .= '<TipoSituacao></TipoSituacao>';
+                $xml .= '<MsgExibicao></MsgExibicao>';
+                $xml .= '<NomeLabel></NomeLabel>';
+                $xml .= '<Erro>1</Erro>';
+                $xml .= '<SinPrimeiraIntimacao>N</SinPrimeiraIntimacao>';
+                $xml .= '</Dados>';
+                return $xml;
+            }
             $objMdLitSituacaoDTO   = $objMdLitSituacaoRN->getObjSituacaoPorId($idSituacao);
             $isLivre               = $objMdLitSituacaoRN->verificaSeSituacaoLivre($objMdLitSituacaoDTO);
             $dadosSit              = $objMdLitSituacaoRN->retornaArrTiposSituacao($objMdLitSituacaoDTO);

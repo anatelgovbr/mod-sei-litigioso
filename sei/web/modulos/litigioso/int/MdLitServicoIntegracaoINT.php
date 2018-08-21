@@ -86,7 +86,7 @@ class MdLitServicoIntegracaoINT extends InfraINT {
         $objMdLitSoapClientRN = new MdLitSoapClienteRN($objMdLitServicoIntegracaoDTO->getStrEnderecoWsdl(), 'wsdl');
         $objMdLitServicoRN = new MdLitServicoRN();
 
-        $arrResultadoWebService = $objMdLitSoapClientRN->call($objMdLitServicoIntegracaoDTO->getStrOperacaoWsdl(), array());
+        $arrResultadoWebService = $objMdLitSoapClientRN->call($objMdLitServicoIntegracaoDTO->getStrOperacaoWsdl(), array('soap_version'=>SOAP_1_2,'cache_wsdl' => WSDL_CACHE_NONE));
 
         $arrResultadoWebService = $arrResultadoWebService['listaTipoServico'];
         $strResultado = '';

@@ -1,14 +1,16 @@
 
 <div class="grid grid_13">
 <!-- Tipo de Controle Litigioso -->
-  <div class="grid grid_8">
+  <div class="grid grid_7">
         <label class="infraLabelObrigatorio" id="lblTipoCtrlTitulo" name="lblTipoCtrlTitulo">Tipo de Controle Litigioso:</label>
-        <label class="infraLabelOpcional" id="lblTipoCtrlDetalhe" name="lblTipoCtrlDetalhe"> <?php echo !is_null($objMdLitTipoControleDTO) ? $objMdLitTipoControleDTO->getStrSigla() : '' ?> </label>
+        <label class="infraLabelOpcional" id="lblTipoCtrlDetalhe" name="lblTipoCtrlDetalhe"> <?php echo !is_null($objMdLitTipoControleDTO) ? $objMdLitTipoControleDTO->getStrSigla() : '' ?>
+        </label>
   </div>
+    <img onclick="modalParametrizarSituacao()" src="modulos/litigioso/imagens/icone-parametrizar.png" title="Parametrização de Situações" style="position:relative; top:-4px; margin-left: 5px;height: 24px;right:200px; " />
 
     <!-- Tempo desde Intimação da Instauração -->
     <?php if($diferencaEntreDias): ?>
-        <div class="grid grid_5">
+        <div class="grid grid_5" style="margin-right: 5px;float: right;">
             <label class="infraLabelObrigatorio" id="lblTipoCtrlTitulo" name="lblTipoCtrlTitulo">Tempo desde Intimação da Instauração:</label>
             <label class="infraLabelOpcional" id="lblTipoCtrlDetalhe" name="lblTipoCtrlDetalhe"> <?= $diferencaEntreDias ?> dias </label>
         </div>

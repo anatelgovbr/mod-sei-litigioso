@@ -64,6 +64,8 @@ $strLinkAjaxTipoProcessoSobrestado = SessaoSEI::getInstance()->assinarLink('cont
 $strLinkGestoresSelecao = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=usuario_selecionar&tipo_selecao=2&id_object=objLupaGestores');
 $strLinkAjaxGestor = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=usuario_auto_completar');
 
+$strLinkMotivosSelecao = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_motivo_selecionar&tipo_selecao=2&id_object=objLupaMotivos');
+$strLinkAjaxMotivos = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=motivo_auto_completar');
 // ======================= INICIO JS
 //arquivo contendo os blocos de JavaScript da pagina
 //antes estava na propria página, mas é melhor remover para um arquivo para facilitar manutenção da aplicação
@@ -78,7 +80,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo,'onload="inicializar();"');
 <?
 PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
 //PaginaSEI::getInstance()->montarAreaValidacao();
-PaginaSEI::getInstance()->abrirAreaDados('68em');
+PaginaSEI::getInstance()->abrirAreaDados('85em');
 ?>
   <div class="infraAreaDados" style="height:4.5em;"> 
     <label id="lblNome" for="txtSigla" accesskey="p" class="infraLabelObrigatorio">Sigla:</label>
@@ -92,7 +94,20 @@ PaginaSEI::getInstance()->abrirAreaDados('68em');
     <textarea id="txaDescricao" name="txtDescricao" rows="3" class="infraTextarea" onkeypress="return infraLimitarTexto(this,event,250);" 
     tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>"><?= PaginaSEI::tratarHTML( $objTipoControleLitigiosoDTO->getStrDescricao() ) ;?></textarea>
   </div>
-  
+
+  <div class="infraAreaDados" style="height: 4em">
+      <label id="lblDtCorte" name="lblDtCorte" for="txtDtCorte" class="infraLabelObrigatorio">Data de Corte:</label>
+      <input type="text" id="txtDtCorte" name="txtDtCorte" onkeypress="return infraMascara(this, event,'##/##/####')" class="infraText"
+             value="<?= PaginaSEI::tratarHTML( $objTipoControleLitigiosoDTO->getDtaDtaCorte() );?>" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" />
+      <img src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal().'/calendario.gif'?>" id="imgCalDthCorte" title="Selecionar Data/Hora Inicial" alt="Selecionar Data de Corte" class="infraImg" onclick="infraCalendario('txtDtCorte',this,false,'<?=InfraData::getStrDataAtual()?>');" />
+      <a id="btAjudaDth" <?=PaginaSEI::montarTitleTooltip('Serve para definir a data a partir da qual os processos gerados dos tipos indicados serão considerados pendentes de Cadastro no 
+      Módulo Litigioso. A data de referência será a Data de Autuação de cada processo. Contudo, não haverá impedimento de cadastro de 
+      processos com Data de Autuação anterior à Data de Corte.')?>
+         tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
+          <img id="imgAjudaDth" border="0" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/ajuda.gif" class="infraImg"/>
+      </a>
+  </div>
+
   <!--  GESTORES -->
   <div id="divGestores" class="infraAreaDados" style="height:11.5em;"> 
     
@@ -114,7 +129,25 @@ PaginaSEI::getInstance()->abrirAreaDados('68em');
     <input type="hidden" id="hdnIdGestor" name="hdnIdGestor" value="" />
   
   </div>
-  
+
+    <!--  Motivos -->
+    <div id="divMotivos" class="infraAreaDados" style="height:12.5em;">
+
+        <label id="lblMotivos" for="selMotivos" accesskey="" class="infraLabelOpcional">Motivos para Instauração:</label>
+        <input type="text" id="txtMotivos" name="txtMotivos" class="infraText" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" />
+
+        <select id="selMotivos" name="selMotivos" size="4" multiple="multiple" class="infraSelect">
+            <?=$strItensSelMotivos?>
+        </select>
+        <div id="divOpcoesMotivos">
+            <img id="imgLupaMotivos" onclick="objLupaMotivos.selecionar();" src="/infra_css/imagens/lupa.gif" alt="Selecionar Motivos" title="Selecionar Motivos" class="infraImg" />
+         <br>
+            <img id="imgExcluirMotivos" onclick="objLupaMotivos.remover();" src="/infra_css/imagens/remover.gif" alt="Remover Motivo Selecionado" title="Remover Motivo Selecionado" class="infraImg" />
+        </div>
+        <input type="hidden" id="hdnIdMotivos" name="hdnIdMotivos" value="" />
+
+    </div>
+
   <!-- TIPOS DE PROCESSOS ASSOCIADOS  -->
   <div id="divTiposProcessos" class="infraAreaDados" style="height:11.5em;"> 
     
@@ -205,6 +238,7 @@ PaginaSEI::getInstance()->abrirAreaDados('68em');
   <input type="hidden" id="hdnUnidades" name="hdnUnidades" value="<?=$_POST['hdnUnidades']?>" />
   <input type="hidden" id="hdnTipoProcessos" name="hdnTipoProcessos" value="<?=$_POST['hdnTipoProcessos']?>" />
   <input type="hidden" id="hdnGestores" name="hdnGestores" value="<?=$_POST['hdnGestores']?>" />
+  <input type="hidden" id="hdnMotivos" name="hdnMotivos" value="<?=$_POST['hdnMotivos']?>" />
   <input type="hidden" id="hdnTipoProcessosSobrestados" name="hdnTipoProcessosSobrestados" value="<?=$_POST['hdnTipoProcessosSobrestados']?>" />
   
   <?

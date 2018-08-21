@@ -32,6 +32,7 @@ button#sbmConsultarNumero {z-index: 1;}
 #imgAjudaCidade {position:absolute;left:51%;top:19%;}
 #selCidade {position:absolute;left:0;top:38%;width:90%;height:56%;}
 #divOpcoesCidade {position:absolute;left:91%;top:38%;}
+
 #fldModalidadesOutorga {display: inline-block;float:left;}
 #fldAbrangencia {display: inline-block;float:left;}
 #fldAbrangencia label,#fldModalidadesOutorga label{cursor: pointer;}
@@ -41,3 +42,25 @@ button#sbmConsultarNumero {z-index: 1;}
 fieldset#fldInfoComplementares {margin-bottom: 10px;}
 legend#legendNumero {margin-bottom: 10px;}
 #dvDadosComplementaresConsulta {margin-bottom: 15px;}
+
+#AdicionarNaoOutorgado{float: right;margin-bottom: 10px;}
+
+#imgAjudaModalidadeNaoOutorga{height: 1.3em;width: 1.3em;position: relative;top: 3px;left: 1px;}
+#fldModalidadesNaoOutorgada {display: inline-block;float:left;}
+
+#imgAjudaAbrangenciaNaoOutorgado{height: 1.3em;width: 1.3em;position: relative;top: 3px;left: 1px;}
+#fldAbrangenciaNaoOutorgado {display: inline-block;float:left;}
+#fldAbrangenciaNaoOutorgado label,#fldModalidadesNaoOutorgada label{cursor: pointer;}
+
+#lblEstadoNaoOutorgado {position:absolute;left:0;top:0;}
+#txtEstadoNaoOutorgado {position:absolute;left:0;top:18%;width:50%;}
+#imgAjudaEstadoNaoOutorgado {position:absolute;left:51%;top:19%;}
+#selEstadoNaoOutorgado {position:absolute;left:0;top:38%;width:90%;height:56%;}
+#divOpcoesEstadoNaoOutorgado {position:absolute;left:91%;top:38%;}
+
+#lblCidadeNaoOutorgado {position:absolute;left:0;top:0;}
+#txtCidadeNaoOutorgado {position:absolute;left:0;top:18%;width:50%;}
+#imgAjudaCidadeNaoOutorgado {position:absolute;left:51%;top:19%;}
+#selCidadeNaoOutorgado {position:absolute;left:0;top:38%;width:90%;height:56%;}
+#divOpcoesCidadeNaoOutorgado {position:absolute;left:91%;top:38%;}
+

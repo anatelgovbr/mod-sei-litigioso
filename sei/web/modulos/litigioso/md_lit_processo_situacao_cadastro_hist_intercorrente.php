@@ -118,13 +118,14 @@ for ($i = 0; $i < $numRegistros; $i++) {
     $strResultado .= $dtFormatada;
     $strResultado .= '</td>';
 
-    $strResultado .= '<td>';
-    $strResultado .= PaginaSEI::tratarHTML($arrObjs[$i]->getStrNomeUsuario());
+    $strResultado .= '<td align="center">';
+    $strResultado .= '<a alt="'.$arrObjs[$i]->getStrNomeUsuario().'" title="'.$arrObjs[$i]->getStrNomeUsuario().'" class="ancoraSigla"> '.$arrObjs[$i]->getStrSiglaUsuario().' </a>';
     $strResultado .= '</td>';
 
-    $strResultado .= '<td>';
-    $strResultado .= PaginaSEI::tratarHTML($arrObjs[$i]->getStrSiglaUnidade());
+    $strResultado .= '<td align="center">';
+    $strResultado .= '<a alt="'.$arrObjs[$i]->getStrDescricaoUnidade().'" title="'.$arrObjs[$i]->getStrDescricaoUnidade().'" class="ancoraSigla"> '.$arrObjs[$i]->getStrSiglaUnidade().' </a>';
     $strResultado .= '</td>';
+
 
     $strResultado .= '<td>';
     $strResultado .= PaginaSEI::tratarHTML($arrObjs[$i]->getDtaIntercorrente());

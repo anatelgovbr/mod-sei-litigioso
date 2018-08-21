@@ -147,19 +147,22 @@
         $txtDispositivo = $_POST['txtDispositivo'];
         $selICCondutas  = $_POST ['selICCondutas'];
         $filtro         = $_GET['filtro'];
+        $optRevogado    = $_POST['optRevogado'];
+        $selTipoControleLitigioso = $_POST['selTipoControleLitigioso'];
         $Ativo          = "";
 
         if ($_GET['acao'] == 'md_lit_dispositivo_normativo_selecionar') {
             $Ativo = "S";
         }
 
-        $objDispositivoNormativoLitigiosoDTO = MdLitDispositivoNormativoINT::listarDispositivos($txtConduta, $txtNorma, $txtDispositivo, $selICCondutas, $filtro, $Ativo);
+        $objDispositivoNormativoLitigiosoDTO = MdLitDispositivoNormativoINT::listarDispositivos($txtConduta, $txtNorma, $txtDispositivo, $selICCondutas, $filtro, $Ativo,$selTipoControleLitigioso, $optRevogado);
 
         PaginaSEI::getInstance()->prepararOrdenacao($objDispositivoNormativoLitigiosoDTO, 'Norma', InfraDTO::$TIPO_ORDENACAO_ASC);
-        PaginaSEI::getInstance()->prepararPaginacao($objDispositivoNormativoLitigiosoDTO, 200);
+        PaginaSEI::getInstance()->prepararPaginacao($objDispositivoNormativoLitigiosoDTO, 100);
 
         $objDispositivoNormativoLitigiosoRN     = new MdLitDispositivoNormativoRN();
         $arrObjDispositivoNormativoLitigiosoDTO = $objDispositivoNormativoLitigiosoRN->listar($objDispositivoNormativoLitigiosoDTO);
+
 
         PaginaSEI::getInstance()->processarPaginacao($objDispositivoNormativoLitigiosoDTO);
 
@@ -263,9 +266,9 @@
             }
 
             if ($_GET['acao'] == 'md_lit_dispositivo_normativo_selecionar') {
-                $strResultado .= '<th class="infraTh" valign="middle" width="15%">' . PaginaSEI::getInstance()->getThOrdenacao($objDispositivoNormativoLitigiosoDTO, 'Norma', 'Norma', $arrObjDispositivoNormativoLitigiosoDTO) . '</th>' . "\n";
-            } else {
                 $strResultado .= '<th class="infraTh" valign="middle" width="20%">' . PaginaSEI::getInstance()->getThOrdenacao($objDispositivoNormativoLitigiosoDTO, 'Norma', 'Norma', $arrObjDispositivoNormativoLitigiosoDTO) . '</th>' . "\n";
+            } else {
+                $strResultado .= '<th class="infraTh" valign="middle" width="25%">' . PaginaSEI::getInstance()->getThOrdenacao($objDispositivoNormativoLitigiosoDTO, 'Norma', 'Norma', $arrObjDispositivoNormativoLitigiosoDTO) . '</th>' . "\n";
             }
 
             $strResultado .= '<th class="infraTh" valign="middle">' . PaginaSEI::getInstance()->getThOrdenacao($objDispositivoNormativoLitigiosoDTO, 'Dispositivo', 'Dispositivo', $arrObjDispositivoNormativoLitigiosoDTO) . '</th>' . "\n";
@@ -273,9 +276,9 @@
             $strResultado .= '<th class="infraTh">' . PaginaSEI::getInstance()->getThOrdenacao($objDispositivoNormativoLitigiosoDTO, 'Tipos de Controle Litigioso', 'Dispositivo', $arrObjDispositivoNormativoLitigiosoDTO) . '</th>' . "\n";
 
             if ($_GET['acao'] == 'md_lit_dispositivo_normativo_selecionar') {
-                $strResultado .= '<th class="infraTh" width="25%">Ações</th>' . "\n";
+                $strResultado .= '<th class="infraTh" width="10%">Ações</th>' . "\n";
             } else {
-                $strResultado .= '<th class="infraTh" width="20%">Ações</th>' . "\n";
+                $strResultado .= '<th class="infraTh" width="10%">Ações</th>' . "\n";
             }
 
             $strResultado .= '</tr>' . "\n";
@@ -332,10 +335,10 @@
                     $strTiposControle .= $siglaTipoControle;
                 }
 
-                if ($arrObjDispositivoNormativoLitigiosoDTO[$i]->getStrSinAtivo() == 'S') {
-                    $strCssTr = ($strCssTr == '<tr class="infraTrClara">') ? '<tr class="infraTrEscura">' : '<tr class="infraTrClara">';
-                } else {
+                if ($arrObjDispositivoNormativoLitigiosoDTO[$i]->getStrSinAtivo() == 'N' || $arrObjDispositivoNormativoLitigiosoDTO[$i]->getStrSinRevogado() == 'S') {
                     $strCssTr = '<tr class="trVermelha">';
+                } else {
+                    $strCssTr = ($strCssTr == '<tr class="infraTrClara">') ? '<tr class="infraTrEscura">' : '<tr class="infraTrClara">';
                 }
 
                 $strResultado .= $strCssTr;
@@ -366,7 +369,7 @@
                     $strResultado .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_dispositivo_normativo_consultar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_dispositivo_normativo_litigioso=' . $arrObjDispositivoNormativoLitigiosoDTO[$i]->getNumIdDispositivoNormativoLitigioso())) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/consultar.gif" title="Consultar Dispositivo Normativo" alt="Consultar Dispositivo Normativo" class="infraImg" /></a>&nbsp;';
                 }
 
-                if ($bolAcaoAlterar) {
+                if ($bolAcaoAlterar && $arrObjDispositivoNormativoLitigiosoDTO[$i]->getStrSinRevogado() != 'S') {
 
                     $strResultado .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_dispositivo_normativo_alterar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_dispositivo_normativo_litigioso=' . $arrObjDispositivoNormativoLitigiosoDTO[$i]->getNumIdDispositivoNormativoLitigioso())) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/alterar.gif" title="Alterar Dispositivo Normativo" alt="Alterar Dispositivo Normativo" class="infraImg" /></a>&nbsp;';
                 }
@@ -376,13 +379,13 @@
                     $strDescricao = PaginaSEI::getInstance()->formatarParametrosJavaScript(PaginaSEI::tratarHTML($arrObjDispositivoNormativoLitigiosoDTO[$i]->getStrNorma(), true));
                 }
 
-                if ($bolAcaoDesativar && $arrObjDispositivoNormativoLitigiosoDTO[$i]->getStrSinAtivo() == 'S') {
+                if ($bolAcaoDesativar && $arrObjDispositivoNormativoLitigiosoDTO[$i]->getStrSinAtivo() == 'S' && $arrObjDispositivoNormativoLitigiosoDTO[$i]->getStrSinRevogado() != 'S') {
                     $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($strId) . '" onclick="acaoDesativar(\'' . $strId . '\',\'' . $strDescricao . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/desativar.gif" title="Desativar Dispositivo Normativo" alt="Desativar Dispositivo Normativo" class="infraImg" /></a>&nbsp;';
-                } else if ($bolAcaoReativar) {
+                } else if ($bolAcaoReativar && $arrObjDispositivoNormativoLitigiosoDTO[$i]->getStrSinRevogado() != 'S') {
                     $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($strId) . '" onclick="acaoReativar(\'' . $strId . '\',\'' . $strDescricao . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/reativar.gif" title="Reativar Dispositivo Normativo" alt="Reativar Dispositivo Normativo" class="infraImg" /></a>&nbsp;';
                 }
 
-                if ($bolAcaoExcluir) {
+                if ($bolAcaoExcluir && $arrObjDispositivoNormativoLitigiosoDTO[$i]->getStrSinRevogado() != 'S') {
                     $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($strId) . '" onclick="acaoExcluir(\'' . $strId . '\',\'' . $strDescricao . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/excluir.gif" title="Excluir Dispositivo Normativo" alt="Excluir Dispositivo Normativo" class="infraImg" /></a>&nbsp;';
                 }
 
@@ -641,6 +644,12 @@
             top: 40%;
             width: 25%;
         }
+        #lblRevogado{
+            position: absolute;
+            left: 0%;
+            top: 0%;
+            width: 25%;
+        }
 
     </style>
 
@@ -656,17 +665,13 @@
         <div style="height:4.5em; margin-top: 11px;" class="infraAreaDados" id="divInfraAreaDados">
 
             <label id="lblNorma" for="txtNorma" class="infraLabelOpcional">Norma:</label>
-            <input type="text" id="txtNorma" name="txtNorma" class="infraText" value="<?= $_POST['txtNorma'] ?>"
-                   maxlength="15" tabindex="502">
+            <input type="text" id="txtNorma" name="txtNorma" class="infraText" value="<?= $_POST['txtNorma'] ?>" maxlength="150" tabindex="502">
 
-            <label id="lblDispositivo" for="txtDispositivo"
-                   class="infraLabelOpcional">Dispositivo:</label>
-            <input type="text" id="txtDispositivo" name="txtDispositivo" class="infraText"
-                   value="<?= $_POST['txtDispositivo'] ?>" maxlength="50" tabindex="503">
+            <label id="lblDispositivo" for="txtDispositivo" class="infraLabelOpcional">Dispositivo:</label>
+            <input type="text" id="txtDispositivo" name="txtDispositivo" class="infraText" value="<?= $_POST['txtDispositivo'] ?>" maxlength="100" tabindex="503">
 
             <label id="lblConduta" for="txtConduta" class="infraLabelOpcional">Conduta:</label>
-            <input type="text" id="txtConduta" name="txtConduta" class="infraText" value="<?= $_POST['txtConduta'] ?>"
-                   maxlength="50" tabindex="504">
+            <input type="text" id="txtConduta" name="txtConduta" class="infraText" value="<?= $_POST['txtConduta'] ?>" maxlength="500" tabindex="504">
 
 
             <?php
@@ -686,8 +691,12 @@
             <input type="hidden" id="selICCondutas" name="selICCondutas" value="<?= $_POST['selICCondutas'] ?>">
 
             <input type="submit" style="visibility: hidden;"/>
-
         </div>
+        <?php if ($showCombo) {?>
+            <div style="height:2.5em;" class="infraAreaDados" id="divInfraAreaDados">
+                <label id="lblRevogado" class="infraLabelOpcional"> <input type="checkbox" id="optRevogado" name="optRevogado" onchange="submitFormPesquisa()" value="S" <?php echo $_POST['optRevogado'] == 'S'?'checked="checked"': '' ?> class="infraCheckbox"> Exibir dispositivos revogados</label>
+            </div>
+        <?php } ?>
 
         <?
             PaginaSEI::getInstance()->montarAreaTabela($strResultado, $numRegistros);

@@ -36,7 +36,7 @@ try {
 
   switch($_GET['acao']){
     case 'md_lit_parametrizar_interessado_cadastrar':
-      $strTitulo = 'Parametrizar Dados Complementares do Interessado';
+      $strTitulo = 'Parametrizar Dados Complementares do Interessado - ';
       $arrComandos[] = '<button type="submit" accesskey="S" name="sbmCadastrarMdLitParamInteressado" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
       $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href=\''.SessaoSEI::getInstance()->assinarLink('controlador.php?acao='.PaginaSEI::getInstance()->getAcaoRetorno().'&acao_origem='.$_GET['acao']).'\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
 
@@ -102,6 +102,7 @@ try {
       $sigla = $objTipoControleLitigiosoDTO->getStrSigla() ? $objTipoControleLitigiosoDTO->getStrSigla() : '';
 
       $strSubTitulo = 'Tipo de Controle Litigioso: ' . PaginaSEI::tratarHTML($sigla);
+      $strTitulo .= PaginaSEI::tratarHTML($sigla);
       break;
 
     default:
@@ -156,6 +157,12 @@ try {
             $numIdMdLitNomeFuncional    = $arrObjMdLitParametrizarInteressadoDTO[$i]->getNumIdMdLitNomeFuncional();
             $sinCampoMapeado            = $arrObjMdLitParametrizarInteressadoDTO[$i]->getStrSinCampoMapeado() == 'S'? 'Sim': 'Não' ;
 
+            if($arrObjMdLitParametrizarInteressadoDTO[$i]->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$CNPJ_CPF || $arrObjMdLitParametrizarInteressadoDTO[$i]->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$OUTORGA){
+                $exibe = 'checked="checked" disabled="disabled" ';
+                $obrigatorio =  'checked="checked" disabled="disabled"';
+                $disabled = '';
+            }
+
             $strResultado .= $strCssTr;
             $strResultado .= "<td id='nome_funcional_{$numIdMdLitNomeFuncional}'>";
             $strResultado .= "<input type='hidden' name='hdnArrayIdMdLitNomeFuncional[]' value='{$numIdMdLitNomeFuncional}' /> <input type='hidden' name='IdMdLitParamInteressado_{$numIdMdLitNomeFuncional}' value='{$arrObjMdLitParametrizarInteressadoDTO[$i]->getNumIdMdLitParamInteressado()}' /> ";
@@ -164,7 +171,7 @@ try {
             $strResultado .= "<td align='center'><input type='checkbox' onchange='campoTabelaDisabilidado(this)' name='chkSinExibe_{$numIdMdLitNomeFuncional}' class='exibe'  id='chkSinExibe_{$numIdMdLitNomeFuncional}' {$exibe}> </input></td>";
             $strResultado .= "<td align='center'><input type='checkbox' {$disabled} name='chkSinObrigatorio_{$numIdMdLitNomeFuncional}' class='obrigatorio'  id='chkSinObrigatorio_{$numIdMdLitNomeFuncional}' $obrigatorio > </input></td>";
             $strResultado .= "<td align='center'> <input type='text' {$disabled} maxlength='25' name='txtLabelCampo_{$numIdMdLitNomeFuncional}'  id='txtLabelCampo_{$numIdMdLitNomeFuncional}' value='".PaginaSEI::tratarHTML($arrObjMdLitParametrizarInteressadoDTO[$i]->getStrLabelCampo())."'  /> </td>";
-            $strResultado .= $arrObjMdLitParametrizarInteressadoDTO[$i]->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$NUMERO?"<td align='center'> <input style='width: 50%;' {$disabled} type='text' maxlength='3' onkeypress='return SomenteNumero(event)' name='txtTamanho_{$numIdMdLitNomeFuncional}' id='txtTamanho_{$numIdMdLitNomeFuncional}' value='".PaginaSEI::tratarHTML($arrObjMdLitParametrizarInteressadoDTO[$i]->getNumTamanho())."' /> </td>": "<td></td>";
+            $strResultado .= $arrObjMdLitParametrizarInteressadoDTO[$i]->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$NUMERO ? "<td align='center'> <input style='width: 50%;' {$disabled} type='text' maxlength='3' onkeypress='return SomenteNumero(event)' name='txtTamanho_{$numIdMdLitNomeFuncional}' id='txtTamanho_{$numIdMdLitNomeFuncional}' value='".PaginaSEI::tratarHTML($arrObjMdLitParametrizarInteressadoDTO[$i]->getNumTamanho())."' /> </td>": "<td></td>";
             $strResultado .= "<td align='center'> <input type='text' maxlength='150' name='txtDescricaoAjuda_{$numIdMdLitNomeFuncional}' id='txtDescricaoAjuda_{$numIdMdLitNomeFuncional}' {$disabled} style='width: 95%;'  value='".PaginaSEI::tratarHTML($arrObjMdLitParametrizarInteressadoDTO[$i]->getStrDescricaoAjuda())."'  /> </td>";
             $strResultado .= "<td align='center'> <input type='hidden' name='hdnSinCampoMapeado_{$numIdMdLitNomeFuncional}' id='chkSinCampoMapeado_{$numIdMdLitNomeFuncional}' value='{$arrObjMdLitParametrizarInteressadoDTO[$i]->getStrSinCampoMapeado()}' /> {$sinCampoMapeado} </td>";
 
@@ -258,7 +265,10 @@ function validarCadastro() {
     }
 
   }
-
+    document.getElementById('chkSinExibe_1').disabled = false;
+    document.getElementById('chkSinObrigatorio_1').disabled = false;
+    document.getElementById('chkSinExibe_2').disabled = false;
+    document.getElementById('chkSinObrigatorio_2').disabled = false;
   return true;
 }
 
