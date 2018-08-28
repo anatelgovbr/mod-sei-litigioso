@@ -28,14 +28,13 @@ class MdLitAtualizadorSipRN extends InfraRN {
     }
 
     private function inicializar($strTitulo){
-        ini_set('max_execution_time', '0');
-        ini_set('memory_limit', '-1');
+        ini_set('max_execution_time','0');
+        ini_set('memory_limit','-1');
 
         try {
-            @ini_set('zlib.output_compression', '0');
+            @ini_set('zlib.output_compression','0');
             @ini_set('implicit_flush', '1');
-        } catch (Exception $e) {
-        }
+        }catch(Exception $e){}
 
         ob_implicit_flush();
 
@@ -74,8 +73,111 @@ class MdLitAtualizadorSipRN extends InfraRN {
         die;
     }
 
+    protected function atualizarVersaoConectado(){
+
+        try {
+            $this->inicializar('INICIANDO A INSTALAÇÃO/ATUALIZAÇÃO DO '.$this->nomeDesteModulo.' NO SIP VERSÃO '.SIP_VERSAO);
+
+            //testando versao do framework
+            $numVersaoInfraRequerida = '1.385';
+            $versaoInfraFormatada = (int) str_replace('.','', VERSAO_INFRA);
+            $versaoInfraReqFormatada = (int) str_replace('.','', $numVersaoInfraRequerida);
+
+            if ($versaoInfraFormatada < $versaoInfraReqFormatada){
+                $this->finalizar('VERSÃO DO FRAMEWORK PHP INCOMPATÍVEL (VERSÃO ATUAL '.VERSAO_INFRA.', SENDO REQUERIDA VERSÃO IGUAL OU SUPERIOR A '.$numVersaoInfraRequerida.')',true);
+            }
+
+            //checando BDs suportados
+            if (!(BancoSip::getInstance() instanceof InfraMySql) &&
+                !(BancoSip::getInstance() instanceof InfraSqlServer) &&
+                !(BancoSip::getInstance() instanceof InfraOracle)) {
+                $this->finalizar('BANCO DE DADOS NÃO SUPORTADO: ' . get_parent_class(BancoSip::getInstance()), true);
+            }
+
+            //checando permissoes na base de dados
+            $objInfraMetaBD = new InfraMetaBD(BancoSip::getInstance());
+
+            if (count($objInfraMetaBD->obterTabelas('sip_teste'))==0){
+                BancoSip::getInstance()->executarSql('CREATE TABLE sip_teste (id '.$objInfraMetaBD->tipoNumero().' null)');
+            }
+
+            BancoSip::getInstance()->executarSql('DROP TABLE sip_teste');
+
+            $objInfraParametro = new InfraParametro(BancoSip::getInstance());
+
+            $strVersaoModuloLitigioso = $objInfraParametro->getValor($this->nomeParametroModulo, false);
+
+            //VERIFICANDO QUAL VERSAO DEVE SER INSTALADA NESTA EXECUCAO
+            if (InfraString::isBolVazia($strVersaoModuloLitigioso)) {
+                $this->instalarv001();
+                $this->instalarv002();
+                $this->instalarv003();
+                $this->instalarv004();
+                $this->instalarv100();
+
+                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
+                $this->finalizar('FIM', false);
+            } elseif ($strVersaoModuloLitigioso == '0.0.1') {
+
+                //instalar apenas a v.002 e a v003
+                $this->instalarv002();
+                $this->instalarv003();
+                $this->instalarv004();
+                $this->instalarv100();
+
+                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
+                $this->finalizar('FIM', false);
+            } elseif ($strVersaoModuloLitigioso == '0.0.2') {
+                $this->instalarv003();
+                $this->instalarv004();
+                $this->instalarv100();
+
+                //atualizando versao do parametro para controlar versao do modulo
+                BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'' . $this->versaoAtualDesteModulo . '\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+
+                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
+                $this->finalizar('FIM', false);
+            } elseif ($strVersaoModuloLitigioso == '0.0.3') {
+                $this->instalarv004();
+                $this->instalarv100();
+
+                //atualizando versao do parametro para controlar versao do modulo
+                BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'' . $this->versaoAtualDesteModulo . '\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+
+                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
+                $this->finalizar('FIM', false);
+            } elseif ($strVersaoModuloLitigioso == '0.0.4') {
+                $this->instalarv100();
+
+                //atualizando versao do parametro para controlar versao do modulo
+                BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'' . $this->versaoAtualDesteModulo . '\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+
+                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
+                $this->finalizar('FIM', false);
+            } else {
+                //se a versão instalada já é a atual, então não instala nada e avisa
+                $this->logar('A VERSÃO MAIS ATUAL DO '.$this->nomeDesteModulo.' (v'.$this->versaoAtualDesteModulo.') JÁ ESTÁ INSTALADA.');
+                $this->finalizar('FIM', false);
+            }
+
+            InfraDebug::getInstance()->setBolLigado(false);
+            InfraDebug::getInstance()->setBolDebugInfra(false);
+            InfraDebug::getInstance()->setBolEcho(false);
+
+        } catch (Exception $e) {
+
+            InfraDebug::getInstance()->setBolLigado(false);
+            InfraDebug::getInstance()->setBolDebugInfra(false);
+            InfraDebug::getInstance()->setBolEcho(false);
+            throw new InfraException('Erro atualizando versão.', $e);
+        }
+
+    }
+
     //Contem atualizações da versao 0.0.1
     protected function instalarv001(){
+
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 0.0.1 DO '.$this->nomeDesteModulo.' NA BASE DO SIP');
 
         $objSistemaRN  = new SistemaRN();
         $objPerfilRN   = new PerfilRN();
@@ -200,10 +302,10 @@ class MdLitAtualizadorSipRN extends InfraRN {
 
         $numIdItemMenuSeiUsuarios = $objItemMenuDTO->getNumIdItemMenu();
 
-        //SEI ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        $this->logar('ATUALIZANDO RECURSOS, MENUS E PERFIS DO MÓDULO LITIGIOSO NA BASE DO SIP...');
+        $this->logar('ATUALIZANDO RECURSOS, MENUS E PERFIS DO '. $this->nomeDesteModulo .' NA BASE DO SIP...');
 
-        //criando os recursos e vinculando-os aos perfil Administrador
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - situação do processo EM basico');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_processo_situacao_cadastrar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_processo_situacao_alterar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_processo_situacao_excluir');
@@ -239,6 +341,7 @@ class MdLitAtualizadorSipRN extends InfraRN {
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_decis_lancament_excluir');
 
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_modalidade_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_abrangencia_consultar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_situacao_lancamento_listar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_situacao_lancamento_consultar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_situacao_lancamento_selecionar');
@@ -249,6 +352,7 @@ class MdLitAtualizadorSipRN extends InfraRN {
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_lancamento_cadastrar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_lancamento_integracao_mapear');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_lancam_int_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_lancam_int_alterar');
         $objRecursoListarSituacaoLancamentoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_lancamento_listar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_visualizar_parametrizar');
 
@@ -262,11 +366,13 @@ class MdLitAtualizadorSipRN extends InfraRN {
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_processo_consultar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_processo_listar');
 
-        //criando Administração -> Controle de Processos Litigiosos
+
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração -> Controle de Processos Litigiosos');
         $objItemMenuDTOControleProcesso       = $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiAdministrador, $numIdMenuSei, $numIdItemMenuSeiAdministracao, null, 'Controle de Processos Litigiosos', 0);
         $objItemMenuDTOControleProcessoBasico = $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, $numIdMenuSei, $numIdItemMenuSeiAdministracao, null, 'Controle de Processos Litigiosos', 0);
 
-        //criando Administração -> Controle de Processos Litigiosos -> Tipos de Controles Litigiosos
+
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração -> Controle de Processos Litigiosos -> Tipos de Controles Litigiosos');
         $this->adicionarItemMenu($numIdSistemaSei,
             $numIdPerfilSeiAdministrador,
             $numIdMenuSei,
@@ -283,7 +389,8 @@ class MdLitAtualizadorSipRN extends InfraRN {
             'Tipos de Controles Litigiosos',
             20);
 
-        //criando Administração -> Controle de Processos Litigiosos -> Situações do Lançamento de Crédito
+
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL  Administração -> Controle de Processos Litigiosos -> Situações do Lançamento de Crédito');
         $this->adicionarItemMenu($numIdSistemaSei,
             $numIdPerfilSeiAdministrador,
             $numIdMenuSei,
@@ -308,7 +415,9 @@ class MdLitAtualizadorSipRN extends InfraRN {
       \'md_lit_tipo_processo_excluir\')'
         );
 
-        //CRIANDO REGRA DE AUDITORIA PARA NOVOS RECURSOS RECEM ADICIONADOS
+
+        $this->logar('CRIANDO REGRA DE AUDITORIA PARA NOVOS RECURSOS');
+
         foreach ($rs as $recurso) {
             BancoSip::getInstance()->executarSql('INSERT INTO rel_regra_auditoria_recurso (id_regra_auditoria, id_sistema, id_recurso) values (' . $objRegraAuditoriaDTO->getNumIdRegraAuditoria() . ', ' . $numIdSistemaSei . ', ' . $recurso['id_recurso'] . ')');
         }
@@ -320,6 +429,1192 @@ class MdLitAtualizadorSipRN extends InfraRN {
         $objSistemaRN = new SistemaRN();
         $objSistemaRN->replicarRegraAuditoria($objReplicacaoRegraAuditoriaDTO);
 
+        //adicionando parametro para controlar versao do modulo
+        $this->logar('ADICIONANDO PARÂMETRO '. $this->nomeParametroModulo .' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+        BancoSip::getInstance()->executarSql('INSERT INTO infra_parametro (valor, nome ) VALUES( \'0.0.1\',  \'' . $this->nomeParametroModulo . '\' )');
+
+    }
+
+    //Contem atualizações da versao 0.0.2
+    protected function instalarv002(){
+
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 0.0.2 DO '.$this->nomeDesteModulo.' NA BASE DO SIP');
+
+        $objSistemaRN  = new SistemaRN();
+        $objPerfilRN   = new PerfilRN();
+        $objMenuRN     = new MenuRN();
+        $objItemMenuRN = new ItemMenuRN();
+        $objRecursoRN  = new RecursoRN();
+
+        $objSistemaDTO = new SistemaDTO();
+        $objSistemaDTO->retNumIdSistema();
+        $objSistemaDTO->setStrSigla('SEI');
+
+        $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
+
+        if ($objSistemaDTO == null) {
+            throw new InfraException('Sistema SEI não encontrado.');
+        }
+
+        $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
+
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome('Administrador');
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+            throw new InfraException('Perfil Administrador do sistema SEI não encontrado.');
+        }
+
+        $numIdPerfilSeiAdministrador = $objPerfilDTO->getNumIdPerfil();
+
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome('Básico');
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
+        }
+
+        $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
+
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome($this->nomeGestorControleLitigioso);
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+
+            //cadastra o novo perfil
+            $objPerfilDTOGestorLitigioso = new PerfilDTO();
+
+            $objPerfilDTOGestorLitigioso->retNumIdPerfil();
+            $objPerfilDTOGestorLitigioso->retNumIdSistema();
+            $objPerfilDTOGestorLitigioso->retStrNome();
+            $objPerfilDTOGestorLitigioso->retStrSinAtivo();
+            $objPerfilDTOGestorLitigioso->retStrSinCoordenado();
+
+            $objPerfilDTOGestorLitigioso->setNumIdSistema($numIdSistemaSei);
+            $objPerfilDTOGestorLitigioso->setStrNome($this->nomeGestorControleLitigioso);
+            $objPerfilDTOGestorLitigioso->setStrDescricao($this->descricaoGestorControleLitigioso);
+            $objPerfilDTOGestorLitigioso->setStrSinCoordenado('N');
+            $objPerfilDTOGestorLitigioso->setStrSinAtivo('S');
+
+            $objPerfilDTOGestorLitigioso = $objPerfilRN->cadastrar($objPerfilDTOGestorLitigioso);
+
+            $numIdPerfilSeiGestorLitigioso = $objPerfilDTOGestorLitigioso->getNumIdPerfil();
+
+        } else {
+
+            $numIdPerfilSeiGestorLitigioso = $objPerfilDTO->getNumIdPerfil();
+        }
+
+        $objMenuDTO = new MenuDTO();
+        $objMenuDTO->retNumIdMenu();
+        $objMenuDTO->setNumIdSistema($numIdSistemaSei);
+        $objMenuDTO->setStrNome('Principal');
+        $objMenuDTO = $objMenuRN->consultar($objMenuDTO);
+
+        if ($objMenuDTO == null) {
+            throw new InfraException('Menu do sistema SEI não encontrado.');
+        }
+
+        $numIdMenuSei = $objMenuDTO->getNumIdMenu();
+
+        $objItemMenuDTO = new ItemMenuDTO();
+        $objItemMenuDTO->retNumIdItemMenu();
+        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
+        $objItemMenuDTO->setStrRotulo('Administração');
+        $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
+
+        if ($objItemMenuDTO == null) {
+            throw new InfraException('Item de menu Administração do sistema SEI não encontrado.');
+        }
+
+        $numIdItemMenuSeiAdministracao = $objItemMenuDTO->getNumIdItemMenu();
+
+        $objItemMenuDTO = new ItemMenuDTO();
+        $objItemMenuDTO->retNumIdItemMenu();
+        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
+        $objItemMenuDTO->setStrRotulo('Usuários');
+        $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
+
+        if ($objItemMenuDTO == null) {
+            throw new InfraException('Item de menu Administração/Usuários do sistema SEI não encontrado.');
+        }
+
+        $numIdItemMenuSeiUsuarios = $objItemMenuDTO->getNumIdItemMenu();
+
+        $this->logar('ATUALIZANDO RECURSOS, MENUS E PERFIS DO MÓDULO LITIGIOSO NA BASE DO SIP... v0.0.2');
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - situação EM gestor do controle Litigioso');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_situacao_parametrizar');
+
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_situacao_alterar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_situacao_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_situacao_desativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_situacao_reativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_situacao_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_situacao_selecionar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_situacao_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_situacao_listar');
+
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_fase_alterar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_fase_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_fase_desativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_fase_reativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_fase_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_fase_selecionar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_fase_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_fase_listar');
+
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_tipo_controle_selecionar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_tipo_controle_consultar');
+        $objRecursoDTOTipoControleGestor = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_tipo_controle_listar');
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - situação EM Básico e administrador');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_situacao_parametrizar');
+
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_alterar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_desativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_reativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_situacao_selecionar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_situacao_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_situacao_listar');
+
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_fase_alterar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_fase_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_fase_desativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_fase_reativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_fase_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_fase_selecionar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_fase_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_fase_listar');
+
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_alterar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_desativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_reativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_excluir');
+
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_controle_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_controle_selecionar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_controle_consultar');
+        $objRecursoDTOTipoControle = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_listar');
+
+
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração -> Controle de Processos Litigiosos');
+        $objItemMenuDTOControleProcesso       = $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiAdministrador, $numIdMenuSei, $numIdItemMenuSeiAdministracao, null, 'Controle de Processos Litigiosos', 0);
+        $objItemMenuDTOControleProcessoBasico = $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, $numIdMenuSei, $numIdItemMenuSeiAdministracao, null, 'Controle de Processos Litigiosos', 0);
+
+
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração -> Controle de Processos Litigiosos -> Tipos de Controles Litigiosos');
+        $this->adicionarItemMenu($numIdSistemaSei,
+            $numIdPerfilSeiAdministrador,
+            $numIdMenuSei,
+            $objItemMenuDTOControleProcesso->getNumIdItemMenu(),
+            $objRecursoDTOTipoControle->getNumIdRecurso(),
+            'Tipos de Controles Litigiosos',
+            10);
+
+        $this->adicionarItemMenu($numIdSistemaSei,
+            $numIdPerfilSeiGestorLitigioso,
+            $numIdMenuSei,
+            $objItemMenuDTOControleProcessoBasico->getNumIdItemMenu(),
+            $objRecursoDTOTipoControleGestor->getNumIdRecurso(),
+            'Tipos de Controles Litigiosos',
+            10);
+
+        $objRegraAuditoriaDTO = new RegraAuditoriaDTO();
+        $objRegraAuditoriaDTO->retNumIdRegraAuditoria();
+        $objRegraAuditoriaDTO->setNumIdSistema($numIdSistemaSei);
+        $objRegraAuditoriaDTO->setStrDescricao('Geral');
+
+        $objRegraAuditoriaRN  = new RegraAuditoriaRN();
+        $objRegraAuditoriaDTO = $objRegraAuditoriaRN->consultar($objRegraAuditoriaDTO);
+
+
+        $rs = BancoSip::getInstance()->consultarSql('select id_recurso from recurso where id_sistema=' . $numIdSistemaSei . ' and nome in (
+
+  	    \'md_lit_situacao_parametrizar\',
+  	
+  	    \'md_lit_situacao_alterar\',
+        \'md_lit_situacao_cadastrar\',
+        \'md_lit_situacao_desativar\',
+        \'md_lit_situacao_reativar\',
+        \'md_lit_situacao_excluir\',
+  	
+	    \'md_lit_tipo_controle_alterar\',
+	    \'md_lit_tipo_controle_cadastrar\',
+	    \'md_lit_tipo_controle_desativar\',
+	    \'md_lit_tipo_controle_reativar\',
+	    \'md_lit_tipo_controle_excluir\',
+	
+  	    \'md_lit_fase_alterar\',
+        \'md_lit_fase_cadastrar\',
+        \'md_lit_fase_desativar\',
+        \'md_lit_fase_reativar\',
+        \'md_lit_fase_excluir\')'
+
+        );
+
+
+        $this->logar('CRIANDO REGRA DE AUDITORIA PARA NOVOS RECURSOS');
+        foreach ($rs as $recurso) {
+            BancoSip::getInstance()->executarSql('INSERT INTO rel_regra_auditoria_recurso (id_regra_auditoria, id_sistema, id_recurso) values (' . $objRegraAuditoriaDTO->getNumIdRegraAuditoria() . ', ' . $numIdSistemaSei . ', ' . $recurso['id_recurso'] . ')');
+        }
+
+        $objReplicacaoRegraAuditoriaDTO = new ReplicacaoRegraAuditoriaDTO();
+        $objReplicacaoRegraAuditoriaDTO->setStrStaOperacao('A');
+        $objReplicacaoRegraAuditoriaDTO->setNumIdRegraAuditoria($objRegraAuditoriaDTO->getNumIdRegraAuditoria());
+
+        $objSistemaRN = new SistemaRN();
+        $objSistemaRN->replicarRegraAuditoria($objReplicacaoRegraAuditoriaDTO);
+
+        //por ultimo, excluir do SIP os recurso tipo_processo_litigioso*
+        $rsRecursosTipoProcesso = BancoSip::getInstance()->consultarSql("select id_recurso from recurso where id_sistema = " . $numIdSistemaSei . " 
+	  		                                       and nome like '%md_lit_tipo_processo_%'");
+
+        if ($rsRecursosTipoProcesso != null && count($rsRecursosTipoProcesso) > 0) {
+
+            foreach ($rsRecursosTipoProcesso as $recurso) {
+
+                //1- remover os menus
+                BancoSip::getInstance()->executarSql('delete from rel_perfil_item_menu 
+		  		                                 WHERE id_sistema = ' . $numIdSistemaSei . ' 
+		  		                                 AND id_recurso = ' . $recurso['id_recurso']);
+
+                BancoSip::getInstance()->executarSql('delete from item_menu
+		  		                                 WHERE id_sistema = ' . $numIdSistemaSei . '
+		  		                                 AND id_recurso = ' . $recurso['id_recurso']);
+
+                //excluir o recurso das regras de auditoria
+                BancoSip::getInstance()->executarSql('delete from rel_regra_auditoria_recurso
+		  		                                 WHERE id_sistema = ' . $numIdSistemaSei . '
+		  		                                 AND id_recurso = ' . $recurso['id_recurso']);
+
+
+                BancoSip::getInstance()->executarSql('delete from recurso_vinculado
+		  	 		WHERE id_sistema = ' . $numIdSistemaSei . '
+		  	 		AND id_recurso = ' . $recurso['id_recurso']);
+
+                BancoSip::getInstance()->executarSql('delete from rel_perfil_recurso
+		  	 		WHERE id_sistema = ' . $numIdSistemaSei . '
+		  	 		AND id_recurso = ' . $recurso['id_recurso']);
+
+                //excluir de fato o recurso
+                BancoSip::getInstance()->executarSql('delete from recurso
+		  		                                 WHERE id_sistema = ' . $numIdSistemaSei . '
+		  		                                 AND id_recurso = ' . $recurso['id_recurso']);
+            }
+        }
+
+        //adicionando parametro para controlar versao do modulo
+        $this->logar('ADICIONANDO PARÂMETRO '. $this->nomeParametroModulo .' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'0.0.2\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+    }
+
+    //Contem atualizações da versao 0.0.3
+    protected function instalarv003(){
+
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 0.0.3 DO '.$this->nomeDesteModulo.' NA BASE DO SIP');
+
+        $objSistemaRN  = new SistemaRN();
+        $objPerfilRN   = new PerfilRN();
+        $objMenuRN     = new MenuRN();
+        $objItemMenuRN = new ItemMenuRN();
+        $objRecursoRN  = new RecursoRN();
+
+        $objSistemaDTO = new SistemaDTO();
+        $objSistemaDTO->retNumIdSistema();
+        $objSistemaDTO->setStrSigla('SEI');
+
+        $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
+
+        if ($objSistemaDTO == null) {
+            throw new InfraException('Sistema SEI não encontrado.');
+        }
+
+        $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
+
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome('Administrador');
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+            throw new InfraException('Perfil Administrador do sistema SEI não encontrado.');
+        }
+
+        $numIdPerfilSeiAdministrador = $objPerfilDTO->getNumIdPerfil();
+
+
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome('Básico');
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
+        }
+
+        $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
+
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome($this->nomeGestorControleLitigioso);
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+
+            //cadastra o novo perfil
+            $objPerfilDTOGestorLitigioso = new PerfilDTO();
+
+            $objPerfilDTOGestorLitigioso->retNumIdPerfil();
+            $objPerfilDTOGestorLitigioso->retNumIdSistema();
+            $objPerfilDTOGestorLitigioso->retStrNome();
+            $objPerfilDTOGestorLitigioso->retStrSinAtivo();
+            $objPerfilDTOGestorLitigioso->retStrSinCoordenado();
+
+            $objPerfilDTOGestorLitigioso->setNumIdSistema($numIdSistemaSei);
+            $objPerfilDTOGestorLitigioso->setStrNome($this->nomeGestorControleLitigioso);
+            $objPerfilDTOGestorLitigioso->setStrDescricao($this->descricaoGestorControleLitigioso);
+            $objPerfilDTOGestorLitigioso->setStrSinCoordenado('N');
+            $objPerfilDTOGestorLitigioso->setStrSinAtivo('S');
+
+
+            $objPerfilDTOGestorLitigioso = $objPerfilRN->cadastrar($objPerfilDTOGestorLitigioso);
+
+            $numIdPerfilSeiGestorLitigioso = $objPerfilDTOGestorLitigioso->getNumIdPerfil();
+
+        } else {
+
+            $numIdPerfilSeiGestorLitigioso = $objPerfilDTO->getNumIdPerfil();
+        }
+
+        $objMenuDTO = new MenuDTO();
+        $objMenuDTO->retNumIdMenu();
+        $objMenuDTO->setNumIdSistema($numIdSistemaSei);
+        $objMenuDTO->setStrNome('Principal');
+        $objMenuDTO = $objMenuRN->consultar($objMenuDTO);
+
+        if ($objMenuDTO == null) {
+            throw new InfraException('Menu do sistema SEI não encontrado.');
+        }
+
+        $numIdMenuSei = $objMenuDTO->getNumIdMenu();
+
+        $objItemMenuDTO = new ItemMenuDTO();
+        $objItemMenuDTO->retNumIdItemMenu();
+        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
+        $objItemMenuDTO->setStrRotulo('Administração');
+        $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
+
+        if ($objItemMenuDTO == null) {
+            throw new InfraException('Item de menu Administração do sistema SEI não encontrado.');
+        }
+
+        $numIdItemMenuSeiAdministracao = $objItemMenuDTO->getNumIdItemMenu();
+
+        $objItemMenuDTO = new ItemMenuDTO();
+        $objItemMenuDTO->retNumIdItemMenu();
+        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
+        $objItemMenuDTO->setStrRotulo('Usuários');
+        $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
+
+        if ($objItemMenuDTO == null) {
+            throw new InfraException('Item de menu Administração/Usuários do sistema SEI não encontrado.');
+        }
+
+        $numIdItemMenuSeiUsuarios = $objItemMenuDTO->getNumIdItemMenu();
+
+        $this->logar('ATUALIZANDO RECURSOS, MENUS E PERFIS DO MÓDULO LITIGIOSO NA BASE DO SIP...');
+
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - dispositivos normativos EM Gestor do controle litigioso e basico');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_associar_dispositivo_normativo_reativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_associar_dispositivo_normativo_desativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_associar_dispositivo_normativo_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_associar_dispositivo_normativo_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_associar_dispositivo_normativo_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_associar_dispositivo_normativo_listar');
+
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dispositivo_normativo_selecionar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dispositivo_normativo_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dispositivo_normativo_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_dispositivo_normativo_reativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_dispositivo_normativo_desativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_dispositivo_normativo_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_dispositivo_normativo_alterar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_dispositivo_normativo_cadastrar');
+
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_conduta_selecionar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_conduta_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_conduta_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_conduta_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_conduta_alterar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_conduta_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_conduta_reativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_conduta_desativar');
+
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - dispositivos normativos EM basico e administrador');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_associar_dispositivo_normativo_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_associar_dispositivo_normativo_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_associar_dispositivo_normativo_reativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_associar_dispositivo_normativo_desativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_associar_dispositivo_normativo_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_associar_dispositivo_normativo_cadastrar');
+
+
+        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dispositivo_normativo_listar');
+        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dispositivo_normativo_selecionar');
+        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dispositivo_normativo_consultar');
+        $objRecursoDTODispositivosADM = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_dispositivo_normativo_listar');
+        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_dispositivo_normativo_reativar');
+        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_dispositivo_normativo_desativar');
+        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_dispositivo_normativo_excluir');
+        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_dispositivo_normativo_alterar');
+        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_dispositivo_normativo_cadastrar');
+
+        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_conduta_selecionar');
+        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_conduta_consultar');
+        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_conduta_listar');
+        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_conduta_cadastrar');
+        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_conduta_alterar');
+        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_conduta_excluir');
+        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_conduta_reativar');
+        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_conduta_desativar');
+
+
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração -> Controle de Processos Litigiosos');
+        $objItemMenuDTOControleProcesso       = $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiAdministrador, $numIdMenuSei, $numIdItemMenuSeiAdministracao, null, 'Controle de Processos Litigiosos', 20);
+        $objItemMenuDTOControleProcessoBasico = $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, $numIdMenuSei, $numIdItemMenuSeiAdministracao, null, 'Controle de Processos Litigiosos', 20);
+
+
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração -> Controle de Processos Litigiosos -> Dispostivos Normativos');
+        $this->adicionarItemMenu($numIdSistemaSei,
+            $numIdPerfilSeiAdministrador,
+            $numIdMenuSei,
+            $objItemMenuDTOControleProcesso->getNumIdItemMenu(),
+            $objRecursoDTODispositivosADM->getNumIdRecurso(),
+            'Dispositivos Normativos',
+            20);
+
+        $objRegraAuditoriaDTO = new RegraAuditoriaDTO();
+        $objRegraAuditoriaDTO->retNumIdRegraAuditoria();
+        $objRegraAuditoriaDTO->setNumIdSistema($numIdSistemaSei);
+        $objRegraAuditoriaDTO->setStrDescricao('Geral');
+
+        $objRegraAuditoriaRN  = new RegraAuditoriaRN();
+        $objRegraAuditoriaDTO = $objRegraAuditoriaRN->consultar($objRegraAuditoriaDTO);
+
+        $rs = BancoSip::getInstance()->consultarSql('select id_recurso from recurso where id_sistema=' . $numIdSistemaSei . ' and nome in (
+		
+  	    \'md_lit_associar_dispositivo_normativo_consultar\',
+  
+  	    \'md_lit_associar_dispositivo_normativo_listar\',
+        \'md_lit_associar_dispositivo_normativo_reativar\',
+        \'md_lit_associar_dispositivo_normativo_desativar\',
+        \'md_lit_associar_dispositivo_normativo_excluir\',
+        \'md_lit_associar_dispositivo_normativo_cadastrar\',
+  
+	    \'md_lit_dispositivo_normativo_selecionar\',
+	    \'md_lit_dispositivo_normativo_listar\',
+	    \'md_lit_dispositivo_normativo_reativar\',
+	    \'md_lit_dispositivo_normativo_desativar\',
+	    \'md_lit_dispositivo_normativo_excluir\',
+		\'md_lit_dispositivo_normativo_consultar\',
+		\'md_lit_dispositivo_normativo_alterar\',
+		\'md_lit_dispositivo_normativo_cadastrar\',
+				
+  	    \'md_lit_conduta_selecionar\',
+		\'md_lit_conduta_listar\',
+        \'md_lit_conduta_cadastrar\',
+		\'md_lit_conduta_alterar\',
+        \'md_lit_conduta_consultar\',
+		\'md_lit_conduta_reativar\',
+		\'md_lit_conduta_desativar\',
+		\'md_lit_conduta_excluir\')'
+
+        );
+
+
+        $this->logar('CRIANDO REGRA DE AUDITORIA PARA NOVOS RECURSOS');
+
+        foreach ($rs as $recurso) {
+            BancoSip::getInstance()->executarSql('INSERT INTO rel_regra_auditoria_recurso (id_regra_auditoria, id_sistema, id_recurso) values (' . $objRegraAuditoriaDTO->getNumIdRegraAuditoria() . ', ' . $numIdSistemaSei . ', ' . $recurso['id_recurso'] . ')');
+        }
+
+        $objReplicacaoRegraAuditoriaDTO = new ReplicacaoRegraAuditoriaDTO();
+        $objReplicacaoRegraAuditoriaDTO->setStrStaOperacao('A');
+        $objReplicacaoRegraAuditoriaDTO->setNumIdRegraAuditoria($objRegraAuditoriaDTO->getNumIdRegraAuditoria());
+
+        $objSistemaRN = new SistemaRN();
+        $objSistemaRN->replicarRegraAuditoria($objReplicacaoRegraAuditoriaDTO);
+
+        //Atualizando parametro para controlar versao do modulo
+        $this->logar('ATUALIZANDO PARÂMETRO '.$this->nomeParametroModulo.' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'0.0.3\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+
+    }
+
+    //Contem atualizações da versao 0.0.4
+    protected function instalarv004(){
+
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 0.0.4 DO '.$this->nomeDesteModulo.' NA BASE DO SIP');
+
+        $objSistemaRN  = new SistemaRN();
+        $objPerfilRN   = new PerfilRN();
+        $objMenuRN     = new MenuRN();
+        $objItemMenuRN = new ItemMenuRN();
+        $objRecursoRN  = new RecursoRN();
+
+        $objSistemaDTO = new SistemaDTO();
+        $objSistemaDTO->retNumIdSistema();
+        $objSistemaDTO->setStrSigla('SEI');
+
+        $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
+
+        if ($objSistemaDTO == null) {
+            throw new InfraException('Sistema SEI não encontrado.');
+        }
+
+        $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
+
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome('Administrador');
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+            throw new InfraException('Perfil Administrador do sistema SEI não encontrado.');
+        }
+
+        $numIdPerfilSeiAdministrador = $objPerfilDTO->getNumIdPerfil();
+
+
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome('Básico');
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
+        }
+
+        $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
+
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome($this->nomeGestorControleLitigioso);
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+
+            //cadastra o novo perfil
+            $objPerfilDTOGestorLitigioso = new PerfilDTO();
+
+            $objPerfilDTOGestorLitigioso->retNumIdPerfil();
+            $objPerfilDTOGestorLitigioso->retNumIdSistema();
+            $objPerfilDTOGestorLitigioso->retStrNome();
+            $objPerfilDTOGestorLitigioso->retStrSinAtivo();
+            $objPerfilDTOGestorLitigioso->retStrSinCoordenado();
+
+            $objPerfilDTOGestorLitigioso->setNumIdSistema($numIdSistemaSei);
+            $objPerfilDTOGestorLitigioso->setStrNome($this->nomeGestorControleLitigioso);
+            $objPerfilDTOGestorLitigioso->setStrDescricao($this->descricaoGestorControleLitigioso);
+            $objPerfilDTOGestorLitigioso->setStrSinCoordenado('N');
+            $objPerfilDTOGestorLitigioso->setStrSinAtivo('S');
+
+            $objPerfilDTOGestorLitigioso = $objPerfilRN->cadastrar($objPerfilDTOGestorLitigioso);
+
+
+            $numIdPerfilSeiGestorLitigioso = $objPerfilDTOGestorLitigioso->getNumIdPerfil();
+
+        } else {
+
+            $numIdPerfilSeiGestorLitigioso = $objPerfilDTO->getNumIdPerfil();
+        }
+
+        $objMenuDTO = new MenuDTO();
+        $objMenuDTO->retNumIdMenu();
+        $objMenuDTO->setNumIdSistema($numIdSistemaSei);
+        $objMenuDTO->setStrNome('Principal');
+        $objMenuDTO = $objMenuRN->consultar($objMenuDTO);
+
+        if ($objMenuDTO == null) {
+            throw new InfraException('Menu do sistema SEI não encontrado.');
+        }
+
+        $numIdMenuSei = $objMenuDTO->getNumIdMenu();
+
+        $objItemMenuDTO = new ItemMenuDTO();
+        $objItemMenuDTO->retNumIdItemMenu();
+        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
+        $objItemMenuDTO->setStrRotulo('Administração');
+        $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
+
+        if ($objItemMenuDTO == null) {
+            throw new InfraException('Item de menu Administração do sistema SEI não encontrado.');
+        }
+
+        $numIdItemMenuSeiAdministracao = $objItemMenuDTO->getNumIdItemMenu();
+
+        $objItemMenuDTO = new ItemMenuDTO();
+        $objItemMenuDTO->retNumIdItemMenu();
+        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
+        $objItemMenuDTO->setStrRotulo('Usuários');
+        $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
+
+        if ($objItemMenuDTO == null) {
+            throw new InfraException('Item de menu Administração/Usuários do sistema SEI não encontrado.');
+        }
+
+        $numIdItemMenuSeiUsuarios = $objItemMenuDTO->getNumIdItemMenu();
+
+        $this->logar('ATUALIZANDO RECURSOS, MENUS E PERFIS DO MÓDULO LITIGIOSO NA BASE DO SIP... v0.0.4');
+
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - tipo de controle EM Gestor do controle litigioso');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_tipo_controle_tipo_decisao_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_tipo_controle_tipo_decisao_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_tipo_decisao_selecionar');
+
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - parametrizar interessado EM Gestor do controle litigioso');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_parametrizar_interessado_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_parametrizar_interessado_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_parametrizar_interessado_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_parametrizar_interessado_alterar');
+
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_mapear_param_entrada_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_mapear_param_saida_listar');
+
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - tipo de decisão EM basico e administrador');
+        $objRecursoTipoDecisaoListarDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_decisao_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_decisao_selecionar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_decisao_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_decisao_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_decisao_desativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_decisao_reativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_decisao_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_decisao_alterar');
+
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_especie_decisao_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_especie_decisao_selecionar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_especie_decisao_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_especie_decisao_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_especie_decisao_desativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_especie_decisao_reativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_especie_decisao_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_especie_decisao_alterar');
+
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_controle_tipo_decisao_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_controle_tipo_decisao_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_tipo_decisao_reativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_tipo_decisao_desativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_tipo_decisao_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_tipo_decisao_cadastrar');
+
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_obrigacao_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_obrigacao_selecionar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_obrigacao_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_obrigacao_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_obrigacao_desativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_obrigacao_reativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_obrigacao_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_obrigacao_alterar');
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - serviço EM basico e administrador');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_servico_selecionar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_servico_integracao_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_servico_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_servico_listar');
+        $objRecursoServicoListarDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_servico_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_servico_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_servico_desativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_servico_reativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_servico_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_servico_alterar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_servico_integracao_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_servico_integracao_alterar');
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - modalidade EM basico e administrador');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_servico_modalidade_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_servico_modalidade_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_servico_modalidade_excluir');
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - abrangencia EM basico e administrador');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_servico_abrangen_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_servico_abrangen_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_servico_abrangen_excluir');
+
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - Integração EM basico e administrador');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_integracao_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_integracao_selecionar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_integracao_consultar');
+        $objRecursoIntegracaoListarDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_integracao_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_integracao_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_integracao_desativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_integracao_reativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_integracao_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_integracao_alterar');
+
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - parametrizar interessado EM basico e administrador');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_parametrizar_interessado_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_parametrizar_interessado_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_parametrizar_interessado_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_parametrizar_interessado_alterar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_funcionalidade_listar');
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - mapeamento de parametros entrada e saida EM basico e administrador');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_mapear_param_entrada_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_mapear_param_saida_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_mapear_param_saida_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_mapear_param_entrada_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_mapear_param_entrada_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_mapear_param_saida_excluir');
+
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - processo litigioso EM basico');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_processo_validar_numero_sei');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_processo_cadastro_completo');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_processo_cadastro_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_controle_consultar');
+
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - dado interessado EM basico');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dado_interessado_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dado_interessado_desativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dado_interessado_reativar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dado_interessado_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dado_interessado_selecionar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dado_interessado_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dado_interessado_alterar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dado_interessado_consultar');
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - Dado Interessado e modalidade EM basico');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_modali_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_modali_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_modali_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_modali_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_modali_alterar');
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - Dado Interessado e abrangencia EM basico');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_abrang_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_abrang_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_abrang_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_abrang_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_abrang_alterar');
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - Dado Interessado e servico EM basico');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_servico_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_servico_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_servico_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_servico_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_servico_alterar');
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - Dado Interessado e cidade EM basico');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_cidade_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_cidade_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_cidade_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_cidade_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_cidade_alterar');
+
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - Dado Interessado e estado EM basico');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_estado_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_estado_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_estado_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_estado_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_estado_alterar');
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - Dado Interessado e estado EM basico');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_numero_interessado_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_numero_interessado_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_numero_interessado_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_numero_interessado_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_numero_interessado_alterar');
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - integração EM basico');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_integracao_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_integracao_listar');
+
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_mapea_param_valor_listar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_mapea_param_valor_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_mapea_param_valor_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_mapea_param_valor_consultar');
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - dispositivo revogado EM basico e administrador');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_disp_norm_revogado_consultar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_disp_norm_revogado_cadastrar');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_disp_norm_revogado_excluir');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_disp_norm_revogado_listar');
+
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - /dispositivo normativo EM basico');
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dispositivo_normativo_listar');
+
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração -> Controle de Processos Litigiosos');
+        $objItemMenuDTO = new ItemMenuDTO();
+        $objItemMenuDTO->retNumIdItemMenu();
+        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
+        $objItemMenuDTO->setStrRotulo('Controle de Processos Litigiosos');
+        $objItemMenuDTOControleProcesso = $objItemMenuRN->consultar($objItemMenuDTO);
+
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração > Controle de Processos Litigiosos > Tipos de Decisão');
+        $this->adicionarItemMenu($numIdSistemaSei,
+            $numIdPerfilSeiAdministrador,
+            $numIdMenuSei,
+            $objItemMenuDTOControleProcesso->getNumIdItemMenu(),
+            $objRecursoTipoDecisaoListarDTO->getNumIdRecurso(),
+            'Tipos de Decisão',
+            20);
+
+        //criando Administração > Controle de Processos Litigiosos > Serviços
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração > Controle de Processos Litigiosos > Serviços');
+        $this->adicionarItemMenu($numIdSistemaSei,
+            $numIdPerfilSeiAdministrador,
+            $numIdMenuSei,
+            $objItemMenuDTOControleProcesso->getNumIdItemMenu(),
+            $objRecursoServicoListarDTO->getNumIdRecurso(),
+            'Lista de Serviços Outorgados',
+            30);
+
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração > Controle de Processos Litigiosos > Integrações');
+        $this->adicionarItemMenu($numIdSistemaSei,
+            $numIdPerfilSeiAdministrador,
+            $numIdMenuSei,
+            $objItemMenuDTOControleProcesso->getNumIdItemMenu(),
+            $objRecursoIntegracaoListarDTO->getNumIdRecurso(),
+            'Mapeamento das Integrações',
+            40);
+
+        $objRegraAuditoriaDTO = new RegraAuditoriaDTO();
+        $objRegraAuditoriaDTO->retNumIdRegraAuditoria();
+        $objRegraAuditoriaDTO->setNumIdSistema($numIdSistemaSei);
+        $objRegraAuditoriaDTO->setStrDescricao('Geral');
+
+        $objRegraAuditoriaRN  = new RegraAuditoriaRN();
+        $objRegraAuditoriaDTO = $objRegraAuditoriaRN->consultar($objRegraAuditoriaDTO);
+
+        $rs = BancoSip::getInstance()->consultarSql('select id_recurso from recurso where id_sistema=' . $numIdSistemaSei . ' and nome in (
+		
+  	    \'md_lit_tipo_decisao_excluir\',
+		\'md_lit_tipo_decisao_desativar\',
+		\'md_lit_tipo_decisao_reativar\',
+								
+		\'md_lit_tipo_decisao_cadastrar\',
+		\'md_lit_tipo_decisao_alterar\',					
+		\'md_lit_especie_decisao_excluir\',
+		\'md_lit_especie_decisao_desativar\',
+		\'md_lit_especie_decisao_reativar\',
+								
+		\'md_lit_especie_decisao_cadastrar\',
+		\'md_lit_especie_decisao_alterar\',
+		
+		\'md_lit_tipo_controle_tipo_decisao_reativar\',
+		\'md_lit_tipo_controle_tipo_decisao_desativar\',
+		\'md_lit_tipo_controle_tipo_decisao_excluir\',
+		\'md_lit_tipo_controle_tipo_decisao_cadastrar\',
+		
+		\'md_lit_obrigacao_excluir\',
+		\'md_lit_obrigacao_desativar\',
+		\'md_lit_obrigacao_reativar\',
+		\'md_lit_obrigacao_cadastrar\',
+		\'md_lit_obrigacao_alterar\',
+		
+		\'md_lit_processo_validar_numero_sei\',
+		\'md_lit_processo_cadastro_completo\',
+
+	    \'md_lit_parametrizar_interessado_cadastrar\',
+	    \'md_lit_parametrizar_interessado_excluir\',
+	    \'md_lit_integracao_cadastrar\',
+	    \'md_lit_integracao_alterar\',
+	    \'md_lit_integracao_excluir\',
+	    \'md_lit_integracao_reativar\',
+	    \'md_lit_integracao_desativar\',
+
+		\'md_lit_servico_cadastrar\',
+		\'md_lit_servico_excluir\',
+		\'md_lit_servico_reativar\',
+		\'md_lit_servico_desativar\',
+		
+		\'md_lit_servico_integracao_cadastrar\',
+		\'md_lit_servico_integracao_alterar\',
+
+		\'md_lit_dado_interessado_excluir\',
+		\'md_lit_dado_interessado_cadastrar\',
+		\'md_lit_dado_interessado_alterar\',
+
+		\'md_lit_parametrizar_interessado_alterar\',
+
+		\'md_lit_processo_cadastro_cadastrar\',
+		
+		\'md_lit_dado_interessado_cadastrar\',
+		\'md_lit_dado_interessado_excluir\',
+		\'md_lit_mapea_param_valor_cadastrar\',
+		\'md_lit_mapea_param_valor_excluir\')'
+
+        );
+
+
+        $this->logar('CRIANDO REGRA DE AUDITORIA PARA NOVOS RECURSOS');
+
+        foreach ($rs as $recurso) {
+            BancoSip::getInstance()->executarSql('INSERT INTO rel_regra_auditoria_recurso (id_regra_auditoria, id_sistema, id_recurso) values (' . $objRegraAuditoriaDTO->getNumIdRegraAuditoria() . ', ' . $numIdSistemaSei . ', ' . $recurso['id_recurso'] . ')');
+        }
+
+        $objReplicacaoRegraAuditoriaDTO = new ReplicacaoRegraAuditoriaDTO();
+        $objReplicacaoRegraAuditoriaDTO->setStrStaOperacao('A');
+        $objReplicacaoRegraAuditoriaDTO->setNumIdRegraAuditoria($objRegraAuditoriaDTO->getNumIdRegraAuditoria());
+
+        $objSistemaRN = new SistemaRN();
+        $objSistemaRN->replicarRegraAuditoria($objReplicacaoRegraAuditoriaDTO);
+
+        //Atualizando parametro para controlar versao do modulo
+        $this->logar('ATUALIZANDO PARÂMETRO '.$this->nomeParametroModulo.' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'0.0.4\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+
+    }
+
+    //Contem atualizações da versao 1.0.0
+    protected function instalarv100(){
+
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.0.0 DO '.$this->nomeDesteModulo.' NA BASE DO SIP');
+
+        $objSistemaRN  = new SistemaRN();
+        $objPerfilRN   = new PerfilRN();
+        $objMenuRN     = new MenuRN();
+        $objItemMenuRN = new ItemMenuRN();
+        $objRecursoRN  = new RecursoRN();
+
+        $objSistemaDTO = new SistemaDTO();
+        $objSistemaDTO->retNumIdSistema();
+        $objSistemaDTO->setStrSigla('SEI');
+
+        $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
+
+        if ($objSistemaDTO == null) {
+            throw new InfraException('Sistema SEI não encontrado.');
+        }
+
+        $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
+
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome('Administrador');
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+            throw new InfraException('Perfil Administrador do sistema SEI não encontrado.');
+        }
+
+        $numIdPerfilSeiAdministrador = $objPerfilDTO->getNumIdPerfil();
+
+
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome($this->nomeGestorControleLitigioso);
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+
+            //cadastra o novo perfil
+            $objPerfilDTOGestorLitigioso = new PerfilDTO();
+
+            $objPerfilDTOGestorLitigioso->retNumIdPerfil();
+            $objPerfilDTOGestorLitigioso->retNumIdSistema();
+            $objPerfilDTOGestorLitigioso->retStrNome();
+            $objPerfilDTOGestorLitigioso->retStrSinAtivo();
+            $objPerfilDTOGestorLitigioso->retStrSinCoordenado();
+
+            $objPerfilDTOGestorLitigioso->setNumIdSistema($numIdSistemaSei);
+            $objPerfilDTOGestorLitigioso->setStrNome($this->nomeGestorControleLitigioso);
+            $objPerfilDTOGestorLitigioso->setStrDescricao($this->descricaoGestorControleLitigioso);
+            $objPerfilDTOGestorLitigioso->setStrSinCoordenado('N');
+            $objPerfilDTOGestorLitigioso->setStrSinAtivo('S');
+
+
+            $objPerfilDTOGestorLitigioso = $objPerfilRN->cadastrar($objPerfilDTOGestorLitigioso);
+
+
+            $numIdPerfilSeiGestorLitigioso = $objPerfilDTOGestorLitigioso->getNumIdPerfil();
+
+        } else {
+
+            $numIdPerfilSeiGestorLitigioso = $objPerfilDTO->getNumIdPerfil();
+        }
+
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome('Básico');
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
+        }
+
+        $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
+
+        $objMenuDTO = new MenuDTO();
+        $objMenuDTO->retNumIdMenu();
+        $objMenuDTO->setNumIdSistema($numIdSistemaSei);
+        $objMenuDTO->setStrNome('Principal');
+        $objMenuDTO = $objMenuRN->consultar($objMenuDTO);
+
+        if ($objMenuDTO == null) {
+            throw new InfraException('Menu do sistema SEI não encontrado.');
+        }
+
+        $numIdMenuSei = $objMenuDTO->getNumIdMenu();
+
+        $objItemMenuDTO = new ItemMenuDTO();
+        $objItemMenuDTO->retNumIdItemMenu();
+        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
+        $objItemMenuDTO->setStrRotulo('Administração');
+        $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
+
+        if ($objItemMenuDTO == null) {
+            throw new InfraException('Item de menu Administração do sistema SEI não encontrado.');
+        }
+
+        $numIdItemMenuSeiAdministracao = $objItemMenuDTO->getNumIdItemMenu();
+
+        $objItemMenuDTO = new ItemMenuDTO();
+        $objItemMenuDTO->retNumIdItemMenu();
+        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
+        $objItemMenuDTO->setStrRotulo('Usuários');
+        $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
+
+        if ($objItemMenuDTO == null) {
+            throw new InfraException('Item de menu Administração/Usuários do sistema SEI não encontrado.');
+        }
+
+        $numIdItemMenuSeiUsuarios = $objItemMenuDTO->getNumIdItemMenu();
+
+        $this->logar('ATUALIZANDO RECURSOS, MENUS E PERFIS DO MÓDULO LITIGIOSO NA BASE DO SIP... v1.0.0');
+
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - reincidencia e antecedencia EM basico e administrador');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_reinciden_anteceden_alterar');
+        $objRecursoReinAnteCadastrarDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_reinciden_anteceden_cadastrar');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_reinciden_anteceden_excluir');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_reinciden_anteceden_listar ');
+
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - tipo de decisao da reincidencia EM basico e administrador');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_tp_dec_rein_ante_excluir');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_tp_dec_rein_ante_cadastrar');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_tp_dec_rein_ante_listar');
+
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - motivo EM basico e administrador');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_motivo_alterar');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_motivo_cadastrar');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_motivo_desativar');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_motivo_excluir');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_motivo_reativar');
+        $objRecursoMotivoListarDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_motivo_listar');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_motivo_selecionar');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_motivo_listar');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_motivo_consultar');
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - tipo de controle litigioso com motivo EM basico e administrador');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_tp_control_moti_alterar');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_tp_control_moti_cadastrar');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_tp_control_moti_excluir');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_tp_control_moti_consultar');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_tp_control_moti_listar');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_tp_control_moti_selecionar');
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - controle litigioso com motivo EM basico e administrador');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_controle_motivo_alterar');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_controle_motivo_cadastrar');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_controle_motivo_excluir');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_controle_motivo_consultar');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_controle_motivo_listar');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_controle_motivo_selecionar');
+
+
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração -> Controle de Processos Litigiosos');
+        $objItemMenuDTO = new ItemMenuDTO();
+        $objItemMenuDTO->retNumIdItemMenu();
+        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
+        $objItemMenuDTO->setStrRotulo('Controle de Processos Litigiosos');
+        $objItemMenuDTOControleProcesso = $objItemMenuRN->consultar($objItemMenuDTO);
+
+
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração > Controle de Processos Litigiosos > Reincidências Específicas e Antecedentes');
+        $this->adicionarItemMenu($numIdSistemaSei,
+            $numIdPerfilSeiAdministrador,
+            $numIdMenuSei,
+            $objItemMenuDTOControleProcesso->getNumIdItemMenu(),
+            $objRecursoReinAnteCadastrarDTO->getNumIdRecurso(),
+            'Reincidências Específicas e Antecedentes',
+            50);
+
+
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração > Controle de Processos Litigiosos > Motivos para Instauração');
+        $this->adicionarItemMenu($numIdSistemaSei,
+            $numIdPerfilSeiAdministrador,
+            $numIdMenuSei,
+            $objItemMenuDTOControleProcesso->getNumIdItemMenu(),
+            $objRecursoMotivoListarDTO->getNumIdRecurso(),
+            'Motivos para Instauração',
+            60);
+
+        $objRegraAuditoriaDTO = new RegraAuditoriaDTO();
+        $objRegraAuditoriaDTO->retNumIdRegraAuditoria();
+        $objRegraAuditoriaDTO->setNumIdSistema($numIdSistemaSei);
+        $objRegraAuditoriaDTO->setStrDescricao('Geral');
+
+        $objRegraAuditoriaRN  = new RegraAuditoriaRN();
+        $objRegraAuditoriaDTO = $objRegraAuditoriaRN->consultar($objRegraAuditoriaDTO);
+
+        $rs = BancoSip::getInstance()->consultarSql('select id_recurso from recurso where id_sistema=' . $numIdSistemaSei . ' and nome in (
+		
+  	    \'md_lit_reinciden_anteceden_cadastrar\',
+  	    \'md_lit_reinciden_anteceden_alterar\')'
+
+        );
+
+
+        $this->logar('CRIANDO REGRA DE AUDITORIA PARA NOVOS RECURSOS');
+        foreach ($rs as $recurso) {
+            BancoSip::getInstance()->executarSql('INSERT INTO rel_regra_auditoria_recurso (id_regra_auditoria, id_sistema, id_recurso) values (' . $objRegraAuditoriaDTO->getNumIdRegraAuditoria() . ', ' . $numIdSistemaSei . ', ' . $recurso['id_recurso'] . ')');
+        }
+
+        $objReplicacaoRegraAuditoriaDTO = new ReplicacaoRegraAuditoriaDTO();
+        $objReplicacaoRegraAuditoriaDTO->setStrStaOperacao('A');
+        $objReplicacaoRegraAuditoriaDTO->setNumIdRegraAuditoria($objRegraAuditoriaDTO->getNumIdRegraAuditoria());
+
+        $objSistemaRN = new SistemaRN();
+        $objSistemaRN->replicarRegraAuditoria($objReplicacaoRegraAuditoriaDTO);
+
+        //Atualizando parametro para controlar versao do modulo
+        $this->logar('ATUALIZANDO PARÂMETRO '.$this->nomeParametroModulo.' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \''.$this->versaoAtualDesteModulo.'\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
     }
 
     private function adicionarRecursoPerfil($numIdSistema, $numIdPerfil, $strNome, $strCaminho = null){
@@ -442,1299 +1737,6 @@ class MdLitAtualizadorSipRN extends InfraRN {
         return $objItemMenuDTO;
     }
 
-    //Contem atualizações da versao 0.0.2
-    protected function instalarv002(){
-
-        $objSistemaRN  = new SistemaRN();
-        $objPerfilRN   = new PerfilRN();
-        $objMenuRN     = new MenuRN();
-        $objItemMenuRN = new ItemMenuRN();
-        $objRecursoRN  = new RecursoRN();
-
-        $objSistemaDTO = new SistemaDTO();
-        $objSistemaDTO->retNumIdSistema();
-        $objSistemaDTO->setStrSigla('SEI');
-
-        $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
-
-        if ($objSistemaDTO == null) {
-            throw new InfraException('Sistema SEI não encontrado.');
-        }
-
-        $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
-
-        $objPerfilDTO = new PerfilDTO();
-        $objPerfilDTO->retNumIdPerfil();
-        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('Administrador');
-        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
-
-        if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil Administrador do sistema SEI não encontrado.');
-        }
-
-        $numIdPerfilSeiAdministrador = $objPerfilDTO->getNumIdPerfil();
-
-        $objPerfilDTO = new PerfilDTO();
-        $objPerfilDTO->retNumIdPerfil();
-        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('Básico');
-        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
-
-        if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
-        }
-
-        $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
-
-        $objPerfilDTO = new PerfilDTO();
-        $objPerfilDTO->retNumIdPerfil();
-        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome($this->nomeGestorControleLitigioso);
-        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
-
-        if ($objPerfilDTO == null) {
-
-            //cadastra o novo perfil
-            $objPerfilDTOGestorLitigioso = new PerfilDTO();
-
-            $objPerfilDTOGestorLitigioso->retNumIdPerfil();
-            $objPerfilDTOGestorLitigioso->retNumIdSistema();
-            $objPerfilDTOGestorLitigioso->retStrNome();
-            $objPerfilDTOGestorLitigioso->retStrSinAtivo();
-            $objPerfilDTOGestorLitigioso->retStrSinCoordenado();
-
-            $objPerfilDTOGestorLitigioso->setNumIdSistema($numIdSistemaSei);
-            $objPerfilDTOGestorLitigioso->setStrNome($this->nomeGestorControleLitigioso);
-            $objPerfilDTOGestorLitigioso->setStrDescricao($this->descricaoGestorControleLitigioso);
-            $objPerfilDTOGestorLitigioso->setStrSinCoordenado('N');
-            $objPerfilDTOGestorLitigioso->setStrSinAtivo('S');
-
-            $objPerfilDTOGestorLitigioso = $objPerfilRN->cadastrar($objPerfilDTOGestorLitigioso);
-
-            $numIdPerfilSeiGestorLitigioso = $objPerfilDTOGestorLitigioso->getNumIdPerfil();
-
-        } else {
-
-            $numIdPerfilSeiGestorLitigioso = $objPerfilDTO->getNumIdPerfil();
-        }
-
-        $objMenuDTO = new MenuDTO();
-        $objMenuDTO->retNumIdMenu();
-        $objMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objMenuDTO->setStrNome('Principal');
-        $objMenuDTO = $objMenuRN->consultar($objMenuDTO);
-
-        if ($objMenuDTO == null) {
-            throw new InfraException('Menu do sistema SEI não encontrado.');
-        }
-
-        $numIdMenuSei = $objMenuDTO->getNumIdMenu();
-
-        $objItemMenuDTO = new ItemMenuDTO();
-        $objItemMenuDTO->retNumIdItemMenu();
-        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('Administração');
-        $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
-
-        if ($objItemMenuDTO == null) {
-            throw new InfraException('Item de menu Administração do sistema SEI não encontrado.');
-        }
-
-        $numIdItemMenuSeiAdministracao = $objItemMenuDTO->getNumIdItemMenu();
-
-        $objItemMenuDTO = new ItemMenuDTO();
-        $objItemMenuDTO->retNumIdItemMenu();
-        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('Usuários');
-        $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
-
-        if ($objItemMenuDTO == null) {
-            throw new InfraException('Item de menu Administração/Usuários do sistema SEI não encontrado.');
-        }
-
-        $numIdItemMenuSeiUsuarios = $objItemMenuDTO->getNumIdItemMenu();
-
-        //SEI ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        $this->logar('ATUALIZANDO RECURSOS, MENUS E PERFIS DO MÓDULO LITIGIOSO NA BASE DO SIP... v0.0.2');
-
-        //======================================================================
-        //criando os recursos e vinculando-os aos perfil Administrador e basico
-        //======================================================================
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_situacao_parametrizar');
-
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_situacao_alterar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_situacao_cadastrar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_situacao_desativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_situacao_reativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_situacao_excluir');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_situacao_selecionar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_situacao_consultar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_situacao_listar');
-
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_fase_alterar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_fase_cadastrar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_fase_desativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_fase_reativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_fase_excluir');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_fase_selecionar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_fase_consultar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_fase_listar');
-
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_tipo_controle_selecionar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_tipo_controle_consultar');
-        $objRecursoDTOTipoControleGestor = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_tipo_controle_listar');
-
-        //======================================================================
-        //adicionando os mesmos recursos ao perfil administrador
-        //======================================================================
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_situacao_parametrizar');
-
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_alterar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_cadastrar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_desativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_reativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_excluir');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_situacao_selecionar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_situacao_consultar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_situacao_listar');
-
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_fase_alterar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_fase_cadastrar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_fase_desativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_fase_reativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_fase_excluir');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_fase_selecionar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_fase_consultar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_fase_listar');
-
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_alterar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_cadastrar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_desativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_reativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_excluir');
-
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_controle_listar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_controle_selecionar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_controle_consultar');
-        $objRecursoDTOTipoControle = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_listar');
-
-        //criando Administração -> Controle de Processos Litigiosos
-        $objItemMenuDTOControleProcesso       = $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiAdministrador, $numIdMenuSei, $numIdItemMenuSeiAdministracao, null, 'Controle de Processos Litigiosos', 0);
-        $objItemMenuDTOControleProcessoBasico = $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, $numIdMenuSei, $numIdItemMenuSeiAdministracao, null, 'Controle de Processos Litigiosos', 0);
-
-        //criando Administração -> Controle de Processos Litigiosos -> Tipos de Controles Litigiosos
-        $this->adicionarItemMenu($numIdSistemaSei,
-            $numIdPerfilSeiAdministrador,
-            $numIdMenuSei,
-            $objItemMenuDTOControleProcesso->getNumIdItemMenu(),
-            $objRecursoDTOTipoControle->getNumIdRecurso(),
-            'Tipos de Controles Litigiosos',
-            10);
-
-        $this->adicionarItemMenu($numIdSistemaSei,
-            $numIdPerfilSeiGestorLitigioso,
-            $numIdMenuSei,
-            $objItemMenuDTOControleProcessoBasico->getNumIdItemMenu(),
-            $objRecursoDTOTipoControleGestor->getNumIdRecurso(),
-            'Tipos de Controles Litigiosos',
-            10);
-
-        $objRegraAuditoriaDTO = new RegraAuditoriaDTO();
-        $objRegraAuditoriaDTO->retNumIdRegraAuditoria();
-        $objRegraAuditoriaDTO->setNumIdSistema($numIdSistemaSei);
-        $objRegraAuditoriaDTO->setStrDescricao('Geral');
-
-        $objRegraAuditoriaRN  = new RegraAuditoriaRN();
-        $objRegraAuditoriaDTO = $objRegraAuditoriaRN->consultar($objRegraAuditoriaDTO);
-
-
-        $rs = BancoSip::getInstance()->consultarSql('select id_recurso from recurso where id_sistema=' . $numIdSistemaSei . ' and nome in (
-
-  	    \'md_lit_situacao_parametrizar\',
-  	
-  	    \'md_lit_situacao_alterar\',
-        \'md_lit_situacao_cadastrar\',
-        \'md_lit_situacao_desativar\',
-        \'md_lit_situacao_reativar\',
-        \'md_lit_situacao_excluir\',
-  	
-	    \'md_lit_tipo_controle_alterar\',
-	    \'md_lit_tipo_controle_cadastrar\',
-	    \'md_lit_tipo_controle_desativar\',
-	    \'md_lit_tipo_controle_reativar\',
-	    \'md_lit_tipo_controle_excluir\',
-	
-  	    \'md_lit_fase_alterar\',
-        \'md_lit_fase_cadastrar\',
-        \'md_lit_fase_desativar\',
-        \'md_lit_fase_reativar\',
-        \'md_lit_fase_excluir\')'
-
-        );
-
-        //CRIANDO REGRA DE AUDITORIA PARA NOVOS RECURSOS RECEM ADICIONADOS
-        foreach ($rs as $recurso) {
-            BancoSip::getInstance()->executarSql('INSERT INTO rel_regra_auditoria_recurso (id_regra_auditoria, id_sistema, id_recurso) values (' . $objRegraAuditoriaDTO->getNumIdRegraAuditoria() . ', ' . $numIdSistemaSei . ', ' . $recurso['id_recurso'] . ')');
-        }
-
-        $objReplicacaoRegraAuditoriaDTO = new ReplicacaoRegraAuditoriaDTO();
-        $objReplicacaoRegraAuditoriaDTO->setStrStaOperacao('A');
-        $objReplicacaoRegraAuditoriaDTO->setNumIdRegraAuditoria($objRegraAuditoriaDTO->getNumIdRegraAuditoria());
-
-        $objSistemaRN = new SistemaRN();
-        $objSistemaRN->replicarRegraAuditoria($objReplicacaoRegraAuditoriaDTO);
-
-        //por ultimo, excluir do SIP os recurso tipo_processo_litigioso*
-        $rsRecursosTipoProcesso = BancoSip::getInstance()->consultarSql("select id_recurso from recurso where id_sistema = " . $numIdSistemaSei . " 
-	  		                                       and nome like '%md_lit_tipo_processo_%'");
-
-        if ($rsRecursosTipoProcesso != null && count($rsRecursosTipoProcesso) > 0) {
-
-            foreach ($rsRecursosTipoProcesso as $recurso) {
-
-                //1- remover os menus
-                BancoSip::getInstance()->executarSql('delete from rel_perfil_item_menu 
-		  		                                 WHERE id_sistema = ' . $numIdSistemaSei . ' 
-		  		                                 AND id_recurso = ' . $recurso['id_recurso']);
-
-                BancoSip::getInstance()->executarSql('delete from item_menu
-		  		                                 WHERE id_sistema = ' . $numIdSistemaSei . '
-		  		                                 AND id_recurso = ' . $recurso['id_recurso']);
-
-                //excluir o recurso das regras de auditoria
-                BancoSip::getInstance()->executarSql('delete from rel_regra_auditoria_recurso
-		  		                                 WHERE id_sistema = ' . $numIdSistemaSei . '
-		  		                                 AND id_recurso = ' . $recurso['id_recurso']);
-
-
-                BancoSip::getInstance()->executarSql('delete from recurso_vinculado
-		  	 		WHERE id_sistema = ' . $numIdSistemaSei . '
-		  	 		AND id_recurso = ' . $recurso['id_recurso']);
-
-                BancoSip::getInstance()->executarSql('delete from rel_perfil_recurso
-		  	 		WHERE id_sistema = ' . $numIdSistemaSei . '
-		  	 		AND id_recurso = ' . $recurso['id_recurso']);
-
-                //excluir de fato o recurso
-                BancoSip::getInstance()->executarSql('delete from recurso
-		  		                                 WHERE id_sistema = ' . $numIdSistemaSei . '
-		  		                                 AND id_recurso = ' . $recurso['id_recurso']);
-            }
-        }
-
-    }
-
-    //Contem atualizações da versao 0.0.3
-    protected function instalarv003(){
-
-        $objSistemaRN  = new SistemaRN();
-        $objPerfilRN   = new PerfilRN();
-        $objMenuRN     = new MenuRN();
-        $objItemMenuRN = new ItemMenuRN();
-        $objRecursoRN  = new RecursoRN();
-
-        $objSistemaDTO = new SistemaDTO();
-        $objSistemaDTO->retNumIdSistema();
-        $objSistemaDTO->setStrSigla('SEI');
-
-        $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
-
-        if ($objSistemaDTO == null) {
-            throw new InfraException('Sistema SEI não encontrado.');
-        }
-
-        $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
-
-        $objPerfilDTO = new PerfilDTO();
-        $objPerfilDTO->retNumIdPerfil();
-        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('Administrador');
-        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
-
-        if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil Administrador do sistema SEI não encontrado.');
-        }
-
-        $numIdPerfilSeiAdministrador = $objPerfilDTO->getNumIdPerfil();
-
-
-        $objPerfilDTO = new PerfilDTO();
-        $objPerfilDTO->retNumIdPerfil();
-        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('Básico');
-        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
-
-        if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
-        }
-
-        $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
-
-        $objPerfilDTO = new PerfilDTO();
-        $objPerfilDTO->retNumIdPerfil();
-        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome($this->nomeGestorControleLitigioso);
-        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
-
-        if ($objPerfilDTO == null) {
-
-            //cadastra o novo perfil
-            $objPerfilDTOGestorLitigioso = new PerfilDTO();
-
-            $objPerfilDTOGestorLitigioso->retNumIdPerfil();
-            $objPerfilDTOGestorLitigioso->retNumIdSistema();
-            $objPerfilDTOGestorLitigioso->retStrNome();
-            $objPerfilDTOGestorLitigioso->retStrSinAtivo();
-            $objPerfilDTOGestorLitigioso->retStrSinCoordenado();
-
-            $objPerfilDTOGestorLitigioso->setNumIdSistema($numIdSistemaSei);
-            $objPerfilDTOGestorLitigioso->setStrNome($this->nomeGestorControleLitigioso);
-            $objPerfilDTOGestorLitigioso->setStrDescricao($this->descricaoGestorControleLitigioso);
-            $objPerfilDTOGestorLitigioso->setStrSinCoordenado('N');
-            $objPerfilDTOGestorLitigioso->setStrSinAtivo('S');
-
-
-            $objPerfilDTOGestorLitigioso = $objPerfilRN->cadastrar($objPerfilDTOGestorLitigioso);
-
-            $numIdPerfilSeiGestorLitigioso = $objPerfilDTOGestorLitigioso->getNumIdPerfil();
-
-        } else {
-
-            $numIdPerfilSeiGestorLitigioso = $objPerfilDTO->getNumIdPerfil();
-        }
-
-        $objMenuDTO = new MenuDTO();
-        $objMenuDTO->retNumIdMenu();
-        $objMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objMenuDTO->setStrNome('Principal');
-        $objMenuDTO = $objMenuRN->consultar($objMenuDTO);
-
-        if ($objMenuDTO == null) {
-            throw new InfraException('Menu do sistema SEI não encontrado.');
-        }
-
-        $numIdMenuSei = $objMenuDTO->getNumIdMenu();
-
-        $objItemMenuDTO = new ItemMenuDTO();
-        $objItemMenuDTO->retNumIdItemMenu();
-        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('Administração');
-        $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
-
-        if ($objItemMenuDTO == null) {
-            throw new InfraException('Item de menu Administração do sistema SEI não encontrado.');
-        }
-
-        $numIdItemMenuSeiAdministracao = $objItemMenuDTO->getNumIdItemMenu();
-
-        $objItemMenuDTO = new ItemMenuDTO();
-        $objItemMenuDTO->retNumIdItemMenu();
-        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('Usuários');
-        $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
-
-        if ($objItemMenuDTO == null) {
-            throw new InfraException('Item de menu Administração/Usuários do sistema SEI não encontrado.');
-        }
-
-        $numIdItemMenuSeiUsuarios = $objItemMenuDTO->getNumIdItemMenu();
-
-        //SEI ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        $this->logar('ATUALIZANDO RECURSOS, MENUS E PERFIS DO MÓDULO LITIGIOSO NA BASE DO SIP... v0.0.3');
-
-        //======================================================================
-        //criando os recursos e vinculando-os aos perfil Administrador e basico
-        //======================================================================
-
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_associar_dispositivo_normativo_reativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_associar_dispositivo_normativo_desativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_associar_dispositivo_normativo_excluir');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_associar_dispositivo_normativo_cadastrar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_associar_dispositivo_normativo_consultar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_associar_dispositivo_normativo_listar');
-
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dispositivo_normativo_selecionar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dispositivo_normativo_listar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dispositivo_normativo_consultar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_dispositivo_normativo_reativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_dispositivo_normativo_desativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_dispositivo_normativo_excluir');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_dispositivo_normativo_alterar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_dispositivo_normativo_cadastrar');
-
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_conduta_selecionar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_conduta_consultar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_conduta_listar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_conduta_cadastrar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_conduta_alterar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_conduta_excluir');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_conduta_reativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_conduta_desativar');
-
-        //======================================================================
-        //adicionando os mesmos recursos ao perfil administrador
-        //======================================================================
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_associar_dispositivo_normativo_consultar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_associar_dispositivo_normativo_listar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_associar_dispositivo_normativo_reativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_associar_dispositivo_normativo_desativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_associar_dispositivo_normativo_excluir');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_associar_dispositivo_normativo_cadastrar');
-
-
-        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dispositivo_normativo_listar');
-        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dispositivo_normativo_selecionar');
-        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dispositivo_normativo_consultar');
-        $objRecursoDTODispositivosADM = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_dispositivo_normativo_listar');
-        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_dispositivo_normativo_reativar');
-        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_dispositivo_normativo_desativar');
-        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_dispositivo_normativo_excluir');
-        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_dispositivo_normativo_alterar');
-        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_dispositivo_normativo_cadastrar');
-
-        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_conduta_selecionar');
-        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_conduta_consultar');
-        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_conduta_listar');
-        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_conduta_cadastrar');
-        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_conduta_alterar');
-        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_conduta_excluir');
-        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_conduta_reativar');
-        $objRecursoDTO                = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_conduta_desativar');
-
-        //criando Administração -> Controle de Processos Litigiosos
-        $objItemMenuDTOControleProcesso       = $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiAdministrador, $numIdMenuSei, $numIdItemMenuSeiAdministracao, null, 'Controle de Processos Litigiosos', 20);
-        $objItemMenuDTOControleProcessoBasico = $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, $numIdMenuSei, $numIdItemMenuSeiAdministracao, null, 'Controle de Processos Litigiosos', 20);
-
-        //criando Administração -> Controle de Processos Litigiosos -> Dispostivos Normativos
-        $this->adicionarItemMenu($numIdSistemaSei,
-            $numIdPerfilSeiAdministrador,
-            $numIdMenuSei,
-            $objItemMenuDTOControleProcesso->getNumIdItemMenu(),
-            $objRecursoDTODispositivosADM->getNumIdRecurso(),
-            'Dispositivos Normativos',
-            20);
-
-        $objRegraAuditoriaDTO = new RegraAuditoriaDTO();
-        $objRegraAuditoriaDTO->retNumIdRegraAuditoria();
-        $objRegraAuditoriaDTO->setNumIdSistema($numIdSistemaSei);
-        $objRegraAuditoriaDTO->setStrDescricao('Geral');
-
-        $objRegraAuditoriaRN  = new RegraAuditoriaRN();
-        $objRegraAuditoriaDTO = $objRegraAuditoriaRN->consultar($objRegraAuditoriaDTO);
-
-        $rs = BancoSip::getInstance()->consultarSql('select id_recurso from recurso where id_sistema=' . $numIdSistemaSei . ' and nome in (
-		
-  	    \'md_lit_associar_dispositivo_normativo_consultar\',
-  
-  	    \'md_lit_associar_dispositivo_normativo_listar\',
-        \'md_lit_associar_dispositivo_normativo_reativar\',
-        \'md_lit_associar_dispositivo_normativo_desativar\',
-        \'md_lit_associar_dispositivo_normativo_excluir\',
-        \'md_lit_associar_dispositivo_normativo_cadastrar\',
-  
-	    \'md_lit_dispositivo_normativo_selecionar\',
-	    \'md_lit_dispositivo_normativo_listar\',
-	    \'md_lit_dispositivo_normativo_reativar\',
-	    \'md_lit_dispositivo_normativo_desativar\',
-	    \'md_lit_dispositivo_normativo_excluir\',
-		\'md_lit_dispositivo_normativo_consultar\',
-		\'md_lit_dispositivo_normativo_alterar\',
-		\'md_lit_dispositivo_normativo_cadastrar\',
-				
-  	    \'md_lit_conduta_selecionar\',
-		\'md_lit_conduta_listar\',
-        \'md_lit_conduta_cadastrar\',
-		\'md_lit_conduta_alterar\',
-        \'md_lit_conduta_consultar\',
-		\'md_lit_conduta_reativar\',
-		\'md_lit_conduta_desativar\',
-		\'md_lit_conduta_excluir\')'
-
-        );
-
-        //CRIANDO REGRA DE AUDITORIA PARA NOVOS RECURSOS RECEM ADICIONADOS
-        foreach ($rs as $recurso) {
-            BancoSip::getInstance()->executarSql('INSERT INTO rel_regra_auditoria_recurso (id_regra_auditoria, id_sistema, id_recurso) values (' . $objRegraAuditoriaDTO->getNumIdRegraAuditoria() . ', ' . $numIdSistemaSei . ', ' . $recurso['id_recurso'] . ')');
-        }
-
-        $objReplicacaoRegraAuditoriaDTO = new ReplicacaoRegraAuditoriaDTO();
-        $objReplicacaoRegraAuditoriaDTO->setStrStaOperacao('A');
-        $objReplicacaoRegraAuditoriaDTO->setNumIdRegraAuditoria($objRegraAuditoriaDTO->getNumIdRegraAuditoria());
-
-        $objSistemaRN = new SistemaRN();
-        $objSistemaRN->replicarRegraAuditoria($objReplicacaoRegraAuditoriaDTO);
-
-    }
-
-    //Contem atualizações da versao 0.0.4
-    protected function instalarv004(){
-
-        $objSistemaRN  = new SistemaRN();
-        $objPerfilRN   = new PerfilRN();
-        $objMenuRN     = new MenuRN();
-        $objItemMenuRN = new ItemMenuRN();
-        $objRecursoRN  = new RecursoRN();
-
-        $objSistemaDTO = new SistemaDTO();
-        $objSistemaDTO->retNumIdSistema();
-        $objSistemaDTO->setStrSigla('SEI');
-
-        $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
-
-        if ($objSistemaDTO == null) {
-            throw new InfraException('Sistema SEI não encontrado.');
-        }
-
-        $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
-
-        $objPerfilDTO = new PerfilDTO();
-        $objPerfilDTO->retNumIdPerfil();
-        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('Administrador');
-        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
-
-        if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil Administrador do sistema SEI não encontrado.');
-        }
-
-        $numIdPerfilSeiAdministrador = $objPerfilDTO->getNumIdPerfil();
-
-
-        $objPerfilDTO = new PerfilDTO();
-        $objPerfilDTO->retNumIdPerfil();
-        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('Básico');
-        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
-
-        if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
-        }
-
-        $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
-
-        $objPerfilDTO = new PerfilDTO();
-        $objPerfilDTO->retNumIdPerfil();
-        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome($this->nomeGestorControleLitigioso);
-        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
-
-        if ($objPerfilDTO == null) {
-
-            //cadastra o novo perfil
-            $objPerfilDTOGestorLitigioso = new PerfilDTO();
-
-            $objPerfilDTOGestorLitigioso->retNumIdPerfil();
-            $objPerfilDTOGestorLitigioso->retNumIdSistema();
-            $objPerfilDTOGestorLitigioso->retStrNome();
-            $objPerfilDTOGestorLitigioso->retStrSinAtivo();
-            $objPerfilDTOGestorLitigioso->retStrSinCoordenado();
-
-            $objPerfilDTOGestorLitigioso->setNumIdSistema($numIdSistemaSei);
-            $objPerfilDTOGestorLitigioso->setStrNome($this->nomeGestorControleLitigioso);
-            $objPerfilDTOGestorLitigioso->setStrDescricao($this->descricaoGestorControleLitigioso);
-            $objPerfilDTOGestorLitigioso->setStrSinCoordenado('N');
-            $objPerfilDTOGestorLitigioso->setStrSinAtivo('S');
-
-            $objPerfilDTOGestorLitigioso = $objPerfilRN->cadastrar($objPerfilDTOGestorLitigioso);
-
-
-            $numIdPerfilSeiGestorLitigioso = $objPerfilDTOGestorLitigioso->getNumIdPerfil();
-
-        } else {
-
-            $numIdPerfilSeiGestorLitigioso = $objPerfilDTO->getNumIdPerfil();
-        }
-
-        $objMenuDTO = new MenuDTO();
-        $objMenuDTO->retNumIdMenu();
-        $objMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objMenuDTO->setStrNome('Principal');
-        $objMenuDTO = $objMenuRN->consultar($objMenuDTO);
-
-        if ($objMenuDTO == null) {
-            throw new InfraException('Menu do sistema SEI não encontrado.');
-        }
-
-        $numIdMenuSei = $objMenuDTO->getNumIdMenu();
-
-        $objItemMenuDTO = new ItemMenuDTO();
-        $objItemMenuDTO->retNumIdItemMenu();
-        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('Administração');
-        $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
-
-        if ($objItemMenuDTO == null) {
-            throw new InfraException('Item de menu Administração do sistema SEI não encontrado.');
-        }
-
-        $numIdItemMenuSeiAdministracao = $objItemMenuDTO->getNumIdItemMenu();
-
-        $objItemMenuDTO = new ItemMenuDTO();
-        $objItemMenuDTO->retNumIdItemMenu();
-        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('Usuários');
-        $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
-
-        if ($objItemMenuDTO == null) {
-            throw new InfraException('Item de menu Administração/Usuários do sistema SEI não encontrado.');
-        }
-
-        $numIdItemMenuSeiUsuarios = $objItemMenuDTO->getNumIdItemMenu();
-
-        //SEI ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        $this->logar('ATUALIZANDO RECURSOS, MENUS E PERFIS DO MÓDULO LITIGIOSO NA BASE DO SIP... v0.0.4');
-
-        //===========================================================================
-        //criando os recursos e vinculando-os ao perfil Gestor de Controle Litigioso
-        //==========================================================================
-
-        /*
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_associar_dispositivo_normativo_consultar');
-        */
-
-        //md_lit_tipo_controle_tipo_decisao_consultar
-        $objRecursoDTO      = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_tipo_controle_tipo_decisao_consultar');
-        $objRecursoDTO      = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_tipo_controle_tipo_decisao_cadastrar');
-
-        //md_lit_tipo_decisao_selecionar
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_tipo_decisao_selecionar');
-
-        //parametrizar interessado
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_parametrizar_interessado_cadastrar');
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_parametrizar_interessado_listar');
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_parametrizar_interessado_excluir');
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_parametrizar_interessado_alterar');
-
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_mapear_param_entrada_listar');
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_mapear_param_saida_listar');
-
-
-        //======================================================================
-        //adicionando os mesmos recursos ao perfil administrador
-        //======================================================================
-
-        $objRecursoTipoDecisaoListarDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_decisao_listar');
-        $objRecursoDTO                  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_decisao_selecionar');
-        $objRecursoDTO                  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_decisao_consultar');
-        $objRecursoDTO                  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_decisao_excluir');
-        $objRecursoDTO                  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_decisao_desativar');
-        $objRecursoDTO                  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_decisao_reativar');
-        $objRecursoDTO                  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_decisao_cadastrar');
-        $objRecursoDTO                  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_decisao_alterar');
-
-        $objRecursoDTO                  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_especie_decisao_listar');
-        $objRecursoDTO                  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_especie_decisao_selecionar');
-        $objRecursoDTO                  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_especie_decisao_consultar');
-        $objRecursoDTO                  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_especie_decisao_excluir');
-        $objRecursoDTO                  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_especie_decisao_desativar');
-        $objRecursoDTO                  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_especie_decisao_reativar');
-        $objRecursoDTO                  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_especie_decisao_cadastrar');
-        $objRecursoDTO                  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_especie_decisao_alterar');
-
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_controle_tipo_decisao_consultar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_controle_tipo_decisao_listar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_tipo_decisao_reativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_tipo_decisao_desativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_tipo_decisao_excluir');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_tipo_decisao_cadastrar');
-
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_obrigacao_listar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_obrigacao_selecionar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_obrigacao_consultar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_obrigacao_excluir');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_obrigacao_desativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_obrigacao_reativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_obrigacao_cadastrar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_obrigacao_alterar');
-
-        //Serviços:
-        $objRecursoDTO              = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_servico_selecionar');
-        $objRecursoDTO              = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_servico_integracao_consultar');
-        $objRecursoDTO              = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_servico_consultar');
-        $objRecursoDTO              = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_servico_listar');
-        $objRecursoServicoListarDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_servico_listar');
-        $objRecursoDTO              = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_servico_excluir');
-        $objRecursoDTO              = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_servico_desativar');
-        $objRecursoDTO              = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_servico_reativar');
-        $objRecursoDTO              = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_servico_cadastrar');
-        $objRecursoDTO              = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_servico_alterar');
-        $objRecursoDTO              = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_servico_integracao_cadastrar');
-        $objRecursoDTO              = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_servico_integracao_alterar');
-
-        //Serviços Modalidade:
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_servico_modalidade_listar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_servico_modalidade_cadastrar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_servico_modalidade_excluir');
-
-        //Serviços Abrangência:
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_servico_abrangen_listar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_servico_abrangen_cadastrar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_servico_abrangen_excluir');
-
-        //Integração:
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_integracao_listar');
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_integracao_selecionar');
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_integracao_consultar');
-        $objRecursoIntegracaoListarDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_integracao_listar');
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_integracao_excluir');
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_integracao_desativar');
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_integracao_reativar');
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_integracao_cadastrar');
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_integracao_alterar');
-
-
-        //parametrizar interessado
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_parametrizar_interessado_listar');
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_parametrizar_interessado_cadastrar');
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_parametrizar_interessado_excluir');
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_parametrizar_interessado_alterar');
-
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_funcionalidade_listar');
-
-        //ações de mapeamento de parametros entrada e saida
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_mapear_param_entrada_listar');
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_mapear_param_saida_listar');
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_mapear_param_saida_cadastrar');
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_mapear_param_entrada_cadastrar');
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_mapear_param_entrada_excluir');
-        $objRecursoDTO                 = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_mapear_param_saida_excluir');
-
-
-        //======================================================================
-        //adicionando os mesmos recursos ao perfil básico
-        //======================================================================
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_processo_validar_numero_sei');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_processo_cadastro_completo');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_processo_cadastro_cadastrar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_controle_consultar');
-
-
-        //Dado Interessado
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dado_interessado_excluir');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dado_interessado_desativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dado_interessado_reativar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dado_interessado_listar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dado_interessado_selecionar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dado_interessado_cadastrar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dado_interessado_alterar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dado_interessado_consultar');
-
-        //Dado Interessado e modalidade
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_modali_cadastrar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_modali_excluir');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'mmd_lit_rel_num_inter_modali_consultar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_modali_listar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_modali_alterar');
-
-        //Dado Interessado e abrangencia
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_abrang_cadastrar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_abrang_excluir');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_abrang_consultar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_abrang_listar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_abrang_alterar');
-
-        //Dado Interessado e servico
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_servico_cadastrar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_servico_excluir');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_servico_consultar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_servico_listar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_servico_alterar');
-
-        //Dado Interessado e cidade
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_cidade_cadastrar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_cidade_excluir');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_cidade_consultar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_cidade_listar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_cidade_alterar');
-
-        //Dado Interessado e estado
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_estado_cadastrar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_estado_excluir');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_estado_consultar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_estado_listar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_estado_alterar');
-
-        //Dado Interessado e estado
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_numero_interessado_cadastrar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_numero_interessado_excluir');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_numero_interessado_consultar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_numero_interessado_listar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_numero_interessado_alterar');
-
-        //integração
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_integracao_consultar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_integracao_listar');
-
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_mapea_param_valor_listar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_mapea_param_valor_excluir');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_mapea_param_valor_cadastrar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_mapea_param_valor_consultar');
-
-        //dispositivo revogado
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_disp_norm_revogado_consultar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_disp_norm_revogado_cadastrar');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_disp_norm_revogado_excluir');
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_disp_norm_revogado_listar');
-
-
-        //dispositivo normativo
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dispositivo_normativo_listar');
-
-        //obtendo o menu Administração -> Controle de Processos Litigiosos
-        $objItemMenuDTO = new ItemMenuDTO();
-        $objItemMenuDTO->retNumIdItemMenu();
-        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('Controle de Processos Litigiosos');
-        $objItemMenuDTOControleProcesso = $objItemMenuRN->consultar($objItemMenuDTO);
-
-        //criando Administração > Controle de Processos Litigiosos > Tipos de Decisão
-        $this->adicionarItemMenu($numIdSistemaSei,
-            $numIdPerfilSeiAdministrador,
-            $numIdMenuSei,
-            $objItemMenuDTOControleProcesso->getNumIdItemMenu(),
-            $objRecursoTipoDecisaoListarDTO->getNumIdRecurso(),
-            'Tipos de Decisão',
-            20);
-
-        //criando Administração > Controle de Processos Litigiosos > Serviços
-        $this->adicionarItemMenu($numIdSistemaSei,
-            $numIdPerfilSeiAdministrador,
-            $numIdMenuSei,
-            $objItemMenuDTOControleProcesso->getNumIdItemMenu(),
-            $objRecursoServicoListarDTO->getNumIdRecurso(),
-            'Lista de Serviços Outorgados',
-            30);
-
-        //criando Administração > Controle de Processos Litigiosos > Integrações
-        $this->adicionarItemMenu($numIdSistemaSei,
-            $numIdPerfilSeiAdministrador,
-            $numIdMenuSei,
-            $objItemMenuDTOControleProcesso->getNumIdItemMenu(),
-            $objRecursoIntegracaoListarDTO->getNumIdRecurso(),
-            'Mapeamento das Integrações',
-            40);
-
-        $objRegraAuditoriaDTO = new RegraAuditoriaDTO();
-        $objRegraAuditoriaDTO->retNumIdRegraAuditoria();
-        $objRegraAuditoriaDTO->setNumIdSistema($numIdSistemaSei);
-        $objRegraAuditoriaDTO->setStrDescricao('Geral');
-
-        $objRegraAuditoriaRN  = new RegraAuditoriaRN();
-        $objRegraAuditoriaDTO = $objRegraAuditoriaRN->consultar($objRegraAuditoriaDTO);
-
-        $rs = BancoSip::getInstance()->consultarSql('select id_recurso from recurso where id_sistema=' . $numIdSistemaSei . ' and nome in (
-		
-  	    \'md_lit_tipo_decisao_excluir\',
-		\'md_lit_tipo_decisao_desativar\',
-		\'md_lit_tipo_decisao_reativar\',
-								
-		\'md_lit_tipo_decisao_cadastrar\',
-		\'md_lit_tipo_decisao_alterar\',					
-		\'md_lit_especie_decisao_excluir\',
-		\'md_lit_especie_decisao_desativar\',
-		\'md_lit_especie_decisao_reativar\',
-								
-		\'md_lit_especie_decisao_cadastrar\',
-		\'md_lit_especie_decisao_alterar\',
-		
-		\'md_lit_tipo_controle_tipo_decisao_reativar\',
-		\'md_lit_tipo_controle_tipo_decisao_desativar\',
-		\'md_lit_tipo_controle_tipo_decisao_excluir\',
-		\'md_lit_tipo_controle_tipo_decisao_cadastrar\',
-		
-		\'md_lit_obrigacao_excluir\',
-		\'md_lit_obrigacao_desativar\',
-		\'md_lit_obrigacao_reativar\',
-		\'md_lit_obrigacao_cadastrar\',
-		\'md_lit_obrigacao_alterar\',
-		
-		\'md_lit_processo_validar_numero_sei\',
-		\'md_lit_processo_cadastro_completo\',
-
-	    \'md_lit_parametrizar_interessado_cadastrar\',
-	    \'md_lit_parametrizar_interessado_excluir\',
-	    \'md_lit_integracao_cadastrar\',
-	    \'md_lit_integracao_alterar\',
-	    \'md_lit_integracao_excluir\',
-	    \'md_lit_integracao_reativar\',
-	    \'md_lit_integracao_desativar\',
-
-		\'md_lit_servico_cadastrar\',
-		\'md_lit_servico_excluir\',
-		\'md_lit_servico_reativar\',
-		\'md_lit_servico_desativar\',
-		
-		\'md_lit_servico_integracao_cadastrar\',
-		\'md_lit_servico_integracao_alterar\',
-
-		\'md_lit_dado_interessado_excluir\',
-		\'md_lit_dado_interessado_cadastrar\',
-		\'md_lit_dado_interessado_alterar\',
-
-		\'md_lit_parametrizar_interessado_alterar\',
-
-		\'md_lit_processo_cadastro_cadastrar\',
-		
-		\'md_lit_dado_interessado_cadastrar\',
-		\'md_lit_dado_interessado_excluir\',
-		\'md_lit_mapea_param_valor_cadastrar\',
-		\'md_lit_mapea_param_valor_excluir\')'
-
-        );
-
-        //CRIANDO REGRA DE AUDITORIA PARA NOVOS RECURSOS RECEM ADICIONADOS
-        foreach ($rs as $recurso) {
-            BancoSip::getInstance()->executarSql('INSERT INTO rel_regra_auditoria_recurso (id_regra_auditoria, id_sistema, id_recurso) values (' . $objRegraAuditoriaDTO->getNumIdRegraAuditoria() . ', ' . $numIdSistemaSei . ', ' . $recurso['id_recurso'] . ')');
-        }
-
-        $objReplicacaoRegraAuditoriaDTO = new ReplicacaoRegraAuditoriaDTO();
-        $objReplicacaoRegraAuditoriaDTO->setStrStaOperacao('A');
-        $objReplicacaoRegraAuditoriaDTO->setNumIdRegraAuditoria($objRegraAuditoriaDTO->getNumIdRegraAuditoria());
-
-        $objSistemaRN = new SistemaRN();
-        $objSistemaRN->replicarRegraAuditoria($objReplicacaoRegraAuditoriaDTO);
-
-    }
-
-    //Contem atualizações da versao 1.0.0
-    protected function instalarv100(){
-        
-        $objSistemaRN  = new SistemaRN();
-        $objPerfilRN   = new PerfilRN();
-        $objMenuRN     = new MenuRN();
-        $objItemMenuRN = new ItemMenuRN();
-        $objRecursoRN  = new RecursoRN();
-
-        $objSistemaDTO = new SistemaDTO();
-        $objSistemaDTO->retNumIdSistema();
-        $objSistemaDTO->setStrSigla('SEI');
-
-        $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
-
-        if ($objSistemaDTO == null) {
-            throw new InfraException('Sistema SEI não encontrado.');
-        }
-
-        $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
-
-        $objPerfilDTO = new PerfilDTO();
-        $objPerfilDTO->retNumIdPerfil();
-        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('Administrador');
-        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
-
-        if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil Administrador do sistema SEI não encontrado.');
-        }
-
-        $numIdPerfilSeiAdministrador = $objPerfilDTO->getNumIdPerfil();
-
-
-        $objPerfilDTO = new PerfilDTO();
-        $objPerfilDTO->retNumIdPerfil();
-        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome($this->nomeGestorControleLitigioso);
-        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
-
-        if ($objPerfilDTO == null) {
-
-            //cadastra o novo perfil
-            $objPerfilDTOGestorLitigioso = new PerfilDTO();
-
-            $objPerfilDTOGestorLitigioso->retNumIdPerfil();
-            $objPerfilDTOGestorLitigioso->retNumIdSistema();
-            $objPerfilDTOGestorLitigioso->retStrNome();
-            $objPerfilDTOGestorLitigioso->retStrSinAtivo();
-            $objPerfilDTOGestorLitigioso->retStrSinCoordenado();
-
-            $objPerfilDTOGestorLitigioso->setNumIdSistema($numIdSistemaSei);
-            $objPerfilDTOGestorLitigioso->setStrNome($this->nomeGestorControleLitigioso);
-            $objPerfilDTOGestorLitigioso->setStrDescricao($this->descricaoGestorControleLitigioso);
-            $objPerfilDTOGestorLitigioso->setStrSinCoordenado('N');
-            $objPerfilDTOGestorLitigioso->setStrSinAtivo('S');
-
-
-            $objPerfilDTOGestorLitigioso = $objPerfilRN->cadastrar($objPerfilDTOGestorLitigioso);
-
-
-            $numIdPerfilSeiGestorLitigioso = $objPerfilDTOGestorLitigioso->getNumIdPerfil();
-
-        } else {
-
-            $numIdPerfilSeiGestorLitigioso = $objPerfilDTO->getNumIdPerfil();
-        }
-
-        $objPerfilDTO = new PerfilDTO();
-        $objPerfilDTO->retNumIdPerfil();
-        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('Básico');
-        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
-
-        if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
-        }
-
-        $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
-
-        $objMenuDTO = new MenuDTO();
-        $objMenuDTO->retNumIdMenu();
-        $objMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objMenuDTO->setStrNome('Principal');
-        $objMenuDTO = $objMenuRN->consultar($objMenuDTO);
-
-        if ($objMenuDTO == null) {
-            throw new InfraException('Menu do sistema SEI não encontrado.');
-        }
-
-        $numIdMenuSei = $objMenuDTO->getNumIdMenu();
-
-        $objItemMenuDTO = new ItemMenuDTO();
-        $objItemMenuDTO->retNumIdItemMenu();
-        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('Administração');
-        $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
-
-        if ($objItemMenuDTO == null) {
-            throw new InfraException('Item de menu Administração do sistema SEI não encontrado.');
-        }
-
-        $numIdItemMenuSeiAdministracao = $objItemMenuDTO->getNumIdItemMenu();
-
-        $objItemMenuDTO = new ItemMenuDTO();
-        $objItemMenuDTO->retNumIdItemMenu();
-        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('Usuários');
-        $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
-
-        if ($objItemMenuDTO == null) {
-            throw new InfraException('Item de menu Administração/Usuários do sistema SEI não encontrado.');
-        }
-
-        $numIdItemMenuSeiUsuarios = $objItemMenuDTO->getNumIdItemMenu();
-
-        //SEI ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        $this->logar('ATUALIZANDO RECURSOS, MENUS E PERFIS DO MÓDULO LITIGIOSO NA BASE DO SIP... v1.0.0');
-
-        //===========================================================================
-        //criando os recursos e vinculando-os ao perfil Gestor de Controle Litigioso
-        //==========================================================================
-
-        /*
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_associar_dispositivo_normativo_consultar');
-        */
-
-        //recursos md_lit_reinciden_anteceden
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_reinciden_anteceden_alterar');
-        $objRecursoReinAnteCadastrarDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_reinciden_anteceden_cadastrar');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_reinciden_anteceden_excluir');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_reinciden_anteceden_listar ');
-
-        //recursos md_lit_rel_tp_dec_rein_ante_excluir
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_tp_dec_rein_ante_excluir');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_tp_dec_rein_ante_cadastrar');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_tp_dec_rein_ante_listar');
-
-        //recursos md_lit_motivo
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_motivo_alterar');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_motivo_cadastrar');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_motivo_desativar');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_motivo_excluir');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_motivo_reativar');
-        $objRecursoMotivoListarDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_motivo_listar');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_motivo_selecionar');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_motivo_listar');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_motivo_consultar');
-
-        //recursos md_lit_rel_tp_control_moti
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_tp_control_moti_alterar');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_tp_control_moti_cadastrar');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_tp_control_moti_excluir');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_tp_control_moti_consultar');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_tp_control_moti_listar');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_tp_control_moti_selecionar');
-
-        //recursos md_lit_rel_controle_motivo
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_controle_motivo_alterar');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_controle_motivo_cadastrar');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_controle_motivo_excluir');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_controle_motivo_consultar');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_controle_motivo_listar');
-        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_controle_motivo_selecionar');
-
-
-        //obtendo o menu Administração -> Controle de Processos Litigiosos
-        $objItemMenuDTO = new ItemMenuDTO();
-        $objItemMenuDTO->retNumIdItemMenu();
-        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('Controle de Processos Litigiosos');
-        $objItemMenuDTOControleProcesso = $objItemMenuRN->consultar($objItemMenuDTO);
-
-        //criando Menu Administração > Controle de Processos Litigiosos > Reincidências Específicas e Antecedentes
-        $this->adicionarItemMenu($numIdSistemaSei,
-            $numIdPerfilSeiAdministrador,
-            $numIdMenuSei,
-            $objItemMenuDTOControleProcesso->getNumIdItemMenu(),
-            $objRecursoReinAnteCadastrarDTO->getNumIdRecurso(),
-            'Reincidências Específicas e Antecedentes',
-            50);
-
-        //criando Menu Administração > Controle de Processos Litigiosos > Reincidências Específicas e Antecedentes
-        $this->adicionarItemMenu($numIdSistemaSei,
-            $numIdPerfilSeiAdministrador,
-            $numIdMenuSei,
-            $objItemMenuDTOControleProcesso->getNumIdItemMenu(),
-            $objRecursoMotivoListarDTO->getNumIdRecurso(),
-            'Motivos para Instauração',
-            60);
-
-        $objRegraAuditoriaDTO = new RegraAuditoriaDTO();
-        $objRegraAuditoriaDTO->retNumIdRegraAuditoria();
-        $objRegraAuditoriaDTO->setNumIdSistema($numIdSistemaSei);
-        $objRegraAuditoriaDTO->setStrDescricao('Geral');
-
-        $objRegraAuditoriaRN  = new RegraAuditoriaRN();
-        $objRegraAuditoriaDTO = $objRegraAuditoriaRN->consultar($objRegraAuditoriaDTO);
-
-        $rs = BancoSip::getInstance()->consultarSql('select id_recurso from recurso where id_sistema=' . $numIdSistemaSei . ' and nome in (
-		
-  	    \'md_lit_reinciden_anteceden_cadastrar\',
-  	    \'md_lit_reinciden_anteceden_alterar\')'
-
-        );
-
-        //CRIANDO REGRA DE AUDITORIA PARA NOVOS RECURSOS RECEM ADICIONADOS
-        foreach ($rs as $recurso) {
-            BancoSip::getInstance()->executarSql('INSERT INTO rel_regra_auditoria_recurso (id_regra_auditoria, id_sistema, id_recurso) values (' . $objRegraAuditoriaDTO->getNumIdRegraAuditoria() . ', ' . $numIdSistemaSei . ', ' . $recurso['id_recurso'] . ')');
-        }
-
-        $objReplicacaoRegraAuditoriaDTO = new ReplicacaoRegraAuditoriaDTO();
-        $objReplicacaoRegraAuditoriaDTO->setStrStaOperacao('A');
-        $objReplicacaoRegraAuditoriaDTO->setNumIdRegraAuditoria($objRegraAuditoriaDTO->getNumIdRegraAuditoria());
-
-        $objSistemaRN = new SistemaRN();
-        $objSistemaRN->replicarRegraAuditoria($objReplicacaoRegraAuditoriaDTO);
-    }
-
-
-    protected function atualizarVersaoConectado(){
-
-        try {
-            $this->inicializar('INICIANDO A INSTALAÇÃO/ATUALIZAÇÃO DO '.$this->nomeDesteModulo.' NO SIP VERSÃO '.SIP_VERSAO);
-
-            //testando versao do framework
-            $numVersaoInfraRequerida = '1.385';
-            $versaoInfraFormatada = (int) str_replace('.','', VERSAO_INFRA);
-            $versaoInfraReqFormatada = (int) str_replace('.','', $numVersaoInfraRequerida);
-
-            if ($versaoInfraFormatada < $versaoInfraReqFormatada){
-                $this->finalizar('VERSÃO DO FRAMEWORK PHP INCOMPATÍVEL (VERSÃO ATUAL '.VERSAO_INFRA.', SENDO REQUERIDA VERSÃO IGUAL OU SUPERIOR A '.$numVersaoInfraRequerida.')',true);
-            }
-
-            //checando BDs suportados
-            if (!(BancoSip::getInstance() instanceof InfraMySql) &&
-                !(BancoSip::getInstance() instanceof InfraSqlServer) &&
-                !(BancoSip::getInstance() instanceof InfraOracle)) {
-                $this->finalizar('BANCO DE DADOS NÃO SUPORTADO: ' . get_parent_class(BancoSip::getInstance()), true);
-            }
-
-            //checando permissoes na base de dados
-            $objInfraMetaBD = new InfraMetaBD(BancoSip::getInstance());
-
-            if (count($objInfraMetaBD->obterTabelas('sip_teste'))==0){
-                BancoSip::getInstance()->executarSql('CREATE TABLE sip_teste (id '.$objInfraMetaBD->tipoNumero().' null)');
-            }
-
-            BancoSip::getInstance()->executarSql('DROP TABLE sip_teste');
-
-            $objInfraParametro = new InfraParametro(BancoSip::getInstance());
-
-            $strVersaoModuloLitigioso = $objInfraParametro->getValor($this->nomeParametroModulo, false);
-
-            //VERIFICANDO QUAL VERSAO DEVE SER INSTALADA NESTA EXECUCAO
-            //se nao tem nenhuma versao instalada, instalar todas
-            if (InfraString::isBolVazia($strVersaoModuloLitigioso)) {
-                $this->instalarv001();
-                $this->instalarv002();
-                $this->instalarv003();
-                $this->instalarv004();
-                $this->instalarv100();
-
-                //adicionando parametro para controlar versao do modulo
-                $this->logar('ADICIONANDO PARÂMETRO '. $this->nomeParametroModulo .' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
-                BancoSip::getInstance()->executarSql('INSERT INTO infra_parametro (valor, nome ) VALUES( \'' . $this->versaoAtualDesteModulo . '\',  \'' . $this->nomeParametroModulo . '\' )');
-                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
-                $this->finalizar('FIM', false);
-            }
-
-            else if ($strVersaoModuloLitigioso == '0.0.1') {
-
-                //instalar apenas a v.002 e a v003
-                $this->instalarv002();
-                $this->instalarv003();
-                $this->instalarv004();
-                $this->instalarv100();
-
-                //atualizando versao do parametro para controlar versao do modulo
-                BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'' . $this->versaoAtualDesteModulo . '\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
-                $this->finalizar('FIM', false);
-            }
-
-            else if ($strVersaoModuloLitigioso == '0.0.2') {
-                $this->instalarv003();
-                $this->instalarv004();
-                $this->instalarv100();
-
-                //atualizando versao do parametro para controlar versao do modulo
-                BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'' . $this->versaoAtualDesteModulo . '\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
-                $this->finalizar('FIM', false);
-            }
-
-            else if ($strVersaoModuloLitigioso == '0.0.3') {
-                $this->instalarv004();
-                $this->instalarv100();
-
-                //atualizando versao do parametro para controlar versao do modulo
-                BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'' . $this->versaoAtualDesteModulo . '\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
-                $this->finalizar('FIM', false);
-            }
-
-            else if($strVersaoModuloLitigioso == '0.0.4') {
-                $this->instalarv100();
-
-                //atualizando versao do parametro para controlar versao do modulo
-                BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'' . $this->versaoAtualDesteModulo . '\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
-                $this->finalizar('FIM', false);
-            }
-
-            //se a versão instalada já é a atual, então não instala nada e avisa
-            else {
-                //se a versão instalada já é a atual, então não instala nada e avisa
-                $this->logar('A VERSÃO MAIS ATUAL DO '.$this->nomeDesteModulo.' (v'.$this->versaoAtualDesteModulo.') JÁ ESTÁ INSTALADA.');
-                $this->finalizar('FIM', false);
-            }
-
-            InfraDebug::getInstance()->setBolLigado(false);
-            InfraDebug::getInstance()->setBolDebugInfra(false);
-            InfraDebug::getInstance()->setBolEcho(false);
-
-        } catch (Exception $e) {
-
-            InfraDebug::getInstance()->setBolLigado(false);
-            InfraDebug::getInstance()->setBolDebugInfra(false);
-            InfraDebug::getInstance()->setBolEcho(false);
-            throw new InfraException('Erro atualizando versão.', $e);
-        }
-
-    }
 
     private function removerRecursoPerfil($numIdSistema, $strNome, $numIdPerfil){
 
