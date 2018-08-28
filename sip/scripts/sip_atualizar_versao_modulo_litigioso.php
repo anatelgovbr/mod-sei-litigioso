@@ -399,24 +399,28 @@ class MdLitAtualizadorSipRN extends InfraRN {
             'Situações do Lançamento de Crédito',
             60);
 
+        $this->logar('CRIANDO REGRA DE AUDITORIA PARA NOVOS RECURSOS');
+
         $objRegraAuditoriaDTO = new RegraAuditoriaDTO();
         $objRegraAuditoriaDTO->retNumIdRegraAuditoria();
+        $objRegraAuditoriaDTO->setNumIdRegraAuditoria(null);
+        $objRegraAuditoriaDTO->setStrSinAtivo('S');
         $objRegraAuditoriaDTO->setNumIdSistema($numIdSistemaSei);
-        $objRegraAuditoriaDTO->setStrDescricao('Geral');
+        $objRegraAuditoriaDTO->setArrObjRelRegraAuditoriaRecursoDTO( array() );
+        $objRegraAuditoriaDTO->setStrDescricao('Modulo_Controle_Litigioso');
 
         $objRegraAuditoriaRN  = new RegraAuditoriaRN();
-        $objRegraAuditoriaDTO = $objRegraAuditoriaRN->consultar($objRegraAuditoriaDTO);
+        $objRegraAuditoriaDTO = $objRegraAuditoriaRN->cadastrar($objRegraAuditoriaDTO);
 
         $rs = BancoSip::getInstance()->consultarSql('select id_recurso from recurso where id_sistema=' . $numIdSistemaSei . ' and nome in (
        \'md_lit_tipo_processo_alterar\',
       \'md_lit_tipo_processo_cadastrar\',
       \'md_lit_tipo_processo_desativar\',
       \'md_lit_tipo_processo_reativar\',
-      \'md_lit_tipo_processo_excluir\')'
+      \'md_lit_tipo_processo_excluir\',
+      \'md_lit_processo_situacao_cadastrar\',
+      \'md_lit_situacao_lancamento_cadastrar\')'
         );
-
-
-        $this->logar('CRIANDO REGRA DE AUDITORIA PARA NOVOS RECURSOS');
 
         foreach ($rs as $recurso) {
             BancoSip::getInstance()->executarSql('INSERT INTO rel_regra_auditoria_recurso (id_regra_auditoria, id_sistema, id_recurso) values (' . $objRegraAuditoriaDTO->getNumIdRegraAuditoria() . ', ' . $numIdSistemaSei . ', ' . $recurso['id_recurso'] . ')');
@@ -635,7 +639,7 @@ class MdLitAtualizadorSipRN extends InfraRN {
         $objRegraAuditoriaDTO = new RegraAuditoriaDTO();
         $objRegraAuditoriaDTO->retNumIdRegraAuditoria();
         $objRegraAuditoriaDTO->setNumIdSistema($numIdSistemaSei);
-        $objRegraAuditoriaDTO->setStrDescricao('Geral');
+        $objRegraAuditoriaDTO->setStrDescricao('Modulo_Controle_Litigioso');
 
         $objRegraAuditoriaRN  = new RegraAuditoriaRN();
         $objRegraAuditoriaDTO = $objRegraAuditoriaRN->consultar($objRegraAuditoriaDTO);
@@ -914,7 +918,7 @@ class MdLitAtualizadorSipRN extends InfraRN {
         $objRegraAuditoriaDTO = new RegraAuditoriaDTO();
         $objRegraAuditoriaDTO->retNumIdRegraAuditoria();
         $objRegraAuditoriaDTO->setNumIdSistema($numIdSistemaSei);
-        $objRegraAuditoriaDTO->setStrDescricao('Geral');
+        $objRegraAuditoriaDTO->setStrDescricao('Modulo_Controle_Litigioso');
 
         $objRegraAuditoriaRN  = new RegraAuditoriaRN();
         $objRegraAuditoriaDTO = $objRegraAuditoriaRN->consultar($objRegraAuditoriaDTO);
@@ -923,14 +927,12 @@ class MdLitAtualizadorSipRN extends InfraRN {
 		
   	    \'md_lit_associar_dispositivo_normativo_consultar\',
   
-  	    \'md_lit_associar_dispositivo_normativo_listar\',
         \'md_lit_associar_dispositivo_normativo_reativar\',
         \'md_lit_associar_dispositivo_normativo_desativar\',
         \'md_lit_associar_dispositivo_normativo_excluir\',
         \'md_lit_associar_dispositivo_normativo_cadastrar\',
   
 	    \'md_lit_dispositivo_normativo_selecionar\',
-	    \'md_lit_dispositivo_normativo_listar\',
 	    \'md_lit_dispositivo_normativo_reativar\',
 	    \'md_lit_dispositivo_normativo_desativar\',
 	    \'md_lit_dispositivo_normativo_excluir\',
@@ -939,7 +941,6 @@ class MdLitAtualizadorSipRN extends InfraRN {
 		\'md_lit_dispositivo_normativo_cadastrar\',
 				
   	    \'md_lit_conduta_selecionar\',
-		\'md_lit_conduta_listar\',
         \'md_lit_conduta_cadastrar\',
 		\'md_lit_conduta_alterar\',
         \'md_lit_conduta_consultar\',
@@ -1310,7 +1311,7 @@ class MdLitAtualizadorSipRN extends InfraRN {
         $objRegraAuditoriaDTO = new RegraAuditoriaDTO();
         $objRegraAuditoriaDTO->retNumIdRegraAuditoria();
         $objRegraAuditoriaDTO->setNumIdSistema($numIdSistemaSei);
-        $objRegraAuditoriaDTO->setStrDescricao('Geral');
+        $objRegraAuditoriaDTO->setStrDescricao('Modulo_Controle_Litigioso');
 
         $objRegraAuditoriaRN  = new RegraAuditoriaRN();
         $objRegraAuditoriaDTO = $objRegraAuditoriaRN->consultar($objRegraAuditoriaDTO);
@@ -1587,7 +1588,7 @@ class MdLitAtualizadorSipRN extends InfraRN {
         $objRegraAuditoriaDTO = new RegraAuditoriaDTO();
         $objRegraAuditoriaDTO->retNumIdRegraAuditoria();
         $objRegraAuditoriaDTO->setNumIdSistema($numIdSistemaSei);
-        $objRegraAuditoriaDTO->setStrDescricao('Geral');
+        $objRegraAuditoriaDTO->setStrDescricao('Modulo_Controle_Litigioso');
 
         $objRegraAuditoriaRN  = new RegraAuditoriaRN();
         $objRegraAuditoriaDTO = $objRegraAuditoriaRN->consultar($objRegraAuditoriaDTO);
