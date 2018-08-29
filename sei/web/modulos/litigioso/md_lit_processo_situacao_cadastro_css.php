@@ -44,7 +44,7 @@ margin-right: 7px
 }
 
 .campoData {
-width : 70%!important;
+width : 68%!important;
 }
 
 .infraImg{

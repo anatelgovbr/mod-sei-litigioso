@@ -141,7 +141,7 @@ class MdLitProcessoSituacaoRN extends InfraRN
     try {
 
       //Valida Permissao
-      SessaoSEI::getInstance()->validarPermissao('md_lit_processo_situacao_cadastrar');
+      SessaoSEI::getInstance()->validarAuditarPermissao('md_lit_processo_situacao_cadastrar', __METHOD__, $objMdLitProcessoSituacaoDTO);
 
       //Regras de Negocio
       $objInfraException = new InfraException();
