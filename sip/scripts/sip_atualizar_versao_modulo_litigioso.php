@@ -11,10 +11,10 @@ require_once dirname(__FILE__).'/../web/Sip.php';
 class MdLitAtualizadorSipRN extends InfraRN {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '1.0.0';
+    private $versaoAtualDesteModulo = '1.1.0';
     private $nomeDesteModulo = 'MÓDULO DE CONTROLE LITIGIOSO';
     private $nomeParametroModulo = 'VERSAO_MODULO_LITIGIOSO';
-    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4','1.0.0');
+    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4','1.0.0', '1.1.0');
     
     private $nomeGestorControleLitigioso = "Gestor de Controle Litigioso";
     private $descricaoGestorControleLitigioso = "Acesso aos recursos específicos de Gestor de Controle Litigioso do módulo Litigioso do SEI.";
@@ -79,7 +79,7 @@ class MdLitAtualizadorSipRN extends InfraRN {
             $this->inicializar('INICIANDO A INSTALAÇÃO/ATUALIZAÇÃO DO '.$this->nomeDesteModulo.' NO SIP VERSÃO '.SIP_VERSAO);
 
             //testando versao do framework
-            $numVersaoInfraRequerida = '1.385';
+            $numVersaoInfraRequerida = '1.493';
             $versaoInfraFormatada = (int) str_replace('.','', VERSAO_INFRA);
             $versaoInfraReqFormatada = (int) str_replace('.','', $numVersaoInfraRequerida);
 
@@ -114,6 +114,7 @@ class MdLitAtualizadorSipRN extends InfraRN {
                 $this->instalarv003();
                 $this->instalarv004();
                 $this->instalarv100();
+                $this->instalarv110();
 
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
                 $this->finalizar('FIM', false);
@@ -124,6 +125,7 @@ class MdLitAtualizadorSipRN extends InfraRN {
                 $this->instalarv003();
                 $this->instalarv004();
                 $this->instalarv100();
+                $this->instalarv110();
 
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
                 $this->finalizar('FIM', false);
@@ -131,28 +133,27 @@ class MdLitAtualizadorSipRN extends InfraRN {
                 $this->instalarv003();
                 $this->instalarv004();
                 $this->instalarv100();
-
-                //atualizando versao do parametro para controlar versao do modulo
-                BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'' . $this->versaoAtualDesteModulo . '\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+                $this->instalarv110();
 
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
                 $this->finalizar('FIM', false);
             } elseif ($strVersaoModuloLitigioso == '0.0.3') {
                 $this->instalarv004();
                 $this->instalarv100();
-
-                //atualizando versao do parametro para controlar versao do modulo
-                BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'' . $this->versaoAtualDesteModulo . '\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+                $this->instalarv110();
 
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
                 $this->finalizar('FIM', false);
             } elseif ($strVersaoModuloLitigioso == '0.0.4') {
                 $this->instalarv100();
-
-                //atualizando versao do parametro para controlar versao do modulo
-                BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'' . $this->versaoAtualDesteModulo . '\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+                $this->instalarv110();
 
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
+                $this->finalizar('FIM', false);
+            } elseif ($strVersaoModuloLitigioso == '1.0.0') {
+                $this->instalarv110();
+
+                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO ' . $this->versaoAtualDesteModulo . ' DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
                 $this->finalizar('FIM', false);
             } else {
                 //se a versão instalada já é a atual, então não instala nada e avisa
@@ -397,7 +398,7 @@ class MdLitAtualizadorSipRN extends InfraRN {
             $objItemMenuDTOControleProcessoBasico->getNumIdItemMenu(),
             $objRecursoListarSituacaoLancamentoDTO->getNumIdRecurso(),
             'Situações do Lançamento de Crédito',
-            60);
+            70);
 
         $this->logar('CRIANDO REGRA DE AUDITORIA PARA NOVOS RECURSOS');
 
@@ -1616,6 +1617,121 @@ class MdLitAtualizadorSipRN extends InfraRN {
         //Atualizando parametro para controlar versao do modulo
         $this->logar('ATUALIZANDO PARÂMETRO '.$this->nomeParametroModulo.' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
         BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \''.$this->versaoAtualDesteModulo.'\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+    }
+
+    //Contem atualizações da versao 1.1.0
+    protected function instalarV110(){
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.1.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+
+        $objSistemaRN  = new SistemaRN();
+        $objPerfilRN   = new PerfilRN();
+        $objMenuRN     = new MenuRN();
+        $objItemMenuRN = new ItemMenuRN();
+        $objRecursoRN  = new RecursoRN();
+
+        $objSistemaDTO = new SistemaDTO();
+        $objSistemaDTO->retNumIdSistema();
+        $objSistemaDTO->setStrSigla('SEI');
+
+        $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
+
+        if ($objSistemaDTO == null) {
+            throw new InfraException('Sistema SEI não encontrado.');
+        }
+
+        $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
+
+
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome('Básico');
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
+        }
+
+        $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
+
+
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome('Administrador');
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+            throw new InfraException('Perfil Administrador do sistema SEI não encontrado.');
+        }
+
+        $numIdPerfilSeiAdministrador = $objPerfilDTO->getNumIdPerfil();
+
+        $objMenuDTO = new MenuDTO();
+        $objMenuDTO->retNumIdMenu();
+        $objMenuDTO->setNumIdSistema($numIdSistemaSei);
+        $objMenuDTO->setStrNome('Principal');
+        $objMenuDTO = $objMenuRN->consultar($objMenuDTO);
+
+        if ($objMenuDTO == null) {
+            throw new InfraException('Menu do sistema SEI não encontrado.');
+        }
+
+        $numIdMenuSei = $objMenuDTO->getNumIdMenu();
+
+        $objItemMenuDTO = new ItemMenuDTO();
+        $objItemMenuDTO->retNumIdItemMenu();
+        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
+        $objItemMenuDTO->setStrRotulo('Administração');
+        $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
+
+        if ($objItemMenuDTO == null) {
+            throw new InfraException('Item de menu Administração do sistema SEI não encontrado.');
+        }
+
+        $numIdItemMenuSeiAdministracao = $objItemMenuDTO->getNumIdItemMenu();
+
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - motivo EM basico');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_decisao_uf_alterar');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_decisao_uf_cadastrar');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_decisao_uf_consultar');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_decisao_uf_excluir');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_decisao_uf_listar');
+
+        $this->logar('Atualizando e VINCULANDO RECURSO A PERFIL - modal de situação EM basico');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_situacao_visualizar_parametrizar');
+        $objRecursoDTO  = $this->removerRecursoPerfil($numIdSistemaSei, 'md_lit_situacao_visualizar_parametrizar', $numIdPerfilSeiAdministrador);
+
+        //recuperando o recurso para vincular com o menu
+        $objRecursoListarSituacaoLancamentoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_lancamento_listar');
+
+
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração -> Controle de Processos Litigiosos');
+        $objItemMenuDTOControleProcesso       = $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiAdministrador, $numIdMenuSei, $numIdItemMenuSeiAdministracao, null, 'Controle de Processos Litigiosos', 0);
+
+
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL  Administração -> Controle de Processos Litigiosos -> Situações do Lançamento de Crédito');
+        $objItemMenuDTO = new ItemMenuDTO();
+        $objItemMenuDTO->retTodos(false);
+        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
+        $objItemMenuDTO->setStrRotulo('Situações do Lançamento de Crédito');
+        $objItemMenuDTO->setNumIdMenuPai($numIdMenuSei);
+        $objItemMenuDTO->setNumIdItemMenuPai($objItemMenuDTOControleProcesso->getNumIdItemMenu());
+        $objItemMenuDTO->setNumIdRecurso($objRecursoListarSituacaoLancamentoDTO->getNumIdRecurso());
+
+        $objItemMenuRN  = new ItemMenuRN();
+        $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
+
+        if($objItemMenuDTO != null){
+            $objItemMenuDTO->setNumSequencia(70);
+            $objItemMenuRN->alterar($objItemMenuDTO);
+        }
+
+
+        //Atualizando parametro para controlar versao do modulo
+        $this->logar('ATUALIZANDO PARÂMETRO '.$this->nomeParametroModulo.' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.1.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
     }
 
     private function adicionarRecursoPerfil($numIdSistema, $numIdPerfil, $strNome, $strCaminho = null){
