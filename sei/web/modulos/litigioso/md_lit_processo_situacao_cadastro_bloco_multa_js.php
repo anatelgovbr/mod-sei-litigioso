@@ -96,7 +96,7 @@
             success: function (result) {
 
                 if($(result).find('erro').length > 0){
-                    alert($(result).find('erro').attr('descricao'));
+                    alert($(result).find('erro').attr('descricao').replace('<br />', '\n\n'));
                     return;
                 }
 
@@ -136,6 +136,13 @@
 
                     var creditoNaoLancado   = $(result).find('creditoNaoLancado').text().replace('.','').replace(',', '.');
                     var totalMultaAplicado  = $(result).find('multaAplicada').text().replace('.','').replace(',', '.');
+
+                    //mostrar o fieldset de multa
+                    if($(result).find('creditoNaoLancado').text() != '0,00' || $(result).find('multaAplicada').text() != '0,00'){
+                        document.getElementById('fieldsetMulta').style.display = '';
+                    }else{
+                        document.getElementById('fieldsetMulta').style.display = 'none';
+                    }
 
                     if($(result).find('creditoNaoLancado').text() != '0,00' && $(result).find('isNovoLancamento').text() == 'S' && document.getElementById('selCreditosProcesso').value == ''){
 

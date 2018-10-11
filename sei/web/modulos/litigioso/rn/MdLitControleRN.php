@@ -98,7 +98,7 @@
                 $objMdLitProcessoSituacaoDTO->setNumIdUnidade(SessaoSEI::getInstance()->getNumIdUnidadeAtual());
                 $objMdLitProcessoSituacaoDTO->setDtaData($ret->getDtaDataInstauracao());
                 $objMdLitProcessoSituacaoDTO->setDthInclusao(InfraData::getStrDataHoraAtual());
-                $objMdLitProcessoSituacaoDTO->setStrSinDepositoExtrajudicial('N');
+                $objMdLitProcessoSituacaoDTO->setStrSinDepositoExtrajudicial(null);
                 $objMdLitProcessoSituacaoDTO->setDblValorDepositoExtrajudicial(null);
                 $objMdLitProcessoSituacaoDTO->setDtaDtDepositoExtrajudicial(null);
                 $objMdLitProcessoSituacaoDTO->setDtaIntercorrente(null);

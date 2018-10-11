@@ -473,7 +473,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 <div class="grid grid_7-8">
                     <label class="infraLabelObrigatorio" id="lblDescricao" for="txtDescricao">Descrição:</label>
                     <input type="text" id="txtDescricao" name="txtDescricao" maxlength="100"
-                           value="<?= $txtDescricao ?>"
+                           value="<?= PaginaSEI::tratarHTML($txtDescricao); ?>"
                            onkeypress="return infraMascaraTexto(this,event,100);"/>
                 </div>
                 <div class="clear-margin-2"></div>

@@ -40,7 +40,7 @@ echo $retEditor->getStrInicializacao();
         <div id="divEditores" style="overflow: auto;">
             <textarea type="text" id="txaConteudo" rows="4" name="txtOrientacoes"
                  class="infraText" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
-                <?=$orientacaoRein; ?></textarea>
+                <?=PaginaSEI::tratarHTML($orientacaoRein); ?></textarea>
             <script type="text/javascript">
                 <?=$retEditor->getStrEditores();?>
             </script>

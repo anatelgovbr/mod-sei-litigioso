@@ -31,7 +31,9 @@
 
         objAutoCompletarDecisaoAnte.processarResultado = function (id, descricao, complemento) {
             if (id != '') {
-                objLupaDecisaoAntecedente.adicionar(id, descricao, document.getElementById('txtDecAntec'));
+                var desc =  $("<pre>").html(descricao).text();
+
+                objLupaDecisaoAntecedente.adicionar(id, desc, document.getElementById('txtDecAntec'));
             }
         };
 
@@ -43,7 +45,10 @@
 
         objAutoCompletarDecisaoRein.processarResultado = function (id, descricao, complemento) {
             if (id != '') {
-                objLupaDecisaoReicidencia.adicionar(id, descricao, document.getElementById('txtDecRein'));
+              var desc =  $("<pre>").html(descricao).text();
+               // console.log(desc);
+                objLupaDecisaoReicidencia.adicionar(id, desc, document.getElementById('txtDecRein'));
+
             }
         };
 

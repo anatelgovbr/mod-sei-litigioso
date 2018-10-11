@@ -82,7 +82,7 @@
                     $arrItens                                = $objAssocDispositivoNormativoLitigiosoRN->listar($objAssocDispositivoNormativoDTO);
 
                     foreach ($arrItens as $item) {
-                        $strItensSelDispositivoNormativos .= "<option value='" . $item->getNumIdDispositivoNormativoLitigioso() . "'>" . $item->getStrNorma() . " - " . $item->getStrDispositivo() . "</option>";
+                        $strItensSelDispositivoNormativos .= "<option value='" . $item->getNumIdDispositivoNormativoLitigioso() . "'>" . PaginaSEI::tratarHTML($item->getStrNorma()) . " - " . PaginaSEI::tratarHTML($item->getStrDispositivo()) . "</option>";
                     }
 
                 }
@@ -95,7 +95,7 @@
                 $objTipoControleLitigiosoRN  = new MdLitTipoControleRN();
                 $objTipoControleLitigiosoDTO = $objTipoControleLitigiosoRN->consultar($objTipoControleLitigiosoDTO);
 
-                $strTitulo .= $objTipoControleLitigiosoDTO->getStrSigla();
+                $strTitulo .= PaginaSEI::tratarHTML($objTipoControleLitigiosoDTO->getStrSigla());
 
                 break;
 

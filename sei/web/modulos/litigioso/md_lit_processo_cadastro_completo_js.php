@@ -1404,8 +1404,8 @@
         objTabelaInteressado.gerarEfeitoTabela = true;
         window.setInterval(verificarModalInteressado, 1000);
 
-        objTabelaInteressado.remover = function (arr) {console.log(objTabelaInteressado.obterItens.length);
-            if(objTabelaInteressado.obterItens.length == 0){
+        objTabelaInteressado.remover = function (arr) {
+            if(objTabelaInteressado.obterItens().length == 1){
                 alert("É necessário ao menos um Interessado");
                 return false;
             }
@@ -1591,7 +1591,7 @@
 
     }
 
-    function validarInteressado() {debugger;
+    function validarInteressado() {
         var tbInteressado = document.getElementById('tbInteressado');
         var trs = tbInteressado.rows;
         var valido = true;

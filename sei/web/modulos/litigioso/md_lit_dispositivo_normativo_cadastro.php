@@ -144,7 +144,7 @@
                         $objCondutaDTO->setNumIdCondutaLitigioso($arrCondutas[$x]->getNumIdConduta());
                         $objCondutaDTO = $objCondutaRN->consultar($objCondutaDTO);
 
-                        $strItensSelCondutas .= "<option value='" . $objCondutaDTO->getNumIdCondutaLitigioso() . "'>" . $objCondutaDTO->getStrNome() . "</option>";
+                        $strItensSelCondutas .= "<option value='" . $objCondutaDTO->getNumIdCondutaLitigioso() . "'>" . PaginaSEI::tratarHTML($objCondutaDTO->getStrNome()) . "</option>";
                     }
 
 
@@ -171,7 +171,7 @@
                         $objTipoControleDTO->setNumIdTipoControleLitigioso($arrTiposControle[$x]->getNumIdTipoControle());
                         $objTipoControleDTO = $objTipoControleRN->consultar($objTipoControleDTO);
 
-                        $strItensSelTiposControle .= "<option value='" . $objTipoControleDTO->getNumIdTipoControleLitigioso() . "'>" . $objTipoControleDTO->getStrSigla() . "</option>";
+                        $strItensSelTiposControle .= "<option value='" . $objTipoControleDTO->getNumIdTipoControleLitigioso() . "'>" . PaginaSEI::tratarHTML($objTipoControleDTO->getStrSigla()) . "</option>";
                     }
 
                     //Consultar dispositivos normativos revogados por esse dispositivo
@@ -284,7 +284,7 @@
                     $objCondutaDTO->setNumIdCondutaLitigioso($arrCondutas[$x]->getNumIdConduta());
                     $objCondutaDTO = $objCondutaRN->consultar($objCondutaDTO);
 
-                    $strItensSelCondutas .= "<option value='" . $objCondutaDTO->getNumIdCondutaLitigioso() . "'>" . $objCondutaDTO->getStrNome() . "</option>";
+                    $strItensSelCondutas .= "<option value='" . $objCondutaDTO->getNumIdCondutaLitigioso() . "'>" . PaginaSEI::tratarHTML($objCondutaDTO->getStrNome()) . "</option>";
                 }
 
 
@@ -311,7 +311,7 @@
                     $objTipoControleDTO->setNumIdTipoControleLitigioso($arrTiposControle[$x]->getNumIdTipoControle());
                     $objTipoControleDTO = $objTipoControleRN->consultar($objTipoControleDTO);
 
-                    $strItensSelTiposControle .= "<option value='" . $objTipoControleDTO->getNumIdTipoControleLitigioso() . "'>" . $objTipoControleDTO->getStrSigla() . "</option>";
+                    $strItensSelTiposControle .= "<option value='" . $objTipoControleDTO->getNumIdTipoControleLitigioso() . "'>" . PaginaSEI::tratarHTML($objTipoControleDTO->getStrSigla()) . "</option>";
                 }
 
                 //Consultar dispositivos normativos revogados por esse dispositivo
@@ -615,7 +615,8 @@
                         options[i].selected = false;
                     }
 
-                    opt = infraSelectAdicionarOption(document.getElementById('selDescricaoTipoControle'), descricao, id);
+                    var desc = $("<pre>").html(descricao).text();
+                    opt = infraSelectAdicionarOption(document.getElementById('selDescricaoTipoControle'), desc, id);
 
                     objLupaTipoControle.atualizar();
 
@@ -660,8 +661,8 @@
                     for (i = 0; i < options.length; i++) {
                         options[i].selected = false;
                     }
-
-                    opt = infraSelectAdicionarOption(document.getElementById('selDescricaoConduta'), descricao, id);
+                    var desc = $("<pre>").html(descricao).text();
+                    opt = infraSelectAdicionarOption(document.getElementById('selDescricaoConduta'), desc, id);
 
                     objLupaConduta.atualizar();
 
@@ -706,8 +707,8 @@
                     for (i = 0; i < options.length; i++) {
                         options[i].selected = false;
                     }
-
-                    opt = infraSelectAdicionarOption(document.getElementById('selRevogarDispositivo'), descricao, id);
+                    var desc = $("<pre>").html(descricao).text();
+                    opt = infraSelectAdicionarOption(document.getElementById('selRevogarDispositivo'), desc, id);
 
                     objLupaRevogarDispositivo.atualizar();
 

@@ -184,7 +184,7 @@
 
  <div class="clear-margin-5"></div>
 
-        <div style="float: left;width: 520px" id="divDataGestaoMulta">
+        <div style="float: left;width: 450px" id="divDataGestaoMulta">
             <!--Data do Decurso do Prazo para Defesa -->
             <div class="grid grid_8">
                 <div class="grid grid_6">
@@ -296,7 +296,7 @@
 
             </div>
         </div>
-        <div style="float:left;width: 300px" id="divHouveConstituicao">
+        <div style="float:left;width: 350px" id="divHouveConstituicao">
             <!-- Houve constituição -->
             <div class="grid grid_5" id="divHouveConstituicaoChk">
                 <input type="checkbox" name="chkHouveConstituicao" id="chkHouveConstituicao" value="S" onchange="houveConstituicao(this);verificarMudancaMulta()">
@@ -349,7 +349,7 @@
             </div>
 
             <!-- Redução pela renúncia ao direito de recorrer -->
-            <div class="grid grid_5-5  nao-tem-constituicao">
+            <div class="grid grid_5-5  nao-tem-constituicao" style="width: 345px;">
                 <input type="checkbox" name="chkReducaoRenuncia" id="chkReducaoRenuncia" value="S" >
                 <label class="infraLabelOpcional" id="lblReducaoRenuncia" name="lblReducaoRenuncia" for="chkReducaoRenuncia">Desconto decorrente da renúncia ao direito de recorrer</label>
                 <a style="margin-left: 5px;" id="btAjudaHouveConstituicao" <?=PaginaSEI::montarTitleTooltip('Esta opção deve ser marcada somente se o Interessado apresentou formalmente e tenha sido aceito pedido de Renúncia ao Direito de Recorrer, obtendo dessa forma a redução no valor da Multa, conforme regulamentação.\n \n Após a Constituição Definitiva ser realizada, apenas o Gestor do Controle Litigioso poderá efetivar correções materiais.')?>

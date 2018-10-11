@@ -103,11 +103,11 @@ function inicializar(){
         options[i].selected = false;
         }
 
-        /*console.log(descricao);
-        console.log(complemento);
+        //console.log($("<pre>").html(descricao).text());
+        /*console.log(complemento);
         strDescricaoFull = descricao + '(' + complemento + ')';
         alert( strDescricaoFull );*/
-        opt = infraSelectAdicionarOption(document.getElementById('selMotivos'), descricao ,id);
+        opt = infraSelectAdicionarOption(document.getElementById('selMotivos'), $("<pre>").html(descricao).text() ,id);
 
         objLupaMotivos.atualizar();
 
@@ -283,7 +283,15 @@ function selecionarChkSobrestar(){
    
 }
 
-function validarCadastro() {
+    function validarFormatoData(obj){
+    var validar = infraValidarData(obj, false);
+    if(!validar){
+        alert('Data Inválida!');
+        obj.value = '';
+    }
+}
+
+    function validarCadastro() {
 
   if (infraTrim(document.getElementById('txtSigla').value)=='') {
     alert('Informe a sigla.');

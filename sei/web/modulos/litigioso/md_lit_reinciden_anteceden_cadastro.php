@@ -8,6 +8,7 @@
 
 try {
     require_once dirname(__FILE__) . '/../../SEI.php';
+    require_once dirname(__FILE__).'/../../../../infra/infra_php/vendor/autoload.php';
 
     session_start();
 
@@ -26,9 +27,6 @@ try {
             break;
     }
 
-} catch (Exception $e) {
-    PaginaSEI::getInstance()->processarExcecao($e);
-}
 
 $bolAlterar = false;
 
@@ -78,11 +76,11 @@ if (count($arrmdLitReincidenAntecedenDTO) > 0) {
 
         if ($mdLitRelTpDecReinAnte->getNumIdRelMdLitReincidenAnteceden() == $idReincidencia) {
             $strItensDecisaoRein .= '<option value=' . $mdLitRelTpDecReinAnte->getNumIdRelMdLitTipoDecisao() .
-                '>' . $mdLitRelTpDecReinAnte->getStrNomeTipoDecisao() . '</option>';
+                '>' . PaginaSEI::tratarHTML($mdLitRelTpDecReinAnte->getStrNomeTipoDecisao()) . '</option>';
         }
         if ($mdLitRelTpDecReinAnte->getNumIdRelMdLitReincidenAnteceden() == $idAntecedente) {
             $strItensDecisaoAnte .= '<option value=' . $mdLitRelTpDecReinAnte->getNumIdRelMdLitTipoDecisao() .
-                '>' . $mdLitRelTpDecReinAnte->getStrNomeTipoDecisao() . '</option>';
+                '>' . PaginaSEI::tratarHTML($mdLitRelTpDecReinAnte->getStrNomeTipoDecisao()) . '</option>';
         }
 
     }
@@ -91,16 +89,29 @@ if (count($arrmdLitReincidenAntecedenDTO) > 0) {
 
 
 if (isset($_POST['sbmCadastrarReincidenciaAntecedente'])) {
+
+    //var_dump($_POST);
+   // die();
+    $objEditorRN = new EditorRN();
+    $objEditorRN->validarTagsCriticas(array('png','jpeg' ), $_POST);
+   // header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_reinciden_anteceden_alterar' . '&acao_origem=' . $_GET['acao']));
+
+
     if ($bolAlterar) {
         $_POST['idReincidencia'] = $idReincidencia;
         $_POST['idAntecedencia'] = $idAntecedente;
 
         $mdLitReincidenAntecedenRN->alterarReincidenciaAntecedentes($_POST);
     } else {
+
         $mdLitReincidenAntecedenRN->cadastrarReincidenciaAntecedentes($_POST);
     }
     header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_reinciden_anteceden_alterar' . '&acao_origem=' . $_GET['acao']));
 
+}
+
+} catch (Exception $e) {
+    PaginaSEI::getInstance()->processarExcecao($e);
 }
 
 $strLinkDecisaoSelecaoAntecedente = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_tipo_decisao_selecionar&tipo_selecao=2&id_object=objLupaDecisaoAntecedente');

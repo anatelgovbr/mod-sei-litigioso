@@ -97,7 +97,7 @@ PaginaSEI::getInstance()->abrirAreaDados('85em');
 
   <div class="infraAreaDados" style="height: 4em">
       <label id="lblDtCorte" name="lblDtCorte" for="txtDtCorte" class="infraLabelObrigatorio">Data de Corte:</label>
-      <input type="text" id="txtDtCorte" name="txtDtCorte" onkeypress="return infraMascara(this, event,'##/##/####')" class="infraText"
+      <input type="text" id="txtDtCorte" name="txtDtCorte" onchange="return validarFormatoData(this)" onkeypress="return infraMascara(this, event,'##/##/####')"  class="infraText"
              value="<?= PaginaSEI::tratarHTML( $objTipoControleLitigiosoDTO->getDtaDtaCorte() );?>" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" />
       <img src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal().'/calendario.gif'?>" id="imgCalDthCorte" title="Selecionar Data/Hora Inicial" alt="Selecionar Data de Corte" class="infraImg" onclick="infraCalendario('txtDtCorte',this,false,'<?=InfraData::getStrDataAtual()?>');" />
       <a id="btAjudaDth" <?=PaginaSEI::montarTitleTooltip('Serve para definir a data a partir da qual os processos gerados dos tipos indicados serão considerados pendentes de Cadastro no 

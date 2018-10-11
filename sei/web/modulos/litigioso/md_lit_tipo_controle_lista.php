@@ -319,7 +319,7 @@
 
                 if ($bolAcaoDesativar || $bolAcaoReativar || $bolAcaoExcluir) {
                     $strId        = $arrObjTipoControleLitigiosoDTO[$i]->getNumIdTipoControleLitigioso();
-                    $strDescricao = PaginaSEI::getInstance()->formatarParametrosJavaScript(PaginaSEI::tratarHTML($arrObjTipoControleLitigiosoDTO[$i]->getStrSigla(), true));
+                    $strDescricao = PaginaSEI::tratarHTML($arrObjTipoControleLitigiosoDTO[$i]->getStrSigla(), true);
                 }
 
                 if ($bolAcaoDesativar && $arrObjTipoControleLitigiosoDTO[$i]->getStrSinAtivo() == 'S' && $isAdministradorSEI) {
@@ -380,7 +380,7 @@
 
 <? if ($bolAcaoDesativar) { ?>
     function acaoDesativar(id,desc){
-
+    var desc = $("<pre>").html(desc).text();
     if (confirm("O controle de processo litigioso correspondente será desativado e os usuários não conseguirão cadastrar processos nesse tipo de controle e nenhum outro registro pertinente. \n\n Confirma a desativação do Tipo de Controle Litigioso \""+desc+"\"?")){
     document.getElementById('hdnInfraItemId').value=id;
     document.getElementById('frmTipoControleLitigiosoLista').action='<?= $strLinkDesativar ?>';
@@ -423,7 +423,7 @@
 
 <? if ($bolAcaoExcluir) { ?>
     function acaoExcluir(id,desc){
-
+    var desc = $("<pre>").html(desc).text();
     if (confirm("Esta operação pode ser demorada. \n\n Confirma a exclusão do Tipo de Controle Litigioso \""+desc+"\"?")){
     document.getElementById('hdnInfraItemId').value=id;
     document.getElementById('frmTipoControleLitigiosoLista').action='<?= $strLinkExcluir ?>';

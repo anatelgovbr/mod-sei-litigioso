@@ -382,6 +382,7 @@
                     $rnUnidadeAssociado          = new MdLitRelTipoControleUnidadeRN();
                     $rnGestorAssociado           = new MdLitRelTipoControleUsuarioRN();
                     $rnSobrestadoAssociado       = new MdLitRelTipoControleTipoProcedimentoSobrestadoRN();
+                    $rnMdLitRelTpControlMoti     = new MdLitRelTpControlMotiRN();
 
                     for ($i = 0; $i < count($arrObjTipoControleLitigiosoDTO); $i++) {
 
@@ -428,6 +429,13 @@
                         $dto4->setNumIdTipoControleLitigioso($arrObjTipoControleLitigiosoDTO[$i]->getNumIdTipoControleLitigioso());
                         $arr4 = $rnSobrestadoAssociado->listar($dto4);
                         $rnSobrestadoAssociado->excluir($arr4);
+
+                        //OnCascade
+                        $dto5 = new MdLitRelTpControlMotiDTO();
+                        $dto5->retTodos();
+                        $dto5->setNumIdMdLitTipoControle($arrObjTipoControleLitigiosoDTO[$i]->getNumIdTipoControleLitigioso());
+                        $arr5 = $rnMdLitRelTpControlMoti->listar($dto5);
+                        $rnMdLitRelTpControlMoti->excluir($arr5);
 
                         //excluir registro pai - tipo de controle
                         $objTipoControleLitigiosoBD->excluir($arrObjTipoControleLitigiosoDTO[$i]);

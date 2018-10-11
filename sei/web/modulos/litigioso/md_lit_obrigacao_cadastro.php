@@ -175,7 +175,7 @@
         <label id="lblNome" for="txtNome" accesskey="N" class="infraLabelObrigatorio"><span
                 class="infraTeclaAtalho">N</span>ome:</label>
         <input type="text" id="txtNome" name="txtNome" class="infraText"
-               value="<?= $objObrigacaoLitigiosoDTO->getStrNome(); ?>"
+               value="<?= PaginaSEI::tratarHTML($objObrigacaoLitigiosoDTO->getStrNome()); ?>"
                onkeypress="return infraMascaraTexto(this,event,50);" maxlength="50"
                tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
 
