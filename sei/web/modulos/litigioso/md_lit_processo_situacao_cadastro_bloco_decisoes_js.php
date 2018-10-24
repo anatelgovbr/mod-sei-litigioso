@@ -3,7 +3,7 @@
     function abrirModalCadastarDecisao() {
         infraAbrirJanela('<?= $urlCadastrarDecisao ?>',
             'CadastrarDecisao',
-            1080,
+            1200,
             600);
     }
 

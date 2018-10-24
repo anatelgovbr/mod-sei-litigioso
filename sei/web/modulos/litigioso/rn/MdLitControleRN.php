@@ -98,7 +98,7 @@
                 $objMdLitProcessoSituacaoDTO->setNumIdUnidade(SessaoSEI::getInstance()->getNumIdUnidadeAtual());
                 $objMdLitProcessoSituacaoDTO->setDtaData($ret->getDtaDataInstauracao());
                 $objMdLitProcessoSituacaoDTO->setDthInclusao(InfraData::getStrDataHoraAtual());
-                $objMdLitProcessoSituacaoDTO->setStrSinDepositoExtrajudicial('N');
+                $objMdLitProcessoSituacaoDTO->setStrSinDepositoExtrajudicial(null);
                 $objMdLitProcessoSituacaoDTO->setDblValorDepositoExtrajudicial(null);
                 $objMdLitProcessoSituacaoDTO->setDtaDtDepositoExtrajudicial(null);
                 $objMdLitProcessoSituacaoDTO->setDtaIntercorrente(null);
@@ -516,7 +516,10 @@
                                 if (count($id_documento_infrigido) > 0) {
                                     $id_md_lit_disp_normat = $id_documento_infrigido[0];
                                     $id_md_lit_conduta     = $id_documento_infrigido[1];
-                                    $dtaInfracao           = $DI[7];
+                                    $dtaInfracaoEspecifica         = $DI[8] == 'null' ? '' : $DI[8];
+                                    $dtaInfracaoPeriodoInicial     = $DI[9] == 'null' ? '' : $DI[9];
+                                    $dtaInfracaoPeriodoFinal       = $DI[10] == 'null' ? '' : $DI[10];
+                                    $staInfracaoData               = $DI[11] == 'null' ? '' : $DI[11];
 
                                     // CONTROLE LITIGIOSO - DOCUMENTO INSTAURADOR
                                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO = new MdLitRelDispositivoNormativoCondutaControleDTO();
@@ -524,7 +527,10 @@
                                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setNumIdDispositivoNormativoLitigioso($id_md_lit_disp_normat);
                                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setNumIdCondutaLitigioso($id_md_lit_conduta);
                                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setNumIdControleLitigioso($objControleLitigiosoDTO->getNumIdControleLitigioso());
-                                    $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setDtaInfracao($dtaInfracao);
+                                    $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setDtaInfracaoEspecifica($dtaInfracaoEspecifica);
+                                    $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setDtaInfracaoPeriodoInicial($dtaInfracaoPeriodoInicial);
+                                    $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setDtaInfracaoPeriodoFinal($dtaInfracaoPeriodoFinal);
+                                    $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setStrStaInfracaoData($staInfracaoData);
 
                                     if((preg_match('/^novo_/', $DI[0]))){
                                         $objRelDispositivoNormativoCondutaControleLitigiosoRN->cadastrar($objRelDispositivoNormativoCondutaControleLitigiosoDTO);

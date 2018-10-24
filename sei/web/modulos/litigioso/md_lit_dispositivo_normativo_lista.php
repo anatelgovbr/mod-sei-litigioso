@@ -212,18 +212,18 @@
 
                 if ($bolAcaoDesativarTopo) {
                     $bolCheck         = true;
-                    $strLinkDesativar = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_dispositivo_normativo_desativar&acao_origem=' . $_GET['acao']);
                 }
 
                 if ($bolAcaoReativarTopo) {
                     $bolCheck        = true;
-                    $strLinkReativar = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_dispositivo_normativo_reativar&acao_origem=' . $_GET['acao'] . '&acao_confirmada=sim');
                 }
 
                 if ($bolAcaoExcluirTopo) {
                     $bolCheck       = true;
-                    $strLinkExcluir = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_dispositivo_normativo_excluir&acao_origem=' . $_GET['acao']);
                 }
+                $strLinkDesativar = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_dispositivo_normativo_desativar&acao_origem=' . $_GET['acao']);
+                $strLinkReativar = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_dispositivo_normativo_reativar&acao_origem=' . $_GET['acao'] . '&acao_confirmada=sim');
+                $strLinkExcluir = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_dispositivo_normativo_excluir&acao_origem=' . $_GET['acao']);
 
             } else {
 
@@ -344,7 +344,7 @@
                 $strResultado .= $strCssTr;
 
                 if ($bolCheck) {
-                    $strResultado .= '<td valign="middle">' . PaginaSEI::getInstance()->getTrCheck($i, $arrObjDispositivoNormativoLitigiosoDTO[$i]->getNumIdDispositivoNormativoLitigioso(), $arrObjDispositivoNormativoLitigiosoDTO[$i]->getStrNorma() . ' - ' . $arrObjDispositivoNormativoLitigiosoDTO[$i]->getStrDispositivo()) . '</td>';
+                    $strResultado .= '<td valign="middle">' . PaginaSEI::getInstance()->getTrCheck($i, $arrObjDispositivoNormativoLitigiosoDTO[$i]->getNumIdDispositivoNormativoLitigioso(), PaginaSEI::tratarHTML($arrObjDispositivoNormativoLitigiosoDTO[$i]->getStrNorma()) . ' - ' . $arrObjDispositivoNormativoLitigiosoDTO[$i]->getStrDispositivo()) . '</td>';
                 }
 
                 if ($arrObjDispositivoNormativoLitigiosoDTO[$i]->getStrUrl() == null
@@ -376,7 +376,7 @@
 
                 if ($bolAcaoDesativar || $bolAcaoReativar || $bolAcaoExcluir) {
                     $strId        = $arrObjDispositivoNormativoLitigiosoDTO[$i]->getNumIdDispositivoNormativoLitigioso();
-                    $strDescricao = PaginaSEI::getInstance()->formatarParametrosJavaScript(PaginaSEI::tratarHTML($arrObjDispositivoNormativoLitigiosoDTO[$i]->getStrNorma(), true));
+                    $strDescricao = PaginaSEI::tratarHTML($arrObjDispositivoNormativoLitigiosoDTO[$i]->getStrNorma(), true);
                 }
 
                 if ($bolAcaoDesativar && $arrObjDispositivoNormativoLitigiosoDTO[$i]->getStrSinAtivo() == 'S' && $arrObjDispositivoNormativoLitigiosoDTO[$i]->getStrSinRevogado() != 'S') {
@@ -484,7 +484,7 @@
     }
 
     }
-
+    var desc = $("<pre>").html(desc).text();
     if (confirm("Confirma desativação do Dispositivo Normativo \""+desc+"\"?")){
     document.getElementById('hdnInfraItemId').value=id;
     document.getElementById('frmDispositivoNormativoLitigiosoLista').action='<?= $strLinkDesativar ?>';
@@ -506,6 +506,7 @@
 <? } ?>
 
     function acaoReativar(id,desc){
+    var desc = $("<pre>").html(desc).text();
     if (confirm("Confirma reativação do Dispositivo Normativo \""+desc+"\"?")){
     document.getElementById('hdnInfraItemId').value=id;
     document.getElementById('frmDispositivoNormativoLitigiosoLista').action='<?= $strLinkReativar ?>';
@@ -527,7 +528,7 @@
 
 <? if ($bolAcaoExcluir) { ?>
     function acaoExcluir(id,desc){
-
+    var desc2 = $("<pre>").html(desc).text();
     <? $strAcao = $_GET['acao']; ?>
     var acao = '<?= $strAcao ?>';
 
@@ -562,7 +563,7 @@
 
     }
 
-    if (confirm("Confirma exclusão do Dispositivo Normativo \""+desc+"\"?")){
+    if (confirm("Confirma exclusão do Dispositivo Normativo \""+desc2+"\"?")){
     document.getElementById('hdnInfraItemId').value=id;
     document.getElementById('frmDispositivoNormativoLitigiosoLista').action='<?= $strLinkExcluir ?>';
     document.getElementById('frmDispositivoNormativoLitigiosoLista').submit();

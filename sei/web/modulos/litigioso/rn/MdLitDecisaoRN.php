@@ -11,6 +11,9 @@ require_once dirname(__FILE__). '/../../../SEI.php';
 
 class MdLitDecisaoRN extends InfraRN {
 
+    public static $STA_LOCALIDADE_NACIONAL = 'N';
+    public static $STA_LOCALIDADE_UF = 'U';
+
   public function __construct(){
     parent::__construct();
   }
@@ -101,7 +104,17 @@ class MdLitDecisaoRN extends InfraRN {
         if(!$objMdLitProcessoSituacaoDTO)
             return null;
 
+
+
         $idMdLitProcessoSituacao = $objMdLitProcessoSituacaoDTO->getNumIdMdLitProcessoSituacao();
+
+        //Excluindo as decisões vinculado a UF
+        $objMdLitRelDecisaoUfRN = new MdLitRelDecisaoUfRN();
+        $arrDecisaoPorProcessoSitucacao = $this->listarPorProcessoSituacao($idMdLitProcessoSituacao);
+        if(count($arrDecisaoPorProcessoSitucacao)){
+            $objMdLitRelDecisaoUfRN->excluirPorDecisao(InfraArray::converterArrInfraDTO($arrDecisaoPorProcessoSitucacao,'IdMdLitDecisao'));
+        }
+
         $ret = array();
         foreach ($arrDecisao['lista'] as $decisao){
             $decisao[4] = str_replace('.', '',$decisao[4]);
@@ -116,6 +129,7 @@ class MdLitDecisaoRN extends InfraRN {
             $objMdLitDecisaoDTO->setNumIdUnidade($decisao[8]);
             $objMdLitDecisaoDTO->setStrSinAtivo('S');
             $objMdLitDecisaoDTO->setDtaInclusao($decisao[12]);
+            $objMdLitDecisaoDTO->setStrStaLocalidade($decisao[15]);
 
             if(preg_match('/^novo_/', $decisao[0])){
                 $objMdLitDecisaoDTO->setNumIdMdLitProcessoSituacao($idMdLitProcessoSituacao);
@@ -128,6 +142,21 @@ class MdLitDecisaoRN extends InfraRN {
                 $objMdLitDecisaoBD->alterar($objMdLitDecisaoDTO);
                 $ret[$decisao[0]] = $objMdLitDecisaoDTO->getNumIdMdLitDecisao();
             }
+
+            if($objMdLitDecisaoDTO->getStrStaLocalidade() == MdLitDecisaoRN::$STA_LOCALIDADE_UF){
+                if(!empty($decisao[16])){
+                    $arrUf = explode('#',$decisao[16]);
+                    foreach ($arrUf as $idUf){
+                        $objMdLitRelDecisaoUfDTO = new MdLitRelDecisaoUfDTO();
+                        $objMdLitRelDecisaoUfDTO->setNumIdUf($idUf);
+                        $objMdLitRelDecisaoUfDTO->setNumIdMdLitDecisao($objMdLitDecisaoDTO->getNumIdMdLitDecisao());
+
+                        $objMdLitRelDecisaoUfRN->cadastrar($objMdLitRelDecisaoUfDTO);
+                    }
+                }
+            }
+
+
         }
 
         if(count($ret)> 0) {
@@ -140,6 +169,7 @@ class MdLitDecisaoRN extends InfraRN {
             if (count($arrObjMdLitDecisaoDesativarDTO)) {
                 $this->desativar($arrObjMdLitDecisaoDesativarDTO);
             }
+
         }
 
         return $ret;
@@ -147,6 +177,16 @@ class MdLitDecisaoRN extends InfraRN {
     }catch(Exception $e){
       throw new InfraException('Erro cadastrando Decisão.',$e);
     }
+  }
+
+  protected  function listarPorProcessoSituacaoConectado($idMdLitProcessoSituacao){
+      $objMdLitDecisaoDTO = new MdLitDecisaoDTO();
+      $objMdLitDecisaoDTO->retTodos(false);
+      $objMdLitDecisaoDTO->setNumIdMdLitProcessoSituacao($idMdLitProcessoSituacao);
+
+      $arrObjMdLitDecisaoDTO = $this->listar($objMdLitDecisaoDTO);
+
+      return $arrObjMdLitDecisaoDTO;
   }
 
   protected function alterarControlado(MdLitDecisaoDTO $objMdLitDecisaoDTO){
@@ -390,15 +430,31 @@ class MdLitDecisaoRN extends InfraRN {
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getNumPrazo();
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getNumIdUsuario();
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getNumIdUnidade();
-          $infracaoArr[$key][] = $objMdLitDecisaoDTO->getStrInfracao();
-          $infracaoArr[$key][] = $objMdLitDecisaoDTO->getStrNomeMdLitTipoDecisao();
-          $infracaoArr[$key][] = $objMdLitDecisaoDTO->getStrNomeMdLitEspecieDecisao();
+          $infracaoArr[$key][] = htmlspecialchars($objMdLitDecisaoDTO->getStrInfracao());
+          $infracaoArr[$key][] = htmlspecialchars($objMdLitDecisaoDTO->getStrNomeMdLitTipoDecisao());
+          $infracaoArr[$key][] = htmlspecialchars($objMdLitDecisaoDTO->getStrNomeMdLitEspecieDecisao());
 
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getDtaInclusao();
           $infracaoArr[$key][] = htmlentities('<a alt="'.$objMdLitDecisaoDTO->getStrNomeUsuario().'" title="'.$objMdLitDecisaoDTO->getStrNomeUsuario().'" class="ancoraSigla"> '.$objMdLitDecisaoDTO->getStrSiglaUsuario().' </a>');
           $infracaoArr[$key][] = htmlentities('<a alt="'.$objMdLitDecisaoDTO->getStrDescricaoUnidade().'" title="'.$objMdLitDecisaoDTO->getStrDescricaoUnidade().'" class="ancoraSigla"> '.$objMdLitDecisaoDTO->getStrSiglaUnidade().' </a>');
-          $infracaoArr[$key][] = $objMdLitDecisaoDTO->getNumIdMdLitProcessoSituacao();
+          $infracaoArr[$key][] = $objMdLitDecisaoDTO->getStrStaLocalidade();
 
+          //adicionando as UF's nas decisões separados por # para popular o componente de infraTabelaDinamica
+          if($objMdLitDecisaoDTO->getStrStaLocalidade() == MdLitDecisaoRN::$STA_LOCALIDADE_UF){
+              $objMdLitRelDecisaoUfDTO = new MdLitRelDecisaoUfDTO();
+              $objMdLitRelDecisaoUfDTO->retTodos(false);
+              $objMdLitRelDecisaoUfDTO->setNumIdMdLitDecisao($objMdLitDecisaoDTO->getNumIdMdLitDecisao());
+
+              $objMdLitRelDecisaoUfRN = new MdLitRelDecisaoUfRN();
+              $arrObjMdLitRelDecisaoUfDTO = $objMdLitRelDecisaoUfRN->listar($objMdLitRelDecisaoUfDTO);
+              if(count($arrObjMdLitRelDecisaoUfDTO)){
+                  $arrIdUf = InfraArray::converterArrInfraDTO($arrObjMdLitRelDecisaoUfDTO, 'IdUf');
+                  $infracaoArr[$key][] = implode('#',$arrIdUf);
+              }
+
+          }else{
+              $infracaoArr[$key][] = '';
+          }
       }
       if(count($infracaoArr) > 0)
           return $infracaoArr;

@@ -10,7 +10,7 @@
 
         public function getVersao()
         {
-            return '1.0.0';
+            return '1.1.0';
         }
 
         public function getInstituicao()
@@ -466,7 +466,17 @@
                     break;
 
                 case 'md_lit_especie_decisao_montar_select':
-                    $arrObjEspecieDecisaoDTO = MdLitEspecieDecisaoINT::montarSelectEspecieDecisao('null', '', $_POST['id_md_lit_tipo_decisao'], null);
+                    $arrObjEspecieDecisaoDTO = MdLitEspecieDecisaoINT::montarSelectEspecieDecisao('null', '%20', $_POST['id_md_lit_tipo_decisao'], null);
+                    $xml              = InfraAjax::gerarXMLSelect($arrObjEspecieDecisaoDTO);
+                    break;
+
+                case 'md_lit_rel_especie_decisao_montar_select':
+                    $arrObjEspecieDecisaoDTO = MdLitEspecieDecisaoINT::montarSelectEspecieDecisaoPorTipoControle('null', '%20', $_POST['id_md_lit_tipo_decisao'], $_POST['id_md_lit_especie_decisao'],$_POST['id_md_lit_tipo_controle']);
+                    $xml              = InfraAjax::gerarXMLSelect($arrObjEspecieDecisaoDTO);
+                    break;
+
+                case 'md_lit_rel_tipo_decisao_montar_select':
+                    $arrObjEspecieDecisaoDTO = MdLitTipoDecisaoINT::montarSelectTipoDecisaoPorTipoControle('null', '%20', $_POST['id_md_lit_tipo_decisao'], $_POST['id_md_lit_tipo_controle']);
                     $xml              = InfraAjax::gerarXMLSelect($arrObjEspecieDecisaoDTO);
                     break;
 
@@ -781,6 +791,57 @@
                 $arrObjArvoreAcaoItemAPI[] = $objArvoreAcaoItemAPI;
             }
 
+
+            return $arrObjArvoreAcaoItemAPI;
+        }
+
+
+        public function montarIconeDocumento(ProcedimentoAPI $objProcedimentoAPI, $arrObjDocumentoAPI){
+            $arrObjArvoreAcaoItemAPI = array();
+            $titulo = 'Documento vinculado a Controle Litigioso';
+            if (SessaoSEI::getInstance()->verificarPermissao('md_lit_processo_situacao_listar')) {
+                foreach ($arrObjDocumentoAPI as $objDocumentoAPI) {
+
+                    $dblIdDocumento = $objDocumentoAPI->getIdDocumento();
+
+                    $objMdLitProcessoSituacaoDTO = new MdLitProcessoSituacaoDTO();
+                    $objMdLitProcessoSituacaoDTO->retNumIdMdLitProcessoSituacao();
+                    $objMdLitProcessoSituacaoDTO->retStrNomeSituacao();
+                    $objMdLitProcessoSituacaoDTO->retStrNomeFase();
+                    $objMdLitProcessoSituacaoDTO->retDtaData();
+                    $objMdLitProcessoSituacaoDTO->setDblIdDocumento($dblIdDocumento);
+
+                    $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+                    $arrObjMdLitProcessoSituacaoDTO = $objMdLitProcessoSituacaoRN->listar($objMdLitProcessoSituacaoDTO);
+                    $texto = '';
+                    foreach ($arrObjMdLitProcessoSituacaoDTO as $objMdLitProcessoSituacaoDTO) {
+
+                        $nomeSituacao = $objMdLitProcessoSituacaoDTO->getStrNomeSituacao();
+                        $nomeFase = $objMdLitProcessoSituacaoDTO->getStrNomeFase();
+                        $data = $objMdLitProcessoSituacaoDTO->getDtaData();
+                        $texto .= '\n\n Fase: ' . $nomeFase . '\n Situação: ' . $nomeSituacao . ' (' . $data . ')';
+                    }
+
+                    if ($texto == '') {
+                        continue;
+                    }
+
+
+                    $objArvoreAcaoItemAPI = new ArvoreAcaoItemAPI();
+                    $objArvoreAcaoItemAPI->setTipo('MD_LIT_DOCUMENTO');
+                    $objArvoreAcaoItemAPI->setId('MD_LIT_DOC_' . $dblIdDocumento);
+                    $objArvoreAcaoItemAPI->setIdPai($dblIdDocumento);
+                    $objArvoreAcaoItemAPI->setTitle($titulo.$texto);
+                    $objArvoreAcaoItemAPI->setIcone('modulos/litigioso/imagens/balanca_documento_check.png');
+
+                    $objArvoreAcaoItemAPI->setTarget(null);
+                    $objArvoreAcaoItemAPI->setHref('#');
+
+                    $objArvoreAcaoItemAPI->setSinHabilitado('S');
+
+                    $arrObjArvoreAcaoItemAPI[$dblIdDocumento][] = $objArvoreAcaoItemAPI;
+                }
+            }
 
             return $arrObjArvoreAcaoItemAPI;
         }

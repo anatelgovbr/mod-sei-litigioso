@@ -198,7 +198,7 @@
               $objMotivoDTO = $objMotivoRN->consultar( $objMotivoDTO );
 
               if( $objMotivoDTO != null && is_object( $objMotivoDTO ) ) {
-                  $strItensSelMotivos .= "<option value='" . $objMotivoDTO->getNumIdMdLitMotivo() .  "'>" . $objMotivoDTO->getStrDescricao() . "</option>";
+                  $strItensSelMotivos .= "<option value='" . $objMotivoDTO->getNumIdMdLitMotivo() .  "'>" . PaginaSEI::tratarHTML($objMotivoDTO->getStrDescricao()) . "</option>";
               }
           }
 
@@ -436,7 +436,7 @@
             $objMotivoDTO = $objMotivoRN->consultar( $objMotivoDTO );
 
             if( $objMotivoDTO != null && is_object( $objMotivoDTO ) ) {
-                $strItensSelMotivos .= "<option value='" . $objMotivoDTO->getNumIdMdLitMotivo() .  "'>" . $objMotivoDTO->getStrDescricao() . "</option>";
+                $strItensSelMotivos .= "<option value='" . $objMotivoDTO->getNumIdMdLitMotivo() .  "'>" . PaginaSEI::tratarHTML($objMotivoDTO->getStrDescricao()) . "</option>";
             }
         }
       

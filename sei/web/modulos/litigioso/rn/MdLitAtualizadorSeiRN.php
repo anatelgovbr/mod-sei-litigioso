@@ -11,10 +11,10 @@ require_once dirname(__FILE__) . '/../../../SEI.php';
 class MdLitAtualizadorSeiRN extends InfraRN {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '1.0.0';
+    private $versaoAtualDesteModulo = '1.1.0';
     private $nomeDesteModulo = 'MÓDULO DE CONTROLE LITIGIOSO';
     private $nomeParametroModulo = 'VERSAO_MODULO_LITIGIOSO';
-    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4','1.0.0');
+    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4','1.0.0','1.1.0');
 
     public function __construct(){
         parent::__construct();
@@ -76,7 +76,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
             $this->inicializar('INICIANDO A INSTALAÇÃO/ATUALIZAÇÃO DO '.$this->nomeDesteModulo.' NO SEI VERSÃO '.SEI_VERSAO);
 
             //testando versao do framework
-            $numVersaoInfraRequerida = '1.385';
+            $numVersaoInfraRequerida = '1.493';
             $versaoInfraFormatada = (int) str_replace('.','', VERSAO_INFRA);
             $versaoInfraReqFormatada = (int) str_replace('.','', $numVersaoInfraRequerida);
 
@@ -111,6 +111,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv003();
                 $this->instalarv004();
                 $this->instalarv100();
+                $this->instalarv110();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.1') {
@@ -118,24 +119,32 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv003();
                 $this->instalarv004();
                 $this->instalarv100();
+                $this->instalarv110();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.2') {
                 $this->instalarv003();
                 $this->instalarv004();
                 $this->instalarv100();
+                $this->instalarv110();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.3') {
                 $this->instalarv004();
                 $this->instalarv100();
+                $this->instalarv110();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.4') {
                 $this->instalarv100();
+                $this->instalarv110();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.0.0') {
+                $this->instalarv110();
+                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
+                $this->finalizar('FIM', false);
+            } else if ($strVersaoModuloLitigioso == '1.1.0') {
                 $this->logar('A VERSÃO MAIS ATUAL DO '.$this->nomeDesteModulo.' (v'.$this->versaoAtualDesteModulo.') JÁ ESTÁ INSTALADA.');
                 $this->finalizar('FIM', false);
             }
@@ -145,6 +154,8 @@ class MdLitAtualizadorSeiRN extends InfraRN {
             InfraDebug::getInstance()->setBolEcho(false);
 
         } catch (Exception $e) {
+
+            var_dump($e);
             InfraDebug::getInstance()->setBolLigado(true);
             InfraDebug::getInstance()->setBolDebugInfra(true);
             InfraDebug::getInstance()->setBolEcho(true);
@@ -1320,7 +1331,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
         $infraAgendamentoDTO->setStrDescricao('Script para Atualizar os lançamentos com o sistema de Arrecadao');
         $infraAgendamentoDTO->setStrComando('MdLitAgendamentoAutomaticoRN::consultarLancamento');
         $infraAgendamentoDTO->setStrSinAtivo('S');
-        $infraAgendamentoDTO->setStrStaPeriodicidadeExecucao( InfraAgendamentoTarefaRN::$PERIODICIDADEEXECUCAO_DIA );
+        $infraAgendamentoDTO->setStrStaPeriodicidadeExecucao( InfraAgendamentoTarefaRN::$PERIODICIDADE_EXECUCAO_HORA );
         $infraAgendamentoDTO->setStrPeriodicidadeComplemento( 4 );
         $infraAgendamentoDTO->setStrParametro( null );
         $infraAgendamentoDTO->setDthUltimaExecucao( null );
@@ -1416,7 +1427,110 @@ class MdLitAtualizadorSeiRN extends InfraRN {
 
 
         $this->logar('ATUALIZANDO PARÂMETRO '.$this->nomeParametroModulo.' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
-        BancoSEI::getInstance()->executarSql('UPDATE infra_parametro SET valor = \''.$this->versaoAtualDesteModulo.'\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+        BancoSEI::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.0.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+
+    }
+
+    //Contem atualizações da versao 1.1.0
+    protected function instalarv110(){
+
+        $objInfraMetaBD = new InfraMetaBD(BancoSEI::getInstance());
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.1.0 DO '.$this->nomeDesteModulo.' NA BASE DO SEI');
+
+        $this->logar(' ALTERANDO A TABELA md_lit_rel_dis_nor_con_ctr');
+        $objInfraMetaBD->alterarColuna('md_lit_rel_dis_nor_con_ctr', 'dta_infracao', $objInfraMetaBD->tipoDataHora(), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_rel_dis_nor_con_ctr', 'dta_infracao_periodo_inicial', $objInfraMetaBD->tipoDataHora(), 'NULL' );
+        $objInfraMetaBD->adicionarColuna('md_lit_rel_dis_nor_con_ctr', 'dta_infracao_periodo_final', $objInfraMetaBD->tipoDataHora(), 'NULL' );
+        $objInfraMetaBD->adicionarColuna('md_lit_rel_dis_nor_con_ctr', 'sta_infracao_data', $objInfraMetaBD->tipoTextoFixo(1), 'NULL' );
+
+
+        $this->logar(' Atualizando registro DA TABELA md_lit_rel_dis_nor_con_ctr');
+        $objMdLitRelDispositivoNormativoCondutaControleDTO = new MdLitRelDispositivoNormativoCondutaControleDTO();
+        $objMdLitRelDispositivoNormativoCondutaControleDTO->retTodos(false);
+
+        $objMdLitRelDispositivoNormativoCondutaControleRN = new MdLitRelDispositivoNormativoCondutaControleRN();
+        $arrObjMdLitRelDispositivoNormativoCondutaControleDTO = $objMdLitRelDispositivoNormativoCondutaControleRN->listar($objMdLitRelDispositivoNormativoCondutaControleDTO);
+
+        if(count($arrObjMdLitRelDispositivoNormativoCondutaControleDTO)){
+            foreach ($arrObjMdLitRelDispositivoNormativoCondutaControleDTO as $objMdLitRelDispositivoNormativoCondutaControleDTO){
+                $objMdLitRelDispositivoNormativoCondutaControleDTO->setStrStaInfracaoData(MdLitRelDispositivoNormativoCondutaControleRN::$TA_ESPECIFICA);
+                $objMdLitRelDispositivoNormativoCondutaControleRN->alterar($objMdLitRelDispositivoNormativoCondutaControleDTO);
+            }
+        }
+
+        $this->logar('ALTERANDO A TABELA md_lit_decisao');
+        $objInfraMetaBD->adicionarColuna('md_lit_decisao', 'sta_localidade', $objInfraMetaBD->tipoTextoFixo(1), 'NULL' );
+
+
+        $this->logar('CRIANDO A TABELA md_lit_rel_decisao_uf');
+
+        BancoSEI::getInstance()->executarSql('CREATE TABLE md_lit_rel_decisao_uf(
+              id_md_lit_decisao ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL,
+              id_uf ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL ) ');
+
+        $objInfraMetaBD->adicionarChavePrimaria('md_lit_rel_decisao_uf', 'pk_md_lit_rel_decisao_uf', array('id_md_lit_decisao', 'id_uf'));
+
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk1_md_lit_rel_decisao_uf', 'md_lit_rel_decisao_uf',array('id_md_lit_decisao'),'md_lit_decisao',array('id_md_lit_decisao'));
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk2_md_lit_rel_decisao_uf', 'md_lit_rel_decisao_uf', array('id_uf'), 'uf', array('id_uf'));
+
+
+        $this->logar(' ALTERANDO A TABELA md_lit_rel_tipo_ctrl_tipo_dec');
+        $objInfraMetaBD->adicionarColuna('md_lit_rel_tipo_ctrl_tipo_dec', 'id_md_lit_especie_decisao', $objInfraMetaBD->tipoNumero(), 'NULL');
+
+
+        $objInfraMetaBD->excluirChaveEstrangeira('md_lit_rel_tipo_ctrl_tipo_dec', 'fk_rel_tipo_ctrl_tipo_dec_01');
+        $objInfraMetaBD->excluirChaveEstrangeira('md_lit_rel_tipo_ctrl_tipo_dec', 'fk_rel_tipo_ctrl_tipo_dec_02');
+        $objInfraMetaBD->excluirChavePrimaria('md_lit_rel_tipo_ctrl_tipo_dec', 'pk_lit_rel_tipo_ctrl_tipo_dec1');
+
+        $this->logar(' migrando os dados DA TABELA md_lit_rel_tipo_ctrl_tipo_dec');
+        $objMdLitRelTipoControleTipoDecisaoDTO = new MdLitRelTipoControleTipoDecisaoDTO();
+        $objMdLitRelTipoControleTipoDecisaoDTO->retNumIdTipoControleLitigioso();
+        $objMdLitRelTipoControleTipoDecisaoDTO->retNumIdTipoDecisaoLitigioso();
+
+        $objMdLitRelTipoControleTipoDecisaoRN = new MdLitRelTipoControleTipoDecisaoRN();
+        $arrObjMdLitRelTipoControleTipoDecisaoDTO = $objMdLitRelTipoControleTipoDecisaoRN->listar($objMdLitRelTipoControleTipoDecisaoDTO);
+
+        if(count($arrObjMdLitRelTipoControleTipoDecisaoDTO)) {
+
+
+            $this->logar(' apagando os dados DA TABELA md_lit_rel_tipo_ctrl_tipo_dec antigos');
+            foreach($arrObjMdLitRelTipoControleTipoDecisaoDTO as $objMdLitRelTipoControleTipoDecisaoDTO){
+                // necessita ser em um for separado por que dentro do cadastrar ele excluir todos os registros do md_lit_rel_tipo_ctrl_tipo_dec pelo id_md_lit_tipo_controle assim gera um erro
+                BancoSEI::getInstance()->executarSql('delete from md_lit_rel_tipo_ctrl_tipo_dec where  id_md_lit_tipo_controle=' . $objMdLitRelTipoControleTipoDecisaoDTO->getNumIdTipoControleLitigioso() . ' and id_md_lit_tipo_decisao='.$objMdLitRelTipoControleTipoDecisaoDTO->getNumIdTipoDecisaoLitigioso());
+            }
+
+
+            $this->logar(' inserindo os dados DA TABELA md_lit_rel_tipo_ctrl_tipo_dec vinculado com id_md_lit_especie_decisao');
+            $arrObjMdLitRelTipoControleTipoDecisaoDTOCadastro = array();
+            foreach ($arrObjMdLitRelTipoControleTipoDecisaoDTO as $objMdLitRelTipoControleTipoDecisaoDTO) {
+                $idTipoDecisaoLitigioso = $objMdLitRelTipoControleTipoDecisaoDTO->getNumIdTipoDecisaoLitigioso();
+                $objMdLitRelTipoEspecieDecisaoDTO = new MdLitRelTipoEspecieDecisaoDTO();
+                $objMdLitRelTipoEspecieDecisaoDTO->retTodos(false);
+                $objMdLitRelTipoEspecieDecisaoDTO->setNumIdTipoDecisaoLitigioso($idTipoDecisaoLitigioso);
+
+
+                $objMdLitRelTipoEspecieDecisaoRN = new MdLitRelTipoEspecieDecisaoRN();
+                $arrObjMdLitRelTipoEspecieDecisaoDTO = $objMdLitRelTipoEspecieDecisaoRN->listar($objMdLitRelTipoEspecieDecisaoDTO);
+                foreach ($arrObjMdLitRelTipoEspecieDecisaoDTO as $objMdLitRelTipoEspecieDecisaoDTO) {
+                    $objMdLitRelTipoControleTipoDecisaoDTONovo = new MdLitRelTipoControleTipoDecisaoDTO();
+                    $objMdLitRelTipoControleTipoDecisaoDTONovo->setNumIdMdLitEspecieDecisao($objMdLitRelTipoEspecieDecisaoDTO->getNumIdEspecieDecisaoLitigioso());
+                    $objMdLitRelTipoControleTipoDecisaoDTONovo->setNumIdTipoControleLitigioso($objMdLitRelTipoControleTipoDecisaoDTO->getNumIdTipoControleLitigioso());
+                    $objMdLitRelTipoControleTipoDecisaoDTONovo->setNumIdTipoDecisaoLitigioso($objMdLitRelTipoControleTipoDecisaoDTO->getNumIdTipoDecisaoLitigioso());
+                    $arrObjMdLitRelTipoControleTipoDecisaoDTOCadastro[] = $objMdLitRelTipoControleTipoDecisaoDTONovo;
+                }
+            }
+            $objMdLitRelTipoControleTipoDecisaoRN->cadastrar($arrObjMdLitRelTipoControleTipoDecisaoDTOCadastro);
+        }
+
+        $objInfraMetaBD->adicionarChavePrimaria('md_lit_rel_tipo_ctrl_tipo_dec', 'pk_md_lit_rel_tipo_ctrl_tipo', array('id_md_lit_tipo_decisao','id_md_lit_tipo_controle','id_md_lit_especie_decisao'));
+
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk_rel_tipo_ctrl_tipo_dec_01', 'md_lit_rel_tipo_ctrl_tipo_dec', array('id_md_lit_tipo_decisao'), 'md_lit_tipo_decisao', array('id_md_lit_tipo_decisao'));
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk_rel_tipo_ctrl_tipo_dec_02', 'md_lit_rel_tipo_ctrl_tipo_dec', array('id_md_lit_tipo_controle'), 'md_lit_tipo_controle', array('id_md_lit_tipo_controle'));
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk_rel_tipo_ctrl_tipo_dec_03', 'md_lit_rel_tipo_ctrl_tipo_dec', array('id_md_lit_especie_decisao'), 'md_lit_especie_decisao', array('id_md_lit_especie_decisao'));
+
+
+        $this->logar('ADICIONANDO PARÂMETRO '.$this->nomeParametroModulo.' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+        BancoSEI::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.1.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
 
     }
 

@@ -73,6 +73,15 @@
             SessaoSEI::getInstance()->validarAuditarPermissao('md_lit_tipo_controle_tipo_decisao_cadastrar', __METHOD__, $arrObjAssociarTipoDecisaoLitigiosoDTO);
 
             try {
+                if(count($arrObjAssociarTipoDecisaoLitigiosoDTO)){
+                    $idTipoControle = $arrObjAssociarTipoDecisaoLitigiosoDTO[0]->getNumIdTipoControleLitigioso();
+
+
+                    $relacionamentoDTO = new MdLitRelTipoControleTipoDecisaoDTO();
+                    $relacionamentoDTO->setNumIdTipoControleLitigioso($idTipoControle);
+                    $this->excluirRelacionamentos($relacionamentoDTO);
+
+                }
 
                 // Valida Permissao
                 SessaoSEI::getInstance()->validarAuditarPermissao('md_lit_tipo_controle_tipo_decisao_consultar', __METHOD__, $arrObjAssociarTipoDecisaoLitigiosoDTO);
@@ -113,6 +122,22 @@
 
             } catch (Exception $e) {
                 throw new InfraException ('Erro excluindo os Tipos de Decisão.', $e);
+            }
+
+        }
+
+
+        protected function excluirControlado($arrObjMdLitRelTipoControleTipoDecisaoDTO)
+        {
+            try {
+                SessaoSEI::getInstance()->validarAuditarPermissao('md_lit_tipo_controle_tipo_decisao_excluir', __METHOD__, $arrObjMdLitRelTipoControleTipoDecisaoDTO);
+
+                $objMdLitRelTipoControleTipoDecisaoBD = new MdLitRelTipoControleTipoDecisaoBD($this->getObjInfraIBanco());
+                for($i = 0; $i < count($arrObjMdLitRelTipoControleTipoDecisaoDTO); $i ++) {
+                    $objMdLitRelTipoControleTipoDecisaoBD->excluir($arrObjMdLitRelTipoControleTipoDecisaoDTO[$i]);
+                }
+            } catch (Exception $e) {
+                throw new InfraException ('Erro excluindo.', $e);
             }
 
         }

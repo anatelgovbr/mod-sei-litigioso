@@ -34,6 +34,7 @@ switch($_GET['acao']){
         }catch(Exception $e){
             PaginaSEI::getInstance()->processarExcecao($e);
         }
+
         header('Location: '.SessaoSEI::getInstance()->assinarLink('controlador.php?acao='.$_GET['acao_origem'].'&acao_origem='.$_GET['acao']));
         die;
 

@@ -54,14 +54,44 @@
             $objMdLitRelTipoControleTipoDecisaoDTO->setStrSinAtivoDecisao('S');
 
             if ($strValorItemSelecionado!=null){
-                $objMdLitRelTipoControleTipoDecisaoDTO->setBolExclusaoLogica(false);
-                $objMdLitRelTipoControleTipoDecisaoDTO->adicionarCriterio(array('IdTipoDecisaoLitigioso'),array(InfraDTO::$OPER_IGUAL,InfraDTO::$OPER_IGUAL),array($strValorItemSelecionado),InfraDTO::$OPER_LOGICO_OR);
+                $objMdLitTipoDecisaoDTO = new MdLitTipoDecisaoDTO();
+                $objMdLitTipoDecisaoDTO->retStrNome();
+                $objMdLitTipoDecisaoDTO->retNumIdTipoDecisaoLitigioso();
+                $objMdLitTipoDecisaoDTO->setNumIdTipoDecisaoLitigioso($strValorItemSelecionado);
+                $objMdLitTipoDecisaoDTO->setBolExclusaoLogica(false);
+
+                $objMdLitTipoDecisaoRN = new MdLitTipoDecisaoRN();
+                $objMdLitTipoDecisaoDTO = $objMdLitTipoDecisaoRN->consultar($objMdLitTipoDecisaoDTO);
             }
 
             $objMdLitRelTipoControleTipoDecisaoDTO->setOrdStrNome(InfraDTO::$TIPO_ORDENACAO_ASC);
 
             $objMdLitRelTipoControleTipoDecisaoRN = new MdLitRelTipoControleTipoDecisaoRN();
             $arrObjMdLitRelTipoControleTipoDecisaoDTO = $objMdLitRelTipoControleTipoDecisaoRN->listar($objMdLitRelTipoControleTipoDecisaoDTO);
+
+            //se o valor for parametrizado e não existir na parametrização faz uma nova consulta retornando o valor não parametrizado
+            //e adicionando na combo
+            if ($strValorItemSelecionado!=null && InfraArray::contarArrInfraDTO($arrObjMdLitRelTipoControleTipoDecisaoDTO, 'IdTipoDecisaoLitigioso',$strValorItemSelecionado ) == 0){
+                $objMdLitTipoDecisaoDTO = new MdLitTipoDecisaoDTO();
+                $objMdLitTipoDecisaoDTO->retStrNome();
+                $objMdLitTipoDecisaoDTO->retNumIdTipoDecisaoLitigioso();
+                $objMdLitTipoDecisaoDTO->setNumIdTipoDecisaoLitigioso($strValorItemSelecionado);
+                $objMdLitTipoDecisaoDTO->setBolExclusaoLogica(false);
+
+                $objMdLitTipoDecisaoRN = new MdLitTipoDecisaoRN();
+                $objMdLitTipoDecisaoDTO = $objMdLitTipoDecisaoRN->consultar($objMdLitTipoDecisaoDTO);
+
+                if($objMdLitTipoDecisaoDTO){
+                    $objMdLitRelTipoControleTipoDecisaoDTO = new MdLitRelTipoControleTipoDecisaoDTO();
+                    $objMdLitRelTipoControleTipoDecisaoDTO->setNumIdTipoDecisaoLitigioso($objMdLitTipoDecisaoDTO->getNumIdTipoDecisaoLitigioso());
+                    $objMdLitRelTipoControleTipoDecisaoDTO->setStrNome($objMdLitTipoDecisaoDTO->getStrNome());
+
+                    $arrObjMdLitRelTipoControleTipoDecisaoDTO[] = $objMdLitRelTipoControleTipoDecisaoDTO;
+                }
+            }
+
+            $arrObjMdLitRelTipoControleTipoDecisaoDTO = InfraArray::distinctArrInfraDTO($arrObjMdLitRelTipoControleTipoDecisaoDTO, 'IdTipoDecisaoLitigioso');
+
 
             return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $arrObjMdLitRelTipoControleTipoDecisaoDTO, 'IdTipoDecisaoLitigioso', 'Nome');
         }

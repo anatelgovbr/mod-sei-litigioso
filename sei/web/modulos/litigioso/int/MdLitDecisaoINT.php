@@ -60,6 +60,10 @@ class MdLitDecisaoINT extends InfraINT {
   public static function gerarItensTabelaDinamicaForm($decisaoPosts){
       $infracaoArr = array();
       $index = 0;
+      $localidade = null;
+      $selectUf = null;
+
+
       foreach ($decisaoPosts as $key => $decisao){
 
           if(($decisao['id_md_lit_tipo_decisao'] == 'null' || empty($decisao['id_md_lit_tipo_decisao'])))
@@ -107,13 +111,21 @@ class MdLitDecisaoINT extends InfraINT {
           $objMdLitEspecieDecisaoDTO = $objMdLitEspecieDecisaoRN->consultar($objMdLitEspecieDecisaoDTO);
           $infracaoArr[$index][] = $objMdLitEspecieDecisaoDTO ? $objMdLitEspecieDecisaoDTO->getStrNome() : null;
 
-          $infracaoArr[$index][] = $decisao['data'] != ''? $decisao['data'] : InfraData::getStrDataHoraAtual();
+          $infracaoArr[$index][] = $decisao['data'] != ''? $decisao['data'] : InfraData::getStrDataAtual();
           $nomeUsuario = $decisao['nome_usuario'] != ''? strip_tags($decisao['nome_usuario']) : SessaoSEI::getInstance()->getStrNomeUsuario();
           $siglaUsuario = $decisao['sigla_usuario'] != ''? strip_tags($decisao['sigla_usuario']) : SessaoSEI::getInstance()->getStrSiglaUsuario();
           $infracaoArr[$index][] = '<a alt="'.$nomeUsuario.'" title="'.$nomeUsuario.'" class="ancoraSigla"> '.$siglaUsuario.' </a>';
           $siglaUnidade = $decisao['sigla_unidade'] != ''? strip_tags($decisao['sigla_unidade']) : SessaoSEI::getInstance()->getStrSiglaUnidadeAtual();
           $descricaoUnidade = $decisao['descricao_unidade'] != ''? strip_tags($decisao['descricao_unidade']) : SessaoSEI::getInstance()->getStrDescricaoUnidadeAtual();
           $infracaoArr[$index][] = '<a alt="'.$descricaoUnidade.'" title="'.$descricaoUnidade.'" class="ancoraSigla"> '.$siglaUnidade.' </a>';
+          $localidade = $decisao['localidade'] == null ? $localidade : $decisao['localidade'] ;
+          if($localidade == MdLitDecisaoRN::$STA_LOCALIDADE_UF){
+              $selectUf = $decisao['id_uf'] ? implode("#",$decisao['id_uf']) : $selectUf;
+          }else{
+              $selectUf = '';
+          }
+          $infracaoArr[$index][] = $localidade;
+          $infracaoArr[$index][] = $selectUf;
           $index++;
       }
       return PaginaSEI::getInstance()->gerarItensTabelaDinamica($infracaoArr);

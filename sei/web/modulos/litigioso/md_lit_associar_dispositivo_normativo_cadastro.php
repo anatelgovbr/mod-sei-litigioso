@@ -82,7 +82,7 @@
                     $arrItens                                = $objAssocDispositivoNormativoLitigiosoRN->listar($objAssocDispositivoNormativoDTO);
 
                     foreach ($arrItens as $item) {
-                        $strItensSelDispositivoNormativos .= "<option value='" . $item->getNumIdDispositivoNormativoLitigioso() . "'>" . $item->getStrNorma() . " - " . $item->getStrDispositivo() . "</option>";
+                        $strItensSelDispositivoNormativos .= "<option value='" . $item->getNumIdDispositivoNormativoLitigioso() . "'>" . PaginaSEI::tratarHTML($item->getStrNorma()) . " - " . PaginaSEI::tratarHTML($item->getStrDispositivo()) . "</option>";
                     }
 
                 }
@@ -95,7 +95,7 @@
                 $objTipoControleLitigiosoRN  = new MdLitTipoControleRN();
                 $objTipoControleLitigiosoDTO = $objTipoControleLitigiosoRN->consultar($objTipoControleLitigiosoDTO);
 
-                $strTitulo .= $objTipoControleLitigiosoDTO->getStrSigla();
+                $strTitulo .= PaginaSEI::tratarHTML($objTipoControleLitigiosoDTO->getStrSigla());
 
                 break;
 
@@ -219,6 +219,7 @@
 
                 if (options != null) {
                     for (var i = 0; i < options.length; i++) {
+
                         if (options[i].value == id) {
                             alert('Dispositivo Normativo já consta na lista.');
                             break;
@@ -232,7 +233,7 @@
                         options[i].selected = false;
                     }
 
-                    var texto = descricao;
+                    var texto = $("<pre>").html(descricao).text();
                     opt = infraSelectAdicionarOption(document.getElementById('selDescricaoDispositivoNormativo'), texto, id);
                     objLupaDispositivoNormativo.atualizar();
                     opt.selected = true;

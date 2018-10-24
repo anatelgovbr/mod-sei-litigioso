@@ -41,10 +41,13 @@ class MdLitDecisaoDTO extends InfraDTO {
 
       $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_DTA, 'Inclusao', 'dth_inclusao');
 
+      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'StaLocalidade', 'sta_localidade');
+
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdMdLitProcessoSituacaoMdLitProcessoSituacao', 'mps.id_md_lit_processo_situacao', 'md_lit_processo_situacao mps');
 
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_DBL, 'IdProcedimentoMdLitProcessoSituacao', 'mps.id_procedimento', 'md_lit_processo_situacao mps');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_DBL, 'IdDocumentoMdLitProcessoSituacao', 'mps.id_documento', 'md_lit_processo_situacao mps');
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdMdLitTipoControleMdLitProcessoSituacao', 'mps.id_md_lit_tipo_controle', 'md_lit_processo_situacao mps');
 
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeMdLitObrigacao', 'nome', 'md_lit_obrigacao');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeMdLitTipoDecisao', 'nome', 'md_lit_tipo_decisao');

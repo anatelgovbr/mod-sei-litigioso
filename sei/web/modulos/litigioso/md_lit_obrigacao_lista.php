@@ -237,9 +237,9 @@
                 $strResultado .= $strCssTr;
 
                 if ($bolCheck) {
-                    $strResultado .= '<td valign="top">' . PaginaSEI::getInstance()->getTrCheck($i, $arrObjObrigacaoLitigiosoDTO[$i]->getNumIdObrigacaoLitigioso(), $arrObjObrigacaoLitigiosoDTO[$i]->getStrNome()) . '</td>';
+                    $strResultado .= '<td valign="top">' . PaginaSEI::getInstance()->getTrCheck($i, $arrObjObrigacaoLitigiosoDTO[$i]->getNumIdObrigacaoLitigioso(), PaginaSEI::tratarHTML($arrObjObrigacaoLitigiosoDTO[$i]->getStrNome())) . '</td>';
                 }
-                $strResultado .= '<td>' . PaginaSEI::getInstance()->formatarParametrosJavaScript(PaginaSEI::tratarHTML($arrObjObrigacaoLitigiosoDTO[$i]->getStrNome(), true)) . '</td>';
+                $strResultado .= '<td>' . PaginaSEI::tratarHTML($arrObjObrigacaoLitigiosoDTO[$i]->getStrNome()) . '</td>';
                 $strResultado .= '<td align="center">';
 
                 $strResultado .= PaginaSEI::getInstance()->getAcaoTransportarItem($i, $arrObjObrigacaoLitigiosoDTO[$i]->getNumIdObrigacaoLitigioso());
@@ -254,7 +254,7 @@
 
                 if ($bolAcaoDesativar || $bolAcaoReativar || $bolAcaoExcluir) {
                     $strId        = $arrObjObrigacaoLitigiosoDTO[$i]->getNumIdObrigacaoLitigioso();
-                    $strDescricao = PaginaSEI::getInstance()->formatarParametrosJavaScript($arrObjObrigacaoLitigiosoDTO[$i]->getStrNome());
+                    $strDescricao = PaginaSEI::tratarHTML($arrObjObrigacaoLitigiosoDTO[$i]->getStrNome());
                 }
 
                 if ($bolAcaoDesativar && $arrObjObrigacaoLitigiosoDTO[$i]->getStrSinAtivo() == 'S') {

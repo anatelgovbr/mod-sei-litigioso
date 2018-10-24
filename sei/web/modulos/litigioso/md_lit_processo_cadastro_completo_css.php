@@ -51,8 +51,13 @@ input#txtTipo{width: 85%;}
 
     #fieldMotivo{margin-bottom: 12px;}
     img#imgLupaIDNDispNorma {position: relative;top: 3px;left: 3px;}
+    img#imgDtaInfracaoInicialPorDispositivo,
+    img#imgDtaInfracaoFinalPorDispositivo,
     img#imgDtaInfracaoPorDispositivo {position: relative;top: 3px;}
+    img#imgDtaInfracaoInicialPorConduta,
+    img#imgDtaInfracaoFinalPorConduta,
+    img#imgDtaInfracaoPorConduta {position: relative;top: 3px;}
     img#imgLupaTipoProcesso {position: relative;top: 1px;}
-    img#imgDtaInfracaoPorConduta {position: relative;top: 4px;}
+    img#imgDtaInfracaoPorConduta {position: relative;top: 3px;}
 
 <?if(0){?></style><?}?>

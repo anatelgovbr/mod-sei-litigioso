@@ -656,8 +656,9 @@ class MdLitProcessoSituacaoRN extends InfraRN
         $nomeUsuario = htmlentities('<a alt="'.$objDTO->getStrNomeUsuario().'" title="'.$objDTO->getStrNomeUsuario().'" class="ancoraSigla"> '.$objDTO->getStrSiglaUsuario().' </a>');
         $linkDocFormt  = $this->_retornaLinkDocFormatado($objDTO->getStrProtocoloFormatadoDocumento(), $objDTO->getDblIdProcedimento(), $objDTO->getDblIdDocumento(), $objDTO->getStrNomeSerie(), $objDTO->getStrNumeroDocumento());
         $urlLink       = htmlentities($this->_retornaLinkDocFormatado($objDTO->getStrProtocoloFormatadoDocumento(), $objDTO->getDblIdProcedimento(), $objDTO->getDblIdDocumento(), $objDTO->getStrNomeSerie(), $objDTO->getStrNumeroDocumento(), true));
+        $sinDepositoExtrajudicial = $objDTO->getStrSinDepositoExtrajudicial();
 
-        $arrGrid[]     = array($objDTO->getNumIdMdLitProcessoSituacao(), 'B',$objDTO->getDblIdProcedimento(), $objDTO->getNumIdMdLitFase(), $objDTO->getNumIdMdLitSituacao(), $objDTO->getNumIdUsuario(), $objDTO->getNumIdUnidade(), $dtIntercor,  $dtQuinq, $linkDocFormt, $objDTO->getStrNomeSerie(), $objDTO->getDtaData(), $objDTO->getStrNomeFase(), $nomeSit, $dth, $nomeUsuario, $nomeUnidade, $tipoSituacao, $valorDep, $dtDep, $objDTO->getNumIdMdLitProcessoSituacao(), $ordem, $rdAlteraPresc, $labelSituacao, $objDTO->getDblIdDocumento(), $isInstauracao, $objDTO->getStrProtocoloFormatadoDocumento(), $urlLink);
+        $arrGrid[]     = array($objDTO->getNumIdMdLitProcessoSituacao(), 'B',$objDTO->getDblIdProcedimento(), $objDTO->getNumIdMdLitFase(), $objDTO->getNumIdMdLitSituacao(), $objDTO->getNumIdUsuario(), $objDTO->getNumIdUnidade(), $dtIntercor,  $dtQuinq, $linkDocFormt, $objDTO->getStrNomeSerie(), $objDTO->getDtaData(), $objDTO->getStrNomeFase(), $nomeSit, $dth, $nomeUsuario, $nomeUnidade, $tipoSituacao, $valorDep, $dtDep, $objDTO->getNumIdMdLitProcessoSituacao(), $ordem, $rdAlteraPresc, $labelSituacao, $objDTO->getDblIdDocumento(), $isInstauracao, $objDTO->getStrProtocoloFormatadoDocumento(), $urlLink,$sinDepositoExtrajudicial);
       }
     }
 
@@ -726,6 +727,7 @@ class MdLitProcessoSituacaoRN extends InfraRN
     $objMdLitProcessoSitDTO->retNumIdMdLitProcessoSituacao();
     $objMdLitProcessoSitDTO->retStrSinAlteraPrescricao();
     $objMdLitProcessoSitDTO->retStrNumeroDocumento();
+    $objMdLitProcessoSitDTO->retStrSinDepositoExtrajudicial();
   }
 
   protected function verificaDadosSitAtualSitAnteriorConectado($arrParams)
@@ -984,11 +986,14 @@ class MdLitProcessoSituacaoRN extends InfraRN
     $objMdLitSituacaoRN = new MdLitSituacaoRN();
     $dtaIntercorrente = null;
     $dtaQuinquenal = null;
+    $depExtraJud = null;
 
-    if ($arrDados[18] != '') {
-      $depExtraJud = 'S';
+    if ($arrDados[28] == 'S') {
+      $depExtraJud = $arrDados[28];
       $vlFormt = str_replace('.', '', $arrDados[18]);
       $vlFormt = str_replace(',', '.', $vlFormt);
+    }elseif($arrDados[28] == 'N'){
+        $depExtraJud = $arrDados[28];
     }
 
     $sinPrescricao = $arrDados[22] == '1' ? 'S' : 'N';
@@ -1030,16 +1035,18 @@ class MdLitProcessoSituacaoRN extends InfraRN
 
   private function _realizaInsercaoSituacao($arrDados){
 
-    $depExtraJud = 'N';
+    $depExtraJud = null;
     $vlFormt = '';
       $dtaIntercorrente = null;
       $dtaQuinquenal = null;
       $objMdLitSituacaoRN = new MdLitSituacaoRN();
 
-    if ($arrDados[18] != '') {
-      $depExtraJud = 'S';
+    if ($arrDados[28] == 'S') {
+      $depExtraJud = $arrDados[28];
       $vlFormt = str_replace('.', '', $arrDados[18]);
       $vlFormt = str_replace(',', '.', $vlFormt);
+    }elseif($arrDados[28] == 'N'){
+        $depExtraJud = $arrDados[28];
     }
 
       $objMdLitProcessoSitDTOIntimacao = $this->consultarPrimeiraIntimacao($arrDados[2]);

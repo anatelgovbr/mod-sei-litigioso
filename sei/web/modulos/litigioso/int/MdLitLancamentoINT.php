@@ -64,6 +64,7 @@ class MdLitLancamentoINT extends InfraINT {
       //Url Modal Histórico de Lançamento
       $strLinkModalHistLanc              = InfraString::formatarXML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_historic_lancamento_listar&id_procedimento='.$idProcedimento.'&id_lancamento='.$idmdLitLancamento));
 
+
       $objMdLitLancamentoRN = new MdLitLancamentoRN();
 
       if(count($arrDecisao)){
@@ -80,6 +81,13 @@ class MdLitLancamentoINT extends InfraINT {
 
       }
       if($idmdLitLancamento){
+          $objMdLitSituacaoLancamentoDTO = new MdLitSituacaoLancamentoDTO();
+          $objMdLitSituacaoLancamentoDTO->retTodos(false);
+
+          $objMdLitSituacaoLancamentoRN = new MdLitSituacaoLancamentoRN();
+          if($objMdLitSituacaoLancamentoRN->contar($objMdLitSituacaoLancamentoDTO) == 0){
+              throw new InfraException('Ocorreu erro na consulta do crédito junto ao Sistema de Arrecadação, em razão da falta de parametrização da lista de Situações do Lançamento de Crédito na Administração do SEI.<br /> Entre em contato com a gestão do SEI no seu órgão para verificar o problema.');
+          }
 
           $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
           $objMdLitLancamentoDTO->retTodos(false);

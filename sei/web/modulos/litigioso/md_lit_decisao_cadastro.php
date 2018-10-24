@@ -12,7 +12,8 @@ try {
     session_start();
     SessaoSEI::getInstance()->validarLink();
 
-    $strLinkAjaxComboEspecieDecisao = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_especie_decisao_montar_select');
+    $strLinkAjaxComboEspecieDecisao = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_rel_especie_decisao_montar_select');
+    $strLinkAjaxComboTipoDecisao = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_rel_tipo_decisao_montar_select');
     $strLinkAjaxEspecieDecisao = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_carregar_especie_decisao');
 //    SessaoSEI::getInstance()->validarPermissao($_GET['acao']);
     //////////////////////////////////////////////////////////////////////////////
@@ -81,7 +82,9 @@ try {
                                 $arrTbDecisaoAntigo[$i][3] != $arrTbDecisaoNovo[$i][3] ||
                                 $arrTbDecisaoAntigo[$i][4] != $arrTbDecisaoNovo[$i][4] ||
                                 $arrTbDecisaoAntigo[$i][5] != $arrTbDecisaoNovo[$i][5] ||
-                                $arrTbDecisaoAntigo[$i][6] != $arrTbDecisaoNovo[$i][6])
+                                $arrTbDecisaoAntigo[$i][6] != $arrTbDecisaoNovo[$i][6] ||
+                                $arrTbDecisaoAntigo[$i][15] != $arrTbDecisaoNovo[$i][15] ||
+                                $arrTbDecisaoAntigo[$i][16] != $arrTbDecisaoNovo[$i][16])
                                 $bolHouveMudanca = true;
                         }
                     }
@@ -108,6 +111,7 @@ if($numRegistros > 0){
     $strTbCadastroDecisao .= '<tr>';
 
     $strTbCadastroDecisao .= '<th class="infraTh" width="20%">&nbsp;Infração&nbsp;</th>' . "\n";
+    $strTbCadastroDecisao .= '<th class="infraTh" width="10%">&nbsp;Localidade&nbsp;</th>' . "\n";
     $strTbCadastroDecisao .= '<th class="infraTh" width="20%">&nbsp;Tipo de Decisão&nbsp;</th>' . "\n";
     $strTbCadastroDecisao .= '<th class="infraTh" width="20%">&nbsp;Espécie de Decisão&nbsp;</th>' . "\n";
     $strTbCadastroDecisao .= '<th class="infraTh" width="10%">&nbsp;Multa&nbsp;</th>' . "\n";
@@ -127,6 +131,20 @@ if($numRegistros > 0){
         $strTbCadastroDecisao .= "<input type='hidden' name='decisao[idDispositivoNormativo_{$idLinha}][id_decisao]' value='' /> ";
         $strTbCadastroDecisao .= '<img id="img_mais_'.$idLinha.'"  value="'.$idDispositivoNormativoNormaCondutaControle.'"  nome-linha="idDispositivoNormativo_'.$idLinha.'" src="/infra_css/imagens/mais.gif" title="adicionar Item" class="infraImg" style="width: 14px; height: 14px;" onclick="incluirLinha(this)">';
         $strTbCadastroDecisao .= '<img id="img__menos_'.$idLinha.'" src="/infra_css/imagens/menos.gif" title="remover Item" class="infraImg" style="width: 14px; height: 14px;display:none" onclick="removerLinha(this)">';
+        $strTbCadastroDecisao .= "</td>";
+        $strTbCadastroDecisao .= "<td>";
+        $strTbCadastroDecisao .= "
+                        <input onclick='changeLocalidades(this, false);' type='radio' name='decisao[idDispositivoNormativo_{$idLinha}][localidade]'
+                               id='rdDispositivoNormativo_localidade_{$idLinha}' value ='N' tabindex='".PaginaSEI::getInstance()->getProxTabDados()."' data-id-select-uf='divUf_{$idLinha}' >".
+                        "<label id='lblRdIdNacional_{$idLinha}' class='infraLabelRadio  lblRdNacional' for='rdDispositivoNormativo_localidade_{$idLinha}'>Nacional</label>";
+
+        $strTbCadastroDecisao .= "
+                        <input onclick='changeLocalidades(this, true);' type='radio' name='decisao[idDispositivoNormativo_{$idLinha}][localidade]'
+                               id='rdDispositivoNormativo_uf_{$idLinha}'  value ='U' tabindex='".PaginaSEI::getInstance()->getProxTabDados()."' data-id-select-uf='divUf_{$idLinha}'>".
+                        "<label id='lblRdIdUf_{$idLinha}' class='infraLabelRadio' for='rdDispositivoNormativo_uf_{$idLinha}'>UF</label>";
+        $strTbCadastroDecisao .= "<div id='divUf_{$idLinha}' style='display: none' ><select id='selUf_{$idLinha}' name='decisao[idDispositivoNormativo_{$idLinha}][id_uf][]' class='infraSelect multipleSelect' multiple='multiple' style='width: 100%;display: none'>";
+        $strTbCadastroDecisao .= UfINT::montarSelectSiglaRI0416(null, null,'');
+        $strTbCadastroDecisao .= "<select></div>";
         $strTbCadastroDecisao .= "</td>";
         $strTbCadastroDecisao .= "<td align='center'>";
         $strTbCadastroDecisao .= "<select id='tipo_decisao_{$idLinha}' name='decisao[idDispositivoNormativo_{$idLinha}][id_md_lit_tipo_decisao]' style='width: 100%;' onchange='carregarComboEspecieDecisao(this)'>";
@@ -171,6 +189,7 @@ p.bloco-orientacao{
     line-height: 1.5em;
     font-size: 1.2em;
 }
+.lblRdNacional{width: 80px;display: inline-block;}
 .margem-bottom10{margin-bottom: 10px !important;}
 <?
 PaginaSEI::getInstance()->fecharStyle();
@@ -211,6 +230,13 @@ if(0){?><script><?}?>
             return;
 
         <?}?>
+
+        $("select.infraSelect.multipleSelect").multipleSelect({
+            filter: false,
+            minimumCountSelected: 1,
+            selectAll: false,
+        }).parent('div').hide();
+
         hdnTbDecisao = window.opener.document.getElementById('hdnTbDecisao');
         if(hdnTbDecisao.value != ''){
             montaResultado();
@@ -222,6 +248,7 @@ if(0){?><script><?}?>
             document.getElementById('sbmCadastrarDecisao').style.display = 'none';
             infraDesabilitarCamposDiv(document.getElementById('divInfraAreaGlobal'));
         }
+
     }
 
     function verificarSituacaoDecisaoNovo(){
@@ -256,7 +283,7 @@ if(0){?><script><?}?>
                             j = incluirLinha(table.rows[j].children[0].children[2]);
                             //combo tipo decisao
                             var selectTipoDecisao = table.rows[j].children[0].children[0];
-                            selectTipoDecisao.value = arrItens[i][2];
+                            carregarTipoDecisao(selectTipoDecisao,arrItens[i][2]);
                             // combo especie decisao
                             carregarComboEspecieDecisao(selectTipoDecisao, arrItens[i][3]);
                             //input multa
@@ -280,30 +307,46 @@ if(0){?><script><?}?>
                                 table.rows[j].children[4].children[5].value = arrItens[i][14];
                             }
                         }else{
+                            if(arrItens[i][15] == 'N'){
+                                //checkbox localidade Nacional
+                                table.rows[j].children[1].children[0].checked = true;
+                                changeLocalidades(table.rows[j].children[1].children[0], false);
+                            }else if(arrItens[i][15] == 'U'){
+                                //checkbox localidade UF
+                                table.rows[j].children[1].children[2].checked = true;
+                                changeLocalidades(table.rows[j].children[1].children[2], true);
+
+                                //select de UF
+                                var selectUF = table.rows[j].children[1].children[4].children[0];
+                                var arrUf =  arrItens[i][16].split('#');
+
+                                $(selectUF).multipleSelect("setSelects", arrUf);
+
+                            }
                             //combo tipo decisao
-                            var selectTipoDecisao = table.rows[j].children[1].children[0];
-                            selectTipoDecisao.value = arrItens[i][2];
+                            var selectTipoDecisao = table.rows[j].children[2].children[0];
+                            carregarTipoDecisao(selectTipoDecisao,arrItens[i][2]);
                             // combo especie decisao
                             carregarComboEspecieDecisao(selectTipoDecisao, arrItens[i][3]);
                             //input multa
-                            table.rows[j].children[3].children[0].value = arrItens[i][4];
+                            table.rows[j].children[4].children[0].value = arrItens[i][4];
                             //input prazo
-                            table.rows[j].children[5].children[0].value = arrItens[i][6];
+                            table.rows[j].children[6].children[0].value = arrItens[i][6];
                             //combo obrigacao
-                            table.rows[j].children[4].children[0].value = arrItens[i][5];
+                            table.rows[j].children[5].children[0].value = arrItens[i][5];
                             if(!isSituacaoDecisaoNovo){
                                 //id_decisao hidden
                                 table.rows[j].children[0].children[1].value = arrItens[i][0];
                                 //input id_usuario
-                                table.rows[j].children[5].children[1].value = arrItens[i][7];
+                                table.rows[j].children[6].children[1].value = arrItens[i][7];
                                 //input id_unidade
-                                table.rows[j].children[5].children[2].value = arrItens[i][8];
+                                table.rows[j].children[6].children[2].value = arrItens[i][8];
                                 //input data
-                                table.rows[j].children[5].children[3].value = arrItens[i][12];
+                                table.rows[j].children[6].children[3].value = arrItens[i][12];
                                 //input nome_usuario
-                                table.rows[j].children[5].children[4].value = arrItens[i][13];
+                                table.rows[j].children[6].children[4].value = arrItens[i][13];
                                 //input sigla_unidade
-                                table.rows[j].children[5].children[5].value = arrItens[i][14];
+                                table.rows[j].children[6].children[5].value = arrItens[i][14];
                             }
                         }
                         idAnterior = arrItens[i][1];
@@ -322,11 +365,11 @@ if(0){?><script><?}?>
             objMulta            = element.parentNode.parentNode.childNodes[2].childNodes[0];
             objObrigacaoSelect  = element.parentNode.parentNode.childNodes[3].childNodes[0];
             objPrazo            = element.parentNode.parentNode.childNodes[4].childNodes[0];
-        }else if(element.parentNode.parentNode.childNodes.length == 6){
-            objSel              = element.parentNode.parentNode.childNodes[2].childNodes[0];
-            objMulta            = element.parentNode.parentNode.childNodes[3].childNodes[0];
-            objObrigacaoSelect  = element.parentNode.parentNode.childNodes[4].childNodes[0];
-            objPrazo            = element.parentNode.parentNode.childNodes[5].childNodes[0];
+        }else if(element.parentNode.parentNode.childNodes.length == 7){
+            objSel              = element.parentNode.parentNode.childNodes[3].childNodes[0];
+            objMulta            = element.parentNode.parentNode.childNodes[4].childNodes[0];
+            objObrigacaoSelect  = element.parentNode.parentNode.childNodes[5].childNodes[0];
+            objPrazo            = element.parentNode.parentNode.childNodes[6].childNodes[0];
         }
         infraSelectLimpar(objObrigacaoSelect);
         infraSelectLimpar(objSel);
@@ -341,7 +384,9 @@ if(0){?><script><?}?>
                 type: "POST",
                 url: "<?= $strLinkAjaxComboEspecieDecisao ?>",
                 async: false,
-                data: {id_md_lit_tipo_decisao: element.value},
+                data: {id_md_lit_tipo_decisao: element.value,
+                    id_md_lit_tipo_controle:document.getElementById('hdnIdMdLitTipoControle').value,
+                    id_md_lit_especie_decisao:valorSelecionado},
                 success: function (result) {
                     if($(result).find('erro').length > 0){
                         alert($(result).find('erro').attr('descricao'));
@@ -350,9 +395,8 @@ if(0){?><script><?}?>
 
                     infraSelectLimpar(objSel);
                     $.each($(result).find('option'), function(key, value){
-
                         var id = $(value).val();
-                        var texto = $(value).text();
+                        var texto = $(value).text() == '%20' ? '': $(value).text();
                         infraSelectAdicionarOption(objSel,texto,id);
                         if($(value).attr("selected")=="selected"){
                             infraSelectSelecionarItem(objSel,id);
@@ -374,6 +418,49 @@ if(0){?><script><?}?>
         }
     }
 
+    function carregarTipoDecisao(element, valorSelecionado){
+        element.value = valorSelecionado;
+        if(element.value != ''){
+            return;
+        }
+
+        //se o valor for selecionado e não existir no combo faz uma nova requisição retornando o valor não parametrizado
+        infraSelectLimpar(element);
+        $.ajax({
+            type: "POST",
+            url: "<?= $strLinkAjaxComboTipoDecisao ?>",
+            async: false,
+            data: {
+                id_md_lit_tipo_controle: document.getElementById('hdnIdMdLitTipoControle').value,
+                id_md_lit_tipo_decisao: valorSelecionado
+
+            },
+            success: function (result) {
+
+                if($(result).find('erro').length > 0){
+                    alert($(result).find('erro').attr('descricao'));
+                    return;
+                }
+
+                infraSelectLimpar(element);
+                $.each($(result).find('option'), function(key, value){
+                    var id = $(value).val();
+                    var texto = $(value).text() == '%20' ? '': $(value).text();
+                    infraSelectAdicionarOption(element,texto,id);
+                    if($(value).attr("selected")=="selected"){
+                        infraSelectSelecionarItem(element,id);
+                    }else if(valorSelecionado == id){
+                        infraSelectSelecionarItem(element,id);
+                        carregarEspecieDecisao(element);
+                    }
+
+                });
+                if(element.options.length > 0)
+                    element.style.display = '';
+            }
+        });
+
+    }
     function carregarEspecieDecisao(element){
         var objMulta            = null;
         var objObrigacaoSelect  = null;
@@ -383,10 +470,10 @@ if(0){?><script><?}?>
             objMulta            = element.parentNode.parentNode.childNodes[2].childNodes[0];
             objObrigacaoSelect  = element.parentNode.parentNode.childNodes[3].childNodes[0];
             objPrazo            = element.parentNode.parentNode.childNodes[4].childNodes[0];
-        }else if(element.parentNode.parentNode.childNodes.length == 6){
-            objMulta            = element.parentNode.parentNode.childNodes[3].childNodes[0];
-            objObrigacaoSelect  = element.parentNode.parentNode.childNodes[4].childNodes[0];
-            objPrazo            = element.parentNode.parentNode.childNodes[5].childNodes[0];
+        }else if(element.parentNode.parentNode.childNodes.length == 7){
+            objMulta            = element.parentNode.parentNode.childNodes[4].childNodes[0];
+            objObrigacaoSelect  = element.parentNode.parentNode.childNodes[5].childNodes[0];
+            objPrazo            = element.parentNode.parentNode.childNodes[6].childNodes[0];
         }
 
         objMulta.style.display = 'none';
@@ -448,6 +535,7 @@ if(0){?><script><?}?>
         var cell5 = row.insertCell(4);
 
         element.parentNode.rowSpan += 1;
+        element.parentNode.nextElementSibling.rowSpan += 1;
         row.className = 'infraTrClara';
         cell1.style.textAlign = 'center';
         cell2.style.textAlign = 'center';
@@ -510,20 +598,30 @@ if(0){?><script><?}?>
 
         for (var i=1;i<numRows;i++){
 //             verificar se a linha da tabela foi mesclado e se é a primeira opção entra no 1°if.
-            if(table.rows[i].cells.length == 6){
+            if(table.rows[i].cells.length == 7){
                 infracao            = table.rows[i].cells[0].childNodes[1].textContent;
-                var tipoDecisao     = table.rows[i].cells[1].childNodes[0];
+                var tipoDecisao     = table.rows[i].cells[2].childNodes[0];
+                var especieDecisao  = table.rows[i].cells[3].childNodes[0];
+                var multa           = table.rows[i].cells[4].childNodes[0];
+                var obrigacao       = table.rows[i].cells[5].childNodes[0];
+                var prazo           = table.rows[i].cells[6].childNodes[0];
+                var chkNacional     = table.rows[i].cells[1].childNodes[1];
+                var chkUF           = table.rows[i].cells[1].childNodes[4];
+                var selUF           = table.rows[i].cells[1].childNodes[6].childNodes[0];
+            }else if(table.rows[i].cells.length == 6){
+                var tipoDecisao     = table.rows[i].cells[2].childNodes[0];
                 var especieDecisao  = table.rows[i].cells[2].childNodes[0];
                 var multa           = table.rows[i].cells[3].childNodes[0];
                 var obrigacao       = table.rows[i].cells[4].childNodes[0];
                 var prazo           = table.rows[i].cells[5].childNodes[0];
-            }else if(table.rows[i].cells.length == 5){
-                var tipoDecisao     = table.rows[i].cells[0].childNodes[0];
-                var especieDecisao  = table.rows[i].cells[1].childNodes[0];
-                var multa           = table.rows[i].cells[2].childNodes[0];
-                var obrigacao       = table.rows[i].cells[3].childNodes[0];
-                var prazo           = table.rows[i].cells[4].childNodes[0];
             }
+
+            if(table.rows[i].cells.length == 7 && !chkNacional.checked && !chkUF.checked){
+                msg += "- Localidade\n";
+            }else if(table.rows[i].cells.length == 7 && chkUF.checked && (selUF.value == '' || selUF.value == 'null')){
+                msg += "- Indicar pelo menos uma UF para a Localidade\n";
+            }
+
             if(tipoDecisao.value != 'null' && tipoDecisao.style.display == ''){
 
                 if((especieDecisao.value == 'null' || especieDecisao.value == '') && especieDecisao.style.display == ''){
@@ -561,7 +659,18 @@ if(0){?><script><?}?>
             return false;
 
     }
-<? if(0){?></script><?}?>
+
+    function changeLocalidades(element, isUf){
+        var elementSelectUF = document.getElementById(element.getAttribute('data-id-select-uf'));
+
+        if(isUf){
+            elementSelectUF.style.display = '';
+        }else{
+            elementSelectUF.style.display = 'none';
+            elementSelectUF.value = 'null';
+        }
+    }
+    <? if(0){?></script><?}?>
 <?
 PaginaSEI::getInstance()->fecharJavaScript();
 PaginaSEI::getInstance()->fecharHead();
@@ -581,6 +690,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
     PaginaSEI::getInstance()->montarAreaTabela($strTbCadastroDecisao, $numRegistros);
     ?>
     <input type="hidden" name="hdnIdUltimaSituacaoDecisoria" id="hdnIdUltimaSituacaoDecisoria" value="<?= $idUltimaSituacaoDecisoria ?>" />
+    <input type="hidden" name="hdnIdMdLitTipoControle" id="hdnIdMdLitTipoControle" value="<?= $objMdLitControleDTO->getNumIdMdLitTipoControle() ?>" />
 </form>
 <?
 PaginaSEI::getInstance()->fecharBody();

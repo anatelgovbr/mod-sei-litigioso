@@ -285,25 +285,26 @@
                 }
 
                 var objDadosComplementares = [];
-                objDadosComplementares[0] = null;//Número
-                objDadosComplementares[1] = null;//nomeServico
-                objDadosComplementares[2] = null;//nomeModalidade
-                objDadosComplementares[3] = null;//nomeAbrangencia
-                objDadosComplementares[4] = null;//nomeEstado
-                objDadosComplementares[5] = null;//nomeCidade
-                objDadosComplementares[6] = null;//idServico
-                objDadosComplementares[7] = null;//idModalidade
-                objDadosComplementares[8] = null;//idAbrangencia
-                objDadosComplementares[9] = null;//idEstado
-                objDadosComplementares[10] = null;//idCidade
-                objDadosComplementares[11] = null;//idContato
-                objDadosComplementares[12] = null;//outorga
-                objDadosComplementares[13] = null;//idMdLitNumeroInteressado
-                objDadosComplementares[14] = null;//ContarLancamento
 
                 var count = 0;
 
                 $.each($(result).find('item'), function(key, value){
+                    objDadosComplementares[0] = null;//Número
+                    objDadosComplementares[1] = null;//nomeServico
+                    objDadosComplementares[2] = null;//nomeModalidade
+                    objDadosComplementares[3] = null;//nomeAbrangencia
+                    objDadosComplementares[4] = null;//nomeEstado
+                    objDadosComplementares[5] = null;//nomeCidade
+                    objDadosComplementares[6] = null;//idServico
+                    objDadosComplementares[7] = null;//idModalidade
+                    objDadosComplementares[8] = null;//idAbrangencia
+                    objDadosComplementares[9] = null;//idEstado
+                    objDadosComplementares[10] = null;//idCidade
+                    objDadosComplementares[11] = null;//idContato
+                    objDadosComplementares[12] = null;//outorga
+                    objDadosComplementares[13] = null;//idMdLitNumeroInteressado
+                    objDadosComplementares[14] = null;//ContarLancamento
+
                     if($(this).attr('id_servico') != undefined)
                         objDadosComplementares[6] = $(this).attr('id_servico');
 

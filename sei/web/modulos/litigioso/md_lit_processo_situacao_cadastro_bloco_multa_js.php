@@ -19,8 +19,7 @@
         objAjaxNumeroInteressado.processarResultado = function(itCnt){
             if(document.getElementById('selNumeroInteressado').getAttribute('data-id-dado-interessado') != ''){
                 infraSelectSelecionarItem('selNumeroInteressado', document.getElementById('selNumeroInteressado').getAttribute('data-id-dado-interessado'));
-            }
-            if(document.getElementById('selNumeroInteressado').options.length == 2){
+            }else if(document.getElementById('selNumeroInteressado').options.length == 2){
                 document.getElementById('selNumeroInteressado').options[1].selected = true;
             }
         };
@@ -97,7 +96,7 @@
             success: function (result) {
 
                 if($(result).find('erro').length > 0){
-                    alert($(result).find('erro').attr('descricao'));
+                    alert($(result).find('erro').attr('descricao').replace('<br />', '\n\n'));
                     return;
                 }
 
@@ -137,6 +136,13 @@
 
                     var creditoNaoLancado   = $(result).find('creditoNaoLancado').text().replace('.','').replace(',', '.');
                     var totalMultaAplicado  = $(result).find('multaAplicada').text().replace('.','').replace(',', '.');
+
+                    //mostrar o fieldset de multa
+                    if($(result).find('creditoNaoLancado').text() != '0,00' || $(result).find('multaAplicada').text() != '0,00'){
+                        document.getElementById('fieldsetMulta').style.display = '';
+                    }else{
+                        document.getElementById('fieldsetMulta').style.display = 'none';
+                    }
 
                     if($(result).find('creditoNaoLancado').text() != '0,00' && $(result).find('isNovoLancamento').text() == 'S' && document.getElementById('selCreditosProcesso').value == ''){
 
@@ -234,6 +240,7 @@
                     infraHabilitarCamposDivMulta(document.getElementById('divDataGestaoMulta'));
                 }else{
                     infraDesabilitarCamposDivMulta(document.getElementById('divDataGestaoMulta'));
+                    infraHabilitarCamposDivMulta(document.getElementById('divDtaIntimacaoAplMulta'));
                 }
 
                 if(document.getElementById('selCreditosProcesso').value != ''){
@@ -250,6 +257,7 @@
                 }else{
                     infraHabilitarCamposDivMulta(document.getElementById('divHouveConstituicao'));
                     document.getElementById('btnConstituirDefinitivamente').style.display = '';
+                    infraHabilitarCamposDivMulta(document.getElementById('divDataGestaoMulta'));
                 }
             },
             error: function (msgError) {
@@ -462,9 +470,9 @@
         if( document.getElementById('txtDtDecursoPrazo').value !=  document.getElementById('txtDtDecursoPrazo').getAttribute('data-valor-antigo')){
             mostrarBotaoRetificar = true;
         }
-        if( document.getElementById('txtDtIntimacaoAplMulta').value !=  document.getElementById('txtDtIntimacaoAplMulta').getAttribute('data-valor-antigo')){
-            mostrarBotaoRetificar = true;
-        }
+        // if( document.getElementById('txtDtIntimacaoAplMulta').value !=  document.getElementById('txtDtIntimacaoAplMulta').getAttribute('data-valor-antigo')){
+        //     mostrarBotaoRetificar = true;
+        // }
         if(!document.getElementById('chkHouveConstituicao').checked && document.getElementById('chkHouveConstituicao').getAttribute('data-valor-antigo') == 'S'){
             document.getElementById('txtDtIntimacaoConstituicao').value = '';
             document.getElementById('chkReducaoRenuncia').checked = false;

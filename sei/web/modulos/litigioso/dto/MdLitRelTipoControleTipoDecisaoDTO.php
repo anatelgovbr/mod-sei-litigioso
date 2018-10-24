@@ -27,8 +27,13 @@
                                            'IdTipoDecisaoLitigioso',
                                            'id_md_lit_tipo_decisao');
 
+            $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM,
+                                            'IdMdLitEspecieDecisao',
+                                            'id_md_lit_especie_decisao');
+
             $this->configurarPK("IdTipoDecisaoLitigioso", InfraDTO::$TIPO_PK_INFORMADO);
             $this->configurarPK("IdTipoControleLitigioso", InfraDTO::$TIPO_PK_INFORMADO);
+            $this->configurarPK("IdMdLitEspecieDecisao", InfraDTO::$TIPO_PK_INFORMADO);
 
             $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'Nome', 'decisao.nome', 'md_lit_tipo_decisao decisao');
 
@@ -36,6 +41,10 @@
 
             $this->configurarFK('IdTipoControleLitigioso', 'md_lit_tipo_controle controle', 'controle.id_md_lit_tipo_controle');
             $this->configurarFK('IdTipoDecisaoLitigioso', 'md_lit_tipo_decisao decisao', 'decisao.id_md_lit_tipo_decisao');
+
+            //vinculação com especie de decisão
+            $this->configurarFK('IdMdLitEspecieDecisao', 'md_lit_especie_decisao especie', 'especie.id_md_lit_especie_decisao');
+            $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeEspecieDecisao', 'especie.nome', 'md_lit_especie_decisao especie');
 
         }
     }

@@ -9,6 +9,8 @@
 
     class MdLitRelDispositivoNormativoCondutaControleRN extends InfraRN
     {
+        public static $TA_ESPECIFICA = 'E';
+        public static $TA_PERIODO = 'P';
 
         public function __construct()
         {

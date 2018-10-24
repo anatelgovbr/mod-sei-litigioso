@@ -266,8 +266,8 @@
     for(i=0;i < options.length;i++){
     options[i].selected = false;
     }
-
-    opt = infraSelectAdicionarOption(document.getElementById('selEspecies'),descricao,id);
+    var desc = $("<pre>").html(descricao).text();
+    opt = infraSelectAdicionarOption(document.getElementById('selEspecies'),desc,id);
 
     objLupaEspecies.atualizar();
 
@@ -377,7 +377,7 @@
             <label id="lblNome" for="txtNome" accesskey="N" class="infraLabelObrigatorio"><span
                     class="infraTeclaAtalho">N</span>ome:</label>
             <input <?= $strDesabilitar; ?> type="text" id="txtNome" name="txtNome" class="infraText"
-                                           value="<?= PaginaSEI::getInstance()->formatarXHTML($objTipoDecisaoDTO->getStrNome()); ?>"
+                                           value="<?= PaginaSEI::tratarHTML($objTipoDecisaoDTO->getStrNome()); ?>"
                                            onkeypress="return infraMascaraTexto(this,event,50);" maxlength="50"
                                            tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
         </div>
@@ -397,7 +397,7 @@
                                            tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
             <select <?= $strDesabilitar; ?> id="selEspecies" name="selEspecies" size="4" multiple="multiple"
                                             class="infraSelect">
-                <?= $strItensSelEspecies ?>
+                <?= PaginaSEI::getInstance()->formatarParametrosJavaScript(PaginaSEI::tratarHTML($strItensSelEspecies)) ?>
             </select>
             <img id="imgLupaEspecies" onclick="objLupaEspecies.selecionar(700,500);" src="/infra_css/imagens/lupa.gif"
                  alt="Localizar Espécies de Decisão" title="Localizar Espécies de Decisão" class="infraImg"/>

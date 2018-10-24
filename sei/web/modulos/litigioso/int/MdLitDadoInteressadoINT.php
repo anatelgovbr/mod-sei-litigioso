@@ -17,6 +17,7 @@ class MdLitDadoInteressadoINT extends InfraINT {
     $objMdLitDadoInteressadoDTO->retNumIdMdLitDadoInteressado();
     $objMdLitDadoInteressadoDTO->retNumIdContato();
 
+
     if ($numIdMdLitControle!==''){
       $objMdLitDadoInteressadoDTO->setNumIdMdLitControle($numIdMdLitControle);
     }
@@ -47,30 +48,68 @@ class MdLitDadoInteressadoINT extends InfraINT {
   }
 
     public static function montarSelectNumero($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $numIdMdLitDadoInteressado=''){
-        $objMdLitRelNumInterServicoDTO = new MdLitRelNumInterServicoDTO();
-        $objMdLitRelNumInterServicoDTO->retNumIdMdLitNumeroInteressado();
-        $objMdLitRelNumInterServicoDTO->retNumIdContatoMdLitDadoInteressado();
-        $objMdLitRelNumInterServicoDTO->retStrNumeroMdLitNumeroInteressado();
-        $objMdLitRelNumInterServicoDTO->retNumIdMdLitServico();
-        $objMdLitRelNumInterServicoDTO->retStrDescricaoMdLitServico();
-        $objMdLitRelNumInterServicoDTO->retNumIdMdLitDadoInteressadoMdLitNumeroInteressado();
+        $arrMontarSelect = array();
+        $objMdLitNumeroInteressadoDTO = new MdLitNumeroInteressadoDTO();
+        $objMdLitNumeroInteressadoDTO->retNumIdMdLitNumeroInteressado();
+        $objMdLitNumeroInteressadoDTO->retStrNumero();
 
-        $objMdLitRelNumInterServicoDTO->setNumIdMdLitDadoInteressadoMdLitNumeroInteressado($numIdMdLitDadoInteressado);
+        $objMdLitNumeroInteressadoDTO->setNumIdMdLitDadoInteressado($numIdMdLitDadoInteressado);
 
-        $objMdLitRelNumInterServicoDTO->setOrdStrDescricaoMdLitServico(InfraDTO::$TIPO_ORDENACAO_ASC);
-        
-        $objMdLitRelNumInterServicoRN = new MdLitRelNumInterServicoRN();
-        $arrObjMdLitDadoInteressadoDTO = $objMdLitRelNumInterServicoRN->listar($objMdLitRelNumInterServicoDTO);
+        $objMdLitNumeroInteressadoRN = new MdLitNumeroInteressadoRN();
+        $arrObjMdLitDadoInteressadoDTO = $objMdLitNumeroInteressadoRN->listar($objMdLitNumeroInteressadoDTO);
 
-        foreach ($arrObjMdLitDadoInteressadoDTO as $objMdLitRelNumInterServicoDTO){
-            $strNumero = $objMdLitRelNumInterServicoDTO->getStrNumeroMdLitNumeroInteressado();
-            if(!$strNumero){
-                $strNumero = 'Número a ser gerado';
+        if(count($arrObjMdLitDadoInteressadoDTO)){
+            $objMdLitRelNumInterServicoDTO = new MdLitRelNumInterServicoDTO();
+            $objMdLitRelNumInterServicoDTO->retNumIdMdLitNumeroInteressado();
+            $objMdLitRelNumInterServicoDTO->retNumIdMdLitServico();
+            $objMdLitRelNumInterServicoDTO->retStrDescricaoMdLitServico();
+            $objMdLitRelNumInterServicoDTO->setOrdStrDescricaoMdLitServico(InfraDTO::$TIPO_ORDENACAO_ASC);
+
+            $objMdLitRelNumInterServicoDTO->setNumIdMdLitNumeroInteressado(InfraArray::converterArrInfraDTO($arrObjMdLitDadoInteressadoDTO,'IdMdLitNumeroInteressado'), InfraDTO::$OPER_IN);
+
+            $objMdLitNumeroInteressadoRN = new MdLitRelNumInterServicoRN();
+            $arrObjMdLitRelNumInterServicoDTO = $objMdLitNumeroInteressadoRN->listar($objMdLitRelNumInterServicoDTO);
+
+            foreach ($arrObjMdLitDadoInteressadoDTO as $key=>$objMdLitDadoInteressadoDTO){
+                $strNumero = $objMdLitDadoInteressadoDTO->getStrNumero();
+                if(!$strNumero){
+                    $strNumero = 'Número a ser gerado';
+                }
+                if(count($arrObjMdLitRelNumInterServicoDTO)){
+                    $arrObjMdLitRelNumInterServicoDTOFiltro = InfraArray::filtrarArrInfraDTO($arrObjMdLitRelNumInterServicoDTO, 'IdMdLitNumeroInteressado',$objMdLitDadoInteressadoDTO->getNumIdMdLitNumeroInteressado());
+
+                    if(count($arrObjMdLitRelNumInterServicoDTOFiltro)){
+                        foreach ($arrObjMdLitRelNumInterServicoDTOFiltro as $objMdLitRelNumInterServicoDTO){
+                            $arrServico = array();
+                            $arrServico['atributoDescricao']    = $strNumero.' - '. $objMdLitRelNumInterServicoDTO->getStrDescricaoMdLitServico();
+                            $arrServico['atributoChave']        = $objMdLitDadoInteressadoDTO->getNumIdMdLitNumeroInteressado();
+                            $arrMontarSelect[] = $arrServico;
+                        }
+                        continue;
+                    }
+
+                }
+                $arrMontarSelect[]= array('atributoDescricao' => $strNumero, 'atributoChave' =>$objMdLitDadoInteressadoDTO->getNumIdMdLitNumeroInteressado() );
             }
-            $objMdLitRelNumInterServicoDTO->setStrNumeroComServico($strNumero.' - '. $objMdLitRelNumInterServicoDTO->getStrDescricaoMdLitServico());
+
         }
 
-        return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $arrObjMdLitDadoInteressadoDTO, 'IdMdLitNumeroInteressado', 'NumeroComServico');
+        return self::montarSelectArrayComposto($strValorItemSelecionado, $arrMontarSelect);
+    }
+
+    public static function montarSelectArrayComposto($varValorItemSelecionado, $arr){
+
+        $strRet =InfraINT::montarItemSelect('null','',$varValorItemSelecionado == '' || $varValorItemSelecionado == null? true : false);
+
+        foreach($arr as $atributo){
+            $bolSelecionado = false;
+            if($varValorItemSelecionado !== null && $varValorItemSelecionado == $atributo['atributoChave'] ){
+                $bolSelecionado = true;
+            }
+
+            $strRet .= InfraINT::montarItemSelect($atributo['atributoChave'],$atributo['atributoDescricao'],$bolSelecionado);
+        }
+        return $strRet;
     }
 
     public static function retirarDuplicado($arrObjDto, $atributoComparador){

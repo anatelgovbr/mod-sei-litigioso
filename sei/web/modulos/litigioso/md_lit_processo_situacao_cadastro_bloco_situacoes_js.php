@@ -483,6 +483,7 @@
             //Preenchendo valores do Recursal
             var vlTxtValor    = isTpSitRecursal  ? document.getElementById("txtValor").value : '';
             var vlDtDepos     = isTpSitRecursal  ? document.getElementById("txtDtDeposito").value : '';
+            var chkDpExtraJudicial = isTpSitRecursal  ? document.getElementById("chkDpExtraJudicial").checked ?'S': 'N' : '';
 
             //Preenchendo Valores das Datas para alterar prescrição ou não
             var txtIntercorr  =  checkedAltPrecr ? document.getElementById("txtDtIntercorrente").value : '';
@@ -529,7 +530,8 @@
                 hdnIdDocumento.value,
                 hdnSinInst,
                 document.getElementById("txtNumeroSei").value,
-                document.getElementById("hdnUrlDocumento").value
+                document.getElementById("hdnUrlDocumento").value,
+                chkDpExtraJudicial
             ];
 
             objTabelaDinamicaSituacao.recarregar();
@@ -573,8 +575,6 @@
             //mostrando os fieldset de decisões e de gestão de multa quanto a situação for do tipo decisorio
             if(isTpSitDecisoria && document.getElementById('hdnErroSituacao').value == 0 && document.getElementById('hdnTbDecisao').value == ''){
                 document.getElementById('fieldsetDecisao').style.display = '';
-                if(document.getElementById('fieldsetMulta') != null)
-                    document.getElementById('fieldsetMulta').style.display = '';
             }
 
             //Corrrigindo o problema do core do Sei que não aceita HTML para alteração (função remover XML)

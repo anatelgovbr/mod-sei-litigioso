@@ -37,8 +37,20 @@
                                            'id_md_lit_controle');
 
             $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_DTA,
-                                            'Infracao',
+                                            'InfracaoEspecifica',
                                             'dta_infracao');
+
+            $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_DTA,
+                                            'InfracaoPeriodoInicial',
+                                            'dta_infracao_periodo_inicial');
+
+            $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_DTA,
+                                            'InfracaoPeriodoFinal',
+                                            'dta_infracao_periodo_final');
+
+            $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
+                                            'StaInfracaoData',
+                                            'sta_infracao_data');
 
             $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'Dispositivo', 'dispositivo', 'md_lit_disp_normat');
             $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'Norma', 'norma', 'md_lit_disp_normat');
@@ -70,6 +82,15 @@
             }
 
             return $infracao;
+        }
+
+        public function getDtaInfracao(){
+
+            if($this->getStrStaInfracaoData() == MdLitRelDispositivoNormativoCondutaControleRN::$TA_ESPECIFICA){
+                return $this->getDtaInfracaoEspecifica();
+            }elseif ($this->getStrStaInfracaoData() == MdLitRelDispositivoNormativoCondutaControleRN::$TA_PERIODO){
+                return $this->getDtaInfracaoPeriodoInicial() .' a '.$this->getDtaInfracaoPeriodoFinal();
+            }
         }
 
     }

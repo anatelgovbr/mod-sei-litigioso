@@ -279,8 +279,8 @@
 
                 $strResultado .= $strCssTr;
 
-                if ($bolCheck && $isAdministradorSEI) {
-                    $strResultado .= '<td valign="top">' . PaginaSEI::getInstance()->getTrCheck($i, $arrObjTipoControleLitigiosoDTO[$i]->getNumIdTipoControleLitigioso(), $arrObjTipoControleLitigiosoDTO[$i]->getStrSigla()) . '</td>';
+                if ($bolCheck) {
+                    $strResultado .= '<td valign="top">' . PaginaSEI::getInstance()->getTrCheck($i, $arrObjTipoControleLitigiosoDTO[$i]->getNumIdTipoControleLitigioso(), PaginaSEI::tratarHTML($arrObjTipoControleLitigiosoDTO[$i]->getStrSigla())) . '</td>';
                 }
                 $strResultado .= '<td style="word-break:break-all">' . PaginaSEI::tratarHTML($arrObjTipoControleLitigiosoDTO[$i]->getStrSigla()) . '</td>';
                 $strResultado .= '<td style="word-break:break-all">' . PaginaSEI::tratarHTML($arrObjTipoControleLitigiosoDTO[$i]->getStrDescricao()) . '</td>';
@@ -299,7 +299,7 @@
                         $strResultado .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_parametrizar_interessado_cadastrar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_tipo_processo_litigioso=' . $arrObjTipoControleLitigiosoDTO[$i]->getNumIdTipoControleLitigioso())) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensLocal() . '/sei_servicos.gif" title="Parametrizar Dados Complementares - '.$siglaTipoControle.'" alt="Parametrizar Dados Complementares - '.$siglaTipoControle.'" class="infraImg" /></a>&nbsp;';
                     }
 
-                    $strResultado .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_tipo_controle_tipo_decisao_consultar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_tipo_controle_litigioso=' . $arrObjTipoControleLitigiosoDTO[$i]->getNumIdTipoControleLitigioso() . '&sigla_tipo_controle_litigioso=' . $arrObjTipoControleLitigiosoDTO[$i]->getStrSigla())) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/litigioso/imagens/associar.png" title="Associar Tipos de Decisão - '.$siglaTipoControle.'" alt="Associar Tipos de Decisão - '.$siglaTipoControle.'" class="infraImg" /></a>&nbsp;';
+                    $strResultado .= '<a href="' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_tipo_controle_tipo_decisao_consultar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_tipo_controle_litigioso=' . $arrObjTipoControleLitigiosoDTO[$i]->getNumIdTipoControleLitigioso()) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/litigioso/imagens/associar.png" title="Associar Tipos de Decisão - '.$siglaTipoControle.'" alt="Associar Tipos de Decisão - '.$siglaTipoControle.'" class="infraImg" /></a>&nbsp;';
 
                     $strResultado .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_associar_dispositivo_normativo_consultar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_tipo_controle_litigioso=' . $arrObjTipoControleLitigiosoDTO[$i]->getNumIdTipoControleLitigioso())) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/litigioso/imagens/livro.png" title="Dispositivos Normativos Associados - '.$siglaTipoControle.'" alt="Dispositivos Normativos Associados - '.$siglaTipoControle.'" class="infraImg" /></a>&nbsp;';
 
@@ -319,7 +319,7 @@
 
                 if ($bolAcaoDesativar || $bolAcaoReativar || $bolAcaoExcluir) {
                     $strId        = $arrObjTipoControleLitigiosoDTO[$i]->getNumIdTipoControleLitigioso();
-                    $strDescricao = PaginaSEI::getInstance()->formatarParametrosJavaScript(PaginaSEI::tratarHTML($arrObjTipoControleLitigiosoDTO[$i]->getStrSigla(), true));
+                    $strDescricao = PaginaSEI::tratarHTML($arrObjTipoControleLitigiosoDTO[$i]->getStrSigla(), true);
                 }
 
                 if ($bolAcaoDesativar && $arrObjTipoControleLitigiosoDTO[$i]->getStrSinAtivo() == 'S' && $isAdministradorSEI) {
@@ -380,7 +380,7 @@
 
 <? if ($bolAcaoDesativar) { ?>
     function acaoDesativar(id,desc){
-
+    var desc = $("<pre>").html(desc).text();
     if (confirm("O controle de processo litigioso correspondente será desativado e os usuários não conseguirão cadastrar processos nesse tipo de controle e nenhum outro registro pertinente. \n\n Confirma a desativação do Tipo de Controle Litigioso \""+desc+"\"?")){
     document.getElementById('hdnInfraItemId').value=id;
     document.getElementById('frmTipoControleLitigiosoLista').action='<?= $strLinkDesativar ?>';
@@ -423,7 +423,7 @@
 
 <? if ($bolAcaoExcluir) { ?>
     function acaoExcluir(id,desc){
-
+    var desc = $("<pre>").html(desc).text();
     if (confirm("Esta operação pode ser demorada. \n\n Confirma a exclusão do Tipo de Controle Litigioso \""+desc+"\"?")){
     document.getElementById('hdnInfraItemId').value=id;
     document.getElementById('frmTipoControleLitigiosoLista').action='<?= $strLinkExcluir ?>';

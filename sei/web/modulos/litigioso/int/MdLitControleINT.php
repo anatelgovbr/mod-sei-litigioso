@@ -313,7 +313,7 @@ class MdLitControleINT extends InfraINT
                 $xml .= "</NomeTipoContato>\n";
 
                 $xml .= '<NomeContato>';
-                $xml .= $objContatoDTO->getStrNome();
+                $xml .= str_replace('&', '&amp;', $objContatoDTO->getStrNome());
                 $xml .= "</NomeContato>\n";
 
                 $xml .= '<Cpf>';

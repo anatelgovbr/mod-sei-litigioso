@@ -117,7 +117,7 @@
                 <div style="clear:both;" class="infraAreaTabela NumeroSEINaoValidado"
                      id="divTabelaDocInstaurador2">&nbsp;</div>
 
-                <div style=" float: left; width: 100%;" class="NumeroSEINaoValidado">
+                <div style=" float: left; width: 100%;" class="NumeroSEINaoValidado infraAreaDados">
                     <div style=" float: left; width: 100%;">
                         <div style=" float: left; width: 25%;">
                             <label id="lblDtInstauracao" class="infraLabelObrigatorio" for="txtDtInstauracao">Data da Instauração:</label>
@@ -232,25 +232,58 @@
                                 <?= $strItensSelIDNCondutas ?>
                             </select>
                         </div>
-                        <div style=" float: left; width: 15%;margin-left: 10px;" onkeypress="return enterAdicionarInfracao(event)">
-                            <label id="lblDtaInfracaoPorDispositivo" class="infraLabelObrigatorio"
-                                   for="txtDtaInfracaoPorDispositivo">Data da Infração:</label>
-                            <input id="txtDtaInfracaoPorDispositivo" name="txtDtaInfracaoPorDispositivo" type="text" class="infraText"
-                                   onkeypress="return infraMascara(this, event, '##/##/####');"
-                                   autocomplete="off" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" style="width: 60%" >
 
-                            <img id="imgDtaInfracaoPorDispositivo" class="infraImg"
-                                 onclick="infraCalendario('txtDtaInfracaoPorDispositivo',this,false,null);"
-                                 alt="Selecionar Data da Infração" title="Selecionar Data da Infração"
-                                 src="/infra_css/imagens/calendario.gif">
-                        </div>
-                        <div style=" float: left; width: 10%;">
-                            <label class="infraLabelObrigatorio">&nbsp;</label>
-                            </br>
-                            <button type="button" onclick="adicionarDI();" name="sbmIDNAdicionar" id="sbmIDNAdicionar"
-                                    value="Adicionar" class="infraButton"
-                                    tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">Adicionar
-                            </button>
+                        <div style="clear:both;">&nbsp;</div>
+                        <div style=" float: left; width: 40%;margin-left: 10px;" onkeypress="return enterAdicionarInfracao(event)">
+                            <label id="lblDtaInfracaoPorDispositivo" class="infraLabelObrigatorio">Data da Infração</label>
+                            <div style=" float: left; width: 100%;">
+                                <input onclick="changeDataInfracoes();" type="radio" name="rdDataInfracoes[]"
+                                       id="rdDataInfracaoEspecificaPorDispositivo"   onkeypress="return enterAdicionarInfracao(event)"
+                                       tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                <label id="lblDataInfracaoEspecificaPorDispositivo" class="infraLabelRadio" for="rdDataInfracaoEspecificaPorDispositivo">Data Especifica:</label>
+                            </div>
+                            <div id="conteudoDataInfracaoEspecificaPorDispositivo" style=" float: left; width: 35%;margin-left: 25px;display: none">
+                                <input id="txtDtaInfracaoPorDispositivo" name="txtDtaInfracaoPorDispositivo" type="text" class="infraText"
+                                       onkeypress="return infraMascara(this, event, '##/##/####');"
+                                       autocomplete="off" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" style="width: 60%" >
+
+                                <img id="imgDtaInfracaoPorDispositivo" class="infraImg"
+                                     onclick="infraCalendario('txtDtaInfracaoPorDispositivo',this,false,null);"
+                                     alt="Selecionar Data da Infração" title="Selecionar Data da Infração"
+                                     src="/infra_css/imagens/calendario.gif">
+                            </div>
+
+                            <div style=" float: left; width: 100%;">
+                                <input onclick="changeDataInfracoes();" type="radio" name="rdDataInfracoes[]"
+                                       id="rdDataInfracaoPeriodoPorDispositivo"   onkeypress="return enterAdicionarInfracao(event)"
+                                       tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                <label id="lblDataInfracaoPeriodoPorDispositivo" class="infraLabelRadio" for="rdDataInfracaoPeriodoPorDispositivo">Período:</label>
+                            </div>
+                            <div id="conteudoDataInfracaoPeriodoPorDispositivo" style=" float: left; width: 70%;margin-left: 25px;display: none;">
+                                <input id="txtDtaInfracaoInicialPorDispositivo" name="txtDtaInfracaoPorDispositivo" type="text" class="infraText"
+                                       onkeypress="return infraMascara(this, event, '##/##/####');"
+                                       autocomplete="off" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" style="width:30%" >
+
+                                <img id="imgDtaInfracaoInicialPorDispositivo" class="infraImg"
+                                     onclick="infraCalendario('txtDtaInfracaoInicialPorDispositivo',this,false,null);"
+                                     alt="Selecionar Data da Infração Inicial" title="Selecionar Data da Infração Inicial"
+                                     src="/infra_css/imagens/calendario.gif">
+                                <label class="infraLabelOpcional" style="margin: 0 5px">a</label>
+                                <input id="txtDtaInfracaoFinalPorDispositivo" name="txtDtaInfracaoPorDispositivo" type="text" class="infraText"
+                                       onkeypress="return infraMascara(this, event, '##/##/####');"
+                                       autocomplete="off" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" style="width: 30%" >
+
+                                <img id="imgDtaInfracaoFinalPorDispositivo" class="infraImg"
+                                     onclick="infraCalendario('txtDtaInfracaoFinalPorDispositivo',this,false,null);"
+                                     alt="Selecionar Data da Infração" title="Selecionar Data da Infração Final"
+                                     src="/infra_css/imagens/calendario.gif">
+                            </div>
+                            <div style=" float: right; width: 20%;">
+                                <button type="button" onclick="adicionarDI();" name="sbmIDNAdicionar" id="sbmIDNAdicionar"
+                                        value="Adicionar" class="infraButton" style="margin-top: 2px;"
+                                        tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">Adicionar
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -291,27 +324,63 @@
                                  tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
                         </div>
 
-                        <div style=" float: left; width: 15%;"  onkeypress="return enterAdicionarInfracao(event)">
-                            <label id="lblDtaInfracaoPorConduta" class="infraLabelObrigatorio"
-                                   for="txtDtaInfracaoPorConduta">Data da Infração:</label>
-                            <input id="txtDtaInfracaoPorConduta" name="txtDtaInfracaoPorConduta" type="text" class="infraText"
-                                   onkeypress="return infraMascara(this, event, '##/##/####');"
-                                   autocomplete="off" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" style="width: 60%" >
 
-                            <img id="imgDtaInfracaoPorConduta" class="infraImg"
-                                 onclick="infraCalendario('txtDtaInfracaoPorConduta',this,false,null);"
-                                 alt="Selecionar Data da Infração" title="Selecionar Data da Infração"
-                                 src="/infra_css/imagens/calendario.gif">
-                        </div>
-                        <div style=" float: left; width: 10%;">
-                            <label class="infraLabelObrigatorio">&nbsp;</label>
-                            </br>
-                            <button type="button" onclick="adicionarDI();" name="sbmICAdicionar" id="sbmICAdicionar"
-                                    value="Adicionar" class="infraButton"
-                                    tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">Adicionar
-                            </button>
+
+
+                        <div style="clear:both;">&nbsp;</div>
+                        <div style=" float: left; width: 40%;margin-left: 10px;" onkeypress="return enterAdicionarInfracao(event)">
+                            <label id="lblDtaInfracaoPorConduta" class="infraLabelObrigatorio">Data da Infração</label>
+                            <div style=" float: left; width: 100%;">
+                                <input onclick="changeDataInfracoes();" type="radio" name="rdDataInfracoes[]"
+                                       id="rdDataInfracaoEspecificaPorConduta"   onkeypress="return enterAdicionarInfracao(event)"
+                                       tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                <label id="lblDataInfracaoEspecificaPorConduta" class="infraLabelRadio" for="rdDataInfracaoEspecificaPorConduta">Data Especifica:</label>
+                            </div>
+                            <div id="conteudoDataInfracaoEspecificaPorConduta" style=" float: left; width: 35%;margin-left: 25px;display: none">
+                                <input id="txtDtaInfracaoPorConduta" name="txtDtaInfracaoPorConduta" type="text" class="infraText"
+                                       onkeypress="return infraMascara(this, event, '##/##/####');"
+                                       autocomplete="off" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" style="width: 60%" >
+
+                                <img id="imgDtaInfracaoPorConduta" class="infraImg"
+                                     onclick="infraCalendario('txtDtaInfracaoPorConduta',this,false,null);"
+                                     alt="Selecionar Data da Infração" title="Selecionar Data da Infração"
+                                     src="/infra_css/imagens/calendario.gif">
+                            </div>
+
+                            <div style=" float: left; width: 100%;">
+                                <input onclick="changeDataInfracoes();" type="radio" name="rdDataInfracoes[]"
+                                       id="rdDataInfracaoPeriodoPorConduta"   onkeypress="return enterAdicionarInfracao(event)"
+                                       tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                <label id="lblDataInfracaoPeriodoPorConduta" class="infraLabelRadio" for="rdDataInfracaoPeriodoPorConduta">Período:</label>
+                            </div>
+                            <div id="conteudoDataInfracaoPeriodoPorConduta" style=" float: left; width: 70%;margin-left: 25px;display: none;">
+                                <input id="txtDtaInfracaoInicialPorConduta" name="txtDtaInfracaoPorConduta" type="text" class="infraText"
+                                       onkeypress="return infraMascara(this, event, '##/##/####');"
+                                       autocomplete="off" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" style="width:30%" >
+
+                                <img id="imgDtaInfracaoInicialPorConduta" class="infraImg"
+                                     onclick="infraCalendario('txtDtaInfracaoInicialPorConduta',this,false,null);"
+                                     alt="Selecionar Data da Infração Inicial" title="Selecionar Data da Infração Inicial"
+                                     src="/infra_css/imagens/calendario.gif">
+                                <label class="infraLabelOpcional" style="margin: 0 5px">a</label>
+                                <input id="txtDtaInfracaoFinalPorConduta" name="txtDtaInfracaoPorConduta" type="text" class="infraText"
+                                       onkeypress="return infraMascara(this, event, '##/##/####');"
+                                       autocomplete="off" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" style="width: 30%" >
+
+                                <img id="imgDtaInfracaoFinalPorConduta" class="infraImg"
+                                     onclick="infraCalendario('txtDtaInfracaoFinalPorConduta',this,false,null);"
+                                     alt="Selecionar Data da Infração" title="Selecionar Data da Infração Final"
+                                     src="/infra_css/imagens/calendario.gif">
+                            </div>
+                            <div style=" float: right; width: 20%;">
+                                <button type="button" onclick="adicionarDI();" name="sbmICAdicionar" id="sbmICAdicionar"
+                                        value="Adicionar" class="infraButton" style="margin-top: 2px;"
+                                        tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">Adicionar
+                                </button>
+                            </div>
                         </div>
                     </div>
+
                 </div>
                 <input type="hidden" name="hdnIdDispositivoNormativoNormaCondutaControle" id="hdnIdDispositivoNormativoNormaCondutaControle" value="">
 
@@ -334,7 +403,11 @@
                             <th class="infraTh" width="17%" id="tdDescDispositivo">Dispositivo</th>
                             <th class="infraTh" width="1%" style="display: none;">ID Conduta</th>
                             <th class="infraTh" width="35%" id="tdDescConduta">Conduta</th>
-                            <th class="infraTh" width="5%" id="tdDtaInfracao">Data da Infração</th>
+                            <th class="infraTh" width="18%" id="tdDtaInfracao">Data da Infração</th>
+                            <th class="infraTh" width="1%" style="display: none;">Data da Infração Especifica</th>
+                            <th class="infraTh" width="1%" style="display: none;">Data da Infraçãp periodo inicial</th>
+                            <th class="infraTh" width="1%" style="display: none;">Data da Infração periodo final</th>
+                            <th class="infraTh" width="1%" style="display: none;" >Status da infração data</th>
                             <th class="infraTh" width="10%" align="center"> Ações</th>
                         </tr>
                         <tbody></tbody>

@@ -231,7 +231,7 @@
                     $strResultado .= '<td valign="top">' . PaginaSEI::getInstance()->getTrCheck($i, $arrObjTipoDecisaoLitigiosoDTO[$i]->getNumIdTipoDecisaoLitigioso(), $arrObjTipoDecisaoLitigiosoDTO[$i]->getStrNome()) . '</td>';
                 }
 
-                $strResultado .= '<td>' . PaginaSEI::getInstance()->formatarParametrosJavaScript(PaginaSEI::tratarHTML($arrObjTipoDecisaoLitigiosoDTO[$i]->getStrNome(), true)) .
+                $strResultado .= '<td>' . PaginaSEI::tratarHTML($arrObjTipoDecisaoLitigiosoDTO[$i]->getStrNome()) .
                     '</td>';
                 $strResultado .= '<td align="center">';
 
@@ -246,15 +246,15 @@
                 }
 
                 if ($bolAcaoDesativar && $arrObjTipoDecisaoLitigiosoDTO[$i]->getStrSinAtivo() == 'S') {
-                    $strResultado .= '<a href="#ID-' . $arrObjTipoDecisaoLitigiosoDTO[$i]->getNumIdTipoDecisaoLitigioso() . '"  onclick="acaoDesativar(\'' . $arrObjTipoDecisaoLitigiosoDTO[$i]->getNumIdTipoDecisaoLitigioso() . '\',\'' . PaginaSEI::getInstance()->formatarXHTML($arrObjTipoDecisaoLitigiosoDTO[$i]->getStrNome()) . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/desativar.gif" title="Desativar Tipo de Decisão" alt="Desativar Tipo de Decisão" class="infraImg" /></a>&nbsp;';
+                    $strResultado .= '<a href="#ID-' . $arrObjTipoDecisaoLitigiosoDTO[$i]->getNumIdTipoDecisaoLitigioso() . '"  onclick="acaoDesativar(\'' . $arrObjTipoDecisaoLitigiosoDTO[$i]->getNumIdTipoDecisaoLitigioso() . '\',\'' . PaginaSEI::tratarHTML($arrObjTipoDecisaoLitigiosoDTO[$i]->getStrNome()) . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/desativar.gif" title="Desativar Tipo de Decisão" alt="Desativar Tipo de Decisão" class="infraImg" /></a>&nbsp;';
                 }
 
                 if ($bolAcaoReativar && $arrObjTipoDecisaoLitigiosoDTO[$i]->getStrSinAtivo() == 'N') {
-                    $strResultado .= '<a href="#ID-' . $arrObjTipoDecisaoLitigiosoDTO[$i]->getNumIdTipoDecisaoLitigioso() . '"  onclick="acaoReativar(\'' . $arrObjTipoDecisaoLitigiosoDTO[$i]->getNumIdTipoDecisaoLitigioso() . '\',\'' . PaginaSEI::getInstance()->formatarXHTML($arrObjTipoDecisaoLitigiosoDTO[$i]->getStrNome()) . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/reativar.gif" title="Reativar Tipo de Decisão" alt="Reativar Tipo de Decisão" class="infraImg" /></a>&nbsp;';
+                    $strResultado .= '<a href="#ID-' . $arrObjTipoDecisaoLitigiosoDTO[$i]->getNumIdTipoDecisaoLitigioso() . '"  onclick="acaoReativar(\'' . $arrObjTipoDecisaoLitigiosoDTO[$i]->getNumIdTipoDecisaoLitigioso() . '\',\'' . PaginaSEI::tratarHTML($arrObjTipoDecisaoLitigiosoDTO[$i]->getStrNome()) . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/reativar.gif" title="Reativar Tipo de Decisão" alt="Reativar Tipo de Decisão" class="infraImg" /></a>&nbsp;';
                 }
 
                 if ($bolAcaoExcluir) {
-                    $strResultado .= '<a href="#ID-' . $arrObjTipoDecisaoLitigiosoDTO[$i]->getNumIdTipoDecisaoLitigioso() . '"  onclick="acaoExcluir(\'' . $arrObjTipoDecisaoLitigiosoDTO[$i]->getNumIdTipoDecisaoLitigioso() . '\',\'' . PaginaSEI::getInstance()->formatarXHTML($arrObjTipoDecisaoLitigiosoDTO[$i]->getStrNome()) . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/excluir.gif" title="Excluir Tipo de Decisão" alt="Excluir Tipo de Decisão" class="infraImg" /></a>&nbsp;';
+                    $strResultado .= '<a href="#ID-' . $arrObjTipoDecisaoLitigiosoDTO[$i]->getNumIdTipoDecisaoLitigioso() . '"  onclick="acaoExcluir(\'' . $arrObjTipoDecisaoLitigiosoDTO[$i]->getNumIdTipoDecisaoLitigioso() . '\',\'' . PaginaSEI::tratarHTML($arrObjTipoDecisaoLitigiosoDTO[$i]->getStrNome()) . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/excluir.gif" title="Excluir Tipo de Decisão" alt="Excluir Tipo de Decisão" class="infraImg" /></a>&nbsp;';
                 }
 
                 $strResultado .= '</td></tr>' . "\n";

@@ -80,19 +80,20 @@ class MdLitNumeroInteressadoRN extends InfraRN {
                     $arrIdMdLitNumeroInteressado[] = $dadosComplementares[13];
             }
 
+
+            $objMdLitNumeroInteressadoDTO = new MdLitNumeroInteressadoDTO();
+
             if(count($arrIdMdLitNumeroInteressado)) {
-                $objMdLitNumeroInteressadoDTO = new MdLitNumeroInteressadoDTO();
-
                 $objMdLitNumeroInteressadoDTO->setNumIdMdLitNumeroInteressado($arrIdMdLitNumeroInteressado, InfraDTO::$OPER_NOT_IN);
-                $objMdLitNumeroInteressadoDTO->setNumIdContatoMdLitDadoInteressado($arrIdContato, InfraDTO::$OPER_IN);
-                $objMdLitNumeroInteressadoDTO->setNumIdMdLitControleMdLitDadoInteressado($idMdLitControle);
-                $objMdLitNumeroInteressadoDTO->retTodos(false);
-
-                $arrObjMdLitNumeroInteressadoDTO = $this->listar($objMdLitNumeroInteressadoDTO);
-
-                if (count($arrObjMdLitNumeroInteressadoDTO))
-                    $this->excluir($arrObjMdLitNumeroInteressadoDTO);
             }
+            $objMdLitNumeroInteressadoDTO->setNumIdContatoMdLitDadoInteressado($arrIdContato, InfraDTO::$OPER_IN);
+            $objMdLitNumeroInteressadoDTO->setNumIdMdLitControleMdLitDadoInteressado($idMdLitControle);
+            $objMdLitNumeroInteressadoDTO->retTodos(false);
+
+            $arrObjMdLitNumeroInteressadoDTO = $this->listar($objMdLitNumeroInteressadoDTO);
+
+            if (count($arrObjMdLitNumeroInteressadoDTO))
+                $this->excluir($arrObjMdLitNumeroInteressadoDTO);
 
             foreach ($arrPostNumeroInteressados as $dadosComplementares){
 

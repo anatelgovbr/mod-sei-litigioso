@@ -267,7 +267,10 @@
                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retStrDescricaoDispositivo();
                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retNumIdCondutaLitigioso();
                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retStrConduta();
-                    $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retDtaInfracao();
+                    $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retDtaInfracaoEspecifica();
+                    $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retDtaInfracaoPeriodoInicial();
+                    $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retDtaInfracaoPeriodoFinal();
+                    $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retStrStaInfracaoData();
                     $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setNumIdControleLitigioso($objControleLitigiosoDTO->getNumIdControleLitigioso());
 
                     $objRelDispositivoNormativoCondutaControleLitigiosoRN     = new MdLitRelDispositivoNormativoCondutaControleRN();
@@ -278,11 +281,12 @@
                         $norma = $objRelDispositivoNormativoCondutaControleLitigioso->getStrNorma();
                         $dispositivo = $objRelDispositivoNormativoCondutaControleLitigioso->getStrDispositivo();
                         if($objRelDispositivoNormativoCondutaControleLitigioso->getStrUrlDispositivo() != ''){
-                            $norma = '<a href="'.$objRelDispositivoNormativoCondutaControleLitigioso->getStrUrlDispositivo().'" style="font-size: inherit !important;" target="_blank" title="Acesse a Norma">'.$objRelDispositivoNormativoCondutaControleLitigioso->getStrNorma().'</a>';
+                            $norma = '<a href="'.PaginaSEI::tratarHTML($objRelDispositivoNormativoCondutaControleLitigioso->getStrUrlDispositivo()).'" style="font-size: inherit !important;" target="_blank" title="Acesse a Norma">'.PaginaSEI::tratarHTML($objRelDispositivoNormativoCondutaControleLitigioso->getStrNorma()).'</a>';
                         }
                         if($objRelDispositivoNormativoCondutaControleLitigioso->getStrDescricaoDispositivo() != ''){
-                            $dispositivo = '<span style="font-size: inherit !important;" title="'.$objRelDispositivoNormativoCondutaControleLitigioso->getStrDescricaoDispositivo().'">'.$dispositivo.'</span>';
+                            $dispositivo = '<span style="font-size: inherit !important;" title="'.PaginaSEI::tratarHTML($objRelDispositivoNormativoCondutaControleLitigioso->getStrDescricaoDispositivo()).'">'.PaginaSEI::tratarHTML($dispositivo).'</span>';
                         }
+                        $conduta = $objRelDispositivoNormativoCondutaControleLitigioso->getStrConduta() ? $objRelDispositivoNormativoCondutaControleLitigioso->getStrConduta() : '';
                         $arr[] = array(
                             $objRelDispositivoNormativoCondutaControleLitigioso->getNumIdDispositivoNormativoNormaCondutaControle(),
                             $objRelDispositivoNormativoCondutaControleLitigioso->getNumIdDispositivoNormativoLitigioso() . '-' . $objRelDispositivoNormativoCondutaControleLitigioso->getNumIdCondutaLitigioso()
@@ -290,8 +294,12 @@
                             , $objRelDispositivoNormativoCondutaControleLitigioso->getNumIdDispositivoNormativoLitigioso()
                             , $dispositivo
                             , $objRelDispositivoNormativoCondutaControleLitigioso->getNumIdCondutaLitigioso()
-                            , $objRelDispositivoNormativoCondutaControleLitigioso->getStrConduta()
+                            , $conduta
                             , $objRelDispositivoNormativoCondutaControleLitigioso->getDtaInfracao()
+                            , $objRelDispositivoNormativoCondutaControleLitigioso->getDtaInfracaoEspecifica()
+                            , $objRelDispositivoNormativoCondutaControleLitigioso->getDtaInfracaoPeriodoInicial()
+                            , $objRelDispositivoNormativoCondutaControleLitigioso->getDtaInfracaoPeriodoFinal()
+                            , $objRelDispositivoNormativoCondutaControleLitigioso->getStrStaInfracaoData()
                         );
                     }
                     $hdnListaDIIndicados = PaginaSEI::getInstance()->gerarItensTabelaDinamica($arr);
