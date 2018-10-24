@@ -212,18 +212,18 @@
 
                 if ($bolAcaoDesativarTopo) {
                     $bolCheck         = true;
-                    $strLinkDesativar = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_dispositivo_normativo_desativar&acao_origem=' . $_GET['acao']);
                 }
 
                 if ($bolAcaoReativarTopo) {
                     $bolCheck        = true;
-                    $strLinkReativar = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_dispositivo_normativo_reativar&acao_origem=' . $_GET['acao'] . '&acao_confirmada=sim');
                 }
 
                 if ($bolAcaoExcluirTopo) {
                     $bolCheck       = true;
-                    $strLinkExcluir = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_dispositivo_normativo_excluir&acao_origem=' . $_GET['acao']);
                 }
+                $strLinkDesativar = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_dispositivo_normativo_desativar&acao_origem=' . $_GET['acao']);
+                $strLinkReativar = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_dispositivo_normativo_reativar&acao_origem=' . $_GET['acao'] . '&acao_confirmada=sim');
+                $strLinkExcluir = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_dispositivo_normativo_excluir&acao_origem=' . $_GET['acao']);
 
             } else {
 

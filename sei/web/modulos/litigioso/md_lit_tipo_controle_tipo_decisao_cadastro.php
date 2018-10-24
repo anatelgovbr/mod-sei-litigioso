@@ -27,8 +27,23 @@
         switch ($_GET['acao']) {
 
             case 'md_lit_tipo_controle_tipo_decisao_consultar':
+
+                //INICIO ALTERAÇÃO
+
+                $objTipoControleLitigiosoDTO = new MdLitTipoControleDTO();
+                $objTipoControleLitigiosoRN = new MdLitTipoControleRN();
+
+                $objTipoControleLitigiosoDTO->retStrSigla();
+                $objTipoControleLitigiosoDTO->setNumIdTipoControleLitigioso($_GET['id_tipo_controle_litigioso']);
+                $arrObjTipoControleLitigiosoDTO = $objTipoControleLitigiosoRN->listar($objTipoControleLitigiosoDTO);
+
+                //var_dump();
+                //die();
+
+                //FIM ALTERAÇÂO
+
                 $strItensSelTipoDecisaoLitigioso = "";
-                $strTitulo                       = 'Associar Tipos de Decisão - ' . $_GET['sigla_tipo_controle_litigioso'];
+                $strTitulo                       = 'Associar Tipos de Decisão - ' . PaginaSEI::tratarHTML($arrObjTipoControleLitigiosoDTO[0]->getStrSigla());
 
                 $arrComandos[] = '<button type="submit" accesskey="S" name="sbmCadastrarTipoDecisaoLitigioso" id="sbmCadastrarTipoDecisaoLitigioso" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
                 $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&id_tipo_processo_litigioso=' . $_GET['id_tipo_processo_litigioso'] . '&acao_origem=' . $_GET['acao'])) . '\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
@@ -215,14 +230,6 @@
         objTabelaAssociacao.gerarEfeitoTabela = true;
         objTabelaAssociacao.inserirNoInicio = false;
         objTabelaAssociacao.exibirMensagens = true;
-        objTabelaAssociacao.remover = function(arrLinha){
-            if(arrLinha[5] > 0){
-                alert('Este Tipo de Decisão/Espécie já está vinculado a uma Decisão, por este motivo a sua exclusão não é permitida.');
-                return false;
-            }
-            return true;
-
-        }
 
     }
 

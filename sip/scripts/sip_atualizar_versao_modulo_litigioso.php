@@ -1667,6 +1667,20 @@ class MdLitAtualizadorSipRN extends InfraRN {
 
         $numIdPerfilSeiAdministrador = $objPerfilDTO->getNumIdPerfil();
 
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome($this->nomeGestorControleLitigioso);
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+            throw new InfraException('Perfil Gestor do Controle Litigioso do sistema SEI não encontrado.');
+        }
+
+        $numIdPerfilSeiGestorControle = $objPerfilDTO->getNumIdPerfil();
+
+
+
         $objMenuDTO = new MenuDTO();
         $objMenuDTO->retNumIdMenu();
         $objMenuDTO->setNumIdSistema($numIdSistemaSei);
@@ -1727,6 +1741,11 @@ class MdLitAtualizadorSipRN extends InfraRN {
             $objItemMenuDTO->setNumSequencia(70);
             $objItemMenuRN->alterar($objItemMenuDTO);
         }
+
+
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - dispositivo revogado EM Gestor do Controle Litgioso');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorControle, 'md_lit_rel_disp_norm_revogado_cadastrar');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorControle, 'md_lit_rel_disp_norm_revogado_excluir');
 
 
         //Atualizando parametro para controlar versao do modulo

@@ -13,6 +13,7 @@ try {
     SessaoSEI::getInstance()->validarLink();
 
     $strLinkAjaxComboEspecieDecisao = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_rel_especie_decisao_montar_select');
+    $strLinkAjaxComboTipoDecisao = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_rel_tipo_decisao_montar_select');
     $strLinkAjaxEspecieDecisao = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_carregar_especie_decisao');
 //    SessaoSEI::getInstance()->validarPermissao($_GET['acao']);
     //////////////////////////////////////////////////////////////////////////////
@@ -135,7 +136,7 @@ if($numRegistros > 0){
         $strTbCadastroDecisao .= "
                         <input onclick='changeLocalidades(this, false);' type='radio' name='decisao[idDispositivoNormativo_{$idLinha}][localidade]'
                                id='rdDispositivoNormativo_localidade_{$idLinha}' value ='N' tabindex='".PaginaSEI::getInstance()->getProxTabDados()."' data-id-select-uf='divUf_{$idLinha}' >".
-                        "<label id='lblRdIdNacional_{$idLinha}' class='infraLabelRadio' for='rdDispositivoNormativo_localidade_{$idLinha}'>Nacional</label>";
+                        "<label id='lblRdIdNacional_{$idLinha}' class='infraLabelRadio  lblRdNacional' for='rdDispositivoNormativo_localidade_{$idLinha}'>Nacional</label>";
 
         $strTbCadastroDecisao .= "
                         <input onclick='changeLocalidades(this, true);' type='radio' name='decisao[idDispositivoNormativo_{$idLinha}][localidade]'
@@ -188,6 +189,7 @@ p.bloco-orientacao{
     line-height: 1.5em;
     font-size: 1.2em;
 }
+.lblRdNacional{width: 80px;display: inline-block;}
 .margem-bottom10{margin-bottom: 10px !important;}
 <?
 PaginaSEI::getInstance()->fecharStyle();
@@ -281,7 +283,7 @@ if(0){?><script><?}?>
                             j = incluirLinha(table.rows[j].children[0].children[2]);
                             //combo tipo decisao
                             var selectTipoDecisao = table.rows[j].children[0].children[0];
-                            selectTipoDecisao.value = arrItens[i][2];
+                            carregarTipoDecisao(selectTipoDecisao,arrItens[i][2]);
                             // combo especie decisao
                             carregarComboEspecieDecisao(selectTipoDecisao, arrItens[i][3]);
                             //input multa
@@ -323,7 +325,7 @@ if(0){?><script><?}?>
                             }
                             //combo tipo decisao
                             var selectTipoDecisao = table.rows[j].children[2].children[0];
-                            selectTipoDecisao.value = arrItens[i][2];
+                            carregarTipoDecisao(selectTipoDecisao,arrItens[i][2]);
                             // combo especie decisao
                             carregarComboEspecieDecisao(selectTipoDecisao, arrItens[i][3]);
                             //input multa
@@ -382,7 +384,9 @@ if(0){?><script><?}?>
                 type: "POST",
                 url: "<?= $strLinkAjaxComboEspecieDecisao ?>",
                 async: false,
-                data: {id_md_lit_tipo_decisao: element.value, id_md_lit_tipo_controle:document.getElementById('hdnIdMdLitTipoControle').value},
+                data: {id_md_lit_tipo_decisao: element.value,
+                    id_md_lit_tipo_controle:document.getElementById('hdnIdMdLitTipoControle').value,
+                    id_md_lit_especie_decisao:valorSelecionado},
                 success: function (result) {
                     if($(result).find('erro').length > 0){
                         alert($(result).find('erro').attr('descricao'));
@@ -414,6 +418,49 @@ if(0){?><script><?}?>
         }
     }
 
+    function carregarTipoDecisao(element, valorSelecionado){
+        element.value = valorSelecionado;
+        if(element.value != ''){
+            return;
+        }
+
+        //se o valor for selecionado e não existir no combo faz uma nova requisição retornando o valor não parametrizado
+        infraSelectLimpar(element);
+        $.ajax({
+            type: "POST",
+            url: "<?= $strLinkAjaxComboTipoDecisao ?>",
+            async: false,
+            data: {
+                id_md_lit_tipo_controle: document.getElementById('hdnIdMdLitTipoControle').value,
+                id_md_lit_tipo_decisao: valorSelecionado
+
+            },
+            success: function (result) {
+
+                if($(result).find('erro').length > 0){
+                    alert($(result).find('erro').attr('descricao'));
+                    return;
+                }
+
+                infraSelectLimpar(element);
+                $.each($(result).find('option'), function(key, value){
+                    var id = $(value).val();
+                    var texto = $(value).text() == '%20' ? '': $(value).text();
+                    infraSelectAdicionarOption(element,texto,id);
+                    if($(value).attr("selected")=="selected"){
+                        infraSelectSelecionarItem(element,id);
+                    }else if(valorSelecionado == id){
+                        infraSelectSelecionarItem(element,id);
+                        carregarEspecieDecisao(element);
+                    }
+
+                });
+                if(element.options.length > 0)
+                    element.style.display = '';
+            }
+        });
+
+    }
     function carregarEspecieDecisao(element){
         var objMulta            = null;
         var objObrigacaoSelect  = null;
@@ -558,6 +605,9 @@ if(0){?><script><?}?>
                 var multa           = table.rows[i].cells[4].childNodes[0];
                 var obrigacao       = table.rows[i].cells[5].childNodes[0];
                 var prazo           = table.rows[i].cells[6].childNodes[0];
+                var chkNacional     = table.rows[i].cells[1].childNodes[1];
+                var chkUF           = table.rows[i].cells[1].childNodes[4];
+                var selUF           = table.rows[i].cells[1].childNodes[6].childNodes[0];
             }else if(table.rows[i].cells.length == 6){
                 var tipoDecisao     = table.rows[i].cells[2].childNodes[0];
                 var especieDecisao  = table.rows[i].cells[2].childNodes[0];
@@ -565,6 +615,13 @@ if(0){?><script><?}?>
                 var obrigacao       = table.rows[i].cells[4].childNodes[0];
                 var prazo           = table.rows[i].cells[5].childNodes[0];
             }
+
+            if(table.rows[i].cells.length == 7 && !chkNacional.checked && !chkUF.checked){
+                msg += "- Localidade\n";
+            }else if(table.rows[i].cells.length == 7 && chkUF.checked && (selUF.value == '' || selUF.value == 'null')){
+                msg += "- Indicar pelo menos uma UF para a Localidade\n";
+            }
+
             if(tipoDecisao.value != 'null' && tipoDecisao.style.display == ''){
 
                 if((especieDecisao.value == 'null' || especieDecisao.value == '') && especieDecisao.style.display == ''){

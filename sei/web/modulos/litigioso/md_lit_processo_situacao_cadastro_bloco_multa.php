@@ -233,7 +233,7 @@
                     <label class="infraLabelOpcional" id="lblDtIntimacaoAplMulta" name="lblDtIntimacaoAplMulta" for="txtDtIntimacaoAplMulta">Data da Intimação da Decisão de Aplicação da Multa:</label>
                 </div>
 
-                <div class="grid grid_3">
+                <div class="grid grid_3" id="divDtaIntimacaoAplMulta">
                     <input onchange="verificarMudancaMulta();return validarFormatoData(this);" class="campoData" type="text" id="txtDtIntimacaoAplMulta" name="txtDtIntimacaoAplMulta"
                            onkeypress="return infraMascara(this, event, '##/##/####');" value=""/>
                     <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/calendario.gif"
@@ -349,7 +349,7 @@
             </div>
 
             <!-- Redução pela renúncia ao direito de recorrer -->
-            <div class="grid grid_5-5  nao-tem-constituicao" style="width: 345px;">
+            <div class="grid grid_5-5  nao-tem-constituicao" style="width: 348px;">
                 <input type="checkbox" name="chkReducaoRenuncia" id="chkReducaoRenuncia" value="S" >
                 <label class="infraLabelOpcional" id="lblReducaoRenuncia" name="lblReducaoRenuncia" for="chkReducaoRenuncia">Desconto decorrente da renúncia ao direito de recorrer</label>
                 <a style="margin-left: 5px;" id="btAjudaHouveConstituicao" <?=PaginaSEI::montarTitleTooltip('Esta opção deve ser marcada somente se o Interessado apresentou formalmente e tenha sido aceito pedido de Renúncia ao Direito de Recorrer, obtendo dessa forma a redução no valor da Multa, conforme regulamentação.\n \n Após a Constituição Definitiva ser realizada, apenas o Gestor do Controle Litigioso poderá efetivar correções materiais.')?>

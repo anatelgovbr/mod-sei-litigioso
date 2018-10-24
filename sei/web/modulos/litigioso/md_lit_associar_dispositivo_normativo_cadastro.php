@@ -219,6 +219,7 @@
 
                 if (options != null) {
                     for (var i = 0; i < options.length; i++) {
+
                         if (options[i].value == id) {
                             alert('Dispositivo Normativo já consta na lista.');
                             break;
@@ -232,7 +233,7 @@
                         options[i].selected = false;
                     }
 
-                    var texto = descricao;
+                    var texto = $("<pre>").html(descricao).text();
                     opt = infraSelectAdicionarOption(document.getElementById('selDescricaoDispositivoNormativo'), texto, id);
                     objLupaDispositivoNormativo.atualizar();
                     opt.selected = true;

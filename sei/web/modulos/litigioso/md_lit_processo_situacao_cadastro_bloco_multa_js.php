@@ -240,6 +240,7 @@
                     infraHabilitarCamposDivMulta(document.getElementById('divDataGestaoMulta'));
                 }else{
                     infraDesabilitarCamposDivMulta(document.getElementById('divDataGestaoMulta'));
+                    infraHabilitarCamposDivMulta(document.getElementById('divDtaIntimacaoAplMulta'));
                 }
 
                 if(document.getElementById('selCreditosProcesso').value != ''){
@@ -256,6 +257,7 @@
                 }else{
                     infraHabilitarCamposDivMulta(document.getElementById('divHouveConstituicao'));
                     document.getElementById('btnConstituirDefinitivamente').style.display = '';
+                    infraHabilitarCamposDivMulta(document.getElementById('divDataGestaoMulta'));
                 }
             },
             error: function (msgError) {
@@ -468,9 +470,9 @@
         if( document.getElementById('txtDtDecursoPrazo').value !=  document.getElementById('txtDtDecursoPrazo').getAttribute('data-valor-antigo')){
             mostrarBotaoRetificar = true;
         }
-        if( document.getElementById('txtDtIntimacaoAplMulta').value !=  document.getElementById('txtDtIntimacaoAplMulta').getAttribute('data-valor-antigo')){
-            mostrarBotaoRetificar = true;
-        }
+        // if( document.getElementById('txtDtIntimacaoAplMulta').value !=  document.getElementById('txtDtIntimacaoAplMulta').getAttribute('data-valor-antigo')){
+        //     mostrarBotaoRetificar = true;
+        // }
         if(!document.getElementById('chkHouveConstituicao').checked && document.getElementById('chkHouveConstituicao').getAttribute('data-valor-antigo') == 'S'){
             document.getElementById('txtDtIntimacaoConstituicao').value = '';
             document.getElementById('chkReducaoRenuncia').checked = false;

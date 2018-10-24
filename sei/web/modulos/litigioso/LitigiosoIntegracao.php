@@ -471,7 +471,12 @@
                     break;
 
                 case 'md_lit_rel_especie_decisao_montar_select':
-                    $arrObjEspecieDecisaoDTO = MdLitEspecieDecisaoINT::montarSelectEspecieDecisaoPorTipoControle('null', '%20', $_POST['id_md_lit_tipo_decisao'], null,$_POST['id_md_lit_tipo_controle']);
+                    $arrObjEspecieDecisaoDTO = MdLitEspecieDecisaoINT::montarSelectEspecieDecisaoPorTipoControle('null', '%20', $_POST['id_md_lit_tipo_decisao'], $_POST['id_md_lit_especie_decisao'],$_POST['id_md_lit_tipo_controle']);
+                    $xml              = InfraAjax::gerarXMLSelect($arrObjEspecieDecisaoDTO);
+                    break;
+
+                case 'md_lit_rel_tipo_decisao_montar_select':
+                    $arrObjEspecieDecisaoDTO = MdLitTipoDecisaoINT::montarSelectTipoDecisaoPorTipoControle('null', '%20', $_POST['id_md_lit_tipo_decisao'], $_POST['id_md_lit_tipo_controle']);
                     $xml              = InfraAjax::gerarXMLSelect($arrObjEspecieDecisaoDTO);
                     break;
 

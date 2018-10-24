@@ -116,17 +116,29 @@
             $objMdLitRelTipoControleTipoDecisaoDTO->setNumIdTipoDecisaoLitigioso($idMdLitTipoDecisao);
             $objMdLitRelTipoControleTipoDecisaoDTO->setStrSinAtivoDecisao('S');
 
-            if ($strValorItemSelecionado!=null){
-                $objMdLitRelTipoControleTipoDecisaoDTO->setBolExclusaoLogica(false);
-                $objMdLitRelTipoControleTipoDecisaoDTO->adicionarCriterio(array('IdMdLitEspecieDecisao'),array(InfraDTO::$OPER_IGUAL,InfraDTO::$OPER_IGUAL),array($strValorItemSelecionado),InfraDTO::$OPER_LOGICO_OR);
-            }
-
             $objMdLitRelTipoControleTipoDecisaoDTO->setOrdStrNome(InfraDTO::$TIPO_ORDENACAO_ASC);
 
             $objMdLitRelTipoControleTipoDecisaoRN = new MdLitRelTipoControleTipoDecisaoRN();
             $arrObjMdLitRelTipoControleTipoDecisaoDTO = $objMdLitRelTipoControleTipoDecisaoRN->listar($objMdLitRelTipoControleTipoDecisaoDTO);
             $arrObjMdLitRelTipoControleTipoDecisaoDTO = InfraArray::distinctArrInfraDTO($arrObjMdLitRelTipoControleTipoDecisaoDTO, 'IdMdLitEspecieDecisao');
 
+            if($strValorItemSelecionado != '' && InfraArray::contarArrInfraDTO($arrObjMdLitRelTipoControleTipoDecisaoDTO, 'IdMdLitEspecieDecisao',$strValorItemSelecionado ) == 0){
+                $objMdLitEspecieDecisaoDTO = new MdLitEspecieDecisaoDTO();
+                $objMdLitEspecieDecisaoDTO->retStrNome();
+                $objMdLitEspecieDecisaoDTO->retNumIdEspecieLitigioso();
+                $objMdLitEspecieDecisaoDTO->setNumIdEspecieLitigioso($strValorItemSelecionado);
+
+                $objMdLitEspecieDecisaoRN = new MdLitEspecieDecisaoRN();
+                $objMdLitEspecieDecisaoDTO = $objMdLitEspecieDecisaoRN->consultar($objMdLitEspecieDecisaoDTO);
+
+                if($objMdLitEspecieDecisaoDTO){
+                    $objMdLitRelTipoControleTipoDecisaoDTO = new MdLitRelTipoControleTipoDecisaoDTO();
+                    $objMdLitRelTipoControleTipoDecisaoDTO->setNumIdMdLitEspecieDecisao($objMdLitEspecieDecisaoDTO->getNumIdEspecieLitigioso());
+                    $objMdLitRelTipoControleTipoDecisaoDTO->setStrNomeEspecieDecisao($objMdLitEspecieDecisaoDTO->getStrNome());
+
+                    $arrObjMdLitRelTipoControleTipoDecisaoDTO[] = $objMdLitRelTipoControleTipoDecisaoDTO;
+                }
+            }
 
             return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $arrObjMdLitRelTipoControleTipoDecisaoDTO, 'IdMdLitEspecieDecisao', 'NomeEspecieDecisao');
 
