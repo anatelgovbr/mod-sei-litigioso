@@ -10,6 +10,26 @@
     function inicializarGridDecisao(){
         objTabelaDinamicaDecisao = new infraTabelaDinamica('tbDecisao', 'hdnTbDecisao', false, false);
         objTabelaDinamicaDecisao.gerarEfeitoTabela = true;
+
+
+        objTabelaDinamicaDecisao.verificarCadastroParcial = function(){
+            var sinParcial = false;
+            var arrDecisao = objTabelaDinamicaDecisao.obterItens();
+
+            for(var i = 0; i < arrDecisao.length;i++){
+                if(arrDecisao[i][17] == 'S'){
+                    sinParcial = true;
+                    break;
+                }
+            }
+
+            return sinParcial;
+        }
+
+        if(objTabelaDinamicaDecisao.verificarCadastroParcial()){
+            bloquearTelaParaAdicao(true, true);
+            alert('Foi identificado que ainda existem infrações sem Decisão cadastrada. Para prosseguir com o cadastro de novas Situações ou a Gestão de Multa, antes é necessário complementar o Cadastro das Decisões e salvar.');
+        }
     }
     function abrirModalHistoricoDecisao(){
         infraAbrirJanela('<?= $urlHistoricoDecisao ?>',
@@ -36,6 +56,7 @@
         }
         return false;
     }
+
 
 </script>
 

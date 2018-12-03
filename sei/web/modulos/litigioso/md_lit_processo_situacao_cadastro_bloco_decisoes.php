@@ -43,6 +43,7 @@
                     <th class="infraTh" align="center" >Unidade</th>
                     <th class="infraTh"  style="display: none">tipo localidade</th>
                     <th class="infraTh"  style="display: none">Select UF</th>
+                    <th class="infraTh"  style="display: none">Cadastro Parcial</th>
                 </tr>
 
             </table>

@@ -130,6 +130,7 @@ class MdLitDecisaoRN extends InfraRN {
             $objMdLitDecisaoDTO->setStrSinAtivo('S');
             $objMdLitDecisaoDTO->setDtaInclusao($decisao[12]);
             $objMdLitDecisaoDTO->setStrStaLocalidade($decisao[15]);
+            $objMdLitDecisaoDTO->setStrSinCadastroParcial($decisao[17]);
 
             if(preg_match('/^novo_/', $decisao[0])){
                 $objMdLitDecisaoDTO->setNumIdMdLitProcessoSituacao($idMdLitProcessoSituacao);
@@ -455,6 +456,8 @@ class MdLitDecisaoRN extends InfraRN {
           }else{
               $infracaoArr[$key][] = '';
           }
+
+          $infracaoArr[$key][] = $objMdLitDecisaoDTO->getStrSinCadastroParcial();
       }
       if(count($infracaoArr) > 0)
           return $infracaoArr;
