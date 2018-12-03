@@ -111,15 +111,18 @@
                 } // VALIDACAO A SER EXECUTADA QUANDO É FEITO UPDATE DE REGISTROS
             } else {
 
-                $sql = "";
-                $sql .= " SELECT id_md_lit_fase , nome FROM md_lit_fase ";
-                $sql .= " WHERE nome = '" . $objFaseLitigiosoDTO->getStrNome() . "'";
-                $sql .= " AND id_md_lit_tipo_controle = " . $objFaseLitigiosoDTO->getNumIdTipoControleLitigioso();
-                $sql .= " AND id_md_lit_fase <> " . $objFaseLitigiosoDTO->getNumIdFaseLitigioso();
 
-                $rs = $this->getObjInfraIBanco()->consultarSql($sql);
+                $objFaseLitigiosoDTO2->retNumIdFaseLitigioso();
 
-                if (count($rs) > 0) {
+
+
+                $objFaseLitigiosoDTO3 = new MdLitFaseDTO ();
+                $objFaseLitigiosoDTO3->retTodos();
+                $objFaseLitigiosoDTO3->setNumIdFaseLitigioso($objFaseLitigiosoDTO->getNumIdFaseLitigioso(), InfraDTO::$OPER_DIFERENTE);
+                $objFaseLitigiosoDTO3->setStrNome($objFaseLitigiosoDTO->getStrNome(), InfraDTO::$OPER_IGUAL);
+                $ret = $objFaseLitigiosoBD->contar($objFaseLitigiosoDTO3);
+
+                if ($ret > 0) {
                     $objInfraException->adicionarValidacao('Já existe Fase para o presente Controle Litigioso com o mesmo Nome.');
                 }
             }

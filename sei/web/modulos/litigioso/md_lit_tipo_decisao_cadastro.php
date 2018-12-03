@@ -92,9 +92,12 @@
 
                     $objTipoDecisaoDTO->setArrObjRelEspecieLitigiosoDTO($arrEspecies);
 
+
+
                     $strItensSelEspecies = "";
                     for ($x = 0; $x < count($arrEspecies); $x++) {
-                        $strItensSelEspecies .= "<option value='" . $arrEspecies[$x]->getNumIdEspecieDecisaoLitigioso() . "'>" . $arrEspecies[$x]->getStrNomeEspecie() . "</option>";
+                        $strItensSelEspecies .= "<option value='" . $arrEspecies[$x]->getNumIdEspecieDecisaoLitigioso() . "'>" . PaginaSEI::tratarHTML($arrEspecies[$x]->getStrNomeEspecie()) . "</option>";
+
                     }
 
                 } else {
@@ -397,7 +400,7 @@
                                            tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
             <select <?= $strDesabilitar; ?> id="selEspecies" name="selEspecies" size="4" multiple="multiple"
                                             class="infraSelect">
-                <?= PaginaSEI::getInstance()->formatarParametrosJavaScript(PaginaSEI::tratarHTML($strItensSelEspecies)) ?>
+                <?= $strItensSelEspecies ?>
             </select>
             <img id="imgLupaEspecies" onclick="objLupaEspecies.selecionar(700,500);" src="/infra_css/imagens/lupa.gif"
                  alt="Localizar Espécies de Decisão" title="Localizar Espécies de Decisão" class="infraImg"/>

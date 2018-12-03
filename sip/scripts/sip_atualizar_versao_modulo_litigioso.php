@@ -11,10 +11,10 @@ require_once dirname(__FILE__).'/../web/Sip.php';
 class MdLitAtualizadorSipRN extends InfraRN {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '1.1.0';
+    private $versaoAtualDesteModulo = '1.2.0';
     private $nomeDesteModulo = 'MÓDULO DE CONTROLE LITIGIOSO';
     private $nomeParametroModulo = 'VERSAO_MODULO_LITIGIOSO';
-    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4','1.0.0', '1.1.0');
+    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4','1.0.0', '1.1.0', '1.2.0');
     
     private $nomeGestorControleLitigioso = "Gestor de Controle Litigioso";
     private $descricaoGestorControleLitigioso = "Acesso aos recursos específicos de Gestor de Controle Litigioso do módulo Litigioso do SEI.";
@@ -115,6 +115,7 @@ class MdLitAtualizadorSipRN extends InfraRN {
                 $this->instalarv004();
                 $this->instalarv100();
                 $this->instalarv110();
+                $this->instalarv120();
 
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
                 $this->finalizar('FIM', false);
@@ -126,6 +127,7 @@ class MdLitAtualizadorSipRN extends InfraRN {
                 $this->instalarv004();
                 $this->instalarv100();
                 $this->instalarv110();
+                $this->instalarv120();
 
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
                 $this->finalizar('FIM', false);
@@ -134,6 +136,7 @@ class MdLitAtualizadorSipRN extends InfraRN {
                 $this->instalarv004();
                 $this->instalarv100();
                 $this->instalarv110();
+                $this->instalarv120();
 
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
                 $this->finalizar('FIM', false);
@@ -141,17 +144,25 @@ class MdLitAtualizadorSipRN extends InfraRN {
                 $this->instalarv004();
                 $this->instalarv100();
                 $this->instalarv110();
+                $this->instalarv120();
 
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
                 $this->finalizar('FIM', false);
             } elseif ($strVersaoModuloLitigioso == '0.0.4') {
                 $this->instalarv100();
                 $this->instalarv110();
+                $this->instalarv120();
 
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SIP');
                 $this->finalizar('FIM', false);
             } elseif ($strVersaoModuloLitigioso == '1.0.0') {
                 $this->instalarv110();
+                $this->instalarv120();
+
+                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO ' . $this->versaoAtualDesteModulo . ' DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+                $this->finalizar('FIM', false);
+            } elseif ($strVersaoModuloLitigioso == '1.1.0') {
+                $this->instalarv120();
 
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO ' . $this->versaoAtualDesteModulo . ' DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
                 $this->finalizar('FIM', false);
@@ -1752,6 +1763,48 @@ class MdLitAtualizadorSipRN extends InfraRN {
         $this->logar('ATUALIZANDO PARÂMETRO '.$this->nomeParametroModulo.' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
         BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.1.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
     }
+
+    protected function instalarV120(){
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.2.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+
+
+        $objSistemaRN  = new SistemaRN();
+        $objPerfilRN   = new PerfilRN();
+
+        $objSistemaDTO = new SistemaDTO();
+        $objSistemaDTO->retNumIdSistema();
+        $objSistemaDTO->setStrSigla('SEI');
+
+        $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
+
+        if ($objSistemaDTO == null) {
+            throw new InfraException('Sistema SEI não encontrado.');
+        }
+
+        $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
+
+
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome('Básico');
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
+        }
+
+        $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
+
+
+        $this->logar('CRIANDO E VINCULANDO AO PERFIL BÁSICO O RECURSO DESATIVAR DECISÃO');
+        $objRecursoDTO  = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_decisao_desativar');
+
+        //Atualizando parametro para controlar versao do modulo
+        $this->logar('ATUALIZANDO PARÂMETRO '.$this->nomeParametroModulo.' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.2.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+    }
+
 
     private function adicionarRecursoPerfil($numIdSistema, $numIdPerfil, $strNome, $strCaminho = null){
 

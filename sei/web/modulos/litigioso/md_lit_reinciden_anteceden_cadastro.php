@@ -90,10 +90,9 @@ if (count($arrmdLitReincidenAntecedenDTO) > 0) {
 
 if (isset($_POST['sbmCadastrarReincidenciaAntecedente'])) {
 
-    //var_dump($_POST);
-   // die();
     $objEditorRN = new EditorRN();
-    $objEditorRN->validarTagsCriticas(array('png','jpeg' ), $_POST);
+    $objEditorRN->validarTagsCriticas(array('png','jpeg' ), $_POST['txtOrientacoes']);
+    $objEditorRN->validarTagsCriticas(array('png','jpeg' ), $_POST['txtAnteOrientacoes']);
    // header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_reinciden_anteceden_alterar' . '&acao_origem=' . $_GET['acao']));
 
 

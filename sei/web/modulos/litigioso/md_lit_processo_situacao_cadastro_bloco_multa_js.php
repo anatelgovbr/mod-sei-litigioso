@@ -259,6 +259,18 @@
                     document.getElementById('btnConstituirDefinitivamente').style.display = '';
                     infraHabilitarCamposDivMulta(document.getElementById('divDataGestaoMulta'));
                 }
+
+                //Se possuir decisão com cadastro parcial as regras acima de aparecer botão para o lançamento e ignorado
+                if(objTabelaDinamicaDecisao.verificarCadastroParcial()){
+                    document.getElementById('btnIncluirLancamento').style.display = 'none';
+                    document.getElementById('btnCancelarRecurso').style.display = 'none';
+                    document.getElementById('btnDenegarRecurso').style.display = 'none';
+                    document.getElementById('btnSuspenderLancamento').style.display = 'none';
+                    document.getElementById('btnRetificarLancamento').style.display = 'none';
+                }
+
+                //por não haver promisses isso é necessario para replicar as datas da situação para multa
+                replicarDataParaFieldsetGestaoMulta();
             },
             error: function (msgError) {
                 msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;
@@ -272,6 +284,11 @@
 
     function abrirModalJustificativaLancamento(element){
         var url = element.getAttribute('data-url');
+
+        if(objTabelaDinamicaDecisao.verificarCadastroParcial()){
+            alert("Foi identificado que ainda existem infrações sem Decisão cadastrada. Posteriormente, para prosseguir com o cadastro de novas Situações ou a Gestão de Multa, ainda será necessário finalizar o Cadastro das Decisões.");
+            return;
+        }
 
         if(document.getElementById('selNumeroInteressado').value == '' || document.getElementById('selNumeroInteressado').value == 'null' ){
             alert('Selecione o número de complemento do interessado!');
@@ -414,6 +431,10 @@
     }
 
     function verificarCondicionaisMulta(){
+        if(objTabelaDinamicaDecisao.verificarCadastroParcial()){
+            return true;
+        }
+
         if(document.getElementById('hdnVlCreditoNaoLancado').value != '0,00' && document.getElementById('hdnJustificativaLancamento').value == '' && document.getElementById('hdnIdMdLitFuncionalidade').value == '' ){
             alert('Foram identificados valores da Gestão de Multa pendentes de atualização no SISTEMA DE ARRECADAÇÃO. Verifique se a ação para atualização dos valores foi acionada.');
             return false;

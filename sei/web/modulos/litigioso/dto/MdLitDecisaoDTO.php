@@ -43,6 +43,8 @@ class MdLitDecisaoDTO extends InfraDTO {
 
       $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'StaLocalidade', 'sta_localidade');
 
+      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinCadastroParcial', 'sin_cadastro_parcial');
+
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdMdLitProcessoSituacaoMdLitProcessoSituacao', 'mps.id_md_lit_processo_situacao', 'md_lit_processo_situacao mps');
 
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_DBL, 'IdProcedimentoMdLitProcessoSituacao', 'mps.id_procedimento', 'md_lit_processo_situacao mps');

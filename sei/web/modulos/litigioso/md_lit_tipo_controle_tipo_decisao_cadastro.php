@@ -37,13 +37,17 @@
                 $objTipoControleLitigiosoDTO->setNumIdTipoControleLitigioso($_GET['id_tipo_controle_litigioso']);
                 $arrObjTipoControleLitigiosoDTO = $objTipoControleLitigiosoRN->listar($objTipoControleLitigiosoDTO);
 
-                //var_dump();
-                //die();
 
                 //FIM ALTERAÇÂO
 
                 $strItensSelTipoDecisaoLitigioso = "";
-                $strTitulo                       = 'Associar Tipos de Decisão - ' . PaginaSEI::tratarHTML($arrObjTipoControleLitigiosoDTO[0]->getStrSigla());
+
+                foreach ($arrObjTipoControleLitigiosoDTO as $objTipoControleLitigiosoDTO) {
+                    $valor = $objTipoControleLitigiosoDTO->getStrSigla();
+                }
+
+                $strTitulo                       = 'Associar Tipos de Decisão - ' . PaginaSEI::tratarHTML($valor);
+
 
                 $arrComandos[] = '<button type="submit" accesskey="S" name="sbmCadastrarTipoDecisaoLitigioso" id="sbmCadastrarTipoDecisaoLitigioso" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
                 $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&id_tipo_processo_litigioso=' . $_GET['id_tipo_processo_litigioso'] . '&acao_origem=' . $_GET['acao'])) . '\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';

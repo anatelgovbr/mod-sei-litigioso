@@ -921,7 +921,7 @@ PaginaSEI::getInstance()->fecharHtml();
             defesa = false, decisoria = false,
             intimacaoDecisao = false, recurso = false,
             decisaoRecurso = false,
-            conclusao = false;
+            conclusao = false, temIntimacaoDaConclusiva = false;
 
         var salvar = true;
 
@@ -987,9 +987,23 @@ PaginaSEI::getInstance()->fecharHtml();
 
                     if(!conclusao) {
                         if(tdChecked(tr[i], tdConclusao)){
+                            //No fluxo, a Situação de Conclusão deverá ser antecedida SEMPRE por uma Intimação, ou seja, não deverá existir uma conclusão, sem que tenha existido uma Intimação imediatamente anterior.
+                            var trAnterior =  pegarTrAnterior(i);
+
+                            if (tdChecked(trAnterior, tdIntimacao)) {
+                                temIntimacaoDaConclusiva = true;
+                            }
+
                             conclusao = true;
                             continue;
                         }
+                    }
+                }
+
+                if(tdChecked(tr[i], tdDecisoria)){
+                    var trProximo =  pegarTrProximo(i);
+                    if(!tdChecked(trProximo, tdIntimacao)){
+                        intimacaoDecisao = false;
                     }
                 }
 
@@ -1038,7 +1052,7 @@ PaginaSEI::getInstance()->fecharHtml();
             return;
         }
 
-        if (!conclusao && !recurso) {
+        if ((!conclusao && !recurso) || !temIntimacaoDaConclusiva) {
             alert('A Conclusão só pode ser realizada caso tenha existido uma Intimação imediatamente anterior a ela. Para inserir Situações entre a Conclusão e a Intimação, elas devem estar sem marcação de parâmetros especiais.');
             salvar = false;
             return;
@@ -1075,6 +1089,44 @@ PaginaSEI::getInstance()->fecharHtml();
             tdChecked = true;
         }
         return tdChecked;
+    }
+
+    function pegarTrAnterior(idTrAtual){
+        var table = document.getElementById('tbSituacao');
+        if (table == null) {
+            return false;
+        }
+        var tr = table.getElementsByTagName('tr');
+        idTrAtual -= 1;
+        if(idTrAtual < 1){
+            return null;
+        }
+        for(var i = idTrAtual; i != 1; i--) {
+            var linhaLivre = trLivre(tr[i]);
+
+            if (!linhaLivre) {
+                return tr[i];
+            }
+        }
+    }
+
+    function pegarTrProximo(idTrAtual){
+        var table = document.getElementById('tbSituacao');
+        if (table == null) {
+            return false;
+        }
+        var tr = table.getElementsByTagName('tr');
+        idTrAtual += 1;
+        if(idTrAtual < 1){
+            return null;
+        }
+        for(var i = idTrAtual; i <= tr.length; i++) {
+            var linhaLivre = trLivre(tr[i]);
+
+            if (!linhaLivre) {
+                return tr[i];
+            }
+        }
     }
 
     function controlarRadios(el) {
@@ -1121,7 +1173,7 @@ PaginaSEI::getInstance()->fecharHtml();
         var table = document.getElementById('tbSituacao');
         if (table == null) {
             return false;
-        }debugger;
+        }
 
         var tr = table.getElementsByTagName('tr');
         for(var i = 1; i < tr.length; i++) {

@@ -66,8 +66,8 @@ class MdLitDecisaoINT extends InfraINT {
 
       foreach ($decisaoPosts as $key => $decisao){
 
-          if(($decisao['id_md_lit_tipo_decisao'] == 'null' || empty($decisao['id_md_lit_tipo_decisao'])))
-              continue;
+//          if(($decisao['id_md_lit_tipo_decisao'] == 'null' || empty($decisao['id_md_lit_tipo_decisao'])))
+//              continue;
 
           if($decisao['id_decisao'] != ''){
               $infracaoArr[$index][] = $decisao['id_decisao'];
@@ -101,7 +101,11 @@ class MdLitDecisaoINT extends InfraINT {
 
           $objMdLitTipoDecisaoRN = new MdLitTipoDecisaoRN();
           $objMdLitTipoDecisaoDTO = $objMdLitTipoDecisaoRN->consultar($objMdLitTipoDecisaoDTO);
-          $infracaoArr[$index][] = $objMdLitTipoDecisaoDTO->getStrNome();
+          if($objMdLitTipoDecisaoDTO){
+              $infracaoArr[$index][] = $objMdLitTipoDecisaoDTO->getStrNome();
+          }else{
+              $infracaoArr[$index][] = null;
+          }
 
           $objMdLitEspecieDecisaoDTO = new MdLitEspecieDecisaoDTO();
           $objMdLitEspecieDecisaoDTO->retTodos();
@@ -126,6 +130,7 @@ class MdLitDecisaoINT extends InfraINT {
           }
           $infracaoArr[$index][] = $localidade;
           $infracaoArr[$index][] = $selectUf;
+          $infracaoArr[$index][] = $decisao['sin_cadastro_parcial'];
           $index++;
       }
       return PaginaSEI::getInstance()->gerarItensTabelaDinamica($infracaoArr);
