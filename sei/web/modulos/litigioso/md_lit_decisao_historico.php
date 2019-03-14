@@ -58,7 +58,16 @@ try {
             if(count($arrObjRelDispositivoNormativoCondutaControleLitigiosoDTO)){
                 foreach ($arrObjRelDispositivoNormativoCondutaControleLitigiosoDTO as $objRelDispositivoNormativoCondutaControleLitigiosoDTO){
                     $objMdLitDecisaoDTO = new MdLitDecisaoDTO();
-                    $objMdLitDecisaoDTO->retTodos(true);
+                    $objMdLitDecisaoDTO->retNumIdMdLitDecisao();
+                    $objMdLitDecisaoDTO->retStrProtocoloFormatadoDocumento();
+                    $objMdLitDecisaoDTO->retDtaInclusao();
+                    $objMdLitDecisaoDTO->retStrNomeUsuario();
+                    $objMdLitDecisaoDTO->retStrSiglaUnidade();
+                    $objMdLitDecisaoDTO->retStrNomeMdLitTipoDecisao();
+                    $objMdLitDecisaoDTO->retStrNomeMdLitEspecieDecisao();
+                    $objMdLitDecisaoDTO->retDblMulta();
+                    $objMdLitDecisaoDTO->retStrNomeMdLitObrigacao();
+                    $objMdLitDecisaoDTO->retNumPrazo();
                     $objMdLitDecisaoDTO->setNumIdMdLitRelDisNorConCtr($objRelDispositivoNormativoCondutaControleLitigiosoDTO->getNumIdDispositivoNormativoNormaCondutaControle());
 
                     $objMdLitDecisaoRN = new MdLitDecisaoRN();

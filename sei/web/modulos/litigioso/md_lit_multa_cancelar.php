@@ -121,7 +121,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         <label class="infraLabelObrigatorio" >
             Justificativa do Cancelamento:
         </label>
-        <textarea rows="8" style="width: 100%" name="txtJustificativaCancelamento" id="txtJustificativaCancelamento" ></textarea>
+        <textarea rows="8" style="width: 100%"  onkeypress="return infraLimitarTexto(this,event,250);" maxlength="250" name="txtJustificativaCancelamento" id="txtJustificativaCancelamento" ></textarea>
     </div>
 
     <input type="hidden" name="hdnIdMdLitFuncionalidade" id="hdnIdMdLitFuncionalidade" value="<?= $_GET['id_md_lit_funcionalidade'] ?>">

@@ -141,7 +141,7 @@ try {
             break;
 
         case 'md_lit_situacao_visualizar_parametrizar':
-            $strTitulo = PaginaSEI::getInstance()->getTituloSelecao('Parametrização de Situação', 'Parametrização de Situação');
+            $strTitulo = PaginaSEI::getInstance()->getTituloSelecao('Consultar Parametrização de Situação', 'Consultar Parametrização de Situação');
             PaginaSEI::getInstance()->setTipoPagina(InfraPagina::$TIPO_PAGINA_SIMPLES);
 
             $objTipoControleLitigiosoDTO = new MdLitTipoControleDTO();
@@ -152,7 +152,7 @@ try {
 
             $sigla = $objTipoControleLitigiosoDTO->getStrSigla() ? $objTipoControleLitigiosoDTO->getStrSigla() : '';
 
-            $strTitulo = 'Parametrizar Situações - ' . PaginaSEI::tratarHTML($sigla);
+            $strTitulo = 'Consultar Parametrização de Situação - ' . PaginaSEI::tratarHTML($sigla);
 
             //Se cadastrou alguem
             if ($_GET['acao_origem'] == 'md_lit_situacao_cadastrar') {

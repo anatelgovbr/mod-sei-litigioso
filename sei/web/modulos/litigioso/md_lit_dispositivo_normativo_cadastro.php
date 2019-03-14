@@ -442,7 +442,7 @@
     <!--  Componente Conduta  -->
     <div id="divUn1" class="infraAreaDados" style="height:11.5em;">
 
-        <label id="lblDescricaoConduta" for="txtConduta" accesskey="q" class="infraLabel">Condutas associadas:</label>
+        <label id="lblDescricaoConduta" for="txtConduta" accesskey="q" class="infraLabelObrigatorio">Condutas associadas:</label>
 
         <input type="text" id="txtConduta" name="txtConduta" class="infraText"
                tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
@@ -748,13 +748,11 @@
             return false;
         }
 
-        //tipos de controle associados
-        //var optionsTipoControle = document.getElementById('selDescricaoTipoControle').options;
-        //if (optionsTipoControle.length == 0) {
-        //    alert('Informe ao menos um tipo de controle associado.');
-        //    document.getElementById('selDescricaoTipoControle').focus();
-        //    return false;
-        //}
+        if(infraTrim(document.getElementById('hdnConduta').value) == ''){
+            alert('É obrigatório associar pelo menos uma conduta ao dispositivo normativo!');
+            document.getElementById('txtDescricaoDispositivo').focus();
+            return false;
+        }
 
         if (!isValidURL()) {
             return false;

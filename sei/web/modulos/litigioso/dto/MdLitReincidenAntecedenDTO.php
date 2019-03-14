@@ -25,7 +25,11 @@ class MdLitReincidenAntecedenDTO extends InfraDTO {
 
     $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'Tipo', 'tipo');
 
+    $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'TipoRegraReincidencia', 'tp_regra_reincidencia');
+
     $this->configurarPK('IdMdLitReincidenAnteceden',InfraDTO::$TIPO_PK_NATIVA);
+
+    $this->adicionarAtributo(InfraDTO::$PREFIXO_ARR,'ObjMdLitRelTpDecReinAnteDTO');
 
 
   }

@@ -20,11 +20,8 @@ echo $retEditor->getStrInicializacao();
 <style type="text/css">
 
     #divOritentacao{
-        width: 90%;
-        margin-top: 207px;
+        width: 100%;
         margin-left: 0px;
-
-
     }
     #txaConteudo{
         height: 6.5%;

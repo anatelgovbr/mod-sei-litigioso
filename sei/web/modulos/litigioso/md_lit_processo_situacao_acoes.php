@@ -127,6 +127,8 @@ switch($_GET['acao']) {
         if($objMdLitControleDTO){
             $urlCadastrarDecisao = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_decisao_cadastrar&id_md_lit_controle='.$objMdLitControleDTO->getNumIdControleLitigioso().'&id_procedimento='.$idProcedimento);
             $urlHistoricoDecisao = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_decisao_historico&id_md_lit_controle='.$objMdLitControleDTO->getNumIdControleLitigioso());
+            $urlModalReincidenciaEspecifica = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_modal_relatorio_reincidencia&id_md_lit_controle='.$objMdLitControleDTO->getNumIdControleLitigioso().'&id_procedimento='.$idProcedimento);
+            $urlModalAntecedente = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_modal_relatorio_antecedente&id_md_lit_controle='.$objMdLitControleDTO->getNumIdControleLitigioso().'&id_procedimento='.$idProcedimento);
         }
 
         //buscando a intimação da instauração( a intimação da instauração será sempre a primeira situação de intimação depois da instauração)

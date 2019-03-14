@@ -12,54 +12,41 @@
         width: 95%;
     }
 
-    #lblPrazoRein {
-        position: absolute;
+    #lblPrazoRein {position: absolute;left: 0;top:0}
 
-    }
+    #txtPrazoRein {position: absolute;top: 40%;width: 15%;}
 
-    #txtPrazoRein {
-        position: absolute;
-        margin-top: 16px;
-    }
+    #lblDecRein {position: absolute;left: 0;top:0;/*margin-top: 54px;*/}
 
-    #lblDecRein {
-        position: absolute;
-        margin-top: 54px;
-    }
+    #txtDecRein {position: absolute;width: 30%;top: 18%;}
 
-    #txtDecRein {
-        position: absolute;
-        margin-top: 70px;
-        width: 30%;
-    }
+    #selDecRein {position: absolute;top:38%;width: 50%;}
+    #divOpcoesTipoDecisao{position: absolute;left: 51%;top: 38%;}
 
-    #lblOrienRein {
-        position: absolute;
-        margin-top: 193px;
-    }
 
-    #selDecRein {
-        position: absolute;
-        margin-top: 96px;
-        width: 50%;
-    }
+    /*#imgLupaTipoDecisaoRein {*/
+        /*position: absolute;*/
+        /*margin-left: 51%;*/
+        /*!*margin-top: 98px;*!*/
+        /*width: 16px;*/
+        /*height: 16px;*/
+    /*}*/
 
-    #imgLupaTipoDecisaoRein {
-        position: absolute;
-        margin-left: 51%;
-        margin-top: 98px;
-        width: 16px;
-        height: 16px;
-    }
+    /*#imgExcluirTipoDecisaoRein {*/
+        /*position: absolute;*/
+        /*margin-left: 51%;*/
+        /*!*margin-top: 115px;*!*/
+        /*width: 16px;*/
+        /*height: 16px;*/
+    /*}*/
 
-    #imgExcluirTipoDecisaoRein {
-        position: absolute;
-        margin-left: 51%;
-        margin-top: 115px;
-        width: 16px;
-        height: 16px;
-    }
+    #lblRegraReincidencia{position: absolute;width: 50%;}
+    #divRdoConduta{position: absolute;width: 50%;top:23%;}
+    #divRdoDispositivo{position: absolute;width: 50%;top:43%;}
+    #divRdoDispositivoConduta{position: absolute;width: 50%;top:63%;}
 
+    #lblOrienRein {position: absolute;}
+    #orientacoes{position: absolute;top:5%;}
     /*
 
     Antecedentes
@@ -72,47 +59,34 @@
 
     #txtPrazoAntec {
         position: absolute;
-        margin-top: 16px;
+        top: 40%;
     }
 
     #lblDecAntec {
         position: absolute;
-        margin-top: 54px;
+        left: 0;
+        top: 0;
     }
 
     #txtDecAntec {
         position: absolute;
-        margin-top: 70px;
         width: 30%;
+        top: 18%;
     }
 
     #lblOrienAntec {
         position: absolute;
-        margin-top: 193px;
     }
 
     #selDecAntec {
         position: absolute;
-        margin-top: 96px;
+        top: 38%;
         width: 50%;
     }
 
-    #imgLupaTipoDecisaoAntec {
-        position: absolute;
-        margin-left: 51%;
-        margin-top: 98px;
-        width: 16px;
-        height: 16px;
-
-    }
-
-    #imgExcluirTipoDecisaoAntec {
-        position: absolute;
-        margin-left: 51%;
-        margin-top: 115px;
-        width: 16px;
-        height: 16px;
-
-    }
+    #divOpcoesTipoDecisaoAnt{position: absolute;left: 51%;top: 38%;}
+    #tbOrientacao{position: relative}
+    #tbConteudoAntecedente{position: relative}
+    .cke_top, .cke_contents, .cke_bottom {max-height: 23em;}
 
 </style>

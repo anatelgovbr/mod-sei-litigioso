@@ -381,8 +381,8 @@
             PaginaSEI::getInstance()->abrirAreaDados('5em');
         ?>
 
-        <label id="lblTipoDecisao" accesskey="t" for="txtTipoDecisao" class="infraLabelOpcional"><span
-                class="infraTeclaAtalho">T</span>ipos de Decisão:</label>
+        <label id="lblTipoDecisao" for="txtTipoDecisao" class="infraLabelOpcional">
+                Tipos de Decisão:</label>
         <input type="text" id="txtTipoDecisao" name="txtTipoDecisao" value="<?= $strNomeTipoDecisaoPesquisa ?>"
                class="infraText" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
 

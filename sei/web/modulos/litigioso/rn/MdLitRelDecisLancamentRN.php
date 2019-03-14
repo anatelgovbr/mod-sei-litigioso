@@ -49,15 +49,21 @@ class MdLitRelDecisLancamentRN extends InfraRN {
 
       $objInfraException->lancarValidacoes();
 
-        foreach ($objMdLitRelDecisLancamentDTO->getArrIdMdLitDecisoes() as $idMdLitDecisao){
-            $objMdLitRelDecisLancamentDTONovo = new MdLitRelDecisLancamentDTO();
-            $objMdLitRelDecisLancamentDTONovo->setNumIdMdLitDecisao($idMdLitDecisao);
-            $objMdLitRelDecisLancamentDTONovo->setNumIdMdLitLancamento($objMdLitRelDecisLancamentDTO->getNumIdMdLitLancamento());
+      if($objMdLitRelDecisLancamentDTO->isSetArrIdMdLitDecisoes()){
+          foreach ($objMdLitRelDecisLancamentDTO->getArrIdMdLitDecisoes() as $idMdLitDecisao){
+              $objMdLitRelDecisLancamentDTONovo = new MdLitRelDecisLancamentDTO();
+              $objMdLitRelDecisLancamentDTONovo->setNumIdMdLitDecisao($idMdLitDecisao);
+              $objMdLitRelDecisLancamentDTONovo->setNumIdMdLitLancamento($objMdLitRelDecisLancamentDTO->getNumIdMdLitLancamento());
 
-            $objMdLitRelDecisLancamentBD = new MdLitRelDecisLancamentBD($this->getObjInfraIBanco());
-            $ret[] = $objMdLitRelDecisLancamentBD->cadastrar($objMdLitRelDecisLancamentDTONovo);
+              $objMdLitRelDecisLancamentBD = new MdLitRelDecisLancamentBD($this->getObjInfraIBanco());
+              $ret[] = $objMdLitRelDecisLancamentBD->cadastrar($objMdLitRelDecisLancamentDTONovo);
+          }
 
-        }
+          return $ret;
+      }
+
+        $objMdLitRelDecisLancamentBD = new MdLitRelDecisLancamentBD($this->getObjInfraIBanco());
+        $ret = $objMdLitRelDecisLancamentBD->cadastrar($objMdLitRelDecisLancamentDTO);
       //Auditoria
 
       return $ret;
@@ -180,6 +186,37 @@ class MdLitRelDecisLancamentRN extends InfraRN {
     }catch(Exception $e){
       throw new InfraException('Erro contando decisões do lançamento.',$e);
     }
+  }
+
+  protected function vincularDecisaoComLancamentoControlado($arrObjMdLitDecisaoDTO){
+      if(count($arrObjMdLitDecisaoDTO)){
+          $arrIdProcedimento = InfraArray::converterArrInfraDTO($arrObjMdLitDecisaoDTO, 'IdProcedimentoMdLitProcessoSituacao');
+          $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+          $objMdLitLancamentoDTO->retNumIdMdLitLancamento();
+          $objMdLitLancamentoDTO->retDblIdProcedimento();
+          $objMdLitLancamentoDTO->setDblIdProcedimento($arrIdProcedimento, InfraDTO::$OPER_IN);
+
+          $objMdLitLancamentoRN = new MdLitLancamentoRN();
+          $arrObjMdLitLancamentoDTO = $objMdLitLancamentoRN->listar($objMdLitLancamentoDTO);
+          if(!count($arrObjMdLitLancamentoDTO))
+              return null;
+
+          foreach ($arrObjMdLitLancamentoDTO as $objMdLitLancamentoDTO){
+              $arrObjMdLitDecisaoFiltradoDTO = InfraArray::filtrarArrInfraDTO($arrObjMdLitDecisaoDTO, 'IdProcedimentoMdLitProcessoSituacao', $objMdLitLancamentoDTO->getDblIdProcedimento());
+              if(!count($arrObjMdLitDecisaoFiltradoDTO))
+                  continue;
+
+              foreach ($arrObjMdLitDecisaoFiltradoDTO as $objMdLitDecisaoFiltradoDTO){
+                  $objMdLitRelDecisLancamentDTO = new MdLitRelDecisLancamentDTO();
+                  $objMdLitRelDecisLancamentDTO->setNumIdMdLitDecisao($objMdLitDecisaoFiltradoDTO->getNumIdMdLitDecisao());
+                  $objMdLitRelDecisLancamentDTO->setNumIdMdLitLancamento($objMdLitLancamentoDTO->getNumIdMdLitLancamento());
+
+                  $this->cadastrar($objMdLitRelDecisLancamentDTO);
+              }
+          }
+
+      }
+
   }
 /* 
   protected function desativarControlado($arrObjMdLitRelDecisLancamentDTO){

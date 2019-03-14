@@ -32,10 +32,15 @@ class MdLitConsultarLancamentoRN extends InfraRN
 
         $sucesso = false;
         $objMdLitSoapClienteRN   = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(),'wsdl');
-        $montarParametrosEntrada = $this->_montarParametrosEntradaConsultarLancamento($objMdLitIntegracaoDTO, $post);
-
-        /**MOC **/
+        $montarParametrosEntrada = $this->_montarParametrosEntradaConsultarLancamento($objMdLitIntegracaoDTO, $post, 'S');
         $arrResultado            = $objMdLitSoapClienteRN->enviarDadosSigecLancamento($objMdLitIntegracaoDTO, $montarParametrosEntrada);
+
+        if(empty($arrResultado)){
+            //@todo solução paliativa retirar quanto a consultarLancamento web-service estiver pronto
+            $montarParametrosEntrada = $this->_montarParametrosEntradaConsultarLancamento($objMdLitIntegracaoDTO, $post, 'N');
+            $arrResultado            = $objMdLitSoapClienteRN->enviarDadosSigecLancamento($objMdLitIntegracaoDTO, $montarParametrosEntrada);
+        }
+
         $err                     = $objMdLitSoapClienteRN->getError();
 
         $dadosSaida = '';
@@ -148,7 +153,7 @@ class MdLitConsultarLancamentoRN extends InfraRN
         return $objMdLitLancamentoDTO;
     }
 
-    private function _montarParametrosEntradaConsultarLancamento($objMdLitIntegracaoDTO, $post){
+    private function _montarParametrosEntradaConsultarLancamento($objMdLitIntegracaoDTO, $post, $sinRenunciaRecurso= null){
         $montarParametroEntrada = array();
         $idLancamento = array_key_exists('selCreditosProcesso', $post) ? $post['selCreditosProcesso'] : '';
         $objMdLitLancamentoRN = new MdLitLancamentoRN();
@@ -177,6 +182,12 @@ class MdLitConsultarLancamentoRN extends InfraRN
                         break;
 
                     case MdLitMapearParamEntradaRN::$ID_PARAM_CONSULTAR_LANCAMENTO['RENUNCIA_RECURSO']:
+                        if(!empty($sinRenunciaRecurso)){
+                            $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $sinRenunciaRecurso;
+                            break;
+                        }
+
+
                         $renunciaRecurso = array_key_exists('chkReducaoRenuncia', $post) && $post['chkReducaoRenuncia'] == 'S' ? 'S' : 'N';
 
                         /**

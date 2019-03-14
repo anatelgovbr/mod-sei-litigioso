@@ -103,6 +103,7 @@
         $bolAcaoReativarTopo  = false;
         $bolAcaoExcluirTopo   = false;
         $bolAcaoDesativarTopo = false;
+        $hdnIdDispositivo = $_POST['hdnIdDispositivo'] ? $_POST['hdnIdDispositivo'] : '';
 
         //BOTOES TOPO DA PAGINA
         if ($_GET['acao'] == 'md_lit_conduta_selecionar') {
@@ -146,6 +147,23 @@
 
         if ($_GET['acao'] == 'md_lit_conduta_selecionar') {
             $objCondutaLitigiosoDTO->setStrSinAtivo('S');
+        }
+
+        if($hdnIdDispositivo != ''){
+            $arrIdDispositivo = explode(',', $hdnIdDispositivo);
+
+            $objRelDispositivoNormativoCondutaRN  = new MdLitRelDispositivoNormativoCondutaRN ();
+            $objRelDispositivoNormativoCondutaDTO = new MdLitRelDispositivoNormativoCondutaDTO ();
+
+            $objRelDispositivoNormativoCondutaDTO->setNumIdDispositivoNormativo($arrIdDispositivo, InfraDTO::$OPER_IN);
+            $objRelDispositivoNormativoCondutaDTO->retNumIdConduta();
+
+            $arrObjRelDispositivoNormativoCondutaDTO = $objRelDispositivoNormativoCondutaRN->listar($objRelDispositivoNormativoCondutaDTO);
+            if(count($arrObjRelDispositivoNormativoCondutaDTO)){
+                $arrIdConduta = InfraArray::converterArrInfraDTO($arrObjRelDispositivoNormativoCondutaDTO, 'IdConduta' );
+
+                $objCondutaLitigiosoDTO->setNumIdCondutaLitigioso($arrIdConduta, InfraDTO::$OPER_IN);
+            }
         }
 
         $arrObjCondutaLitigiosoDTO = $objCondutaLitigiosoRN->listar($objCondutaLitigiosoDTO);
@@ -341,6 +359,12 @@
     if ('<?= $_GET['acao'] ?>'=='md_lit_conduta_selecionar'){
     infraReceberSelecao();
     document.getElementById('btnFecharSelecao').focus();
+    var idObject = document.getElementById('hdnInfraSelecaoIdObject');
+    var obj = eval('window.opener.'+idObject.value);
+    if(obj.id_dispositivo != null && document.getElementById('hdnIdDispositivo').value == ''){
+        document.getElementById('hdnIdDispositivo').value = obj.id_dispositivo;
+        document.getElementById('frmCondutaLitigiosoLista').submit();
+    }
     }else{
     document.getElementById('btnFechar').focus();
     }
@@ -524,6 +548,7 @@
             <label id="lblConduta" for="txtConduta" accesskey="S" class="infraLabelOpcional">Conduta:</label>
             <input type="text" id="txtConduta" name="txtConduta" class="infraText" value="<?php echo isset($_POST['txtConduta']) ? $_POST['txtConduta'] : '' ?>" maxlength="500" tabindex="502">
         </div>
+        <input type="hidden" id="hdnIdDispositivo" name="hdnIdDispositivo" value="<?=$hdnIdDispositivo?>"/>
         <?php
 
             PaginaSEI::getInstance()->montarAreaTabela($strResultado, $numRegistros);

@@ -148,7 +148,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         <label class="infraLabelObrigatorio" >
             Justificativa:
         </label>
-        <textarea rows="8" style="width: 100%" name="txtJustificativaLancamento" id="txtJustificativaLancamento" disabled="disabled" ><?= $txtJustificativaPadrao ?></textarea>
+        <textarea rows="8" style="width: 100%" name="txtJustificativaLancamento"  onkeypress="return infraLimitarTexto(this,event,250);" maxlength="250" id="txtJustificativaLancamento" disabled="disabled" ><?= $txtJustificativaPadrao ?></textarea>
     </div>
 
     <input type="hidden" name="hdnIdMdLitFuncionalidade" id="hdnIdMdLitFuncionalidade" value="<?= $_GET['id_md_lit_funcionalidade'] ?>">

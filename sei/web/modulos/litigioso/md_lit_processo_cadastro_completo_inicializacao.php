@@ -284,7 +284,8 @@
                             $norma = '<a href="'.PaginaSEI::tratarHTML($objRelDispositivoNormativoCondutaControleLitigioso->getStrUrlDispositivo()).'" style="font-size: inherit !important;" target="_blank" title="Acesse a Norma">'.PaginaSEI::tratarHTML($objRelDispositivoNormativoCondutaControleLitigioso->getStrNorma()).'</a>';
                         }
                         if($objRelDispositivoNormativoCondutaControleLitigioso->getStrDescricaoDispositivo() != ''){
-                            $dispositivo = '<span style="font-size: inherit !important;" title="'.PaginaSEI::tratarHTML($objRelDispositivoNormativoCondutaControleLitigioso->getStrDescricaoDispositivo()).'">'.PaginaSEI::tratarHTML($dispositivo).'</span>';
+                            $descricao = str_replace('±', '&plusmn;', $objRelDispositivoNormativoCondutaControleLitigioso->getStrDescricaoDispositivo());
+                            $dispositivo = '<span style="font-size: inherit !important;" title="'.PaginaSEI::tratarHTML($descricao).'">'.PaginaSEI::tratarHTML($dispositivo).'</span>';
                         }
                         $conduta = $objRelDispositivoNormativoCondutaControleLitigioso->getStrConduta() ? $objRelDispositivoNormativoCondutaControleLitigioso->getStrConduta() : '';
                         $arr[] = array(

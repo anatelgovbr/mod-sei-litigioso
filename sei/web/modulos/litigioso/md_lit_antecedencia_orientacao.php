@@ -20,10 +20,9 @@ echo $retEditor->getStrInicializacao();
 <style type="text/css">
 
     #ConteudoAntecedente{
-
-        width: 90%;
-        margin-top: 207px;
-        margin-left: 0px;
+    position: absolute;
+        width: 100%;
+        top:5%
 
     }
     #txaConteudoAntecedente{

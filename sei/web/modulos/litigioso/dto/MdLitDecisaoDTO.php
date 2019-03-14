@@ -45,6 +45,8 @@ class MdLitDecisaoDTO extends InfraDTO {
 
       $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinCadastroParcial', 'sin_cadastro_parcial');
 
+      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinUltimaDecisao', 'sin_ultima_decisao');
+
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdMdLitProcessoSituacaoMdLitProcessoSituacao', 'mps.id_md_lit_processo_situacao', 'md_lit_processo_situacao mps');
 
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_DBL, 'IdProcedimentoMdLitProcessoSituacao', 'mps.id_procedimento', 'md_lit_processo_situacao mps');
@@ -61,6 +63,9 @@ class MdLitDecisaoDTO extends InfraDTO {
 
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdDispositivoNormativoMdLitRelDisNorConCtr', 'rel.id_md_lit_disp_normat', 'md_lit_rel_dis_nor_con_ctr rel');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdCondutaMdLitRelDisNorConCtr', 'rel.id_md_lit_conduta', 'md_lit_rel_dis_nor_con_ctr rel');
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_DTA, 'InfracaoEspecifica', 'rel.dta_infracao', 'md_lit_rel_dis_nor_con_ctr rel');
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_DTA, 'InfracaoPeriodoInicial', 'rel.dta_infracao_periodo_inicial', 'md_lit_rel_dis_nor_con_ctr rel');
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_DTA, 'InfracaoPeriodoFinal', 'rel.dta_infracao_periodo_final', 'md_lit_rel_dis_nor_con_ctr rel');
       //retornar a infração
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'Dispositivo', 'disp.dispositivo', 'md_lit_disp_normat disp');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'Norma', 'disp.norma', 'md_lit_disp_normat disp');
@@ -71,8 +76,8 @@ class MdLitDecisaoDTO extends InfraDTO {
 
     $this->configurarFK('IdMdLitProcessoSituacao', 'md_lit_processo_situacao mps', 'mps.id_md_lit_processo_situacao');
     $this->configurarFK('IdMdLitRelDisNorConCtr', 'md_lit_rel_dis_nor_con_ctr rel', 'rel.id_md_lit_rel_dis_nor_con_ctr');
-    $this->configurarFK('IdDispositivoNormativoMdLitRelDisNorConCtr', 'md_lit_disp_normat disp', 'disp.id_md_lit_disp_normat');
-    $this->configurarFK('IdCondutaMdLitRelDisNorConCtr', 'md_lit_conduta cond', 'cond.id_md_lit_conduta', InfraDTO::$TIPO_FK_OPCIONAL);
+    $this->configurarFK('IdDispositivoNormativoMdLitRelDisNorConCtr', 'md_lit_disp_normat disp', 'disp.id_md_lit_disp_normat', InfraDTO::$TIPO_FK_OBRIGATORIA, InfraDTO::$FILTRO_FK_WHERE);
+    $this->configurarFK('IdCondutaMdLitRelDisNorConCtr', 'md_lit_conduta cond', 'cond.id_md_lit_conduta', InfraDTO::$TIPO_FK_OPCIONAL, InfraDTO::$FILTRO_FK_WHERE);
     $this->configurarFK('IdMdLitObrigacao', 'md_lit_obrigacao', 'id_md_lit_obrigacao',InfraDTO::$TIPO_FK_OPCIONAL);
     $this->configurarFK('IdMdLitTipoDecisao', 'md_lit_tipo_decisao', 'id_md_lit_tipo_decisao',InfraDTO::$TIPO_FK_OPCIONAL);
     $this->configurarFK('IdMdLitEspecieDecisao', 'md_lit_especie_decisao', 'id_md_lit_especie_decisao',InfraDTO::$TIPO_FK_OPCIONAL);
@@ -85,10 +90,29 @@ class MdLitDecisaoDTO extends InfraDTO {
     $this->configurarFK('IdProtocoloDocumento', 'protocolo pd', 'pd.id_protocolo');
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_DBL, 'IdProtocoloDocumento','d.id_documento','documento d');
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'ProtocoloFormatadoDocumento','pd.protocolo_formatado','protocolo pd');
+
+    //Get Numero Processo Formatado
+    $this->configurarFK('IdProtocoloProcedimento', 'protocolo procedimento', 'procedimento.id_protocolo');
+    $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_DBL, 'IdProtocoloProcedimento','mps.id_procedimento','md_lit_processo_situacao mps');
+    $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'ProtocoloFormatadoProcedimento','procedimento.protocolo_formatado','protocolo procedimento');
+
+    //GET o Dado do interessado
+    $this->configurarFK('IdMdLitControle', 'md_lit_dado_interessado interessado', 'interessado.id_md_lit_controle');
+    $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdMdLitControle','rel.id_md_lit_controle','md_lit_rel_dis_nor_con_ctr rel');
+    $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdContato','interessado.id_contato','md_lit_dado_interessado interessado');
+    $this->configurarFK('IdContato', 'contato cont', 'cont.id_contato', InfraDTO::$TIPO_FK_OBRIGATORIA, InfraDTO::$FILTRO_FK_WHERE);
+    $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeContato','cont.nome','contato cont');
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'CpfContato','cont.cpf','contato cont');
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'CnpjContato','cont.cnpj','contato cont');
+
     $this->configurarExclusaoLogica('SinAtivo', 'N');
 
     //Situação
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdMdLitSituacao', 'mps.id_md_lit_situacao', 'md_lit_situacao mps');
+
+    $this->adicionarAtributo(InfraDTO::$PREFIXO_DTA, 'TransitoJulgado');
+      $this->adicionarAtributo(InfraDTO::$PREFIXO_DTA, 'Corte');
+      $this->adicionarAtributo(InfraDTO::$PREFIXO_STR, 'DispositivoNormativo');
 
   }
 
@@ -106,6 +130,10 @@ class MdLitDecisaoDTO extends InfraDTO {
         }
 
         return $infracao;
+    }
+
+    public function getStrDispositivoNormativo(){
+      return $this->getStrNorma().' - '.$this->getStrDispositivo();
     }
 }
 ?>

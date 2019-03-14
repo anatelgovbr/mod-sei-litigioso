@@ -209,8 +209,8 @@ class MdLitHistoricLancamentoRN extends InfraRN {
     }else{
       $objMdLitHistoricLancamentoDTO->setStrJustificativa(trim($objMdLitHistoricLancamentoDTO->getStrJustificativa()));
 
-      if (strlen($objMdLitHistoricLancamentoDTO->getStrJustificativa())>100){
-        $objInfraException->adicionarValidacao('justificativa possui tamanho superior a 100 caracteres.');
+      if (strlen($objMdLitHistoricLancamentoDTO->getStrJustificativa())>250){
+        $objInfraException->adicionarValidacao('A justificativo do histórico do Lançamento possui tamanho superior a 250 caracteres.');
       }
     }
   }

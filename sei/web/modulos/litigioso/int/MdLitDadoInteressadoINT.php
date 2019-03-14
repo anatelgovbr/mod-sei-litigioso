@@ -298,12 +298,13 @@ class MdLitDadoInteressadoINT extends InfraINT {
                         if($resultado[$objMdLitParamEntradaDTO->getStrCampo()]) {
                             $objMdLitServicoDTO = new MdLitServicoDTO();
                             $objMdLitServicoRN = new MdLitServicoRN();
-                            $objMdLitServicoDTO = self::buscarDTOUtilWS($objMdLitServicoDTO, $objMdLitServicoRN, array('Codigo', 'Sigla', 'Descricao'), utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]));
-                            if (!$objMdLitServicoDTO)
-                                return '<erros><erro descricao="O serviço \'' . utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]) . '\' recuperado pelo web-service não foi cadastrado no SEI"></erro></erros>';
+                            $arrObjMdLitServicoDTO = self::buscarDTOUtilWS($objMdLitServicoDTO, $objMdLitServicoRN, array('Codigo', 'Sigla', 'Descricao'), utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]));
+                            if (!$arrObjMdLitServicoDTO)
+                                return '<erros><erro descricao="O serviço \'' . ($resultado[$objMdLitParamEntradaDTO->getStrCampo()]) . '\' recuperado pelo web-service não foi cadastrado no SEI"></erro></erros>';
 
-                            $arrResultadoParametrizado[$key]['id_servico'] = $objMdLitServicoDTO->getNumIdMdLitServico();
-                            $arrResultadoParametrizado[$key]['nome_servico'] = $objMdLitServicoDTO->getStrDescricao();
+                            $arrItensTabela = self::gerarItensTabela($arrObjMdLitServicoDTO , 'IdMdLitServico', 'Descricao');
+                            $arrResultadoParametrizado[$key]['id_servico'] = $arrItensTabela['id'];
+                            $arrResultadoParametrizado[$key]['nome_servico'] = $arrItensTabela['nome'];
                         }
 
                         break;
@@ -311,26 +312,30 @@ class MdLitDadoInteressadoINT extends InfraINT {
                         if($resultado[$objMdLitParamEntradaDTO->getStrCampo()]) {
                             $objMdLitAbrangenciaDTO = new MdLitAbrangenciaDTO();
                             $objMdLitAbrangenciaRN = new MdLitAbrangenciaRN();
-                            $objMdLitAbrangenciaDTO = self::buscarDTOUtilWS($objMdLitAbrangenciaDTO, $objMdLitAbrangenciaRN, array('IdMdLitAbrangencia', 'Nome'), utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]));
+                            $arrObjMdLitAbrangenciaDTO = self::buscarDTOUtilWS($objMdLitAbrangenciaDTO, $objMdLitAbrangenciaRN, array('Nome'), $resultado[$objMdLitParamEntradaDTO->getStrCampo()]);
 
-                            if (!$objMdLitAbrangenciaDTO)
-                                return '<erros><erro descricao="a abrangência \'' . utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]) . '\' recuperado pelo web-service não foi cadastrado no SEI"></erro></erros>';
+                            if (!$arrObjMdLitAbrangenciaDTO){
+                                continue;
+                            }
 
-                            $arrResultadoParametrizado[$key]['id_abrangencia'] = $objMdLitAbrangenciaDTO->getNumIdMdLitAbrangencia();
-                            $arrResultadoParametrizado[$key]['nome_abrangencia'] = $objMdLitServicoDTO->getStrNome();
+                            $arrItensTabela = self::gerarItensTabela($arrObjMdLitAbrangenciaDTO , 'IdMdLitAbrangencia', 'Nome');
+                            $arrResultadoParametrizado[$key]['id_abrangencia'] = $arrItensTabela['id'];
+                            $arrResultadoParametrizado[$key]['nome_abrangencia'] = $arrItensTabela['nome'];
                         }
                         break;
                     case MdLitNomeFuncionalRN::$MODALIDADE:
                         if($resultado[$objMdLitParamEntradaDTO->getStrCampo()]) {
                             $objMdLitModalidadeDTO = new MdLitModalidadeDTO();
                             $objMdLitModalidadeRN = new MdLitModalidadeRN();
-                            $objMdLitModalidadeDTO = self::buscarDTOUtilWS($objMdLitModalidadeDTO, $objMdLitModalidadeRN, array('IdMdLitModalidade', 'Nome'), utf8_decode(current($resultado[$objMdLitParamEntradaDTO->getStrCampo()])));
+                            $arrObjMdLitModalidadeDTO = self::buscarDTOUtilWS($objMdLitModalidadeDTO, $objMdLitModalidadeRN, array('Nome'), $resultado[$objMdLitParamEntradaDTO->getStrCampo()]);
 
-                            if (!$objMdLitModalidadeDTO)
-                                return '<erros><erro descricao="a modalidade \'' . utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]) . '\' recuperado pelo web-service não foi cadastrado no SEI"></erro></erros>';
+                            if (!$arrObjMdLitModalidadeDTO)
+                                continue;
 
-                            $arrResultadoParametrizado[$key]['id_modalidade'] = $objMdLitModalidadeDTO->getNumIdMdLitModalidade();
-                            $arrResultadoParametrizado[$key]['nome_modalidade'] = $objMdLitModalidadeDTO->getStrNome();
+
+                            $arrItensTabela = self::gerarItensTabela($arrObjMdLitModalidadeDTO , 'IdMdLitModalidade', 'Nome');
+                            $arrResultadoParametrizado[$key]['id_modalidade'] = $arrItensTabela['id'];
+                            $arrResultadoParametrizado[$key]['nome_modalidade'] = $arrItensTabela['nome'];
                         }
                         break;
                     case MdLitNomeFuncionalRN::$CNPJ_CPF:
@@ -340,12 +345,33 @@ class MdLitDadoInteressadoINT extends InfraINT {
                         break;
                     case MdLitNomeFuncionalRN::$ESTADO:
                         if($resultado[$objMdLitParamEntradaDTO->getStrCampo()]) {
-                            $arrResultadoParametrizado[$key]['estado'] = utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]);
+
+                            $objUfDTO = new UfDTO();
+                            $objUfRN = new UfRN();
+                            $arrObjUfDTO = self::buscarDTOUtilWS($objUfDTO, $objUfRN, array('Sigla', 'Nome'), $resultado[$objMdLitParamEntradaDTO->getStrCampo()]);
+
+                            if (!$arrObjUfDTO)
+                                continue;
+
+
+                            $arrItensTabela = self::gerarItensTabela($arrObjUfDTO , 'IdUf', 'Nome');
+                            $arrResultadoParametrizado[$key]['id_estado'] = $arrItensTabela['id'];
+                            $arrResultadoParametrizado[$key]['nome_estado'] = $arrItensTabela['nome'];
                         }
                         break;
                     case MdLitNomeFuncionalRN::$CIDADE:
                         if($resultado[$objMdLitParamEntradaDTO->getStrCampo()]) {
-                            $arrResultadoParametrizado[$key]['cidade'] = utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]);
+                            $objCidadeDTO = new CidadeDTO();
+                            $objCidadeRN = new CidadeRN();
+                            $arrObjCidadeDTO = self::buscarDTOUtilWS($objCidadeDTO, $objCidadeRN, array('Nome'), $resultado[$objMdLitParamEntradaDTO->getStrCampo()]);
+
+                            if (!$arrObjCidadeDTO)
+                                continue;
+
+
+                            $arrItensTabela = self::gerarItensTabela($arrObjCidadeDTO , 'IdCidade', 'Nome');
+                            $arrResultadoParametrizado[$key]['id_cidade'] = $arrItensTabela['id'];
+                            $arrResultadoParametrizado[$key]['nome_cidade'] = $arrItensTabela['nome'];
                         }
                         break;
                 }
@@ -353,6 +379,25 @@ class MdLitDadoInteressadoINT extends InfraINT {
             }
         }
         return self::gerarXMLItensArr($arrResultadoParametrizado);
+    }
+
+    private static function gerarItensTabela($arrObj, $idAtributo, $nomeAtributo){
+        $id = null;
+        $nome = null;
+        foreach ($arrObj as $objDTO){
+            if($id)
+                $id .= ',€ ';
+
+            $id .= $objDTO->get($idAtributo);
+
+            if($nome)
+                $nome .= ',<br> ';
+
+            $nome .= $objDTO->get($nomeAtributo);
+
+        }
+        return ['id'=> $id, 'nome'=> $nome];
+
     }
 
     private static function mensagemValidacaoNaoOutorgado($filtro){
@@ -392,8 +437,18 @@ class MdLitDadoInteressadoINT extends InfraINT {
         $operadoresAtributos = array();
         $operadoresLogico    = array();
         $valoresAtributos    = array();
+
+        if (is_array($txtFiltro)) {
+            $txtFiltro = InfraArray::valoresArrayRecursivo($txtFiltro);
+            $txtFiltro = self::to_utf8($txtFiltro);
+
+        } else {
+            $txtFiltro = array($txtFiltro);
+        }
+
+
         foreach ($criterio as $item) {
-            $operadoresAtributos[]  = InfraDTO::$OPER_IGUAL;
+            $operadoresAtributos[]  = InfraDTO::$OPER_IN;
             $operadoresLogico[]     = InfraDTO::$OPER_LOGICO_OR;
             $valoresAtributos[]     = $txtFiltro;
         }
@@ -404,15 +459,33 @@ class MdLitDadoInteressadoINT extends InfraINT {
             $valoresAtributos,
             $operadoresLogico);
 
-        return $objRN->consultar($objDTO);
+        //listar estado não usa o padrão de metodos listar
+        if($objRN instanceof UfRN){
+            return $objRN->listarRN0401($objDTO);
+        }
 
-//        $return = array();
-//        foreach ($arrObj as $objDTO){
-//            foreach ($objDTO->getArrAtributos() as $atributo) {
-//                $return[$atributo[1]] = isset($return[$atributo[1]])? $atributo[2].', '.$atributo[2]: $atributo[2];
-//            }
-//        }
-//        var_dump($arrObj);exit;
+        //listar cidade não usa o padrão de metodos listar
+        if($objRN instanceof CidadeRN){
+            return $objRN->listarRN0410($objDTO);
+        }
+
+        return $objRN->listar($objDTO);
+
+    }
+
+    public static function to_utf8($data)
+    {
+        if (is_array($data)) {
+            $out = array();
+            foreach ($data as $key => $value) {
+                $out[self::to_utf8($key)] = self::to_utf8($value);
+            }
+
+            return $out;
+        } elseif(is_string($data)) {
+            return utf8_decode($data);
+        }
+        return $data;
     }
 
     public static function gerarXMLItensArr($arr){
@@ -500,10 +573,10 @@ class MdLitDadoInteressadoINT extends InfraINT {
             $objMdLitRelNumInterAbrangDTO->setNumIdMdLitNumeroInteressado($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado());
 
             $objMdLitRelNumInterAbrangRN = new MdLitRelNumInterAbrangRN();
-            $arrObjMdLitRelNumInterServicoDTO = $objMdLitRelNumInterAbrangRN->listar($objMdLitRelNumInterAbrangDTO);
+            $arrObjMdLitRelNumInterAbrangenciaDTO = $objMdLitRelNumInterAbrangRN->listar($objMdLitRelNumInterAbrangDTO);
 
-            if($arrObjMdLitRelNumInterModaliDTO){
-                foreach ($arrObjMdLitRelNumInterServicoDTO as $objMdLitRelNumInterAbrangDTO) {
+            if($arrObjMdLitRelNumInterAbrangenciaDTO){
+                foreach ($arrObjMdLitRelNumInterAbrangenciaDTO as $objMdLitRelNumInterAbrangDTO) {
                     $arrResultado[$key]['nome_abrangencia'] .= isset($arrResultado[$key]['nome_abrangencia']) ? ',<br> '.$objMdLitRelNumInterAbrangDTO->getStrNomeMdLitAbrangencia() : $objMdLitRelNumInterAbrangDTO->getStrNomeMdLitAbrangencia();
                     $arrResultado[$key]['id_abrangencia'] .= isset($arrResultado[$key]['id_abrangencia']) ? ',€ '.$objMdLitRelNumInterAbrangDTO->getNumIdMdLitAbrangencia() : $objMdLitRelNumInterAbrangDTO->getNumIdMdLitAbrangencia();
                 }

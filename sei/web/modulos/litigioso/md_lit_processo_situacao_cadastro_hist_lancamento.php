@@ -231,9 +231,8 @@ PaginaSEI::getInstance()->abrirBody($strTitulo,'onload=""');
         </div>
 
         <div id="divInformacoes">
-          <label style="margin-left:70px" id="lblInformacoes">- É possível visualizar o boleto apenas sobre o último registro, pois o Boleto apresentado é sempre o atualizado.</label>
-            <p style="margin-left:70px;font-size: 1.2em;">- Apenas são apresentadas novas linhas, quando:</p>
-            <p style="margin-left:100px;font-size: 1.2em;text-align:justify;">- Existirem atualizações de valores (inclusive no valor lançado, ou se existirem descontos), data do último pagamento e modificação de situação do lançamento, ou seja, atualizações monetárias (Juros, Multa) realizadas pelo Sistema de Arrecadação, não geram novas linhas neste Histórico.</p>
+          <label style="margin-left:70px" id="lblInformacoes">- Somente é possível acessar o Boleto sobre último registro do Histórico, para que seja apresentado sempre atualizado.</label>
+            <p style="margin-left:70px;font-size: 1.2em;margin-top: 5px;margin-bottom: 0;">- São apresentadas novas linhas no Histórico somente quando ocorre atualizações sobre o Crédito Lançado, Desconto, pagamento ou modificação da situação do lançamento.</p>
         </div>
     </div>
 

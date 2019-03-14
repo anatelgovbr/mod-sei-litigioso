@@ -954,6 +954,17 @@
                     alert('A data da infração é obrigatório!');
                     return false;
                 }
+                if(!infraValidarData(document.getElementById('txtDtaInfracaoPorDispositivo'), false)){
+                    alert('A data da infração é inválida!');
+                    document.getElementById('txtDtaInfracaoPorDispositivo').value = '';
+                    document.getElementById('txtDtaInfracaoPorDispositivo').focus();
+                    return false;
+                }
+                if(infraCompararDatas(dtaInfracaoEspecifica, infraDataAtual())<0){
+                    alert('A data da infração especifica é maior que a data atual!');
+                    document.getElementById('txtDtaInfracaoPorDispositivo').focus();
+                    return false;
+                }
             }else if(document.getElementById('rdDataInfracaoPeriodoPorDispositivo').checked){
                 staInfracaoData = '<?php echo MdLitRelDispositivoNormativoCondutaControleRN::$TA_PERIODO?>';
                 dtaInfracaoInicial = document.getElementById('txtDtaInfracaoInicialPorDispositivo').value;
@@ -966,7 +977,33 @@
 
                 if (infraCompararDatas(dtaInfracaoInicial, dtaInfracaoFinal)<0) {
                     alert('Período de datas inválido.');
-                    document.getElementById('txtDataInicio').focus();
+                    document.getElementById('txtDtaInfracaoInicialPorDispositivo').focus();
+                    return false;
+                }
+
+                if(!infraValidarData(document.getElementById('txtDtaInfracaoInicialPorDispositivo'), false)){
+                    alert('A data do periodo inicial é Inválida!');
+                    document.getElementById('txtDtaInfracaoInicialPorDispositivo').value = '';
+                    document.getElementById('txtDtaInfracaoInicialPorDispositivo').focus();
+                    return false;
+                }
+
+                if(!infraValidarData(document.getElementById('txtDtaInfracaoFinalPorDispositivo'), false)){
+                    alert('A data do periodo final é Inválida!');
+                    document.getElementById('txtDtaInfracaoFinalPorDispositivo').value = '';
+                    document.getElementById('txtDtaInfracaoFinalPorDispositivo').focus();
+                    return false;
+                }
+
+                if(infraCompararDatas(dtaInfracaoInicial, infraDataAtual())<0){
+                    alert('A data do periodo inicial é maior que a data atual!');
+                    document.getElementById('txtDtaInfracaoInicialPorDispositivo').focus();
+                    return false;
+                }
+
+                if(infraCompararDatas(dtaInfracaoFinal, infraDataAtual())<0){
+                    alert('A data do periodo final é maior que a data atual!');
+                    document.getElementById('txtDtaInfracaoFinalPorDispositivo').focus();
                     return false;
                 }
                 dtaInfracao = dtaInfracaoInicial +' a '+ dtaInfracaoFinal;
@@ -1005,6 +1042,18 @@
                     alert('A data da infração é obrigatório!');
                     return false;
                 }
+                if(!infraValidarData(document.getElementById('txtDtaInfracaoPorConduta'), false)){
+                    alert('A data da infração é inválida!');
+                    document.getElementById('txtDtaInfracaoPorConduta').value = '';
+                    document.getElementById('txtDtaInfracaoPorConduta').focus();
+                    return false;
+                }
+                if(infraCompararDatas(dtaInfracaoEspecifica, infraDataAtual())<0){
+                    alert('A data da infração especifica é maior que a data atual!');
+                    document.getElementById('txtDtaInfracaoPorConduta').focus();
+                    return false;
+                }
+
             }else if(document.getElementById('rdDataInfracaoPeriodoPorConduta').checked){
                 staInfracaoData = '<?php echo MdLitRelDispositivoNormativoCondutaControleRN::$TA_PERIODO?>';
                 dtaInfracaoInicial = document.getElementById('txtDtaInfracaoInicialPorConduta').value;
@@ -1017,9 +1066,36 @@
 
                 if (infraCompararDatas(dtaInfracaoInicial, dtaInfracaoFinal)<0) {
                     alert('Período de datas inválido.');
-                    document.getElementById('txtDataInicio').focus();
+                    document.getElementById('txtDtaInfracaoFinalPorConduta').focus();
                     return false;
                 }
+
+                if(!infraValidarData(document.getElementById('txtDtaInfracaoFinalPorConduta'), false)){
+                    alert('A data do periodo final é Inválida!');
+                    document.getElementById('txtDtaInfracaoFinalPorConduta').value = '';
+                    document.getElementById('txtDtaInfracaoFinalPorConduta').focus();
+                    return false;
+                }
+
+                if(!infraValidarData(document.getElementById('txtDtaInfracaoInicialPorConduta'), false)){
+                    alert('A data do periodo inicial é Inválida!');
+                    document.getElementById('txtDtaInfracaoInicialPorConduta').value = '';
+                    document.getElementById('txtDtaInfracaoInicialPorConduta').focus();
+                    return false;
+                }
+
+                if(infraCompararDatas(dtaInfracaoInicial, infraDataAtual())<0){
+                    alert('A data do periodo inicial é maior que a data atual!');
+                    document.getElementById('txtDtaInfracaoInicialPorConduta').focus();
+                    return false;
+                }
+
+                if(infraCompararDatas(dtaInfracaoFinal, infraDataAtual())<0){
+                    alert('A data do periodo final é maior que a data atual!');
+                    document.getElementById('txtDtaInfracaoFinalPorConduta').focus();
+                    return false;
+                }
+
                 dtaInfracao = dtaInfracaoInicial +' a '+ dtaInfracaoFinal;
             }else{
                 alert('Selecione o tipo da data de infração');
@@ -1664,6 +1740,7 @@
     }
 
     function mostrarDispositivoPorConduta(){
+        objLupaICDispositivoNormativo.remover();
         element = document.getElementById('selICCondutas');
         if(element.value == '' ||element.value == 'null' ){
             document.getElementById('divDispositivoPorConduta').style.display = 'none';

@@ -530,8 +530,8 @@
                         nomeServico     = arrResultado[7] == 'null' ? nomeServico :arrResultado[7];
                         nomeModalidade  = arrResultado[8] == 'null' ? nomeModalidade :arrResultado[8];
                         nomeAbrangencia = arrResultado[9] == 'null' ? nomeAbrangencia :arrResultado[9];
-//                        nomeEstado      = nomeEstado;
-//                        nomeCidade      = nomeCidade;
+                        nomeEstado      = arrResultado[10] == 'null' ? nomeEstado :arrResultado[10];
+                        nomeCidade      = arrResultado[11] == 'null' ? nomeCidade :arrResultado[11];
 
                         objTblDadosComplementares.adicionar([
                             numero,
@@ -828,19 +828,22 @@
                 }
 
                 var objDadosComplementares = [];
-                objDadosComplementares[0] = null;//checkbox
-                objDadosComplementares[1] = null;//ID Serviços
-                objDadosComplementares[2] = null;//ID Modalidades
-                objDadosComplementares[3] = null;//ID Abrangencias
-                objDadosComplementares[4] = null;//ID Estados
-                objDadosComplementares[5] = null;//ID Cidades
-                objDadosComplementares[6] = null;//Número
-                objDadosComplementares[7] = null;//Serviço
-                objDadosComplementares[8] = null;//Modalidade de Outorga
-                objDadosComplementares[9] = null;//Abrangências
                 var count = 0;
 
                 $.each($(result).find('item'), function(key, value){
+                    objDadosComplementares[0] = null;//checkbox
+                    objDadosComplementares[1] = null;//ID Serviços
+                    objDadosComplementares[2] = null;//ID Modalidades
+                    objDadosComplementares[3] = null;//ID Abrangencias
+                    objDadosComplementares[4] = null;//ID Estados
+                    objDadosComplementares[5] = null;//ID Cidades
+                    objDadosComplementares[6] = null;//Número
+                    objDadosComplementares[7] = null;//Serviço
+                    objDadosComplementares[8] = null;//Modalidade de Outorga
+                    objDadosComplementares[9] = null;//Abrangências
+                    objDadosComplementares[10] = null;//Estado
+                    objDadosComplementares[11] = null;//Cidade
+
                     objDadosComplementares[0] = '<input type="checkbox" onclick="toggleSelecionarTabela(this)" id="chkInfraItem'+count+'" name="chkInfraItem'+count+'" class="infraCheckbox" value="'+count+'">';
                     if($(this).attr('id_servico') != undefined)
                         objDadosComplementares[1] = $(this).attr('id_servico');
@@ -850,6 +853,31 @@
 
                     if($(this).attr('numero') != undefined)
                         objDadosComplementares[6] = $(this).attr('numero');
+
+                    if($(this).attr('id_abrangencia') != undefined)
+                        objDadosComplementares[3] = $(this).attr('id_abrangencia');
+
+                    if($(this).attr('nome_abrangencia') != undefined)
+                        objDadosComplementares[9] = $(this).attr('nome_abrangencia');
+
+                    if($(this).attr('id_modalidade') != undefined)
+                        objDadosComplementares[2] = $(this).attr('id_modalidade');
+
+                    if($(this).attr('nome_modalidade') != undefined)
+                        objDadosComplementares[8] = $(this).attr('nome_modalidade');
+
+                    if($(this).attr('id_estado') != undefined)
+                        objDadosComplementares[4] = $(this).attr('id_estado');
+
+                    if($(this).attr('nome_estado') != undefined)
+                        objDadosComplementares[10] = $(this).attr('nome_estado');
+
+                    if($(this).attr('id_cidade') != undefined)
+                        objDadosComplementares[5] = $(this).attr('id_estado');
+
+                    if($(this).attr('nome_cidade') != undefined)
+                        objDadosComplementares[11] = $(this).attr('nome_estado');
+
 
 
                     if(document.getElementById('optOutorgadaSim').checked){

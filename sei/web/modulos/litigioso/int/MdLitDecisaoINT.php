@@ -151,5 +151,100 @@ class MdLitDecisaoINT extends InfraINT {
 
 
   }
+
+  public static function montarSelectCondutaPorArrMdLitDecisao($strPrimeiroItemValor, $strPrimeiroItemDescricao, $varValorItemSelecionado, $arrObjMdLitDecisaoDTO){
+      if(count($arrObjMdLitDecisaoDTO) == 0){
+          return null;
+      }
+      $arrObjMdLitDecisaoDTO = InfraArray::distinctArrInfraDTO($arrObjMdLitDecisaoDTO,'IdCondutaMdLitRelDisNorConCtr');
+      //retirando os dados da decisão que não possui conduta
+      $arrObjMdLitDecisaoDTO = InfraArray::retirarElementoArrInfraDTO($arrObjMdLitDecisaoDTO, 'Conduta',null);
+      return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $varValorItemSelecionado, $arrObjMdLitDecisaoDTO, 'IdCondutaMdLitRelDisNorConCtr', 'Conduta');
+  }
+
+    public static function montarSelectDispositivoPorArrMdLitDecisao($strPrimeiroItemValor, $strPrimeiroItemDescricao, $varValorItemSelecionado, $arrObjMdLitDecisaoDTO){
+        if(count($arrObjMdLitDecisaoDTO) == 0){
+            return null;
+        }
+        $arrObjMdLitDecisaoDTO = InfraArray::distinctArrInfraDTO($arrObjMdLitDecisaoDTO,'IdDispositivoNormativoMdLitRelDisNorConCtr');
+        //retirando os dados da decisão que não possui conduta
+        $arrObjMdLitDecisaoDTO = InfraArray::retirarElementoArrInfraDTO($arrObjMdLitDecisaoDTO, 'Dispositivo',null);
+        return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $varValorItemSelecionado, $arrObjMdLitDecisaoDTO, 'IdDispositivoNormativoMdLitRelDisNorConCtr', 'DispositivoNormativo');
+    }
+
+
+    public static function converterParaArrExcelInfraDTO($arrObjDTO, $inicioLinha = 1){
+        $arrAlfabeto = array('A','B','C','D','E','F','G', 'H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
+        $arrRetorno = array();
+        //obs : a key não foi reutilizada, pois a pesquisa  não segue uma ordem correta .
+
+        $arrCabecalho = array('Processo', 'Interessado', 'CNPJ/CPF', 'Dispositivo', 'Norma', 'Conduta', 'Data do Trânsito Julgado');
+
+        //Cabecalho
+        $contador = 0;
+        foreach($arrCabecalho as $label){
+            $arrRetorno[1][$arrAlfabeto[$contador]] = $label;
+            $contador++;
+        }
+
+        //Dados
+        $contador = 0;
+        foreach($arrObjDTO as $objDTO){
+            $linhaExcel = $contador + $inicioLinha + 1;
+            $arrRetorno[$linhaExcel][$arrAlfabeto[0]] = $objDTO->getStrProtocoloFormatadoProcedimento();
+            $arrRetorno[$linhaExcel][$arrAlfabeto[1]] = $objDTO->getStrNomeContato();
+
+            if(!empty($objDTO->getStrCpfContato())){
+                $arrRetorno[$linhaExcel][$arrAlfabeto[2]] = InfraUtil::formatarCpfCnpj($objDTO->getStrCpfContato());
+            }else{
+                $arrRetorno[$linhaExcel][$arrAlfabeto[2]] = InfraUtil::formatarCpfCnpj($objDTO->getStrCnpjContato());
+            }
+            $arrRetorno[$linhaExcel][$arrAlfabeto[3]] = $objDTO->getStrDispositivo();
+            $arrRetorno[$linhaExcel][$arrAlfabeto[4]] = $objDTO->getStrNorma();
+            $arrRetorno[$linhaExcel][$arrAlfabeto[5]] = $objDTO->getStrConduta();
+            $arrRetorno[$linhaExcel][$arrAlfabeto[6]] = $objDTO->getDtaTransitoJulgado();
+            $contador++;
+        }
+
+
+        return $arrRetorno;
+    }
+
+
+    public static function converterParaArrExcelInfraDTOAntecedente($arrObjDTO, $inicioLinha = 1){
+        $arrAlfabeto = array('A','B','C','D','E','F','G', 'H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
+        $arrRetorno = array();
+        //obs : a key não foi reutilizada, pois a pesquisa  não segue uma ordem correta .
+
+        $arrCabecalho = array('Processo', 'Interessado', 'CNPJ/CPF', 'Tipo de Decisão', 'Espécie de Decisão', 'Data do Trânsito Julgado');
+
+        //Cabecalho
+        $contador = 0;
+        foreach($arrCabecalho as $label){
+            $arrRetorno[1][$arrAlfabeto[$contador]] = $label;
+            $contador++;
+        }
+
+        //Dados
+        $contador = 0;
+        foreach($arrObjDTO as $objDTO){
+            $linhaExcel = $contador + $inicioLinha + 1;
+            $arrRetorno[$linhaExcel][$arrAlfabeto[0]] = $objDTO->getStrProtocoloFormatadoProcedimento();
+            $arrRetorno[$linhaExcel][$arrAlfabeto[1]] = $objDTO->getStrNomeContato();
+
+            if(!empty($objDTO->getStrCpfContato())){
+                $arrRetorno[$linhaExcel][$arrAlfabeto[2]] = InfraUtil::formatarCpfCnpj($objDTO->getStrCpfContato());
+            }else{
+                $arrRetorno[$linhaExcel][$arrAlfabeto[2]] = InfraUtil::formatarCpfCnpj($objDTO->getStrCnpjContato());
+            }
+            $arrRetorno[$linhaExcel][$arrAlfabeto[3]] = $objDTO->getStrNomeMdLitTipoDecisao();
+            $arrRetorno[$linhaExcel][$arrAlfabeto[4]] = $objDTO->getStrNomeMdLitEspecieDecisao();
+            $arrRetorno[$linhaExcel][$arrAlfabeto[5]] = $objDTO->getDtaTransitoJulgado();
+            $contador++;
+        }
+
+
+        return $arrRetorno;
+    }
 }
 ?>

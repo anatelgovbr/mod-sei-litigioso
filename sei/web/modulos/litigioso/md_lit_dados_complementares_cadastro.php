@@ -356,6 +356,22 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                                 <? continue; }elseif($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$ABRANGENCIA){?>
                                 <th class="infraTh" style="display: none">Abrangências</th>
                                 <? continue;} ?>
+
+                            <?php if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$ESTADO
+                                && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S'
+                                && $objMdLitParametrizarInteressadoDTO->getStrSinCampoMapeado() == 'S'){ ?>
+                                <th class="infraTh" width="10%"><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?></th>
+                                <? continue; }elseif($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$ESTADO){?>
+                                <th class="infraTh" style="display: none">Estado</th>
+                                <? continue;} ?>
+
+                            <?php if($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$CIDADE
+                                && $objMdLitParametrizarInteressadoDTO->getStrSinExibe() == 'S'
+                                && $objMdLitParametrizarInteressadoDTO->getStrSinCampoMapeado() == 'S'){ ?>
+                                <th class="infraTh" width="10%"><?= $objMdLitParametrizarInteressadoDTO->getStrLabelCampo()?></th>
+                                <? continue; }elseif($objMdLitParametrizarInteressadoDTO->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$CIDADE){?>
+                                <th class="infraTh" style="display: none">Cidade</th>
+                                <? continue;} ?>
                         <? } //endForeach table ?>
                     </tr>
                 </table>

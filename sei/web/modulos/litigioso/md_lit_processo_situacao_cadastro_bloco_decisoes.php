@@ -6,6 +6,16 @@
         <div class="clear-margin-1"></div>
  
             <div class="botoesDecisao">
+                <?php if(MdLitRelatorioReincidenteAntecedenteINT::existeParametrizado(MdLitReincidenAntecedenRN::$TIPO_REINCIDENCIA)){ ?>
+                <button id="btnRelatorioReincidencia" name="btnRelatorioReincidencia" type="button" value="Reincidências Específicas"
+                        class="infraButton" onclick="abrirModalReincidenciaEspecífica()">Reincidências Específicas </button>
+                <?php } ?>
+
+                <?php if(MdLitRelatorioReincidenteAntecedenteINT::existeParametrizado(MdLitReincidenAntecedenRN::$TIPO_ANTECEDENTE)){ ?>
+                        <button id="btnRelatorioAntecedente" name="btnRelatorioAntecedente" type="button" value="Reincidências Específicas"
+                        class="infraButton" onclick="abrirModalAntecedente()">Antecedentes </button>
+                <?php } ?>
+
                 <button id="btnCadastroDecisoes" name="btnCadastroDecisoes" type="button" value="Cadastro de Decisões"
                         class="infraButton" onclick="abrirModalCadastarDecisao()">Cadastro de Decisões </button>
 

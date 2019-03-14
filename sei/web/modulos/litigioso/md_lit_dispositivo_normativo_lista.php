@@ -676,9 +676,9 @@
 
 
             <?php
-                $showCombo = $_GET['acao'] !== 'md_lit_dispositivo_normativo_selecionar' && $filtro !== '' ? true : false;
+                $showCombo = $_GET['acao'] !== 'md_lit_dispositivo_normativo_selecionar' && $filtro == '' ? true : false;
 
-                if ($showCombo) {
+                if (empty($_GET['filtro'])) {
                     ?>
                     <label id="lblTipoControleLitigioso" for="selTipoControleLitigioso" name="lblTipoControleLitigioso"
                            class="infraLabelOpcional">Tipo de Controle Litigioso:</label>

@@ -154,6 +154,12 @@ class MdLitNumeroInteressadoRN extends InfraRN {
 
         $objMdLitIntegracaoDTO  = $objMdLitIntegracaoRN->retornarObjIntegracaoDTOPorFuncionalidade(MdLitIntegracaoRN::$GERAR_NUMERO_COMPLEMENTAR_ENTIDADE_NAO_OUTORGADA);
 
+        if(!$objMdLitIntegracaoDTO){
+            $objInfraException = new InfraException();
+            $objInfraException->adicionarValidacao('O Número Complementar do Interessado é obrigatório para a inclusão do lançamento. Antes, é necessário que a Administração do SEI parametrize o Mapeamento da Integração correspondente à funcionalidade "Gerar Número do Interessado para Entidade não Outorgada".');
+            $objInfraException->lancarValidacoes();
+        }
+
         $objMdLitSoapClienteRN  = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(),'wsdl');
 
         //monta os parametros de entrada do web-service

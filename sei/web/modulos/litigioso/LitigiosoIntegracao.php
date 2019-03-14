@@ -5,12 +5,12 @@
 
         public function getNome()
         {
-            return 'Litigioso';
+            return 'Controle Litigioso';
         }
 
         public function getVersao()
         {
-            return '1.2.0';
+            return '1.3.0';
         }
 
         public function getInstituicao()
@@ -319,6 +319,29 @@
                 case 'md_lit_situacao_lancamento_integracao_mapear':
                     require_once dirname(__FILE__) . '/md_lit_situacao_lancamento_integracao_mapeamento.php';
                     return true;
+
+                case 'md_lit_relatorio_reincidencia':
+                case 'md_lit_modal_relatorio_reincidencia':
+                    require_once dirname(__FILE__).'/md_lit_relatorio_reincidente.php';
+                    return true;
+
+                case 'md_lit_relatorio_reincidencia_exp_excel':
+                    require_once dirname(__FILE__).'/md_lit_relatorio_reincidencia_exp_excel.php';
+                    return true;
+
+                
+                case 'md_lit_relatorio_antecedente':
+                case 'md_lit_modal_relatorio_antecedente':
+                        require_once dirname(__FILE__).'/md_lit_relatorio_antecedente.php';
+                        return true;
+    
+                case 'md_lit_relatorio_antecedente_exp_excel':
+                        require_once dirname(__FILE__).'/md_lit_relatorio_antecedente_exp_excel.php';
+                        return true;
+
+                case 'md_lit_antecedencia_reincidencia_orientacao':
+                    require_once dirname(__FILE__).'/md_lit_antecedencia_reincidencia_orientacao.php';
+                    return true;
             }
 
             return false;
@@ -377,7 +400,8 @@
                     break;
 
                 case 'md_lit_conduta_auto_completar':
-                    $arrObjCondutaDTO = MdLitCondutaINT::autoCompletarCondutasAtivas($_POST['palavras_pesquisa']);
+                    $arrIdDispositivo = count($_POST['id_dispositivo']) ? $_POST['id_dispositivo'] : null;
+                    $arrObjCondutaDTO = MdLitCondutaINT::autoCompletarCondutasAtivas($_POST['palavras_pesquisa'],$arrIdDispositivo);
                     $xml              = InfraAjax::gerarXMLItensArrInfraDTO($arrObjCondutaDTO, 'IdCondutaLitigioso', 'Nome');
                     break;
 
@@ -521,6 +545,13 @@
                 case 'motivo_auto_completar':
                     $dto = MdLitMotivoINT::consultarMotivoAjax($_POST);
                     $xml = InfraAjax::gerarXMLItensArrInfraDTO($dto, 'IdMdLitMotivo', 'Descricao');
+                    break;
+                case 'md_lit_associar_dispositivo_conduta':
+                    $arrDispositivos = PaginaSEI::getInstance()->getArrOptionsSelect($_POST['hdnDispositivo']);
+                    $arrIdDispositivos = InfraArray::simplificarArr($arrDispositivos, 0);
+                    $arrConduta = PaginaSEI::getInstance()->getArrOptionsSelect($_POST['hdnConduta']);
+                    $arrIdConduta = InfraArray::simplificarArr($arrConduta, 0);
+                    $xml = MdLitRelatorioReincidenteAntecedenteINT::associarDispositivoConduta($arrIdDispositivos,$arrIdConduta);
                     break;
             }
 

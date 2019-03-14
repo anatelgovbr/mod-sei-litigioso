@@ -133,6 +133,7 @@ class MdLitDecisaoRN extends InfraRN {
             $objMdLitDecisaoDTO->setStrSinCadastroParcial($decisao[17]);
 
             if(preg_match('/^novo_/', $decisao[0])){
+                $objMdLitDecisaoDTO->setStrSinUltimaDecisao('S');
                 $objMdLitDecisaoDTO->setNumIdMdLitProcessoSituacao($idMdLitProcessoSituacao);
                 $objMdLitDecisaoBD = new MdLitDecisaoBD($this->getObjInfraIBanco());
                 $objMdLitDecisaoDTO = $objMdLitDecisaoBD->cadastrar($objMdLitDecisaoDTO);
@@ -170,6 +171,23 @@ class MdLitDecisaoRN extends InfraRN {
             if (count($arrObjMdLitDecisaoDesativarDTO)) {
                 $this->desativar($arrObjMdLitDecisaoDesativarDTO);
             }
+
+            // adicionando as decisões anteriores como não sendo a ultima cadastrada
+            $objMdLitDecisaoDTO = new MdLitDecisaoDTO();
+            $objMdLitDecisaoDTO->retTodos(false);
+            $objMdLitDecisaoDTO->setNumIdMdLitDecisao($ret, InfraDTO::$OPER_NOT_IN);
+            $objMdLitDecisaoDTO->setNumIdMdLitProcessoSituacao($idMdLitProcessoSituacao, InfraDTO::$OPER_DIFERENTE);
+            $objMdLitDecisaoDTO->setDblIdProcedimentoMdLitProcessoSituacao($objMdLitProcessoSituacaoDTO->getDblIdProcedimento());
+
+            $arrObjMdLitDecisaoDTO = $this->listar($objMdLitDecisaoDTO);
+            if (count($arrObjMdLitDecisaoDTO)) {
+                foreach ($arrObjMdLitDecisaoDTO as $objMdLitDecisaoDTO){
+                    $objMdLitDecisaoDTO->setStrSinUltimaDecisao('N');
+                    $objMdLitDecisaoBD = new MdLitDecisaoBD($this->getObjInfraIBanco());
+                    $objMdLitDecisaoBD->alterar($objMdLitDecisaoDTO);
+                }
+            }
+
 
         }
 
@@ -483,6 +501,128 @@ class MdLitDecisaoRN extends InfraRN {
 
         }
         return $idsSituacao;
+    }
+
+    protected function listarRelatorioConectado(MdLitDecisaoDTO $objMdLitDecisaoDTO) {
+        try {
+            $arrObjMdLitProcessoSituacaoConclusivaDTO = $this->filtroProcessoSituacaoConclusiva($objMdLitDecisaoDTO);
+            if(count($arrObjMdLitProcessoSituacaoConclusivaDTO) == 0){
+                return null;
+            }
+            $arrIdProcedimento = InfraArray::converterArrInfraDTO($arrObjMdLitProcessoSituacaoConclusivaDTO, 'IdProcedimento');
+            $objMdLitDecisaoDTO->setDblIdProcedimentoMdLitProcessoSituacao($arrIdProcedimento, InfraDTO::$OPER_IN);
+            $objMdLitDecisaoDTO->setDistinct(true);
+            //retorno
+            $objMdLitDecisaoDTO->retNumIdMdLitProcessoSituacao();
+            $objMdLitDecisaoDTO->retDblIdProcedimentoMdLitProcessoSituacao();
+            $objMdLitDecisaoDTO->retStrProtocoloFormatadoProcedimento();
+            $objMdLitDecisaoDTO->retStrProtocoloFormatadoProcedimento();
+            $objMdLitDecisaoDTO->retStrDispositivo();
+            $objMdLitDecisaoDTO->retStrNorma();
+            $objMdLitDecisaoDTO->retStrConduta();
+            $objMdLitDecisaoDTO->retNumIdContato();
+            $objMdLitDecisaoDTO->retStrNomeContato();
+            $objMdLitDecisaoDTO->retStrCpfContato();
+            $objMdLitDecisaoDTO->retStrCnpjContato();
+            $objMdLitDecisaoDTO->retNumIdCondutaMdLitRelDisNorConCtr();
+            $objMdLitDecisaoDTO->retNumIdDispositivoNormativoMdLitRelDisNorConCtr();
+            $objMdLitDecisaoDTO->setStrSinUltimaDecisao('S');
+
+            //filtro
+
+            $objMdLitDecisaoBD = new MdLitDecisaoBD($this->getObjInfraIBanco());
+            $ret = $objMdLitDecisaoBD->listar($objMdLitDecisaoDTO);
+//            $ret = $objMdLitDecisaoBD->listar($objMdLitDecisaoDTO, true);
+//            echo $ret; exit;
+
+            $this->inserindoDataTransitoJulgado($ret,$arrObjMdLitProcessoSituacaoConclusivaDTO);
+            //Auditoria
+            return $ret;
+
+        }catch(Exception $e){
+            throw new InfraException('Erro listando Decisões.',$e);
+        }
+    }
+
+    private function filtroProcessoSituacaoConclusiva(MdLitDecisaoDTO $objMdLitDecisaoDTO){
+        $objMdLitProcessoSituacaoDTO = new MdLitProcessoSituacaoDTO();
+        $objMdLitProcessoSituacaoDTO->retDblIdProcedimento();
+        $objMdLitProcessoSituacaoDTO->retDtaData();
+        $objMdLitProcessoSituacaoDTO->setStrSinConclusivaSit('S');
+        if($objMdLitDecisaoDTO->isSetNumIdMdLitTipoControleMdLitProcessoSituacao()){
+            $objMdLitProcessoSituacaoDTO->setNumIdMdLitTipoControle($objMdLitDecisaoDTO->getNumIdMdLitTipoControleMdLitProcessoSituacao());
+        }
+        if($objMdLitDecisaoDTO->isSetDtaTransitoJulgado()){
+            $objMdLitProcessoSituacaoDTO->adicionarCriterio(array('Data','Data'),
+                array(InfraDTO::$OPER_MAIOR_IGUAL,InfraDTO::$OPER_MENOR_IGUAL),
+                array($objMdLitDecisaoDTO->getDtaTransitoJulgado(),$objMdLitDecisaoDTO->getDtaCorte()),
+                array(InfraDTO::$OPER_LOGICO_AND));
+        }
+
+
+        $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+        return $objMdLitProcessoSituacaoRN->listar($objMdLitProcessoSituacaoDTO);
+    }
+
+    private function inserindoDataTransitoJulgado($arrObjMdLitDecisaoDTO, $arrObjMdLitProcessoSituacaoDTO){
+      foreach ($arrObjMdLitDecisaoDTO as $objMdLitDecisaoDTO){
+          $arrData = InfraArray::filtrarArrInfraDTO($arrObjMdLitProcessoSituacaoDTO, 'IdProcedimento', $objMdLitDecisaoDTO->getDblIdProcedimentoMdLitProcessoSituacao());
+          $objMdLitDecisaoDTO->setDtaTransitoJulgado(count($arrData) ? $arrData[0]->getDtaData(): null);
+      }
+
+      return $arrObjMdLitDecisaoDTO;
+    }
+
+    private function filtroProcessoSituacaoDecisaoUltima(MdLitDecisaoDTO $objMdLitDecisaoDTO){
+        $objMdLitProcessoSituacaoDTO = new MdLitProcessoSituacaoDTO();
+        $objMdLitProcessoSituacaoDTO->retDblIdProcedimento();
+        $objMdLitProcessoSituacaoDTO->retNumIdMdLitProcessoSituacao();
+        $objMdLitProcessoSituacaoDTO->retDtaData();
+        $objMdLitProcessoSituacaoDTO->setStrSinDecisoriaSit('S');
+        $objMdLitProcessoSituacaoDTO->setOrdDblIdProcedimento(InfraDTO::$TIPO_ORDENACAO_ASC);
+        $objMdLitProcessoSituacaoDTO->setOrdNumIdMdLitProcessoSituacao(InfraDTO::$TIPO_ORDENACAO_ASC);
+        if($objMdLitDecisaoDTO->isSetNumIdMdLitTipoControleMdLitProcessoSituacao()){
+            $objMdLitProcessoSituacaoDTO->setNumIdMdLitTipoControle($objMdLitDecisaoDTO->getNumIdMdLitTipoControleMdLitProcessoSituacao());
+        }
+
+        if($objMdLitDecisaoDTO->isSetDblIdProcedimentoMdLitProcessoSituacao()){
+            $objMdLitProcessoSituacaoDTO->setDblIdProcedimento($objMdLitDecisaoDTO->getDblIdProcedimentoMdLitProcessoSituacao(), InfraDTO::$OPER_IN);
+        }
+
+        $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+        $arrObjMdLitProcessoSituacaoDTO =  $objMdLitProcessoSituacaoRN->listar($objMdLitProcessoSituacaoDTO);
+        $arrObjMdLitProcessoSituacaoResultado = array();
+        $idUltimoProcedimento = null;
+
+        foreach ($arrObjMdLitProcessoSituacaoDTO as $objMdLitProcessoSituacaoDTO){
+            $arrObjMdLitProcessoSituacaoResultado[$objMdLitProcessoSituacaoDTO->getDblIdProcedimento()] = $objMdLitProcessoSituacaoDTO;
+        }
+
+        return $arrObjMdLitProcessoSituacaoResultado;
+    }
+
+    public function migrarUltimaSituacaoDecisorioControlado(){
+        $objMdLitDecisaoDTO = new MdLitDecisaoDTO();
+        $arrObjMdLitProcessoSituacaoDecisivaDTO = $this->filtroProcessoSituacaoDecisaoUltima($objMdLitDecisaoDTO);
+        if(count($arrObjMdLitProcessoSituacaoDecisivaDTO)){
+            $arrIdMdLitProcessoSituacao = InfraArray::converterArrInfraDTO($arrObjMdLitProcessoSituacaoDecisivaDTO, 'IdMdLitProcessoSituacao');
+
+            $objMdLitDecisaoDTO = new MdLitDecisaoDTO();
+            $objMdLitDecisaoDTO->retNumIdMdLitDecisao();
+            $objMdLitDecisaoDTO->retDblIdProcedimentoMdLitProcessoSituacao();
+            $objMdLitDecisaoDTO->setNumIdMdLitProcessoSituacao($arrIdMdLitProcessoSituacao, InfraDTO::$OPER_IN);
+
+            $objMdLitDecisaoBD = new MdLitDecisaoBD($this->getObjInfraIBanco());
+            $arrMdLitDecisaoDTO = $objMdLitDecisaoBD->listar($objMdLitDecisaoDTO);
+
+            if(count($arrMdLitDecisaoDTO)){
+                foreach ($arrMdLitDecisaoDTO as $objMdLitDecisaoDTO){
+                    $objMdLitDecisaoDTO->setStrSinUltimaDecisao('S');
+                    $this->alterar($objMdLitDecisaoDTO);
+                }
+            }
+            return $arrMdLitDecisaoDTO;
+        }
     }
 
 }

@@ -15,6 +15,11 @@ class MdLitReincidenAntecedenRN extends InfraRN {
     public static $TIPO_REINCIDENCIA    = 'R';
     public static $TIPO_ANTECEDENTE     = 'A';
 
+    //Regra para considerar Reincidência Específica nos filtros
+    public static $CONDUTA      = 1;
+    public static $DISPOSITIVO  = 2;
+    public static $DISPOSITIVO_CONDUTA = 3;
+
   public function __construct(){
     parent::__construct();
   }
@@ -275,6 +280,7 @@ class MdLitReincidenAntecedenRN extends InfraRN {
         $mdLitReincidenAntecedenDTO->setNumPrazo($dados['txtPrazoRein']);
         $mdLitReincidenAntecedenDTO->setStrOrientacao($dados['txtOrientacoes']);
         $mdLitReincidenAntecedenDTO->setStrTipo(self::$TIPO_REINCIDENCIA);
+        $mdLitReincidenAntecedenDTO->setStrTipoRegraReincidencia($dados['rd_regra_reincidencia']);
         $mdLitReincidenAntecedenDTO->retNumIdMdLitReincidenAnteceden();
 
         $mdLitReincidenAnteceden = $this->cadastrar($mdLitReincidenAntecedenDTO);
@@ -340,6 +346,7 @@ class MdLitReincidenAntecedenRN extends InfraRN {
         $mdLitReincidenAntecedenDTO->setNumIdMdLitReincidenAnteceden($dados['idReincidencia']);
         $mdLitReincidenAntecedenDTO->setNumPrazo($dados['txtPrazoRein']);
         $mdLitReincidenAntecedenDTO->setStrOrientacao($dados['txtOrientacoes']);
+        $mdLitReincidenAntecedenDTO->setStrTipoRegraReincidencia($dados['rd_regra_reincidencia']);
         $mdLitReincidenAntecedenDTO->retNumIdMdLitReincidenAnteceden();
 
         $mdLitReincidenAnteceden = $this->alterar($mdLitReincidenAntecedenDTO);
@@ -404,6 +411,48 @@ class MdLitReincidenAntecedenRN extends InfraRN {
         }
 
         return true;
+    }
+
+    public function adicionarFiltroInfracaoMesmaNatureza(MdLitReincidenAntecedenDTO $objMdLitReincidenAntecedenDTO, MdLitDecisaoDTO $objMdLitDecisaoDTO, $arrObjMdLitRelDispositivoNormativoCondutaControleDTO){
+
+        switch ($objMdLitReincidenAntecedenDTO->getStrTipoRegraReincidencia()){
+            case MdLitReincidenAntecedenRN::$CONDUTA:
+                $arrIdConduta = InfraArray::retirarElementoArray(InfraArray::converterArrInfraDTO($arrObjMdLitRelDispositivoNormativoCondutaControleDTO, 'IdCondutaLitigioso'), null);
+
+//                //Que cometeu Infrações utilizando as mesmas Condutas do Processo sob o qual está trabalhando.
+                if(count($arrIdConduta)){
+                    $objMdLitDecisaoDTO->setNumIdCondutaMdLitRelDisNorConCtr($arrIdConduta, InfraDTO::$OPER_IN);
+                }else{
+                    $objMdLitDecisaoDTO->setNumIdCondutaMdLitRelDisNorConCtr(null);
+                }
+                break;
+            case MdLitReincidenAntecedenRN::$DISPOSITIVO_CONDUTA:
+
+                $arrNomeCriterioDispositivoNormativo = array();
+                foreach ($arrObjMdLitRelDispositivoNormativoCondutaControleDTO as $key=>$objMdLitRelDispositivoNormativoCondutaControleDTO){
+                    $nomeCriterio ='criterioDispositivoConduta'.$key;
+                    $arrNomeCriterioDispositivoNormativo[] = $nomeCriterio;
+                    $objMdLitDecisaoDTO->adicionarCriterio(array('IdCondutaMdLitRelDisNorConCtr', 'IdDispositivoNormativoMdLitRelDisNorConCtr'),array(InfraDTO::$OPER_IGUAL,InfraDTO::$OPER_IGUAL), array($objMdLitRelDispositivoNormativoCondutaControleDTO->getNumIdCondutaLitigioso(), $objMdLitRelDispositivoNormativoCondutaControleDTO->getNumIdDispositivoNormativoLitigioso()), InfraDTO::$OPER_LOGICO_AND, $nomeCriterio);
+                }
+                if(count($arrNomeCriterioDispositivoNormativo) > 1) {
+                    $objMdLitDecisaoDTO->agruparCriterios($arrNomeCriterioDispositivoNormativo, array_fill(0, count($arrNomeCriterioDispositivoNormativo) - 1, InfraDTO::$OPER_LOGICO_OR));
+                }
+                break;
+
+            case MdLitReincidenAntecedenRN::$DISPOSITIVO:
+                $arrIdDispositivo = InfraArray::retirarElementoArray(InfraArray::converterArrInfraDTO($arrObjMdLitRelDispositivoNormativoCondutaControleDTO, 'IdDispositivoNormativoLitigioso'), null);
+
+//                //Que cometeu Infrações utilizando os mesmo dispositivo normativo do Processo sob o qual está trabalhando.
+                if(count($arrIdDispositivo)){
+                    $objMdLitDecisaoDTO->setNumIdDispositivoNormativoMdLitRelDisNorConCtr($arrIdDispositivo, InfraDTO::$OPER_IN);
+                }else{
+                    $objMdLitDecisaoDTO->setNumIdDispositivoNormativoMdLitRelDisNorConCtr(null);
+                }
+                break;
+        }
+
+        return $objMdLitDecisaoDTO;
+
     }
 
 }

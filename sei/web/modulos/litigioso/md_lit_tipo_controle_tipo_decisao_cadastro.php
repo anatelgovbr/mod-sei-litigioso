@@ -146,13 +146,13 @@
 ?>
 
 #lblTipoDecisaoLitigioso {position:absolute;left:0%;top:0%;width:50%;}
-#selDescricaoTipoDecisaoLitigioso{position:absolute;left:0%;top:5%;width:50%;}
+#selDescricaoTipoDecisaoLitigioso{position:absolute;left:0%;top:3%;width:50%;}
 
-#lblEspecieDecisao{position:absolute;left:0%;top:10%;width:50%;}
-#selEspecieDecisaoLitigioso{position:absolute;left:0%;top:15%;width:50%;}
+#lblEspecieDecisao{position:absolute;left:0%;top:8%;width:50%;}
+#selEspecieDecisaoLitigioso{position:absolute;left:0%;top:11%;width:50%;}
 
-#addTipoDecisao{position:absolute;left:51%;top:15%;}
-#tableTiposDecisao{position:absolute;left:0%;top:22%;}
+#addTipoDecisao{position:absolute;left:51%;top:11%;}
+#tableTiposDecisao{position:absolute;left:0%;top:18%;}
 
 <?
     PaginaSEI::getInstance()->fecharStyle();
@@ -207,7 +207,7 @@
         <!-- Hidden Relacionado à tabela -->
         <input type="hidden" name="hdnTbTiposDecisao" id="hdnTbTiposDecisao" value="<?php echo $hdnTbTiposDecisao?>"/>
 
-        <button type="button" id='addTipoDecisao' class="infraButton" onclick="adicionarTipoDecisao()">Adicionar</button>
+        <button type="button" id='addTipoDecisao' class="infraButton" onclick="adicionarTipoDecisao()" accesskey="A"><span class="infraTeclaAtalho">A</span>dicionar</button>
         <input type="hidden" id="hdnIdTipoDecisaoLitigioso" name="hdnIdTipoDecisaoLitigioso"
                value="<?= $_POST['hdnIdTipoDecisaoLitigioso'] ?>"/>
         <input type="hidden" id="hdnIdTipoControle" name="hdnIdTipoControle"

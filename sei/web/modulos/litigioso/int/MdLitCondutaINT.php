@@ -12,7 +12,7 @@
     {
 
 
-        public static function autoCompletarCondutasAtivas($strPalavrasPesquisa)
+        public static function autoCompletarCondutasAtivas($strPalavrasPesquisa, $arrIdDispositivo=null)
         {
 
             $objCondutaDTO = new MdLitCondutaDTO();
@@ -21,6 +21,22 @@
             $objCondutaDTO->setStrNome('%' . $strPalavrasPesquisa . '%', InfraDTO::$OPER_LIKE);
             $objCondutaDTO->setOrdStrNome(InfraDTO::$TIPO_ORDENACAO_ASC);
             $objCondutaDTO->setStrSinAtivo('S');
+
+            if(count($arrIdDispositivo)){
+                $objRelDispositivoNormativoCondutaRN  = new MdLitRelDispositivoNormativoCondutaRN ();
+                $objRelDispositivoNormativoCondutaDTO = new MdLitRelDispositivoNormativoCondutaDTO ();
+
+                $objRelDispositivoNormativoCondutaDTO->setNumIdDispositivoNormativo($arrIdDispositivo, InfraDTO::$OPER_IN);
+                $objRelDispositivoNormativoCondutaDTO->retNumIdConduta();
+
+                $arrObjRelDispositivoNormativoCondutaDTO = $objRelDispositivoNormativoCondutaRN->listar($objRelDispositivoNormativoCondutaDTO);
+                if(count($arrObjRelDispositivoNormativoCondutaDTO)){
+                    $arrIdConduta = InfraArray::converterArrInfraDTO($arrObjRelDispositivoNormativoCondutaDTO, 'IdConduta' );
+
+                    $objCondutaDTO->setNumIdCondutaLitigioso($arrIdConduta, InfraDTO::$OPER_IN);
+                }
+
+            }
 
             $objCondutaRN     = new MdLitCondutaRN();
             $arrObjCondutaDTO = $objCondutaRN->listar($objCondutaDTO);

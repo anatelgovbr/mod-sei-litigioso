@@ -6,7 +6,7 @@
         <label class="infraLabelOpcional" id="lblTipoCtrlDetalhe" name="lblTipoCtrlDetalhe"> <?php echo !is_null($objMdLitTipoControleDTO) ? $objMdLitTipoControleDTO->getStrSigla() : '' ?>
         </label>
   </div>
-    <img onclick="modalParametrizarSituacao()" src="modulos/litigioso/imagens/icone-parametrizar.png" title="Parametrização de Situações" style="position:relative; top:-4px; margin-left: 5px;height: 24px;right:200px; " />
+    <img onclick="modalParametrizarSituacao()" src="modulos/litigioso/imagens/icone-parametrizar.png" title="Consultar Parametrização de Situações" style="position:relative; top:-4px; margin-left: 5px;height: 24px;right:200px; " />
 
     <!-- Tempo desde Intimação da Instauração -->
     <?php if($diferencaEntreDias): ?>

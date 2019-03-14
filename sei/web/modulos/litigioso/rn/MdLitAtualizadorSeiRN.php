@@ -11,10 +11,10 @@ require_once dirname(__FILE__) . '/../../../SEI.php';
 class MdLitAtualizadorSeiRN extends InfraRN {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '1.2.0';
+    private $versaoAtualDesteModulo = '1.3.0';
     private $nomeDesteModulo = 'MÓDULO DE CONTROLE LITIGIOSO';
     private $nomeParametroModulo = 'VERSAO_MODULO_LITIGIOSO';
-    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4','1.0.0','1.1.0','1.2.0');
+    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4','1.0.0','1.1.0','1.2.0','1.3.0');
 
     public function __construct(){
         parent::__construct();
@@ -76,7 +76,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
             $this->inicializar('INICIANDO A INSTALAÇÃO/ATUALIZAÇÃO DO '.$this->nomeDesteModulo.' NO SEI VERSÃO '.SEI_VERSAO);
 
             //testando versao do framework
-            $numVersaoInfraRequerida = '1.493';
+            $numVersaoInfraRequerida = '1.502';
             $versaoInfraFormatada = (int) str_replace('.','', VERSAO_INFRA);
             $versaoInfraReqFormatada = (int) str_replace('.','', $numVersaoInfraRequerida);
 
@@ -113,6 +113,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv100();
                 $this->instalarv110();
                 $this->instalarv120();
+                $this->instalarv130();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.1') {
@@ -122,6 +123,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv100();
                 $this->instalarv110();
                 $this->instalarv120();
+                $this->instalarv130();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.2') {
@@ -130,6 +132,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv100();
                 $this->instalarv110();
                 $this->instalarv120();
+                $this->instalarv130();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.3') {
@@ -137,24 +140,32 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv100();
                 $this->instalarv110();
                 $this->instalarv120();
+                $this->instalarv130();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.4') {
                 $this->instalarv100();
                 $this->instalarv110();
                 $this->instalarv120();
+                $this->instalarv130();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.0.0') {
                 $this->instalarv110();
                 $this->instalarv120();
+                $this->instalarv130();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.1.0') {
                 $this->instalarv120();
+                $this->instalarv130();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.2.0') {
+                $this->instalarv130();
+                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
+                $this->finalizar('FIM', false);
+            } else if ($strVersaoModuloLitigioso == '1.3.0') {
                 $this->logar('A VERSÃO MAIS ATUAL DO '.$this->nomeDesteModulo.' (v'.$this->versaoAtualDesteModulo.') JÁ ESTÁ INSTALADA.');
                 $this->finalizar('FIM', false);
             }
@@ -364,7 +375,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 id_md_lit_disp_normat ' . $objInfraMetaBD->tipoNumero() . '  NOT NULL ,
                 id_md_lit_conduta ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL )');
 
-        $objInfraMetaBD->adicionarChavePrimaria('md_lit_rel_disp_norm_conduta', 'pk_md_lit_rel_disp_norm_conduta', array('id_md_lit_disp_normat', 'id_md_lit_conduta'));
+        $objInfraMetaBD->adicionarChavePrimaria('md_lit_rel_disp_norm_conduta', 'pk_md_lit_rel_disp_norm_condut', array('id_md_lit_disp_normat', 'id_md_lit_conduta'));
 
         $objInfraMetaBD->adicionarChaveEstrangeira('fk_dispositivo_norm_01', 'md_lit_rel_disp_norm_conduta', array('id_md_lit_disp_normat'), 'md_lit_disp_normat', array('id_md_lit_disp_normat'));
         $objInfraMetaBD->adicionarChaveEstrangeira('fk_conduta_01', 'md_lit_rel_disp_norm_conduta', array('id_md_lit_conduta'), 'md_lit_conduta', array('id_md_lit_conduta'));
@@ -376,7 +387,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 id_md_lit_disp_normat ' . $objInfraMetaBD->tipoNumero() . '  NOT NULL ,
                 id_md_lit_tipo_controle ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL )');
 
-        $objInfraMetaBD->adicionarChavePrimaria('md_lit_rel_disp_norm_tipo_ctrl', 'pk_md_lit_rel_disp_norm_tipo_ctrl', array('id_md_lit_disp_normat', 'id_md_lit_tipo_controle'));
+        $objInfraMetaBD->adicionarChavePrimaria('md_lit_rel_disp_norm_tipo_ctrl', 'pk_md_lit_rel_disp_norm_tp_ctr', array('id_md_lit_disp_normat', 'id_md_lit_tipo_controle'));
 
         $objInfraMetaBD->adicionarChaveEstrangeira('fk_dispositivo_norm_02', 'md_lit_rel_disp_norm_tipo_ctrl', array('id_md_lit_disp_normat'), 'md_lit_disp_normat', array('id_md_lit_disp_normat'));
         $objInfraMetaBD->adicionarChaveEstrangeira('fk_tipo_controle_01', 'md_lit_rel_disp_norm_tipo_ctrl', array('id_md_lit_tipo_controle'), 'md_lit_tipo_controle', array('id_md_lit_tipo_controle'));
@@ -952,7 +963,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
             array('idMdLitFuncionalidade' => 7, 'nome' => 'Arrecadação Denegar Recurso'),
             array('idMdLitFuncionalidade' => 8, 'nome' => 'Arrecadação Cancelar Recurso'),
             array('idMdLitFuncionalidade' => 9, 'nome' => 'Arrecadação Listar Motivos de Cancelamento de Lançamento'),
-            array('idMdLitFuncionalidade' => 10, 'nome' => 'Gerar Número do interessado para Entidade não Outorgada')
+            array('idMdLitFuncionalidade' => 10, 'nome' => 'Gerar Número do Interessado para Entidade não Outorgada')
         );
 
         $objMdLitFuncionalidadeRN = new MdLitFuncionalidadeRN();
@@ -1532,6 +1543,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
             $objMdLitRelTipoControleTipoDecisaoRN->cadastrar($arrObjMdLitRelTipoControleTipoDecisaoDTOCadastro);
         }
 
+        $objInfraMetaBD->alterarColuna('md_lit_rel_tipo_ctrl_tipo_dec', 'id_md_lit_especie_decisao', $objInfraMetaBD->tipoNumero(), 'NOT NULL');
         $objInfraMetaBD->adicionarChavePrimaria('md_lit_rel_tipo_ctrl_tipo_dec', 'pk_md_lit_rel_tipo_ctrl_tipo', array('id_md_lit_tipo_decisao','id_md_lit_tipo_controle','id_md_lit_especie_decisao'));
 
         $objInfraMetaBD->adicionarChaveEstrangeira('fk_rel_tipo_ctrl_tipo_dec_01', 'md_lit_rel_tipo_ctrl_tipo_dec', array('id_md_lit_tipo_decisao'), 'md_lit_tipo_decisao', array('id_md_lit_tipo_decisao'));
@@ -1560,5 +1572,92 @@ class MdLitAtualizadorSeiRN extends InfraRN {
 
     }
 
+
+    //Contem atualizações da versao 1.3.0
+    protected function instalarv130(){
+
+        $objInfraMetaBD = new InfraMetaBD(BancoSEI::getInstance());
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.3.0 DO '.$this->nomeDesteModulo.' NA BASE DO SEI');
+
+
+        $this->logar('ALTERANDO A TABELA md_lit_reinciden_anteceden');
+        $objInfraMetaBD->adicionarColuna('md_lit_reinciden_anteceden', 'tp_regra_reincidencia', $objInfraMetaBD->tipoTextoFixo(1), 'NULL' );
+
+
+        $this->logar('EXECUTANDO A criação/edição da administração de Antecedentes');
+        $objMdLitReincidenAntecedenCadastroDTO = new MdLitReincidenAntecedenDTO();
+        $objMdLitReincidenAntecedenCadastroDTO->setNumPrazo(5);
+        $objMdLitReincidenAntecedenCadastroDTO->setStrTipo(MdLitReincidenAntecedenRN::$TIPO_ANTECEDENTE);
+        $objMdLitReincidenAntecedenCadastroDTO->setStrOrientacao("<p>Abaixo são listados os processos Transitados em Julgados dentro do período de @prazo_anos_antecedente@, contados da data mais antiga das infrações dispostas no processo de trabalho (pesquisa a partir de processo específico) ou da Data de Corte (se estiver utilizando o menu de Relatórios) e que conste decisão dos Tipos de Decisão @tipos_decisao_antecedente@.</p>");
+
+        $objMdLitReincidenAntecedenDTO = new MdLitReincidenAntecedenDTO();
+        $objMdLitReincidenAntecedenDTO->retNumIdMdLitReincidenAnteceden();
+        $objMdLitReincidenAntecedenDTO->setStrTipo(MdLitReincidenAntecedenRN::$TIPO_ANTECEDENTE);
+
+        $objMdLitReincidenAntecedenRN = new MdLitReincidenAntecedenRN();
+        $objMdLitReincidenAntecedenDTO = $objMdLitReincidenAntecedenRN->consultar($objMdLitReincidenAntecedenDTO);
+        if($objMdLitReincidenAntecedenDTO){
+            $objMdLitReincidenAntecedenCadastroDTO->setNumIdMdLitReincidenAnteceden($objMdLitReincidenAntecedenDTO->getNumIdMdLitReincidenAnteceden());
+            $objMdLitReincidenAntecedenRN->alterar($objMdLitReincidenAntecedenCadastroDTO);
+        }else{
+            $objMdLitReincidenAntecedenRN->cadastrar($objMdLitReincidenAntecedenCadastroDTO);
+        }
+
+        $this->logar('EXECUTANDO A criação/edição da administração de Reincidente');
+        $objMdLitReincidenAntecedenCadastroDTO = new MdLitReincidenAntecedenDTO();
+        $objMdLitReincidenAntecedenCadastroDTO->setNumPrazo(5);
+        $objMdLitReincidenAntecedenCadastroDTO->setStrTipo(MdLitReincidenAntecedenRN::$TIPO_REINCIDENCIA);
+        $objMdLitReincidenAntecedenCadastroDTO->setStrTipoRegraReincidencia(MdLitReincidenAntecedenRN::$CONDUTA);
+        $objMdLitReincidenAntecedenCadastroDTO->setStrOrientacao("<p>Abaixo são listados os processos Transitados em Julgados dentro do período de @prazo_anos_reincidencia_especifica@, contados da data mais antiga das infrações dispostas no processo de trabalho (pesquisa a partir de processo específico) ou da Data de Corte (se estiver utilizando o menu de Relatórios), que conste decisão dos Tipos de Decisão @tipos_decisao_reincidencia_especifica@ e infração envolvendo @definicao_infracao_mesma_natureza_reincidencia_especifica@.</p>");
+
+        $objMdLitReincidenAntecedenDTO = new MdLitReincidenAntecedenDTO();
+        $objMdLitReincidenAntecedenDTO->retNumIdMdLitReincidenAnteceden();
+        $objMdLitReincidenAntecedenDTO->setStrTipo(MdLitReincidenAntecedenRN::$TIPO_REINCIDENCIA);
+
+        $objMdLitReincidenAntecedenRN = new MdLitReincidenAntecedenRN();
+        $objMdLitReincidenAntecedenDTO = $objMdLitReincidenAntecedenRN->consultar($objMdLitReincidenAntecedenDTO);
+        if($objMdLitReincidenAntecedenDTO){
+            $objMdLitReincidenAntecedenCadastroDTO->setNumIdMdLitReincidenAnteceden($objMdLitReincidenAntecedenDTO->getNumIdMdLitReincidenAnteceden());
+            $objMdLitReincidenAntecedenRN->alterar($objMdLitReincidenAntecedenCadastroDTO);
+        }else{
+            $objMdLitReincidenAntecedenRN->cadastrar($objMdLitReincidenAntecedenCadastroDTO);
+        }
+
+
+        $this->logar('ALTERANDO A TABELA md_lit_decisao');
+        $objInfraMetaBD->adicionarColuna('md_lit_decisao', 'sin_ultima_decisao', $objInfraMetaBD->tipoTextoFixo(1), 'NULL' );
+
+        $this->logar('ALTERANDO O registro da tabela md_lit_decisao sinalizando com a ultima decisao');
+        $objMdLitDecisaoRN = new MdLitDecisaoRN();
+        $arrObjMdLitDecisaoDTOUltima = $objMdLitDecisaoRN->migrarUltimaSituacaoDecisorio();
+        BancoSEI::getInstance()->executarSql('UPDATE md_lit_decisao SET sin_ultima_decisao = \'N\' WHERE sin_ultima_decisao IS NULL');
+
+        $this->logar('ALTERANDO O registro da tabela md_lit_rel_decis_lancament vinculando a decisão com o Lancamento');
+        $objMdLitDecisaoRN = new MdLitRelDecisLancamentRN();
+        $objMdLitDecisaoRN->vincularDecisaoComLancamento($arrObjMdLitDecisaoDTOUltima);
+
+        $this->logar('ALTERANDO A TABELA md_lit_historic_lancamento');
+        $objInfraMetaBD->alterarColuna('md_lit_historic_lancamento', 'justificativa', $objInfraMetaBD->tipoTextoVariavel(250), 'NULL' );
+
+
+        $this->logar('ALTERANDO o nome da PK da tabela md_lit_rel_disp_norm_conduta');
+        $arrPk = $objInfraMetaBD->obterNomeConstraint('md_lit_rel_disp_norm_conduta', 'pk_md_lit_rel_disp_norm_conduta', 'primary');
+        if(count($arrPk)){
+            $objInfraMetaBD->excluirChavePrimaria('md_lit_rel_disp_norm_conduta','pk_md_lit_rel_disp_norm_conduta');
+            $objInfraMetaBD->adicionarChavePrimaria('md_lit_rel_disp_norm_conduta', 'pk_md_lit_rel_disp_norm_condut', array('id_md_lit_disp_normat', 'id_md_lit_conduta'));
+        }
+
+
+        $this->logar('ALTERANDO o nome da PK da tabela md_lit_rel_disp_norm_tipo_ctrl');
+        $arrPk = $objInfraMetaBD->obterNomeConstraint('md_lit_rel_disp_norm_tipo_ctrl', 'pk_md_lit_rel_disp_norm_tipo_ctrl', 'primary');
+        if(count($arrPk)){
+            $objInfraMetaBD->excluirChavePrimaria('md_lit_rel_disp_norm_tipo_ctrl','pk_md_lit_rel_disp_norm_tipo_ctrl');
+            $objInfraMetaBD->adicionarChavePrimaria('md_lit_rel_disp_norm_tipo_ctrl', 'pk_md_lit_rel_disp_norm_tp_ctr', array('id_md_lit_disp_normat', 'id_md_lit_tipo_controle'));
+        }
+
+        $this->logar('ATUALIZANDO PARÂMETRO '.$this->nomeParametroModulo.' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+        BancoSEI::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.3.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+
+    }
 }
 ?>

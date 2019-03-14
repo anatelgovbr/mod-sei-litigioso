@@ -57,6 +57,20 @@
         return false;
     }
 
+    function abrirModalReincidenciaEspecífica(){
+        infraAbrirJanela('<?= $urlModalReincidenciaEspecifica ?>',
+            'ReincidenciaEspecífica',
+            1200,
+            600);
+    }
+
+    function abrirModalAntecedente(){
+        infraAbrirJanela('<?= $urlModalAntecedente ?>',
+            'Antecedente',
+            1200,
+            600);
+    }
+
 
 </script>
 
