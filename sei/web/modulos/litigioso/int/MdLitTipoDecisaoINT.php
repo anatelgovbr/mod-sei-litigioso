@@ -18,7 +18,7 @@
             $objDTO = new MdLitTipoDecisaoDTO();
             $objDTO->retNumIdTipoDecisaoLitigioso();
             $objDTO->retStrNome();
-
+            $objDTO->setNumMaxRegistrosRetorno(50);
             $objDTO->setStrNome('%' . $strPalavrasPesquisa . '%', InfraDTO::$OPER_LIKE);
             $objDTO->setStrSinAtivo('S');
             $objDTO->setOrdStrNome(InfraDTO::$TIPO_ORDENACAO_ASC);

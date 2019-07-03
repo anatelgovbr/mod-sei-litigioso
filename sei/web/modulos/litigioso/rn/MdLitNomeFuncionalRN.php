@@ -16,7 +16,7 @@ class MdLitNomeFuncionalRN extends InfraRN {
     public static $NUMERO       = '3';
     public static $SERVICO      = '4';
     public static $MODALIDADE   = '5';
-    public static $ABRANGENCIA  = '6';
+    public static $TIPO_OUTORGA  = '6';
     public static $ESTADO       = '7';
     public static $CIDADE       = '8';
 

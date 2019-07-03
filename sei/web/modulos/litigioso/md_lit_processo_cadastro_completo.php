@@ -72,6 +72,7 @@
                         <input type="hidden" id="hdnNumero" name="hdnNumero">
                         <input type="hidden" id="hdnUnidade" name="hdnUnidade">
                         <input type="hidden" id="hdnData" name="hdnData">
+                        <input type="hidden" id="hdnDataAssinatura" name="hdnDataAssinatura">
                     </div>
                     <!--div style=" float: left; width: 25%;">
 

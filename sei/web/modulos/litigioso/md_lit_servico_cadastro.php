@@ -31,8 +31,6 @@ try {
     $txtCodigo        = '';
     $txtSigla         = '';
     $txtDescricao     = '';
-    $arrIdModalidade  = array();
-    $arrIdAbrangencia = array();
     $idMdLitServicoIntegracao = '';
 
     switch ($_GET['acao']) {
@@ -51,18 +49,11 @@ try {
             $txtCodigo              = $_POST['txtCodigo'];
             $txtSigla               = $_POST['txtSigla'];
             $txtDescricao           = $_POST['txtDescricao'];
-            $arrIdModalidade        = $_POST['chkModalidade'] ? $_POST['chkModalidade']: array();
-            $arrIdAbrangencia       = $_POST['chkAbrangencia'] ? $_POST['chkAbrangencia']: array();
             // valor do input do integracao
             $selOperacao            = $_POST['selOperacao'];
             $txtEnderecoWsdl        = $_POST['txtEnderecoWsdl'];
             $txtIntegracao          = $_POST['txtIntegracao'];
 
-            if(!empty($arrIdModalidade))
-                $strCheckboxModalidade  = MdLitModalidadeINT::montarCheckboxModalidade($arrIdModalidade);
-
-            if(!empty($arrIdAbrangencia))
-                $strCheckboxAbrangencia = MdLitAbrangenciaINT::montarCheckboxAbrangencia($arrIdAbrangencia);
 
             if (isset($_POST['hdnSalvarServico'])) {
 
@@ -73,8 +64,6 @@ try {
                     $objMdLitServicoDTO->setStrSigla($_POST['txtSigla']);
                     $objMdLitServicoDTO->setStrDescricao($_POST['txtDescricao']);
                     $objMdLitServicoDTO->setStrSinAtivo('S');
-                    $objMdLitServicoDTO->setArrModalidade($_POST['chkModalidade']);
-                    $objMdLitServicoDTO->setArrAbrangencia($_POST['chkAbrangencia']);
 
                     $objMdLitServicoRN  = new MdLitServicoRN();
                     $objMdLitServicoDTO = $objMdLitServicoRN->cadastrar($objMdLitServicoDTO);
@@ -151,10 +140,6 @@ try {
                     $txtCodigo = $_POST['txtCodigo'];
                     $txtSigla = $_POST['txtSigla'];
                     $txtDescricao = $_POST['txtDescricao'];
-                    $arrIdModalidade = $_POST['chkModalidade'];
-                    $arrIdAbrangencia = $_POST['chkAbrangencia'];
-                    $strCheckboxModalidade = MdLitModalidadeINT::montarCheckboxModalidade($arrIdModalidade);
-                    $strCheckboxAbrangencia = MdLitAbrangenciaINT::montarCheckboxAbrangencia($arrIdAbrangencia);
 
 
                     $objMdLitServicoDTO = new MdLitServicoDTO();
@@ -247,22 +232,6 @@ try {
                 $txtSigla     = $objMdLitServicoDTO->getStrSigla();
                 $txtDescricao = $objMdLitServicoDTO->getStrDescricao();
 
-                //Modalidade
-                $objMdLitRelServicoModalidadeDTO = new MdLitRelServicoModalidadeDTO();
-                $objMdLitRelServicoModalidadeDTO->setNumIdMdLitServico($idMdLitServico);
-                $objMdLitRelServicoModalidadeDTO->retNumIdMdLitModalidade();
-                $objMdLitRelServicoModalidadeRN     = new MdLitRelServicoModalidadeRN();
-                $arrObjMdLitRelServicoModalidadeDTO = $objMdLitRelServicoModalidadeRN->listar($objMdLitRelServicoModalidadeDTO);
-                $arrIdModalidade                    = InfraArray::converterArrInfraDTO($arrObjMdLitRelServicoModalidadeDTO, 'IdMdLitModalidade');
-
-                //Abrangencia
-                $objMdLitRelServicoAbrangenDTO = new MdLitRelServicoAbrangenDTO();
-                $objMdLitRelServicoAbrangenDTO->setNumIdMdLitServico($idMdLitServico);
-                $objMdLitRelServicoAbrangenDTO->retNumIdMdLitAbrangencia();
-                $objMdLitRelServicoAbrangenRN     = new MdLitRelServicoAbrangenRN();
-                $arrObjMdLitRelServicoAbrangenDTO = $objMdLitRelServicoAbrangenRN->listar($objMdLitRelServicoAbrangenDTO);
-                $arrIdAbrangencia                 = InfraArray::converterArrInfraDTO($arrObjMdLitRelServicoAbrangenDTO, 'IdMdLitAbrangencia');
-
             }elseif( !empty($objMdLitServicoDTO->getNumIdMdLitServicoIntegracao()) ){
 
                 $idMdLitServicoIntegracao = $objMdLitServicoDTO->getNumIdMdLitServicoIntegracao();
@@ -314,21 +283,7 @@ try {
                 $txtSigla     = $objMdLitServicoDTO->getStrSigla();
                 $txtDescricao = $objMdLitServicoDTO->getStrDescricao();
 
-                //Modalidade
-                $objMdLitRelServicoModalidadeDTO = new MdLitRelServicoModalidadeDTO();
-                $objMdLitRelServicoModalidadeDTO->setNumIdMdLitServico($idMdLitServico);
-                $objMdLitRelServicoModalidadeDTO->retNumIdMdLitModalidade();
-                $objMdLitRelServicoModalidadeRN     = new MdLitRelServicoModalidadeRN();
-                $arrObjMdLitRelServicoModalidadeDTO = $objMdLitRelServicoModalidadeRN->listar($objMdLitRelServicoModalidadeDTO);
-                $arrIdModalidade                    = InfraArray::converterArrInfraDTO($arrObjMdLitRelServicoModalidadeDTO, 'IdMdLitModalidade');
 
-                //Abrangencia
-                $objMdLitRelServicoAbrangenDTO = new MdLitRelServicoAbrangenDTO();
-                $objMdLitRelServicoAbrangenDTO->setNumIdMdLitServico($idMdLitServico);
-                $objMdLitRelServicoAbrangenDTO->retNumIdMdLitAbrangencia();
-                $objMdLitRelServicoAbrangenRN     = new MdLitRelServicoAbrangenRN();
-                $arrObjMdLitRelServicoAbrangenDTO = $objMdLitRelServicoAbrangenRN->listar($objMdLitRelServicoAbrangenDTO);
-                $arrIdAbrangencia                 = InfraArray::converterArrInfraDTO($arrObjMdLitRelServicoAbrangenDTO, 'IdMdLitAbrangencia');
             }elseif( !empty($objMdLitServicoDTO->getNumIdMdLitServicoIntegracao()) ){
 
                 $objMdLitServicoIntegracaoRN = new MdLitServicoIntegracaoRN();
@@ -354,10 +309,6 @@ try {
             throw new InfraException("Ação '" . $_GET['acao'] . "' não reconhecida.");
             break;
     }
-
-
-    $strCheckboxModalidade  = MdLitModalidadeINT::montarCheckboxModalidade($arrIdModalidade);
-    $strCheckboxAbrangencia = MdLitAbrangenciaINT::montarCheckboxAbrangencia($arrIdAbrangencia);
 
 
 } catch (Exception $e) {
@@ -395,7 +346,7 @@ try{
     if($objMdLitServicoIntegracaoDTO)
         $strResultadoTabelaServicoIntegracao = MdLitServicoIntegracaoINT::montarTabelaServicoIntegracao($objMdLitServicoIntegracaoDTO);
 
-}catch (Exception $e){
+}catch (Exception $e){var_dump($e);exit;
     $exception = new InfraException();
     $exception->adicionarValidacao('Não foi possível carregar o web-service.');
     PaginaSEI::getInstance()->processarExcecao($exception);
@@ -524,36 +475,6 @@ PaginaSEI::getInstance()->montarJavaScript();
                 return false;
             }
 
-            var checked = false;
-            for (var i = 0; i < chkModalidade.length; i++) {
-                if (chkModalidade[i].checked) {
-                    checked = true;
-                    break;
-                }
-            }
-
-            if (!checked) {
-                alert('Informe ao menos uma Modalidade!');
-                chkModalidade[0].focus();
-                return false;
-            }
-
-
-            checked = false;
-            for (i = 0; i < chkAbrangencia.length; i++) {
-                if (chkAbrangencia[i].checked) {
-                    checked = true;
-                    break;
-                }
-            }
-
-            if (!checked) {
-                alert('Informe ao menos uma Abrangência!');
-                chkAbrangencia[0].focus();
-                return false;
-            }
-
-
             return true;
         }
 
@@ -580,20 +501,7 @@ PaginaSEI::getInstance()->montarJavaScript();
                 return false;
             }
 
-            selectModalidadeVazio = true;
-            selectAbrangeciaVazio = true;
-
             for(var i = 0; i < (document.getElementById('tableWebServiceServico').rows.length-1); i++ ){
-                if(infraTrim(document.getElementById('selModalidade_'+i).value) == ''){
-                    alert('Possui serviço sem uma modalidade!');
-                    document.getElementById('selModalidade_'+i).focus();
-                    return false;
-                }
-                if(infraTrim(document.getElementById('selAbrangencia_'+i).value) == ''){
-                    alert('Possui serviço sem uma abrangência!');
-                    document.getElementById('selAbrangencia_'+i).focus();
-                    return false;
-                }
                 for(var j = 0; j < (document.getElementById('tableWebServiceServico').rows.length-1); j++ ){
                     if(i==j) continue;
                     if(document.getElementById('codigo_'+i).innerText == document.getElementById('codigo_'+j).innerText ){
@@ -737,26 +645,6 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                            onkeypress="return infraMascaraTexto(this,event,100);"/>
                 </div>
                 <div class="clear-margin-2"></div>
-                <div class="grid grid_8">
-                    <div class="grid grid_4-5">
-                        <fieldset class="infraFieldset" id="fieldsetOutorga">
-                            <legend class="infraLegend">&nbsp;Modalidades de Outorga&nbsp;</legend>
-                            <div>
-                                <?= $strCheckboxModalidade ?>
-                            </div>
-                        </fieldset>
-                    </div>
-
-                    <div class="grid grid_4-5">
-                        <fieldset class="infraFieldset">
-                            <legend class="infraLegend">&nbsp;Abragência&nbsp;</legend>
-                            <div>
-                                <?= $strCheckboxAbrangencia ?>
-                            </div>
-                        </fieldset>
-                    </div>
-                </div>
-
             </div>
         </div>
         <input type="hidden" id="hdnSalvarServico" name="hdnSalvarServico" value=""/>

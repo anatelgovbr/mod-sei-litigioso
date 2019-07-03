@@ -16,7 +16,7 @@
 
             $objObrigacaoDTO = new MdLitObrigacaoDTO();
             $objObrigacaoDTO->retTodos();
-
+            $objObrigacaoDTO->setNumMaxRegistrosRetorno(50);
             $objObrigacaoDTO->setStrNome('%' . $strPalavrasPesquisa . '%', InfraDTO::$OPER_LIKE);
             $objObrigacaoDTO->setOrdStrNome(InfraDTO::$TIPO_ORDENACAO_ASC);
             $objObrigacaoDTO->setStrSinAtivo('S');

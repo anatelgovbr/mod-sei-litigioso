@@ -906,8 +906,10 @@ class MdLitProcessoSituacaoRN extends InfraRN
         // o cadastrar situação colocar o $id_md_lit_processo_situacao cadastrado/alterado
         $arrDecisao['id_md_lit_processo_situacao'] = count($arrIdSituacao)> 0 ? end($arrIdSituacao): null;
         $arrDecisao['id_procedimento'] = $post['hdnIdProcedimento'];
+        $arrDecisao['valor_lancamento'] = $objMdLitLancamentoDTO ? $objMdLitLancamentoRN->valorLancadoPorProcedimento($objMdLitLancamentoDTO->getDblIdProcedimento()): null;
         $arrDecisao['lista'] = PaginaSEI::getInstance()->getArrItensTabelaDinamica($post['hdnTbDecisao']);
         $objMdLitDecisaoRN = new MdLitDecisaoRN();
+
         $arrIdDecisao = $objMdLitDecisaoRN->cadastrar($arrDecisao);
 
         if(count($arrIdDecisao) > 0){

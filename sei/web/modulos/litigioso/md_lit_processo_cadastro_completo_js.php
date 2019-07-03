@@ -254,7 +254,7 @@
 
         objAutoCompletarIDNDispositivoNormativo = new infraAjaxAutoCompletar('hdnIdIDNDispNormat', 'txtIDNDispNormat', '<?=$strLinkAjaxDispNormatDNAjax?>');
         objAutoCompletarIDNDispositivoNormativo.limparCampo = false;
-
+        objAutoCompletarIDNDispositivoNormativo.tamanhoMinimo = 3;
         objAutoCompletarIDNDispositivoNormativo.prepararExecucao = function () {
             return 'palavras_pesquisa=' + document.getElementById('txtIDNDispNormat').value;
         };
@@ -277,7 +277,7 @@
 
         objAutoCompletarICDispositivoNormativo = new infraAjaxAutoCompletar('hdnIdICDispNormat', 'txtICDispNormat', '<?=$strLinkAjaxDispNormatCDAjax?>');
         objAutoCompletarICDispositivoNormativo.limparCampo = false;
-
+        objAutoCompletarICDispositivoNormativo.tamanhoMinimo = 3;
         objAutoCompletarICDispositivoNormativo.prepararExecucao = function () {
             return 'palavras_pesquisa=' + document.getElementById('txtICDispNormat').value + '&conduta=' + document.getElementById('selICCondutas').value;
         };
@@ -536,6 +536,7 @@
                     document.getElementById('hdnUnidade').value = '<a alt="'+arrValidaSEI['DescricaoUnidadeGeradoraProtocolo']+'" title="'+arrValidaSEI['DescricaoUnidadeGeradoraProtocolo']+'" class="ancoraSigla" > '+arrValidaSEI["SiglaUnidadeGeradoraProtocolo"]+'</a>';
                     document.getElementById('hdnData').value = arrValidaSEI["GeracaoProtocolo"];
                     document.getElementById('txtTipo').value = arrValidaSEI["NomeSerie"];
+                    document.getElementById('hdnDataAssinatura').value = arrDtAssinatura && arrDtAssinatura.length > 0? arrDtAssinatura[0] : '';
 
                     buscarInteressado();
                     return true;
@@ -1368,7 +1369,8 @@
         receberDocInstaurador(arrDadosValido, bolCustomizado);
 
         //Datas
-        document.getElementById('txtDtInstauracao').value = Data;
+        var dtaAssinatura = document.getElementById('hdnDataAssinatura').value;
+        document.getElementById('txtDtInstauracao').value = dtaAssinatura != ''? dtaAssinatura: Data;
 
         //Limpando
         limparDocInstaurador();
@@ -1431,6 +1433,7 @@
         document.getElementById('hdnNumero').value = '';
         document.getElementById('hdnUnidade').value = '';
         document.getElementById('hdnData').value = '';
+        document.getElementById('hdnDataAssinatura').value = '';
     }
 
     function removerValidacaoDocInstaurador() {
@@ -1775,7 +1778,7 @@
     if(document.getElementById('hdnIdMotivos') != null){
         objAutoCompletarMotivos = new infraAjaxAutoCompletar('hdnIdMotivos','txtMotivos','<?=$strLinkAjaxMotivos?>');
         objAutoCompletarMotivos.limparCampo = true;
-
+        objAutoCompletarMotivos.tamanhoMinimo = 3;
         objAutoCompletarMotivos.prepararExecucao = function(){
             return 'palavras_pesquisa='+document.getElementById('txtMotivos').value+'&idTipoControle=<?=$idMdRelTipoCntroleTipoProcedimento?>';
         };

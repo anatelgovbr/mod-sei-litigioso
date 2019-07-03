@@ -29,6 +29,8 @@ class MdLitIntegracaoDTO extends InfraDTO {
 
     $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinAtivo', 'sin_ativo');
 
+      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinVincularLancamento', 'sin_vincular_lancamento');
+
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeMdLitFuncionalidade', 'nome', 'md_lit_funcionalidade');
 
     $this->configurarPK('IdMdLitIntegracao',InfraDTO::$TIPO_PK_NATIVA);

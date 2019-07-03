@@ -361,6 +361,30 @@ class MdLitParametrizarInteressadoRN extends InfraRN {
       throw new InfraException('Erro contando interessados.',$e);
     }
   }
+
+    protected function excluirControlado($arrObjMdLitParametrizarInteressadoDTO){
+        try {
+
+            //Valida Permissao
+            SessaoSEI::getInstance()->validarPermissao('md_lit_parametrizar_interessado_excluir');
+
+            //Regras de Negocio
+            //$objInfraException = new InfraException();
+
+            //$objInfraException->lancarValidacoes();
+
+            $objMdLitParametrizarInteressadoBD = new MdLitParametrizarInteressadoBD($this->getObjInfraIBanco());
+            for($i=0;$i<count($arrObjMdLitParametrizarInteressadoDTO);$i++){
+                $objMdLitParametrizarInteressadoBD->excluir($arrObjMdLitParametrizarInteressadoDTO[$i]);
+            }
+
+            //Auditoria
+
+        }catch(Exception $e){
+            throw new InfraException('Erro excluindo Parâmetro de interessado.',$e);
+        }
+    }
+
 /* 
   protected function desativarControlado($arrObjMdLitParamInteressadoDTO){
     try {

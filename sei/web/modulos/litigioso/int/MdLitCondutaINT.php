@@ -21,7 +21,7 @@
             $objCondutaDTO->setStrNome('%' . $strPalavrasPesquisa . '%', InfraDTO::$OPER_LIKE);
             $objCondutaDTO->setOrdStrNome(InfraDTO::$TIPO_ORDENACAO_ASC);
             $objCondutaDTO->setStrSinAtivo('S');
-
+            $objCondutaDTO->setNumMaxRegistrosRetorno(50);
             if(count($arrIdDispositivo)){
                 $objRelDispositivoNormativoCondutaRN  = new MdLitRelDispositivoNormativoCondutaRN ();
                 $objRelDispositivoNormativoCondutaDTO = new MdLitRelDispositivoNormativoCondutaDTO ();

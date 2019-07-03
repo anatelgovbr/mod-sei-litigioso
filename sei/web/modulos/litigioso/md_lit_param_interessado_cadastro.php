@@ -254,10 +254,6 @@ function validarCadastro() {
             }
         }
     }
-    if(document.getElementById('chkSinExibe_8').checked  && !document.getElementById('chkSinExibe_7').checked ){
-        alert("O campo Estado é obrigatório se o campo Cidade for marcado!");
-        return false;
-    }
 
     if(!elementExibeChecked){
         alert('Ao menos um campo deve ser marcado como Exibe.');
@@ -324,11 +320,6 @@ function campoTabelaDisabilidado(element){
         //td "Descrição da ajuda"
         row.cells[5].children[0].disabled = false;
 
-        //se o combo de cidade for checado irá automaticamente checar o da cidade
-        if(element.id == 'chkSinExibe_8'){
-            document.getElementById('chkSinExibe_7').checked = true;
-            campoTabelaDisabilidado(document.getElementById('chkSinExibe_7'));
-        }
     }
 }
 

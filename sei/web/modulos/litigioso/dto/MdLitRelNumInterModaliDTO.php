@@ -19,16 +19,16 @@ class MdLitRelNumInterModaliDTO extends InfraDTO {
 
         $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM, 'IdMdLitNumeroInteressado', 'id_md_lit_numero_interessado');
 
-        $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM, 'IdMdLitModalidade', 'id_md_lit_modalidade');
+        $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM, 'IdMdLitModalidade', 'id_md_lit_adm_modalidad_outor');
 
         $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdParticipanteMdLitNumInteressado', 'id_participante', 'md_lit_numero_interessado');
 
-        $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeMdLitModalidade', 'nome', 'md_lit_modalidade');
+        $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeMdLitModalidade', 'nome', 'md_lit_adm_modalidad_outor');
 
         $this->configurarPK('IdMdLitModalidade',InfraDTO::$TIPO_PK_INFORMADO);
 
         $this->configurarFK('IdMdLitNumeroInteressado', 'md_lit_numero_interessado', 'id_md_lit_numero_interessado');
-        $this->configurarFK('IdMdLitModalidade', 'md_lit_modalidade', 'id_md_lit_modalidade');
+        $this->configurarFK('IdMdLitModalidade', 'md_lit_adm_modalidad_outor', 'id_md_lit_adm_modalidad_outor');
     }
 }
 ?>

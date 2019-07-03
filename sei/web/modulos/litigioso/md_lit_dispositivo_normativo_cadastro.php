@@ -590,7 +590,7 @@
 
         objAutoCompletarTipoControle = new infraAjaxAutoCompletar('hdnIdTipoControle', 'txtTipoControle', '<?=$strLinkAjaxTipoControle?>');
         objAutoCompletarTipoControle.limparCampo = true;
-
+        objAutoCompletarTipoControle.tamanhoMinimo = 3;
         objAutoCompletarTipoControle.prepararExecucao = function () {
             return 'palavras_pesquisa=' + document.getElementById('txtTipoControle').value;
         };
@@ -637,7 +637,7 @@
 
         objAutoCompletarConduta = new infraAjaxAutoCompletar('hdnIdConduta', 'txtConduta', '<?=$strLinkAjaxConduta?>');
         objAutoCompletarConduta.limparCampo = true;
-
+        objAutoCompletarConduta.tamanhoMinimo = 3;
         objAutoCompletarConduta.prepararExecucao = function () {
             return 'palavras_pesquisa=' + document.getElementById('txtConduta').value;
         };
@@ -683,7 +683,7 @@
 
         objAutoCompletarRevogarDispositivo = new infraAjaxAutoCompletar('hdnIdRevogarDispositivo', 'txtRevogarDispositivo', '<?=$strLinkAjaxDispositivoNormativo?>');
         objAutoCompletarRevogarDispositivo.limparCampo = true;
-
+        objAutoCompletarRevogarDispositivo.tamanhoMinimo = 3;
         objAutoCompletarRevogarDispositivo.prepararExecucao = function () {
             return 'palavras_pesquisa=' + document.getElementById('txtRevogarDispositivo').value;
         };

@@ -7,6 +7,14 @@
 
         <div class="grid grid_10 botoesGestaoMulta">
 
+            <?php if($isVincularLancamento){?>
+            <!-- Vincular Lançamento -->
+            <button id="btnVincularLancamento" type="button" name="btnVincularLancamento" value="Vincular Lançamento"
+                    style="display: none;" class="infraButton btnLancamento" onclick="abrirModalVincularLancamento(this)"
+                    data-url="<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_vincular_lancamento&id_procedimento='.$idProcedimento.'&id_md_lit_funcionalidade='.MdLitIntegracaoRN::$ARRECADACAO_CONSULTAR_LANCAMENTO); ?>">Vincular Lançamento
+            </button>
+            <?php } ?>
+
             <!-- Incluir Lançamento -->
             <button id="btnIncluirLancamento" type="button" name="btnIncluirLancamento" value="Incluir Lançamento"
                     style="display: none;" class="infraButton btnLancamento" onclick="abrirModalJustificativaLancamento(this)"
@@ -376,6 +384,7 @@
         <input type="hidden" name="hdnVlSaldoDevAtualizado" id="hdnVlSaldoDevAtualizado"  value="" />
         <input type="hidden" name="hdnVlCredConstituidoDef" id="hdnVlCredConstituidoDef" value=""  />
         <input type="hidden" name="hdnDtDecursoPrazo" id="hdnDtDecursoPrazo" value="<?=$dataDecursoPrazoDefesa?>" />
+        <input type="hidden" name="hdnTbVincularLancamento" id="hdnTbVincularLancamento" value="" />
 
         <!-- Hidden id da Funcionalidade que está sendo manipulada -->
         <input type="hidden" name="hdnIdMdLitFuncionalidade" id="hdnIdMdLitFuncionalidade" value="" />

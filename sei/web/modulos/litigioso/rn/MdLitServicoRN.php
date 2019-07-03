@@ -59,13 +59,6 @@
 
                 $objServicoBD = new MdLitServicoBD ($this->getObjInfraIBanco());
 
-
-                for ($i = 0; $i < count($arrObjServicoDTO); $i++) {
-                    $this->_excluirModalidade($arrObjServicoDTO[$i]->getNumIdMdLitServico());
-                    $this->_excluirAbrangencia($arrObjServicoDTO[$i]->getNumIdMdLitServico());
-                    $objServicoBD->excluir($arrObjServicoDTO[$i]);
-                }
-
             } catch (Exception $e) {
                 throw new InfraException ('Erro excluindo Serviço.', $e);
             }
@@ -209,24 +202,6 @@
                 $objMdLitServicoDTO = $objMdLitServicoBD->cadastrar($objMdLitServicoDTO);
             }
 
-            $objMdLitRelServicoModalidadeRN = new MdLitRelServicoModalidadeRN();
-            $this->_excluirModalidade($objMdLitServicoDTO->getNumIdMdLitServico());
-            foreach ($objMdLitServicoDTO->getArrModalidade() as $idModalidade) {
-                $objMdLitRelServicoModalidadeDTO = new MdLitRelServicoModalidadeDTO();
-                $objMdLitRelServicoModalidadeDTO->setNumIdMdLitServico($objMdLitServicoDTO->getNumIdMdLitServico());
-                $objMdLitRelServicoModalidadeDTO->setNumIdMdLitModalidade($idModalidade);
-                $objMdLitRelServicoModalidadeRN->cadastrar($objMdLitRelServicoModalidadeDTO);
-            }
-
-            $objMdLitRelServicoAbrangenRN = new MdLitRelServicoAbrangenRN();
-            $this->_excluirAbrangencia($objMdLitServicoDTO->getNumIdMdLitServico());
-            foreach ($objMdLitServicoDTO->getArrAbrangencia() as $idAbrangencia) {
-                $objMdLitRelServicoAbrangenDTO = new MdLitRelServicoAbrangenDTO();
-                $objMdLitRelServicoAbrangenDTO->setNumIdMdLitServico($objMdLitServicoDTO->getNumIdMdLitServico());
-                $objMdLitRelServicoAbrangenDTO->setNumIdMdLitAbrangencia($idAbrangencia);
-                $objMdLitRelServicoAbrangenRN->cadastrar($objMdLitRelServicoAbrangenDTO);
-            }
-
             return $objMdLitServicoDTO;
 
         }
@@ -241,24 +216,6 @@
                 $objMdLitServicoDTO = $objMdLitServicoBD->cadastrar($objMdLitServicoDTO);
             }
 
-            $objMdLitRelServicoModalidadeRN = new MdLitRelServicoModalidadeRN();
-            $this->_excluirModalidade($objMdLitServicoDTO->getNumIdMdLitServico());
-            foreach ($objMdLitServicoDTO->getArrModalidade() as $idModalidade) {
-                $objMdLitRelServicoModalidadeDTO = new MdLitRelServicoModalidadeDTO();
-                $objMdLitRelServicoModalidadeDTO->setNumIdMdLitServico($objMdLitServicoDTO->getNumIdMdLitServico());
-                $objMdLitRelServicoModalidadeDTO->setNumIdMdLitModalidade($idModalidade);
-                $objMdLitRelServicoModalidadeRN->cadastrar($objMdLitRelServicoModalidadeDTO);
-            }
-
-            $objMdLitRelServicoAbrangenRN = new MdLitRelServicoAbrangenRN();
-            $this->_excluirAbrangencia($objMdLitServicoDTO->getNumIdMdLitServico());
-            foreach ($objMdLitServicoDTO->getArrAbrangencia() as $idAbrangencia) {
-                $objMdLitRelServicoAbrangenDTO = new MdLitRelServicoAbrangenDTO();
-                $objMdLitRelServicoAbrangenDTO->setNumIdMdLitServico($objMdLitServicoDTO->getNumIdMdLitServico());
-                $objMdLitRelServicoAbrangenDTO->setNumIdMdLitAbrangencia($idAbrangencia);
-                $objMdLitRelServicoAbrangenRN->cadastrar($objMdLitRelServicoAbrangenDTO);
-            }
-
             return $objMdLitServicoDTO;
         }
 
@@ -267,14 +224,6 @@
 
             if (InfraString::isBolVazia($objMdLitServicoDTO->getStrCodigo())) {
                 $objInfraException->adicionarValidacao('Informe o campo Código!');
-            }
-
-            if (!$objMdLitServicoDTO->isSetArrModalidade()) {
-                $objInfraException->adicionarValidacao('Informe ao menos uma Modalidade!');
-            }
-
-            if (!$objMdLitServicoDTO->isSetArrAbrangencia()) {
-                $objInfraException->adicionarValidacao('Informe ao menos uma Abrangência!');
             }
 
             if($this->_verificarServicoDuplicado($objMdLitServicoDTO) > 0){
@@ -298,38 +247,10 @@
                 $objInfraException->adicionarValidacao('Informe o campo Descrição!');
             }
 
-            if (!$objMdLitServicoDTO->isSetArrModalidade()) {
-                $objInfraException->adicionarValidacao('Informe ao menos uma Modalidade!');
-            }
-
-            if (!$objMdLitServicoDTO->isSetArrAbrangencia()) {
-                $objInfraException->adicionarValidacao('Informe ao menos uma Abrangência!');
-            }
-
             if($this->_verificarServicoDuplicado($objMdLitServicoDTO) > 0){
                 $objInfraException->adicionarValidacao('Serviço com o código já cadastrado!');
             }
 
-        }
-
-        private function _excluirModalidade($idMdLitServico)
-        {
-            $objMdLitRelServicoModalidadeRN  = new MdLitRelServicoModalidadeRN();
-            $objMdLitRelServicoModalidadeDTO = new MdLitRelServicoModalidadeDTO();
-            $objMdLitRelServicoModalidadeDTO->setNumIdMdLitServico($idMdLitServico);
-            $objMdLitRelServicoModalidadeDTO->retTodos();
-            $arrObjMdLitRelServicoModalidadeDTO = $objMdLitRelServicoModalidadeRN->listar($objMdLitRelServicoModalidadeDTO);
-            $objMdLitRelServicoModalidadeRN->excluir($arrObjMdLitRelServicoModalidadeDTO);
-        }
-
-        private function _excluirAbrangencia($idMdLitServico)
-        {
-            $objMdLitRelServicoAbrangenDTO = new MdLitRelServicoAbrangenDTO();
-            $objMdLitRelServicoAbrangenRN  = new MdLitRelServicoAbrangenRN();
-            $objMdLitRelServicoAbrangenDTO->setNumIdMdLitServico($idMdLitServico);
-            $objMdLitRelServicoAbrangenDTO->retTodos();
-            $arrObjMdLitRelServicoAbrangenDTO = $objMdLitRelServicoAbrangenRN->listar($objMdLitRelServicoAbrangenDTO);
-            $objMdLitRelServicoAbrangenRN->excluir($arrObjMdLitRelServicoAbrangenDTO);
         }
 
         private function _verificarServicoDuplicado($objMdLitServicoDTO)

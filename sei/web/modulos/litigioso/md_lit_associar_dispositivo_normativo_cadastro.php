@@ -206,7 +206,7 @@
 
         objAutoCompletarDispositivoNormativo = new infraAjaxAutoCompletar('hdnIdDispositivoNormativo', 'txtDispositivoNormativo', '<?=$strLinkAjaxDispositivoNormativo?>');
         objAutoCompletarDispositivoNormativo.limparCampo = true;
-
+        objAutoCompletarDispositivoNormativo.tamanhoMinimo = 3;
         objAutoCompletarDispositivoNormativo.prepararExecucao = function () {
             return 'palavras_pesquisa=' + document.getElementById('txtDispositivoNormativo').value;
         };

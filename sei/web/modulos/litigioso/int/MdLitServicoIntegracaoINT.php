@@ -103,46 +103,10 @@ class MdLitServicoIntegracaoINT extends InfraINT {
             $strResultado .= '<th class="infraTh" width="5%">&nbsp;Código&nbsp;</th>' . "\n";
             $strResultado .= '<th class="infraTh" width="5%">&nbsp;Sigla&nbsp;</th>' . "\n";
             $strResultado .= '<th class="infraTh" width="20%">&nbsp;Descrição&nbsp;</th>' . "\n";
-            $strResultado .= '<th class="infraTh" width="15%">&nbsp;Modalidades&nbsp;</th>' . "\n";
-            $strResultado .= '<th class="infraTh" width="15%">&nbsp;Abrangências&nbsp;</th>' . "\n";
             $strResultado .= '</tr>' . "\n";
             $strCssTr = '';
 
-            $strOptionModalidade  = MdLitModalidadeINT::montarSelectNome(null, null, null);
-            $strOptionAbrangencia = MdLitAbrangenciaINT::montarSelectNome(null, null, null);
             for ($i = 0; $i < $numRegistros; $i++) {
-
-                if($objMdLitServicoIntegracaoDTO->isSetNumIdMdLitServicoIntegracao() && $objMdLitServicoIntegracaoDTO->getNumIdMdLitServicoIntegracao()){
-                    $objMdLitServicoDTO = new MdLitServicoDTO();
-                    $arrIdAbrangencia = null;
-                    $arrIdModalidade = null;
-                    $objMdLitServicoDTO->retNumIdMdLitServico();
-                    $objMdLitServicoDTO->setNumIdMdLitServicoIntegracao($objMdLitServicoIntegracaoDTO->getNumIdMdLitServicoIntegracao());
-                    $objMdLitServicoDTO->setStrCodigo($arrResultadoWebService[$i][$objMdLitServicoIntegracaoDTO->getStrChaveUnica()]);
-
-                    $objMdLitServicoDTO = $objMdLitServicoRN->consultar($objMdLitServicoDTO);
-
-                    if($objMdLitServicoDTO){
-                        //Modalidade
-                        $objMdLitRelServicoModalidadeDTO = new MdLitRelServicoModalidadeDTO();
-                        $objMdLitRelServicoModalidadeDTO->setNumIdMdLitServico($objMdLitServicoDTO->getNumIdMdLitServico());
-                        $objMdLitRelServicoModalidadeDTO->retNumIdMdLitModalidade();
-                        $objMdLitRelServicoModalidadeRN     = new MdLitRelServicoModalidadeRN();
-                        $arrObjMdLitRelServicoModalidadeDTO = $objMdLitRelServicoModalidadeRN->listar($objMdLitRelServicoModalidadeDTO);
-                        $arrIdModalidade                    = InfraArray::converterArrInfraDTO($arrObjMdLitRelServicoModalidadeDTO, 'IdMdLitModalidade');
-
-                        //Abrangencia
-                        $objMdLitRelServicoAbrangenDTO = new MdLitRelServicoAbrangenDTO();
-                        $objMdLitRelServicoAbrangenDTO->setNumIdMdLitServico($objMdLitServicoDTO->getNumIdMdLitServico());
-                        $objMdLitRelServicoAbrangenDTO->retNumIdMdLitAbrangencia();
-                        $objMdLitRelServicoAbrangenRN     = new MdLitRelServicoAbrangenRN();
-                        $arrObjMdLitRelServicoAbrangenDTO = $objMdLitRelServicoAbrangenRN->listar($objMdLitRelServicoAbrangenDTO);
-                        $arrIdAbrangencia                 = InfraArray::converterArrInfraDTO($arrObjMdLitRelServicoAbrangenDTO, 'IdMdLitAbrangencia');
-                    }
-
-                    $strOptionModalidade  = MdLitModalidadeINT::montarSelectNome(null, null, $arrIdModalidade);
-                    $strOptionAbrangencia = MdLitAbrangenciaINT::montarSelectNome(null, null, $arrIdAbrangencia);
-                }
 
                 $idLinha = $i;
 
@@ -164,20 +128,6 @@ class MdLitServicoIntegracaoINT extends InfraINT {
                 // descricao
                 $strResultado .= "<td id='descricao_$idLinha'>";
                 $strResultado .= $objMdLitServicoIntegracaoDTO->isSetStrMapeamentoDescricao() ? (PaginaSEI::tratarHTML($arrResultadoWebService[$i][$objMdLitServicoIntegracaoDTO->getStrMapeamentoDescricao()])): '';
-                $strResultado .= "</td>";
-
-                // Modalidades
-                $strResultado .= "<td id='modalidade_$idLinha'>";
-                $strResultado .= "<select id='selModalidade_$i' name='selModalidade[{$arrResultadoWebService[$i][$objMdLitServicoIntegracaoDTO->getStrChaveUnica()]}][]' multiple  style='width: 80%;' class='infraSelect multipleSelect'>";
-                $strResultado .= $strOptionModalidade;
-                $strResultado .= "</select>";
-                $strResultado .= "</td>";
-
-                // Abrangencia
-                $strResultado .= "<td id='abrangencia_$idLinha'>";
-                $strResultado .= "<select id='selAbrangencia_$i' name='selAbrangencia[{$arrResultadoWebService[$i][$objMdLitServicoIntegracaoDTO->getStrChaveUnica()]}][]'  style='width: 80%;' multiple class='infraSelect multipleSelect'>>";
-                $strResultado .= $strOptionAbrangencia;
-                $strResultado .= "</select>";
                 $strResultado .= "</td>";
 
                 $strResultado .= '</tr>' . "\n";

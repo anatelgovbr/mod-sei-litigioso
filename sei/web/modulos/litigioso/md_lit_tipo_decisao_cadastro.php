@@ -248,7 +248,7 @@
 
     objAutoCompletarEspecies = new infraAjaxAutoCompletar('hdnIdEspecies','txtEspecies','<?= $strLinkAjaxEspecies ?>');
     objAutoCompletarEspecies.limparCampo = true;
-
+    objAutoCompletarEspecies.tamanhoMinimo = 3;
     objAutoCompletarEspecies.prepararExecucao = function(){
     return 'palavras_pesquisa='+document.getElementById('txtEspecies').value;
     };

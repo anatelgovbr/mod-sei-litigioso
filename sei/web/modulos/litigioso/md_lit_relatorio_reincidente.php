@@ -472,7 +472,7 @@ PaginaSEI::getInstance()->abrirJavaScript();?>
         <?php if($mostrarFiltro){ ?>
         objAutoCompletarInteressados = new infraAjaxAutoCompletar('hdnIdInteressados','txtInteressados','<?=$strLinkAjaxInteressados?>');
         objAutoCompletarInteressados.limparCampo = true;
-
+        objAutoCompletarInteressados.tamanhoMinimo = 3;   
         objAutoCompletarInteressados.prepararExecucao = function(){
             return 'palavras_pesquisa='+document.getElementById('txtInteressados').value;
         };
@@ -557,7 +557,7 @@ PaginaSEI::getInstance()->abrirJavaScript();?>
             //inicio da configuração da conduta
             objAutoCompletarConduta = new infraAjaxAutoCompletar('hdnIdConduta','txtConduta','<?=$strLinkAjaxConduta?>');
             objAutoCompletarConduta.limparCampo = false;
-
+            objAutoCompletarConduta.tamanhoMinimo = 3;
             objAutoCompletarConduta.prepararExecucao = function(){
                 return 'palavras_pesquisa='+document.getElementById('txtConduta').value;
             };

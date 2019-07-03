@@ -22,7 +22,8 @@
 
         objAutoCompletarDecisaoAnte = new infraAjaxAutoCompletar('hdnIdTipoDeciAnte', 'txtDecAntec', '<?php echo $strLinkAjaxAutoComplDecisao?>');
         objAutoCompletarDecisaoRein = new infraAjaxAutoCompletar('hdnIdTipoDeciRein', 'txtDecRein', '<?=$strLinkAjaxAutoComplDecisao?>');
-
+        objAutoCompletarDecisaoRein.tamanhoMinimo = 3;
+        objAutoCompletarDecisaoAnte.tamanhoMinimo = 3;
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         objAutoCompletarDecisaoAnte.prepararExecucao = function () {

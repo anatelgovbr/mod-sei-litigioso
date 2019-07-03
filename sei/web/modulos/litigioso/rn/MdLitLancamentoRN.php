@@ -437,6 +437,18 @@ class MdLitLancamentoRN extends InfraRN {
      * @return MdLitLancamentoDTO retorna o objeto se for o lançamento de um novo crédito ao contrario não há retorno
      */
     public function prepararLancamento($post){
+
+        if(!empty($post['hdnTbVincularLancamento'])){
+            //vincular Lancamento do lado do SEI tem que salvar na tabela md_lit_lancamento
+            $arrTbVincularLancamento = current(PaginaSEI::getInstance()->getArrItensTabelaDinamica($post['hdnTbVincularLancamento']));
+
+            $arrTbVincularLancamento['selNumeroInteressado'] = $post['selNumeroInteressado'];
+            $arrTbVincularLancamento['hdnIdProcedimento'] = $post['hdnIdProcedimento'];
+            $arrTbVincularLancamento['txtDtIntimacaoAplMulta'] = $post['txtDtIntimacaoAplMulta'];
+            $arrTbVincularLancamento['hdnDtDecursoPrazo'] = $post['hdnDtDecursoPrazo'];
+            $objMdLitLancamentoDTO = $this->vincularLancamento($arrTbVincularLancamento);
+            return $objMdLitLancamentoDTO;
+        }
         switch ($post['hdnIdMdLitFuncionalidade']) {
             case MdLitIntegracaoRN::$ARRECADACAO_LANCAMENTO_CREDITO:
                 $objMdLitLancamento = $this->_realizarLancamentoCredito($post);
@@ -544,6 +556,43 @@ class MdLitLancamentoRN extends InfraRN {
 
             return $objMdLitLancamentoNovo;
         }
+    }
+
+    public function vincularLancamentoControlado($arrTbVincularLancamento){
+        $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+        $objMdLitLancamentoDTO->setStrSequencial($arrTbVincularLancamento[0]);
+        $objMdLitLancamentoDTO->setStrCodigoReceita($arrTbVincularLancamento[1]);
+        $objMdLitLancamentoDTO->setDtaVencimento($arrTbVincularLancamento[2]);
+        $objMdLitLancamentoDTO->setDblVlrLancamento(str_replace('.', '', $arrTbVincularLancamento[3]));
+        $objMdLitLancamentoDTO->setDblVlrDesconto(str_replace('.', '',$arrTbVincularLancamento[4]));
+        $objMdLitLancamentoDTO->setDblVlrPago(str_replace('.', '',$arrTbVincularLancamento[5]));
+        $objMdLitLancamentoDTO->setDblVlrSaldoDevedor(str_replace('.', '',$arrTbVincularLancamento[6]));
+        $objMdLitLancamentoDTO->setDtaDecisao($arrTbVincularLancamento[7] ? $arrTbVincularLancamento[7]: null);
+        $objMdLitLancamentoDTO->setStrSinConstituicaoDefinitiva($arrTbVincularLancamento[9] ? 'S':'N');
+        $objMdLitLancamentoDTO->setDtaConstituicaoDefinitiva($arrTbVincularLancamento[9] ? $arrTbVincularLancamento[9]:null);
+        $objMdLitLancamentoDTO->setNumIdMdLitSituacaoLancamento($arrTbVincularLancamento[10]);
+        $objMdLitLancamentoDTO->setStrLinkBoleto($arrTbVincularLancamento[11]);
+        $objMdLitLancamentoDTO->setStrNumeroInteressado($arrTbVincularLancamento[12]);
+        $objMdLitLancamentoDTO->setNumIdMdLitNumeroInteressado($arrTbVincularLancamento['selNumeroInteressado']);
+        $objMdLitLancamentoDTO->setStrJustificativa(null);
+
+        //verificar se já existe lancamento para o processo
+        $arrObjMdLitLancamentoDTO = $this->listarLancamentoPorProcedimento($arrTbVincularLancamento['hdnIdProcedimento']);
+
+        $objMdLitLancamentoDTO->setDblIdProcedimento($arrTbVincularLancamento['hdnIdProcedimento']);
+        $objMdLitLancamentoDTO->setNumIdUnidade(SessaoSEI::getInstance()->getNumIdUnidadeAtual());
+        $objMdLitLancamentoDTO->setNumIdUsuario(SessaoSEI::getInstance()->getNumIdUsuario());
+        $objMdLitLancamentoDTO->setDthInclusao(InfraData::getStrDataHoraAtual());
+        $objMdLitLancamentoDTO->setStrTipoLancamento(count($arrObjMdLitLancamentoDTO) > 0? self::$TIPO_LANCAMENTO_MAJORADO:self::$TIPO_LANCAMENTO_PRINCIPAL);
+        $objMdLitLancamentoDTO->setDtaIntimacao($arrTbVincularLancamento['txtDtIntimacaoAplMulta']);
+        $objMdLitLancamentoDTO->setStrSinRenunciaRecorrer('N');
+        $objMdLitLancamentoDTO->setDtaPrazoDefesa($arrTbVincularLancamento['hdnDtDecursoPrazo']);
+        $objMdLitLancamentoDTO->setStrSinSuspenso('N');
+
+
+        $objMdLitLancamentoDTO = $this->cadastrar($objMdLitLancamentoDTO);
+        return $objMdLitLancamentoDTO;
+
     }
 
     private function realizarRetificarCredito($post){
@@ -886,7 +935,8 @@ class MdLitLancamentoRN extends InfraRN {
 
         $objProtocoloRN = new ProtocoloRN();
         $objProtocoloDTO = $objProtocoloRN->consultarRN0186($objProtocoloDTO);
-        $numProcesso = substr(str_replace(array('.', '/', '-'), '',$objProtocoloDTO->getStrProtocoloFormatado()), 0, -2);
+//        $numProcesso = substr(str_replace(array('.', '/', '-'), '',$objProtocoloDTO->getStrProtocoloFormatado()), 0, -2);
+        $numProcesso = str_replace(array('.', '/', '-'), '',$objProtocoloDTO->getStrProtocoloFormatado());
 
         return $numProcesso;
     }
@@ -1040,6 +1090,25 @@ class MdLitLancamentoRN extends InfraRN {
             return true;
 
         return false;
+    }
+
+    protected function listarLancamentoPorProcedimentoConectado($idProcedimento){
+        $objMdLitSituacaoLancamentoDTO = new MdLitSituacaoLancamentoDTO();
+        $objMdLitSituacaoLancamentoDTO->retTodos(false);
+
+        $objMdLitSituacaoLancamentoRN = new MdLitSituacaoLancamentoRN();
+        $objMdLitSituacaoLancamentoDTO = $objMdLitSituacaoLancamentoRN->consultarSituacaoCancelamento($objMdLitSituacaoLancamentoDTO);
+
+        $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+        $objMdLitLancamentoDTO->retTodos(false);
+        $objMdLitLancamentoDTO->setDblIdProcedimento($idProcedimento);
+        if($objMdLitSituacaoLancamentoDTO){
+            $objMdLitLancamentoDTO->adicionarCriterio(array('IdMdLitSituacaoLancamento', 'IdMdLitSituacaoLancamento'), array(InfraDTO::$OPER_DIFERENTE, InfraDTO::$OPER_IGUAL), array($objMdLitSituacaoLancamentoDTO->getNumIdMdLitSituacaoLancamento(), null), array(InfraDTO::$OPER_LOGICO_OR));
+        }
+
+        $arrObjMdLitSituacaoLancamentoDTO = $this->listar($objMdLitLancamentoDTO);
+
+        return $arrObjMdLitSituacaoLancamentoDTO;
     }
 
 

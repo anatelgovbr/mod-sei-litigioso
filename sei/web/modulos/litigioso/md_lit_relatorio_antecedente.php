@@ -390,7 +390,7 @@ PaginaSEI::getInstance()->abrirJavaScript();?>
 
         objAutoCompletarInteressados = new infraAjaxAutoCompletar('hdnIdInteressados','txtInteressados','<?=$strLinkAjaxInteressados?>');
         objAutoCompletarInteressados.limparCampo = true;
-
+        objAutoCompletarInteressados.tamanhoMinimo = 3;    
         objAutoCompletarInteressados.prepararExecucao = function(){
             return 'palavras_pesquisa='+document.getElementById('txtInteressados').value;
         };

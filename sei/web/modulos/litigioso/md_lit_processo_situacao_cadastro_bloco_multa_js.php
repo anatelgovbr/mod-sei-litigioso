@@ -74,6 +74,7 @@
         var valueDecisao = objTabelaDinamicaDecisao.hdn.value;
         document.getElementById('btnRetificarLancamento').style.display = 'none';
         document.getElementById('btnIncluirLancamento').style.display = 'none';
+        mostrarEsconderElemento(document.getElementById('btnVincularLancamento'),'none');
         document.getElementById('btnCancelarLancamento').style.display = 'none';
         document.getElementById('btnSuspenderLancamento').style.display = 'none';
         document.getElementById('btnDenegarRecurso').style.display = 'none';
@@ -134,8 +135,8 @@
                     //botão historico
                     document.getElementById('btnHistoricoLancamento').setAttribute('data-url', $(result).find('urlHistoricoLancamento').text());
 
-                    var creditoNaoLancado   = $(result).find('creditoNaoLancado').text().replace('.','').replace(',', '.');
-                    var totalMultaAplicado  = $(result).find('multaAplicada').text().replace('.','').replace(',', '.');
+                    var creditoNaoLancado   = $(result).find('creditoNaoLancado').text().infraReplaceAll('.','').replace(',', '.');
+                    var totalMultaAplicado  = $(result).find('multaAplicada').text().infraReplaceAll('.','').replace(',', '.');
 
                     //mostrar o fieldset de multa
                     if($(result).find('creditoNaoLancado').text() != '0,00' || $(result).find('multaAplicada').text() != '0,00'){
@@ -143,11 +144,15 @@
                     }else{
                         document.getElementById('fieldsetMulta').style.display = 'none';
                     }
-
+debugger;
                     if($(result).find('creditoNaoLancado').text() != '0,00' && $(result).find('isNovoLancamento').text() == 'S' && document.getElementById('selCreditosProcesso').value == ''){
 
 
                         document.getElementById('btnIncluirLancamento').style.display = parseFloat(creditoNaoLancado) > 0 ? '': 'none';
+
+                        var estilo = parseFloat(creditoNaoLancado) > 0 ? '': 'none';
+                        mostrarEsconderElemento(document.getElementById('btnVincularLancamento'),estilo);
+
                     }else if(creditoNaoLancado > 0 && $(result).find('isNovoLancamento').text() == 'S'){
                         //Novo Boleto da Diferença a Maior (combo de crédito à parte, com datas próprias)
                         if(!optionExiste('',document.getElementById('selCreditosProcesso')))
@@ -263,6 +268,7 @@
                 //Se possuir decisão com cadastro parcial as regras acima de aparecer botão para o lançamento e ignorado
                 if(objTabelaDinamicaDecisao.verificarCadastroParcial()){
                     document.getElementById('btnIncluirLancamento').style.display = 'none';
+                    mostrarEsconderElemento(document.getElementById('btnVincularLancamento'),'none');
                     document.getElementById('btnCancelarRecurso').style.display = 'none';
                     document.getElementById('btnDenegarRecurso').style.display = 'none';
                     document.getElementById('btnSuspenderLancamento').style.display = 'none';
@@ -312,6 +318,26 @@
             280);
     }
 
+
+    function abrirModalVincularLancamento(element){
+        var url = element.getAttribute('data-url');
+
+        if(objTabelaDinamicaDecisao.verificarCadastroParcial()){
+            alert("Foi identificado que ainda existem infrações sem Decisão cadastrada. Posteriormente, para prosseguir com o cadastro de novas Situações ou a Gestão de Multa, ainda será necessário finalizar o Cadastro das Decisões.");
+            return;
+        }
+
+        if(document.getElementById('selNumeroInteressado').value == '' || document.getElementById('selNumeroInteressado').value == 'null' ){
+            alert('Selecione o número de complemento do interessado!');
+            objAjaxNumeroInteressado.executar();
+            return false;
+        }
+
+        infraAbrirJanela(url,
+            'JustificativaLancamento',
+            880,
+            480);
+    }
     function abrirModalConstituirDefinitivamente(element){
         var url = element.getAttribute('data-url');
         var txtConst = document.getElementById('txtDtConstituicao');
@@ -435,7 +461,7 @@
             return true;
         }
 
-        if(document.getElementById('hdnVlCreditoNaoLancado').value != '0,00' && document.getElementById('hdnJustificativaLancamento').value == '' && document.getElementById('hdnIdMdLitFuncionalidade').value == '' ){
+        if(document.getElementById('hdnVlCreditoNaoLancado').value != '0,00' && document.getElementById('hdnJustificativaLancamento').value == '' && infraTrim(document.getElementById('hdnIdMdLitFuncionalidade').value == '') && document.getElementById('hdnTbVincularLancamento').value == '' ){
             alert('Foram identificados valores da Gestão de Multa pendentes de atualização no SISTEMA DE ARRECADAÇÃO. Verifique se a ação para atualização dos valores foi acionada.');
             return false;
         }
@@ -530,5 +556,10 @@
         }
     }
 
+    function mostrarEsconderElemento(element, estilo){
+        if(element){
+            element.style.display = estilo;
+        }
+    }
 </script>
 

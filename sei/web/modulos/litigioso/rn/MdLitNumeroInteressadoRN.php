@@ -120,9 +120,7 @@ class MdLitNumeroInteressadoRN extends InfraRN {
 
                     $this->excluirRel($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado(),new MdLitRelNumInterServicoDTO(), new MdLitRelNumInterServicoRN());
                     $this->excluirRel($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado(),new MdLitRelNumInterModaliDTO(), new MdLitRelNumInterModaliRN());
-                    $this->excluirRel($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado(),new MdLitRelNumInterAbrangDTO(), new MdLitRelNumInterAbrangRN());
-                    $this->excluirRel($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado(),new MdLitRelNumInterEstadoDTO(), new MdLitRelNumInterEstadoRN());
-                    $this->excluirRel($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado(),new MdLitRelNumInterCidadeDTO(), new MdLitRelNumInterCidadeRN());
+                    $this->excluirRel($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado(),new MdLitRelNumInterTpOutorDTO(), new MdLitRelNumInterTpOutorRN());
 
                 }else{
                     $objMdLitNumeroInteressadoDTO = $objMdLitNumeroInteressadoBD->cadastrar($objMdLitNumeroInteressadoDTO);
@@ -136,9 +134,7 @@ class MdLitNumeroInteressadoRN extends InfraRN {
 
                 $this->cadastrarRel(new MdLitRelNumInterServicoRN(), new MdLitRelNumInterServicoDTO(), $arrIdServico, $objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado(), 'IdMdLitServico');
                 $this->cadastrarRel(new MdLitRelNumInterModaliRN(), new MdLitRelNumInterModaliDTO(), $arrIdModalidades, $objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado(), 'IdMdLitModalidade');
-                $this->cadastrarRel(new MdLitRelNumInterAbrangRN(), new MdLitRelNumInterAbrangDTO(), $arrIdAbrangencia, $objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado(), 'IdMdLitAbrangencia');
-                $this->cadastrarRel(new MdLitRelNumInterEstadoRN(), new MdLitRelNumInterEstadoDTO(), $arrIdEstados, $objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado(), 'IdUf');
-                $this->cadastrarRel(new MdLitRelNumInterCidadeRN(), new MdLitRelNumInterCidadeDTO(), $arrIdCidades, $objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado(), 'IdCidade');
+                $this->cadastrarRel(new MdLitRelNumInterTpOutorRN(), new MdLitRelNumInterTpOutorDTO(), $arrIdAbrangencia, $objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado(), 'IdMdLitAdmTipoOutor');
 
             }
 
@@ -246,12 +242,8 @@ class MdLitNumeroInteressadoRN extends InfraRN {
                 $this->excluirRel($arrObjMdLitNumeroInteressadoDTO[$i]->getNumIdMdLitNumeroInteressado(),new MdLitRelNumInterServicoDTO(), new MdLitRelNumInterServicoRN());
                 //modalidade
                 $this->excluirRel($arrObjMdLitNumeroInteressadoDTO[$i]->getNumIdMdLitNumeroInteressado(),new MdLitRelNumInterModaliDTO(), new MdLitRelNumInterModaliRN());
-                //abrangencia
-                $this->excluirRel($arrObjMdLitNumeroInteressadoDTO[$i]->getNumIdMdLitNumeroInteressado(),new MdLitRelNumInterAbrangDTO(), new MdLitRelNumInterAbrangRN());
-                //estado
-                $this->excluirRel($arrObjMdLitNumeroInteressadoDTO[$i]->getNumIdMdLitNumeroInteressado(),new MdLitRelNumInterEstadoDTO(), new MdLitRelNumInterEstadoRN());
-                //cidade
-                $this->excluirRel($arrObjMdLitNumeroInteressadoDTO[$i]->getNumIdMdLitNumeroInteressado(),new MdLitRelNumInterCidadeDTO(), new MdLitRelNumInterCidadeRN());
+                //tipo Outorga
+                $this->excluirRel($arrObjMdLitNumeroInteressadoDTO[$i]->getNumIdMdLitNumeroInteressado(),new MdLitRelNumInterTpOutorDTO(), new MdLitRelNumInterTpOutorRN());
 
                 $objMdLitNumeroInteressadoBD->excluir($arrObjMdLitNumeroInteressadoDTO[$i]);
             }

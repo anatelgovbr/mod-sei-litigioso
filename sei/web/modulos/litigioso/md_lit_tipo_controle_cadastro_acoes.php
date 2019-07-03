@@ -410,8 +410,9 @@
       
       	$objUsuarioDTO->setNumIdUsuario($arrGestores[$x]->getNumIdUsuario());
       	$objUsuarioDTO = $objUsuarioRN->consultarRN0489( $objUsuarioDTO );
-      
-      	$strItensSelGestores .= "<option value='" . $objUsuarioDTO->getNumIdUsuario() .  "'>" . $objUsuarioDTO->getStrNome() . "</option>";
+
+      	if($objUsuarioDTO)
+      	    $strItensSelGestores .= "<option value='" . $objUsuarioDTO->getNumIdUsuario() .  "'>" . $objUsuarioDTO->getStrNome() . "</option>";
       }
 
         //consultar os motivos

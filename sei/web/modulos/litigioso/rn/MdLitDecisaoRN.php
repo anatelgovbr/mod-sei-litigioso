@@ -114,6 +114,7 @@ class MdLitDecisaoRN extends InfraRN {
         if(count($arrDecisaoPorProcessoSitucacao)){
             $objMdLitRelDecisaoUfRN->excluirPorDecisao(InfraArray::converterArrInfraDTO($arrDecisaoPorProcessoSitucacao,'IdMdLitDecisao'));
         }
+        $valorRestanteDecisao = $this->calcularValorRestanteDecisao($arrDecisao['lista'], $arrDecisao['valor_lancamento']);
 
         $ret = array();
         foreach ($arrDecisao['lista'] as $decisao){
@@ -135,6 +136,17 @@ class MdLitDecisaoRN extends InfraRN {
             if(preg_match('/^novo_/', $decisao[0])){
                 $objMdLitDecisaoDTO->setStrSinUltimaDecisao('S');
                 $objMdLitDecisaoDTO->setNumIdMdLitProcessoSituacao($idMdLitProcessoSituacao);
+
+                //cenario que so vai ocorrer na funcionalidade de vincular lançamento aonde o valor do lançamento no sistema de arrecadação
+                //pode estar maior ou menor do que o usuario cadastrou na decisão assim o sistema irá alterar a primeira decisao com multa
+                //com o valor restante.
+                if($valorRestanteDecisao != 0 && $objMdLitDecisaoDTO->getDblMulta() > 0){
+                    $valorMulta = str_replace(',','.',$objMdLitDecisaoDTO->getDblMulta());
+                    $valorMulta = floatval($valorMulta);
+                    $objMdLitDecisaoDTO->setDblMulta(bcadd($valorMulta, $valorRestanteDecisao,2));
+                    $valorRestanteDecisao = 0;
+                }
+
                 $objMdLitDecisaoBD = new MdLitDecisaoBD($this->getObjInfraIBanco());
                 $objMdLitDecisaoDTO = $objMdLitDecisaoBD->cadastrar($objMdLitDecisaoDTO);
                 $ret[$decisao[0]] = $objMdLitDecisaoDTO->getNumIdMdLitDecisao();
@@ -198,6 +210,28 @@ class MdLitDecisaoRN extends InfraRN {
     }
   }
 
+  private function calcularValorRestanteDecisao($arrDecisao, $valorTotalLancamento){
+      if(empty(trim($valorTotalLancamento))){
+          return 0;
+      }
+
+      $vlTotalDecisao = 0;
+      $valorTotalLancamento = floatval($valorTotalLancamento);
+      foreach ($arrDecisao as $decisao){
+          $vlDecisao = str_replace(',','.',str_replace('.', '',$decisao[4]));
+          $vlDecisao = floatval($vlDecisao);
+          $vlTotalDecisao = bcadd($vlTotalDecisao, $vlDecisao, 2);
+      }
+      switch (bccomp($valorTotalLancamento, $vlDecisao, 2)){
+          case 0:
+              return 0;
+              break;
+          case 1:
+          case -1:
+              return bcsub($valorTotalLancamento, $vlTotalDecisao,2);
+              break;
+      }
+  }
   protected  function listarPorProcessoSituacaoConectado($idMdLitProcessoSituacao){
       $objMdLitDecisaoDTO = new MdLitDecisaoDTO();
       $objMdLitDecisaoDTO->retTodos(false);

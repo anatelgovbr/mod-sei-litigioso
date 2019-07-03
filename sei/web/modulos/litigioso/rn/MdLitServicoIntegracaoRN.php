@@ -170,11 +170,19 @@ class MdLitServicoIntegracaoRN extends InfraRN {
       if($numRegistros > 0){
           for ($i = 0; $i < $numRegistros; $i++) {
               $objMdLitServicoDTO = new MdLitServicoDTO();
+              $situacaoAtivo = 'S';
+
+              // parse por causa do web-service entende como inativo = S
+              if($objMdLitServicoIntegracaoDTO->isSetStrMapeamentoSituacao() && !empty($objMdLitServicoIntegracaoDTO->getStrMapeamentoSituacao())
+              && $arrResultadoWebService[$i][$objMdLitServicoIntegracaoDTO->getStrMapeamentoSituacao()] == 'S'){
+                  $situacaoAtivo = 'N';
+              }
+
               $objMdLitServicoDTO->setStrStaOrigem(MdLitServicoRN::$STA_ORIGEM_INTEGRACAO);
               $objMdLitServicoDTO->setStrCodigo($arrResultadoWebService[$i][$objMdLitServicoIntegracaoDTO->getStrMapeamentoCodigo()]);
               $objMdLitServicoDTO->setStrSigla($arrResultadoWebService[$i][$objMdLitServicoIntegracaoDTO->getStrMapeamentoSigla()]);
               $objMdLitServicoDTO->setStrDescricao($arrResultadoWebService[$i][$objMdLitServicoIntegracaoDTO->getStrMapeamentoDescricao()]);
-              $objMdLitServicoDTO->setStrSinAtivo('S');
+              $objMdLitServicoDTO->setStrSinAtivo($situacaoAtivo);
               $objMdLitServicoDTO->setNumIdMdLitServicoIntegracao($objMdLitServicoIntegracaoDTO->getNumIdMdLitServicoIntegracao());
               $objMdLitServicoDTO->setArrModalidade($arrModalidade[$arrResultadoWebService[$i][$objMdLitServicoIntegracaoDTO->getStrChaveUnica()]]);
               $objMdLitServicoDTO->setArrAbrangencia($arrAbrangencia[$arrResultadoWebService[$i][$objMdLitServicoIntegracaoDTO->getStrChaveUnica()]]);

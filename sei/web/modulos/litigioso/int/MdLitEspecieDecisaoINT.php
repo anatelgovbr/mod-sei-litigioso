@@ -17,7 +17,7 @@
 
             $objEspecieDecisaoDTO = new MdLitEspecieDecisaoDTO();
             $objEspecieDecisaoDTO->retTodos();
-
+            $objEspecieDecisaoDTO->setNumMaxRegistrosRetorno(50);
             $objEspecieDecisaoDTO->setStrNome('%' . $strPalavrasPesquisa . '%', InfraDTO::$OPER_LIKE);
             $objEspecieDecisaoDTO->setOrdStrNome(InfraDTO::$TIPO_ORDENACAO_ASC);
             $objEspecieDecisaoDTO->setStrSinAtivo('S');

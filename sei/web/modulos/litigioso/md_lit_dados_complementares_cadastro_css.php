@@ -1,8 +1,8 @@
 button#sbmConsultarNumero {z-index: 1;}
 
 #imgAjudaCpf{position: relative;top: 4px;}
-#imgAjudaModalidade{height: 1.3em;width: 1.3em;position: relative;top: 3px;left: 1px;}
-#imgAjudaAbrangencia{height: 1.3em;width: 1.3em;position: relative;top: 3px;left: 1px;}
+#imgAjudaModalidade{vertical-align: middle;padding: .1em 0;width: 16px;height: 16px;}
+#imgAjudaAbrangencia{vertical-align: middle;padding: .1em 0;width: 16px;height: 16px;}
 
 #lblNumero {position:absolute;left:0;top:0;}
 #txtNumero {position:absolute;left:0;top: 35%;width:50%;}
@@ -45,10 +45,10 @@ legend#legendNumero {margin-bottom: 10px;}
 
 #AdicionarNaoOutorgado{float: right;margin-bottom: 10px;}
 
-#imgAjudaModalidadeNaoOutorga{height: 1.3em;width: 1.3em;position: relative;top: 3px;left: 1px;}
+#imgAjudaModalidadeNaoOutorga{vertical-align: middle;padding: .1em 0;width: 16px;height: 16px;}
 #fldModalidadesNaoOutorgada {display: inline-block;float:left;}
 
-#imgAjudaAbrangenciaNaoOutorgado{height: 1.3em;width: 1.3em;position: relative;top: 3px;left: 1px;}
+#imgAjudaAbrangenciaNaoOutorgado{vertical-align: middle;padding: .1em 0;width: 16px;height: 16px;}
 #fldAbrangenciaNaoOutorgado {display: inline-block;float:left;}
 #fldAbrangenciaNaoOutorgado label,#fldModalidadesNaoOutorgada label{cursor: pointer;}
 

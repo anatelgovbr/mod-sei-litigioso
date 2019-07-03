@@ -229,10 +229,10 @@ class MdLitHistoricLancamentoRN extends InfraRN {
       $objMdLitLancamentoDTOAntigo = $this->consultar($objMdLitLancamentoDTOAntigo);
         if($objMdLitLancamentoDTOAntigo === null || (
             $objMdLitHistoricLancamentoDTO->getNumIdMdLitSituacaoLancamento() != $objMdLitLancamentoDTOAntigo->getNumIdMdLitSituacaoLancamento()
-            || $objMdLitHistoricLancamentoDTO->getDblVlrDesconto() != $objMdLitLancamentoDTOAntigo->getDblVlrDesconto()
-            || $objMdLitHistoricLancamentoDTO->getDtaUltimoPagamento() != $objMdLitLancamentoDTOAntigo->getDtaUltimoPagamento()
-            || $objMdLitHistoricLancamentoDTO->getDblVlrPago() != $objMdLitLancamentoDTOAntigo->getDblVlrPago()
-            || $objMdLitHistoricLancamentoDTO->getDblVlrLancamento() != $objMdLitLancamentoDTOAntigo->getDblVlrLancamento())){
+            || InfraUtil::prepararDbl($objMdLitHistoricLancamentoDTO->getDblVlrDesconto()) != InfraUtil::prepararDbl($objMdLitLancamentoDTOAntigo->getDblVlrDesconto())
+            || InfraUtil::prepararDbl($objMdLitHistoricLancamentoDTO->getDtaUltimoPagamento()) != InfraUtil::prepararDbl($objMdLitLancamentoDTOAntigo->getDtaUltimoPagamento())
+            || InfraUtil::prepararDbl($objMdLitHistoricLancamentoDTO->getDblVlrPago()) != InfraUtil::prepararDbl($objMdLitLancamentoDTOAntigo->getDblVlrPago())
+            || InfraUtil::prepararDbl($objMdLitHistoricLancamentoDTO->getDblVlrLancamento()) != InfraUtil::prepararDbl($objMdLitLancamentoDTOAntigo->getDblVlrLancamento()))){
                return $this->cadastrar($objMdLitHistoricLancamentoDTO);
         }elseif ($objMdLitLancamentoDTOAntigo &&  $objMdLitHistoricLancamentoDTO->getStrLinkBoleto() != $objMdLitLancamentoDTOAntigo->getStrLinkBoleto()){
             $objMdLitLancamentoDTOAntigo->setStrLinkBoleto($objMdLitHistoricLancamentoDTO->getStrLinkBoleto());
@@ -499,7 +499,7 @@ class MdLitHistoricLancamentoRN extends InfraRN {
 
   public function formatarSequencialLink($seq, $link){
     $linkForm = trim($link);
-    $aHref = '<a style="font-size:12.4px" class="ancoraPadraoAzul" target="_blank" href="'.$linkForm.'" > '.$seq.' </a>';
+    $aHref = '<a style="font-size:12.4px" class="ancoraPadraoAzul" target="_blank" href="'.$linkForm.'" >'.$seq.'</a>';
     return $aHref;
   }
 

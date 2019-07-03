@@ -37,7 +37,14 @@ class MdLitMapearParamSaidaRN extends InfraRN {
       'VL_ULTIMO_PAGAMENTO' => 22,
       'VL_DESCONTO' => 23,
       'LINK_BOLETO' => 24,
-      'VALOR_ATUALIZADO' => 25
+      'VALOR_ATUALIZADO' => 25,
+      'VALOR_RECEITA_INICIAL' => 79,
+      'DTA_APLICACAO_MULTA' => 80,
+      'DTA_VENCIMENTO' => 81,
+      'NUM_COMPLEMENTAR_INTERESSADO' => 82,
+      'IDENTIFICACAO_LANCAMENTO' => 83,
+      'COD_RECEITA' => 84,
+      'DTA_CONSTITUICAO_DEFINITIVA' => 85,
   );
 
     public static $ID_PARAM_RETIFICAR_LANCAMENTO = array(

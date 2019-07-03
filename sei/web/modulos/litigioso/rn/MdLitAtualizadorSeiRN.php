@@ -11,10 +11,10 @@ require_once dirname(__FILE__) . '/../../../SEI.php';
 class MdLitAtualizadorSeiRN extends InfraRN {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '1.3.0';
+    private $versaoAtualDesteModulo = '1.4.0';
     private $nomeDesteModulo = 'MÓDULO DE CONTROLE LITIGIOSO';
     private $nomeParametroModulo = 'VERSAO_MODULO_LITIGIOSO';
-    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4','1.0.0','1.1.0','1.2.0','1.3.0');
+    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4','1.0.0','1.1.0','1.2.0','1.3.0', '1.4.0');
 
     public function __construct(){
         parent::__construct();
@@ -114,6 +114,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv110();
                 $this->instalarv120();
                 $this->instalarv130();
+                $this->instalarv140();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.1') {
@@ -124,6 +125,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv110();
                 $this->instalarv120();
                 $this->instalarv130();
+                $this->instalarv140();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.2') {
@@ -133,6 +135,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv110();
                 $this->instalarv120();
                 $this->instalarv130();
+                $this->instalarv140();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.3') {
@@ -141,6 +144,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv110();
                 $this->instalarv120();
                 $this->instalarv130();
+                $this->instalarv140();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.4') {
@@ -148,24 +152,32 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv110();
                 $this->instalarv120();
                 $this->instalarv130();
+                $this->instalarv140();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.0.0') {
                 $this->instalarv110();
                 $this->instalarv120();
                 $this->instalarv130();
+                $this->instalarv140();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.1.0') {
                 $this->instalarv120();
                 $this->instalarv130();
+                $this->instalarv140();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.2.0') {
                 $this->instalarv130();
+                $this->instalarv140();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.3.0') {
+                $this->instalarv140();
+                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
+                $this->finalizar('FIM', false);
+            } else if ($strVersaoModuloLitigioso == '1.4.0') {
                 $this->logar('A VERSÃO MAIS ATUAL DO '.$this->nomeDesteModulo.' (v'.$this->versaoAtualDesteModulo.') JÁ ESTÁ INSTALADA.');
                 $this->finalizar('FIM', false);
             }
@@ -576,17 +588,6 @@ class MdLitAtualizadorSeiRN extends InfraRN {
         $this->logar('CRIANDO A SEQUENCE md_lit_modalidade');
         BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_modalidade', 1);
 
-        $this->logar('populando a tabela md_lit_modalidade');
-
-        $arrNome              = array(1 => 'Autorização', 2 => 'Concessão');
-        $objMdLitModalidadeRN = new MdLitModalidadeRN();
-        foreach ($arrNome as $codigo => $nome) {
-            $objMdLitModalidadeDTO = new MdLitModalidadeDTO();
-            $objMdLitModalidadeDTO->setNumIdMdLitModalidade($codigo);
-            $objMdLitModalidadeDTO->setStrNome($nome);
-            $objMdLitModalidadeRN->cadastrar($objMdLitModalidadeDTO);
-        }
-
 
         $this->logar('CRIANDO A TABELA md_lit_abrangencia');
 
@@ -598,16 +599,6 @@ class MdLitAtualizadorSeiRN extends InfraRN {
 
         $this->logar('CRIANDO A SEQUENCE seq_md_lit_abrangencia');
         BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_abrangencia', 1);
-
-        $this->logar('populando a tabela: md_lit_abrangencia');
-        $arrNome               = array(1 => 'Nacional', 2 => 'Regional', 3 => 'Estadual');
-        $objMdLitAbrangenciaRN = new MdLitAbrangenciaRN();
-        foreach ($arrNome as $codigo => $nome) {
-            $objMdLitAbrangenciaDTO = new MdLitAbrangenciaDTO();
-            $objMdLitAbrangenciaDTO->setNumIdMdLitAbrangencia($codigo);
-            $objMdLitAbrangenciaDTO->setStrNome($nome);
-            $objMdLitAbrangenciaRN->cadastrar($objMdLitAbrangenciaDTO);
-        }
 
 
         $this->logar('CRIANDO A TABELA md_lit_servico_integracao');
@@ -1657,6 +1648,241 @@ class MdLitAtualizadorSeiRN extends InfraRN {
 
         $this->logar('ATUALIZANDO PARÂMETRO '.$this->nomeParametroModulo.' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
         BancoSEI::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.3.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+
+    }
+
+
+    //Contem atualizações da versao 1.4.0
+    protected function instalarv140(){
+
+        $objInfraMetaBD = new InfraMetaBD(BancoSEI::getInstance());
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.4.0 DO '.$this->nomeDesteModulo.' NA BASE DO SEI');
+
+
+        $this->logar('ALTERANDO A TABELA md_lit_integracao');
+        $objInfraMetaBD->adicionarColuna('md_lit_integracao', 'sin_vincular_lancamento', $objInfraMetaBD->tipoTextoFixo(1), 'NULL' );
+
+        $this->logar('Adicionando novos parametros na combo de saida da funcionalidade Arrecadação Consulta Lançamento ');
+
+        $arrDados = array(
+            #Arrecadação Lançamento de Crédito
+            //Saida
+            array('idMdLitCampoIntegracao' => 79, 'idMdLitFuncionalidade' => MdLitIntegracaoRN::$ARRECADACAO_CONSULTAR_LANCAMENTO, 'nomeCampo' => 'Valor da Receita Inicial', 'staParametro' => 'S'),
+            array('idMdLitCampoIntegracao' => 80, 'idMdLitFuncionalidade' => MdLitIntegracaoRN::$ARRECADACAO_CONSULTAR_LANCAMENTO, 'nomeCampo' => 'Data da Decisão de Aplicação da Multa', 'staParametro' => 'S'),
+            array('idMdLitCampoIntegracao' => 81, 'idMdLitFuncionalidade' => MdLitIntegracaoRN::$ARRECADACAO_CONSULTAR_LANCAMENTO, 'nomeCampo' => 'Data de Vencimento', 'staParametro' => 'S'),
+            array('idMdLitCampoIntegracao' => 82, 'idMdLitFuncionalidade' => MdLitIntegracaoRN::$ARRECADACAO_CONSULTAR_LANCAMENTO, 'nomeCampo' => 'Número de Complemento do Interessado', 'staParametro' => 'S'),
+            array('idMdLitCampoIntegracao' => 83, 'idMdLitFuncionalidade' => MdLitIntegracaoRN::$ARRECADACAO_CONSULTAR_LANCAMENTO, 'nomeCampo' => 'Identificação do Lançamento', 'staParametro' => 'S'),
+            array('idMdLitCampoIntegracao' => 84, 'idMdLitFuncionalidade' => MdLitIntegracaoRN::$ARRECADACAO_CONSULTAR_LANCAMENTO, 'nomeCampo' => 'Código da Receita', 'staParametro' => 'S'),
+            array('idMdLitCampoIntegracao' => 85, 'idMdLitFuncionalidade' => MdLitIntegracaoRN::$ARRECADACAO_CONSULTAR_LANCAMENTO, 'nomeCampo' => 'Data Constituição Definitiva', 'staParametro' => 'S'),
+        );
+
+        $objMdLitCampoIntegracaoRN = new MdLitCampoIntegracaoRN();
+        foreach ($arrDados as $dados){
+            $objMdLitCampoIntegracaoDTO = new MdLitCampoIntegracaoDTO();
+            $objMdLitCampoIntegracaoDTO->setNumIdMdLitCampoIntegracao($dados['idMdLitCampoIntegracao']);
+            $objMdLitCampoIntegracaoDTO->setNumIdMdLitFuncionalidade($dados['idMdLitFuncionalidade']);
+            $objMdLitCampoIntegracaoDTO->setStrNomeCampo($dados['nomeCampo']);
+            $objMdLitCampoIntegracaoDTO->setStrStaParametro($dados['staParametro']);
+            $objMdLitCampoIntegracaoRN->cadastrar($objMdLitCampoIntegracaoDTO);
+        }
+
+        $this->logar('Removendo parametros na combo de saida da funcionalidade Arrecadação Consulta Lançamento ');
+        $objMdLitCampoIntegracaoDTO = new MdLitCampoIntegracaoDTO();
+        $objMdLitCampoIntegracaoDTO->retNumIdMdLitCampoIntegracao();
+        $objMdLitCampoIntegracaoDTO->setNumIdMdLitFuncionalidade(MdLitIntegracaoRN::$ARRECADACAO_CONSULTAR_LANCAMENTO);
+        $objMdLitCampoIntegracaoDTO->setStrNomeCampo(array("Renúncia a Recurso", "Vencido","Desbloqueio Processo Vencido"),InfraDTO::$OPER_IN);
+        $arrObjMdLitCampoIntegracaoDTO = $objMdLitCampoIntegracaoRN->listar($objMdLitCampoIntegracaoDTO);
+
+        if(count($arrObjMdLitCampoIntegracaoDTO)){
+            $arrIdMdLitCampoIntegracao = InfraArray::converterArrInfraDTO($arrObjMdLitCampoIntegracaoDTO, 'IdMdLitCampoIntegracao');
+            $objMdLitMapearParamEntradaDTO = new MdLitMapearParamEntradaDTO();
+            $objMdLitMapearParamEntradaDTO->retNumIdMdLitMapearParamEntrada();
+            $objMdLitMapearParamEntradaDTO->setNumIdMdLitCampoIntegracao($arrIdMdLitCampoIntegracao, InfraDTO::$OPER_IN);
+
+            $objMdLitMapearParamEntradaRN = new MdLitMapearParamEntradaRN();
+            $arrObjMdLitMapearParamEntradaDTO = $objMdLitMapearParamEntradaRN->listar($objMdLitMapearParamEntradaDTO);
+
+            if(count($arrObjMdLitMapearParamEntradaDTO)){
+                $objMdLitMapearParamEntradaRN->excluir($arrObjMdLitMapearParamEntradaDTO);
+            }
+
+            $objMdLitMapearParamSaidaDTO = new MdLitMapearParamSaidaDTO();
+            $objMdLitMapearParamSaidaDTO->retNumIdMdLitMapearParamSaida();
+            $objMdLitMapearParamSaidaDTO->setNumIdMdLitCampoIntegracao($arrIdMdLitCampoIntegracao, InfraDTO::$OPER_IN);
+
+            $objMdLitMapearParamSaidaRN = new MdLitMapearParamSaidaRN();
+            $arrObjMdLitMapearParamSaidaDTO = $objMdLitMapearParamSaidaRN->listar($objMdLitMapearParamSaidaDTO);
+
+            if(count($arrObjMdLitMapearParamSaidaDTO)){
+                $objMdLitMapearParamSaidaRN->excluir($arrObjMdLitMapearParamSaidaDTO);
+            }
+
+            $objMdLitCampoIntegracaoRN->excluir($arrObjMdLitCampoIntegracaoDTO);
+        }
+
+
+        $this->logar('Alterando o Nome do registro da combo de mapeamento de integração');
+        $objMdLitCampoIntegracaoDTO = new MdLitCampoIntegracaoDTO();
+        $objMdLitCampoIntegracaoDTO->retNumIdMdLitCampoIntegracao();
+        $objMdLitCampoIntegracaoDTO->setNumIdMdLitFuncionalidade(MdLitIntegracaoRN::$ARRECADACAO_CONSULTAR_LANCAMENTO);
+        $objMdLitCampoIntegracaoDTO->setStrNomeCampo('Valor do Último Pagamento');
+        $objMdLitCampoIntegracaoDTO->setNumMaxRegistrosRetorno(1);
+
+        $objMdLitCampoIntegracaoDTO = $objMdLitCampoIntegracaoRN->consultar($objMdLitCampoIntegracaoDTO);
+
+        if($objMdLitCampoIntegracaoDTO){
+            $objMdLitCampoIntegracaoDTO->setStrNomeCampo('Valor Total do Pagamento');
+            $objMdLitCampoIntegracaoRN->alterar($objMdLitCampoIntegracaoDTO);
+        }
+
+
+        $this->logar('Apagando as tabelas de vinculo de modalidade e abrangencia');
+        BancoSEI::getInstance()->executarSql('DROP TABLE md_lit_rel_num_inter_uf');
+        BancoSEI::getInstance()->executarSql('DROP TABLE md_lit_rel_num_inter_cidade');
+        BancoSEI::getInstance()->executarSql('DROP TABLE md_lit_rel_servico_modalidade');
+        BancoSEI::getInstance()->executarSql('DROP TABLE md_lit_rel_servico_abrangen');
+        BancoSEI::getInstance()->executarSql('DROP TABLE md_lit_rel_num_inter_abrang');
+        BancoSEI::getInstance()->executarSql('DROP TABLE md_lit_rel_num_inter_modali');
+        BancoSEI::getInstance()->executarSql('DROP TABLE md_lit_abrangencia');
+        BancoSEI::getInstance()->executarSql('DROP TABLE md_lit_modalidade');
+
+        if (BancoSEI::getInstance() instanceof InfraMySql) {
+            BancoSEI::getInstance()->executarSql('DROP TABLE seq_md_lit_modalidade');
+            BancoSEI::getInstance()->executarSql('DROP TABLE seq_md_lit_abrangencia');
+        } elseif (BancoSEI::getInstance() instanceof InfraOracle || BancoSEI::getInstance() instanceof InfraSqlServer) {
+            BancoSEI::getInstance()->executarSql('DROP SEQUENCE seq_md_lit_modalidade');
+            BancoSEI::getInstance()->executarSql('DROP SEQUENCE seq_md_lit_abrangencia');
+        }
+
+        //as tabelas de modalidade e abrangencia mudaram a concepção assim excluindo a abrangencia e criando a tipo de outorga
+        $this->logar('CRIANDO A TABELA md_lit_adm_modalidad_outor');
+
+        BancoSEI::getInstance()->executarSql('CREATE TABLE md_lit_adm_modalidad_outor (
+                id_md_lit_adm_modalidad_outor ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL,
+                nome ' . $objInfraMetaBD->tipoTextoVariavel(100) . ' NOT NULL,
+                sin_ativo ' . $objInfraMetaBD->tipoTextoFixo(1) . ' NOT NULL) ');
+
+        $objInfraMetaBD->adicionarChavePrimaria('md_lit_adm_modalidad_outor', 'pk_md_lit_adm_modalidad_outor', array('id_md_lit_adm_modalidad_outor'));
+
+        $this->logar('CRIANDO A SEQUENCE md_lit_adm_modalidad_outor');
+        BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_adm_modalidad_outor', 1);
+
+
+        $this->logar('CRIANDO A TABELA md_lit_adm_tipo_outor');
+        BancoSEI::getInstance()->executarSql('CREATE TABLE md_lit_adm_tipo_outor (
+                id_md_lit_adm_tipo_outor ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL,
+                nome ' . $objInfraMetaBD->tipoTextoVariavel(100) . ' NOT NULL,
+                sin_ativo ' . $objInfraMetaBD->tipoTextoFixo(1) . ' NOT NULL ) ');
+
+        $objInfraMetaBD->adicionarChavePrimaria('md_lit_adm_tipo_outor', 'pk_md_lit_adm_tipo_outor', array('id_md_lit_adm_tipo_outor'));
+
+        $this->logar('CRIANDO A SEQUENCE seq_md_lit_adm_tipo_outor');
+        BancoSEI::getInstance()->criarSequencialNativa('seq_md_lit_adm_tipo_outor', 1);
+
+
+        $this->logar('CRIANDO A TABELA md_lit_rel_num_inter_modali');
+        BancoSEI::getInstance()->executarSql('CREATE TABLE md_lit_rel_num_inter_modali (
+                id_md_lit_numero_interessado ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL,
+                id_md_lit_adm_modalidad_outor ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL
+                ) ');
+
+
+        $objInfraMetaBD->adicionarChavePrimaria('md_lit_rel_num_inter_modali', 'pk1_md_lit_rel_num_inter_moda', array('id_md_lit_numero_interessado', 'id_md_lit_adm_modalidad_outor'));
+
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk1_md_lit_rel_num_inter_moda', 'md_lit_rel_num_inter_modali', array('id_md_lit_numero_interessado'), 'md_lit_numero_interessado', array('id_md_lit_numero_interessado'));
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk2_md_lit_rel_num_inter_moda', 'md_lit_rel_num_inter_modali', array('id_md_lit_adm_modalidad_outor'), 'md_lit_adm_modalidad_outor', array('id_md_lit_adm_modalidad_outor'));
+
+
+        $this->logar('CRIANDO A TABELA md_lit_rel_num_inter_tp_outor');
+        BancoSEI::getInstance()->executarSql('CREATE TABLE md_lit_rel_num_inter_tp_outor (
+                id_md_lit_numero_interessado ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL,
+                id_md_lit_adm_tipo_outor ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL
+                ) ');
+
+
+        $objInfraMetaBD->adicionarChavePrimaria('md_lit_rel_num_inter_tp_outor', 'pk1_md_lit_rel_num_inter_tp_ou', array('id_md_lit_numero_interessado', 'id_md_lit_adm_tipo_outor'));
+
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk1_md_lit_rel_num_inter_tp_ou', 'md_lit_rel_num_inter_tp_outor', array('id_md_lit_numero_interessado'), 'md_lit_numero_interessado', array('id_md_lit_numero_interessado'));
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk2_md_lit_rel_num_inter_tp_ou', 'md_lit_rel_num_inter_tp_outor', array('id_md_lit_adm_tipo_outor'), 'md_lit_adm_tipo_outor', array('id_md_lit_adm_tipo_outor'));
+
+
+        $this->logar('Removendo estado e cidade dos parametros já mapeado nos Dados Complementares');
+        $objMdLitNomeFuncionalRN = new MdLitNomeFuncionalRN();
+        $objMdLitNomeFuncionalDTO = new MdLitNomeFuncionalDTO();
+        $objMdLitNomeFuncionalDTO->retNumIdMdLitNomeFuncional();
+        $objMdLitNomeFuncionalDTO->setNumIdMdLitNomeFuncional(array(7,8), InfraDTO::$OPER_IN);
+        $arrObjMdLitNomeFuncionalDTO = $objMdLitNomeFuncionalRN->listar($objMdLitNomeFuncionalDTO);
+
+        if(count($arrObjMdLitNomeFuncionalDTO)){
+            $arrIdMdLitNomeFuncionalDTO = InfraArray::converterArrInfraDTO($arrObjMdLitNomeFuncionalDTO, 'IdMdLitNomeFuncional');
+            $objMdLitMapearParamEntradaDTO = new MdLitMapearParamEntradaDTO();
+            $objMdLitMapearParamEntradaDTO->retNumIdMdLitMapearParamEntrada();
+            $objMdLitMapearParamEntradaDTO->setNumIdFuncionalidadeMdLitIntegracao(MdLitIntegracaoRN::$DADOS_COMPL_INTERESSADO_CONSULTA);
+            $objMdLitMapearParamEntradaDTO->setNumIdMdLitNomeFuncional($arrIdMdLitNomeFuncionalDTO, InfraDTO::$OPER_IN);
+
+            $objMdLitMapearParamEntradaRN = new MdLitMapearParamEntradaRN();
+            $arrObjMdLitMapearParamEntradaDTO = $objMdLitMapearParamEntradaRN->listar($objMdLitMapearParamEntradaDTO);
+
+            if(count($arrObjMdLitMapearParamEntradaDTO)){
+                $objMdLitMapearParamEntradaRN->excluir($arrObjMdLitMapearParamEntradaDTO);
+            }
+
+            $objMdLitMapearParamSaidaDTO = new MdLitMapearParamSaidaDTO();
+            $objMdLitMapearParamSaidaDTO->retNumIdMdLitMapearParamSaida();
+            $objMdLitMapearParamSaidaDTO->setNumIdFuncionalidadeMdLitIntegracao(MdLitIntegracaoRN::$DADOS_COMPL_INTERESSADO_CONSULTA);
+            $objMdLitMapearParamSaidaDTO->setNumIdMdLitNomeFuncional($arrIdMdLitNomeFuncionalDTO, InfraDTO::$OPER_IN);
+
+            $objMdLitMapearParamSaidaRN = new MdLitMapearParamSaidaRN();
+            $arrObjMdLitMapearParamSaidaDTO = $objMdLitMapearParamSaidaRN->listar($objMdLitMapearParamSaidaDTO);
+
+            if(count($arrObjMdLitMapearParamSaidaDTO)){
+                $objMdLitMapearParamSaidaRN->excluir($arrObjMdLitMapearParamSaidaDTO);
+            }
+
+            $objMdLitParametrizarInteressadoDTO = new MdLitParametrizarInteressadoDTO();
+            $objMdLitParametrizarInteressadoDTO->retNumIdMdLitParamInteressado();
+            $objMdLitParametrizarInteressadoDTO->setNumIdMdLitNomeFuncional($arrIdMdLitNomeFuncionalDTO, InfraDTO::$OPER_IN);
+
+            $objMdLitParametrizarInteressadoRN = new MdLitParametrizarInteressadoRN();
+            $arrObjMdLitParametrizarInteressadoDTO = $objMdLitParametrizarInteressadoRN->listar($objMdLitParametrizarInteressadoDTO);
+
+            if(count($arrObjMdLitParametrizarInteressadoDTO)){
+                $objMdLitParametrizarInteressadoRN->excluir($arrObjMdLitParametrizarInteressadoDTO);
+            }
+
+            $objMdLitNomeFuncionalRN->excluir($arrObjMdLitNomeFuncionalDTO);
+        }
+
+        $this->logar('Renomeando os parametros dos Dados Complementares');
+        $objMdLitNomeFuncionalDTO = new MdLitNomeFuncionalDTO();
+        $objMdLitNomeFuncionalDTO->retNumIdMdLitNomeFuncional();
+        $objMdLitNomeFuncionalDTO->setNumIdMdLitNomeFuncional(array(MdLitNomeFuncionalRN::$NUMERO,MdLitNomeFuncionalRN::$SERVICO, MdLitNomeFuncionalRN::$TIPO_OUTORGA, MdLitNomeFuncionalRN::$MODALIDADE), InfraDTO::$OPER_IN);
+        $arrObjMdLitNomeFuncionalDTO = $objMdLitNomeFuncionalRN->listar($objMdLitNomeFuncionalDTO);
+
+        if(count($arrObjMdLitNomeFuncionalDTO)){
+            foreach ($arrObjMdLitNomeFuncionalDTO as $objMdLitNomeFuncionalDTO){
+                switch ($objMdLitNomeFuncionalDTO->getNumIdMdLitNomeFuncional()){
+                    case MdLitNomeFuncionalRN::$NUMERO:
+                        $objMdLitNomeFuncionalDTO->setStrNome('Número de Complemento do Interessado');
+                        break;
+                    case MdLitNomeFuncionalRN::$SERVICO:
+                        $objMdLitNomeFuncionalDTO->setStrNome('Serviço Outorgado');
+                        break;
+                    case MdLitNomeFuncionalRN::$TIPO_OUTORGA:
+                        //o tipo de outorga nas versões anteriores do Litigioso era entendido como abrangência
+                        $objMdLitNomeFuncionalDTO->setStrNome('Tipo de Outorga');
+                        break;
+                    case MdLitNomeFuncionalRN::$MODALIDADE:
+                        $objMdLitNomeFuncionalDTO->setStrNome('Modalidade de Outorga');
+                        break;
+                }
+                $objMdLitNomeFuncionalRN->alterar($objMdLitNomeFuncionalDTO);
+
+            }
+        }
+
+        $this->logar('ATUALIZANDO PARÂMETRO '.$this->nomeParametroModulo.' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+        BancoSEI::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.4.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
 
     }
 }

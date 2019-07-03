@@ -170,6 +170,23 @@ switch($_GET['acao']) {
         //lançamento do crédito
         $idLancamentoSelecionado = null;
 
+        //Botão "Vincular Lancamento" deve ser exibido somente se o checkbox "Habilitar Funcionalidade de Vinculação de Lançamento
+        // Pré Existente" estiver ativo no mapeamento da integração sob a funcionalidade "Arrecadação Consulta Lançamento"
+
+        $objMdLitIntegracaoDTO = new MdLitIntegracaoDTO();
+        $objMdLitIntegracaoDTO->retTodos();
+        $objMdLitIntegracaoDTO->setNumIdMdLitFuncionalidade(MdLitIntegracaoRN::$ARRECADACAO_CONSULTAR_LANCAMENTO);
+        $objMdLitIntegracaoDTO->setStrSinAtivo('S');
+        $objMdLitIntegracaoDTO->setNumMaxRegistrosRetorno(1);
+
+        $objMdLitIntegracaoRN = new MdLitIntegracaoRN();
+        $objMdLitIntegracaoDTO = $objMdLitIntegracaoRN->consultar($objMdLitIntegracaoDTO);
+
+        $isVincularLancamento = false;
+        if($objMdLitIntegracaoDTO && $objMdLitIntegracaoDTO->getStrSinVincularLancamento() == 'S'){
+            $isVincularLancamento = true;
+        }
+
         try {
             $objMdLitLancamentoDTO = $objMdLitLancamentoRN->atualizarLancamento($idProcedimento, $idLancamentoSelecionado);
         }catch (Exception $e){

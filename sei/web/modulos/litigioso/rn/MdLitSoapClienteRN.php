@@ -69,21 +69,7 @@ class MdLitSoapClienteRN extends nusoap_client{
         }
 
         if (!empty($complexTypes[$returnType]['elements'])) {
-
-
-            foreach ($complexTypes[$returnType]['elements'] as $nome => $elementArr) {
-                $outputArr[] = $nome;
-            }
-        }
-
-        if (array_key_exists('extensionBase', $complexTypes[$returnType])) {
-            $returnType2 = $this->getEntidadePorUrlWSDL($complexTypes[$returnType]['extensionBase']);
-            $outputArr2 = $this->getParamsInput($returnType2, true);
-
-            if (count($outputArr2) > 0) {
-                $outputArr = array_merge($outputArr, $outputArr2);
-                sort($outputArr);
-            }
+            $outputArr = $this->pegarElemento($complexTypes[$returnType]);
         }
 
         return $outputArr;
@@ -144,12 +130,31 @@ class MdLitSoapClienteRN extends nusoap_client{
 
         $returnType     = $this->getEntidadePorUrlWSDL($complexTypes[$nameType]['elements']['return']['type']);
         if($complexTypes[$returnType]['elements']){
-            foreach ($complexTypes[$returnType]['elements'] as $nome => $elementArr){
-                $outputArr[] = $nome;
-            }
+            $outputArr = $this->pegarElemento($complexTypes[$returnType]);
         }
         return $outputArr;
     }
+
+    private function pegarElemento($complexTypes){
+        $outputArr = array();
+        if(array_key_exists('extensionBase', $complexTypes)){
+            $returnType     = $this->getEntidadePorUrlWSDL($complexTypes['extensionBase']);
+            $complexTypesGeral   = $this->wsdl->schemas[$this->wsdl->namespaces['tns']][0]->complexTypes;
+            if(isset($complexTypesGeral[$returnType])){
+                $outputArr = $this->pegarElemento($complexTypesGeral[$returnType]);
+            }
+
+        }
+
+        if(count($complexTypes['elements'])){
+            foreach ($complexTypes['elements'] as $nome => $elementArr){
+                $outputArr[] = $nome;
+            }
+            sort($outputArr);
+        }
+
+        return $outputArr;
+    }//SMA
 
     private function getEntidadePorUrlWSDL($urlWSDL){
         $urlWSDL = strrchr($urlWSDL, ':');
@@ -302,8 +307,12 @@ class MdLitSoapClienteRN extends nusoap_client{
                 throw new InfraException($err);
             }
 
-            $this->soap_defencoding = 'ISO-8859-1';
+            $this->soap_defencoding = 'UTF-8';
             $this->decode_utf8 = false;
+
+            //converte todas as entradas de parametro para enviar como UTF-8 e evitar erro de parse no xml e erro no Webservice Server
+            $montarParametroEntrada = $this->convertEncondig($montarParametroEntrada, $this->soap_defencoding);
+
             if($nomeArrPrincipal){
                 $montarParametroEntrada = array($nomeArrPrincipal => $montarParametroEntrada);
             }
@@ -323,6 +332,8 @@ class MdLitSoapClienteRN extends nusoap_client{
 
                 if($objMdLitIntegracaoDTO->getNumIdMdLitFuncionalidade() == MdLitIntegracaoRN::$ARRECADACAO_CONSULTAR_LANCAMENTO){
                     $exception = new InfraException();
+                    //tratamento do encode dinamico
+                    $err = $this->convertEncondig($err, 'ISO-8859-1');
                     $exception->lancarValidacao('Não foi possível a comunicação com o Webservice da Arrecadação. Contate o Gestor do Controle.', null,new Exception($err));
                 }
 
@@ -348,12 +359,49 @@ class MdLitSoapClienteRN extends nusoap_client{
         }
 
         if(count($arrResultado) > 0) {
-            return $arrResultado;
+            //converte o retorno do serviço para o encode esperado pelo sei, que por padrao é ISO-8859-1
+            return $this->convertEncondig($arrResultado, 'ISO-8859-1');
         }
 
         return false;
     }
 
+    /**
+     * Detecta o encode do array informado
+     * @param $arrParams
+     * @param string $toEncode
+     * @return mixed
+     */
+    public function convertEncondig(&$params, $toEncode='UTF-8')
+    {
+        try {
+            if (is_array($params)) {
+                foreach ($params as $key => $value) {
+                    if(is_array($value)){
+                        $params[$key] = $this->convertEncondig($value, $toEncode);
+                        continue;
+                    }
+                    //detecta o encode que a aplicação esta enviando
+                    $fromEncoding = mb_detect_encoding($value, ['UTF-8', 'ISO-8859-1', 'ASCII'], true);
+                    //converte para encode informado
+                    if ($toEncode != $fromEncoding) {
+                        $params[$key] = mb_convert_encoding($value, $toEncode, $fromEncoding);
+                    }
+                }
+            } else {
+                $fromEncoding = mb_detect_encoding($params, ['UTF-8', 'ISO-8859-1', 'ASCII'], true);
+                //converte para encode informado
+                if ($toEncode != $fromEncoding) {
+                    $params = mb_convert_encoding($params, $toEncode, $fromEncoding);
+                }
+            }
+
+            return $params;
+        } catch (Exception $e){
+            $exception = new InfraException();
+            $exception->lancarValidacao('Erro ao converter os parametros do webservice. '.$e->getMessage(),null, $e);
+        }
+    }
 
 
     public function enviarDados($strOperacaoWsdl, $montarParametroEntrada, $nomeArrPrincipal = false){

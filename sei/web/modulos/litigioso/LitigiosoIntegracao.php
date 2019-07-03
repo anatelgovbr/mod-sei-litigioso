@@ -10,7 +10,7 @@
 
         public function getVersao()
         {
-            return '1.3.0';
+            return '1.4.0';
         }
 
         public function getInstituicao()
@@ -342,6 +342,10 @@
                 case 'md_lit_antecedencia_reincidencia_orientacao':
                     require_once dirname(__FILE__).'/md_lit_antecedencia_reincidencia_orientacao.php';
                     return true;
+
+                case 'md_lit_vincular_lancamento':
+                    require_once dirname(__FILE__).'/md_lit_vincular_lancamento.php';
+                    return true;
             }
 
             return false;
@@ -355,17 +359,17 @@
             switch ($strAcaoAjax) {
 
                 case 'md_lit_unidade_auto_completar':
-                    $arrObjUnidadeDTO = UnidadeINT::autoCompletarUnidades($_POST['palavras_pesquisa'], true, '');
+                    $arrObjUnidadeDTO = MdLitTipoControleINT::autoCompletarUnidades($_POST['palavras_pesquisa'], true, '');
                     $xml              = InfraAjax::gerarXMLItensArrInfraDTO($arrObjUnidadeDTO, 'IdUnidade', 'Sigla');
                     break;
 
                 case 'md_lit_tipo_procedimento_auto_completar':
-                    $arrObjTipoProcedimentoDTO = TipoProcedimentoINT::autoCompletarTipoProcedimento($_POST['palavras_pesquisa']);
+                    $arrObjTipoProcedimentoDTO = MdLitTipoControleINT::autoCompletarTipoProcedimento($_POST['palavras_pesquisa']);
                     $xml                       = InfraAjax::gerarXMLItensArrInfraDTO($arrObjTipoProcedimentoDTO, 'IdTipoProcedimento', 'Nome');
                     break;
 
                 case 'usuario_auto_completar':
-                    $arrObjUsuarioDTO = UsuarioINT::autoCompletarUsuarios(null, $_POST['palavras_pesquisa'], false, false);
+                    $arrObjUsuarioDTO = MdLitTipoControleINT::autoCompletarUsuarios(null, $_POST['palavras_pesquisa'], false, false);
                     $xml              = InfraAjax::gerarXMLItensArrInfraDTO($arrObjUsuarioDTO, 'IdUsuario', 'Nome');
                     break;
 

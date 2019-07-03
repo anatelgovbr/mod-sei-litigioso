@@ -174,19 +174,49 @@ class MdLitDadoInteressadoINT extends InfraINT {
         $objMdLitIntegracaoDTO->setNumIdMdLitFuncionalidade(MdLitIntegracaoRN::$DADOS_COMPL_INTERESSADO_CONSULTA);
         $objMdLitIntegracaoDTO = $objMdLitIntegracaoRN->consultar($objMdLitIntegracaoDTO);
 
+        $filtroWS = self::mapearParamentroEntrada($objMdLitIntegracaoDTO,$filtro);
+        $objMdlitSoapClient = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(), 'wsdl');
+
+        $err = $objMdlitSoapClient->getError();
+        if($err)
+            return '<erros><erro descricao="'.$err.'"></erro></erros>';
+
+        $objMdlitSoapClient->soap_defencoding = 'UTF-8';
+        $objMdlitSoapClient->decode_utf8 = false;
+        $arrResultado = $objMdlitSoapClient->call($objMdLitIntegracaoDTO->getStrOperacaWsdl(), array('filtro' => $filtroWS));
+
+        $err = $objMdlitSoapClient->getError();
+        if($err)
+            return '<erros><erro descricao="'.$err.'"></erro></erros>';
+
+        if(empty($arrResultado) && $filtro['outorga'] == 'N'){
+            return self::mensagemValidacaoNaoOutorgado($filtro);
+        }elseif(empty($arrResultado)){
+            return '<erros><erro descricao="Não existe resultado com os filtros informados no webservice."></erro></erros>';
+        }
+
+        if(!is_array($arrResultado['return'][0]))
+            $arrResultado['return'] = [$arrResultado['return']];
+
+        $arrResultadoParametrizado = self::mapearParamentroSaida($objMdLitIntegracaoDTO,$arrResultado);
+
+        //removendo valores duplicados de um array multi-dimensional, o web-service esta trazendo valores com resultados duplicados
+        if(is_array($arrResultadoParametrizado)) {
+            $arrResultadoParametrizado = array_map("unserialize", array_unique(array_map("serialize", $arrResultadoParametrizado)));
+
+            return self::gerarXMLItensArr($arrResultadoParametrizado);
+        }
+        return $arrResultadoParametrizado;
+    }
+
+    private static function mapearParamentroEntrada(MdLitIntegracaoDTO $objMdLitIntegracaoDTO,$filtro){
         $objMdLitParamEntradaRN = new MdLitMapearParamEntradaRN();
         $objMdLitParamEntradaDTO = new MdLitMapearParamEntradaDTO();
         $objMdLitParamEntradaDTO->retTodos();
         $objMdLitParamEntradaDTO->setNumIdMdLitIntegracao($objMdLitIntegracaoDTO->getNumIdMdLitIntegracao());
         $arrObjMdLitParamEntradaDTO = $objMdLitParamEntradaRN->listar($objMdLitParamEntradaDTO);
-
-        $objMdLitParamSaidaRN = new MdLitMapearParamSaidaRN();
-        $objMdLitParamSaidaDTO = new MdLitMapearParamSaidaDTO();
-        $objMdLitParamSaidaDTO->retTodos();
-        $objMdLitParamSaidaDTO->setNumIdMdLitIntegracao($objMdLitIntegracaoDTO->getNumIdMdLitIntegracao());
-        $arrObjMdLitParamSaidaDTO = $objMdLitParamSaidaRN->listar($objMdLitParamSaidaDTO);
-
         $filtroWS = array();
+
 
         foreach ($arrObjMdLitParamEntradaDTO as $objMdLitParamEntradaDTO){
             switch ($objMdLitParamEntradaDTO->getNumIdMdLitNomeFuncional()){
@@ -214,41 +244,39 @@ class MdLitDadoInteressadoINT extends InfraINT {
                     }
                     break;
                 case MdLitNomeFuncionalRN::$MODALIDADE:
-                    $filtroWS[$objMdLitParamEntradaDTO->getStrCampo()] = $filtro['modalidade'];
-                    break;
-                case MdLitNomeFuncionalRN::$ABRANGENCIA:
-                    $filtroWS[$objMdLitParamEntradaDTO->getStrCampo()] = $filtro['abrangencia'];
-                    break;
-                case MdLitNomeFuncionalRN::$CIDADE:
-                    if(isset($filtro['cidades'])) {
-                        $filtro['cidades'] = PaginaSEI::getInstance()->getArrItensTabelaDinamica($filtro['cidades']);
-                        $arrCidade = array();
-                        foreach ($filtro['cidades'] as $cidade){
-                            $arrCidade[] =  $cidade[1];
+
+                    $objMdLitModalidadeDTO = new MdLitModalidadeDTO();
+                    $objMdLitModalidadeRN = new MdLitModalidadeRN();
+                    $arrObjMdLitModalidadeDTO = self::buscarDTOUtilWS($objMdLitModalidadeDTO, $objMdLitModalidadeRN, array('IdMdLitModalidade'), $filtro['modalidade']);
+
+                    if(count($arrObjMdLitModalidadeDTO) > 0){
+                        $strFiltroModalidade = '';
+                        foreach ($arrObjMdLitModalidadeDTO as $objMdLitModalidadeDTO){
+                            if($strFiltroModalidade != '')
+                                $strFiltroModalidade .= ',';
+
+                            $strFiltroModalidade .= utf8_encode($objMdLitModalidadeDTO->getStrNome());
                         }
-                        $filtroWS[$objMdLitParamEntradaDTO->getStrCampo()] = $arrCidade;
+                        $filtroWS[$objMdLitParamEntradaDTO->getStrCampo()] = $strFiltroModalidade;
                     }
+
                     break;
-                case MdLitNomeFuncionalRN::$ESTADO:
-                    if(isset($filtro['estados'])) {
-                        $filtro['estados'] = PaginaSEI::getInstance()->getArrItensTabelaDinamica($filtro['estados']);
-                        $arrEstados = array();
-                        $idEstadosArr = InfraArray::simplificarArr($filtro['estados'], 0);
+                case MdLitNomeFuncionalRN::$TIPO_OUTORGA:
+                    $objMdLitAdmTipoOutorDTO = new MdLitAdmTipoOutorDTO();
+                    $objMdLitAdmTipoOutorRN = new MdLitAdmTipoOutorRN();
+                    $arrObjMdLitAdmTipoOutorDTO = self::buscarDTOUtilWS($objMdLitAdmTipoOutorDTO, $objMdLitAdmTipoOutorRN, array('IdMdLitAdmTipoOutor'), $filtro['abrangencia']);
 
-                        $ufDto = new UfDTO();
-                        $ufDto->retTodos(false);
-                        $ufDto->setNumIdUf($idEstadosArr, InfraDTO::$OPER_IN);
+                    if(count($arrObjMdLitAdmTipoOutorDTO) > 0){
+                        $strFiltroAbrangencia = '';
+                        foreach ($arrObjMdLitAdmTipoOutorDTO as $objMdLitAdmTipoOutorDTO){
+                            if($strFiltroAbrangencia != '')
+                                $strFiltroAbrangencia .= ',';
 
-                        $ufRN = new UfRN();
-                        $estadosArr = $ufRN->listarRN0401($ufDto);
-
-                        if(count($estadosArr)){
-                            foreach ($estadosArr as $estadoDTO){
-                                $arrEstados[] = $estadoDTO->getStrNome();
-                            }
-                            $filtroWS[$objMdLitParamEntradaDTO->getStrCampo()] = $arrEstados;
+                            $strFiltroAbrangencia .= utf8_encode($objMdLitAdmTipoOutorDTO->getStrNome());
                         }
+                        $filtroWS[$objMdLitParamEntradaDTO->getStrCampo()] = $strFiltroAbrangencia;
                     }
+
                     break;
                 case MdLitNomeFuncionalRN::$CNPJ_CPF:
 
@@ -264,30 +292,19 @@ class MdLitDadoInteressadoINT extends InfraINT {
                     break;
             }
         }
-        $objMdlitSoapClient = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(), 'wsdl');
+        return $filtroWS;
 
-        $err = $objMdlitSoapClient->getError();
-        if($err)
-            return '<erros><erro descricao="'.$err.'"></erro></erros>';
+    }
 
-        $objMdlitSoapClient->soap_defencoding = 'UTF-8';
-        $objMdlitSoapClient->decode_utf8 = false;
-        $arrResultado = $objMdlitSoapClient->call($objMdLitIntegracaoDTO->getStrOperacaWsdl(), array('filtro' => $filtroWS));
+    private static function mapearParamentroSaida(MdLitIntegracaoDTO $objMdLitIntegracaoDTO,$arrResultado){
 
-        $err = $objMdlitSoapClient->getError();
-        if($err)
-            return '<erros><erro descricao="'.$err.'"></erro></erros>';
-
-        if(empty($arrResultado) && $filtro['outorga'] == 'N'){
-            return self::mensagemValidacaoNaoOutorgado($filtro);
-        }elseif(empty($arrResultado)){
-            return '<erros><erro descricao="Não existe resultado com os filtros informados no webservice."></erro></erros>';
-        }
-
-        if(!is_array($arrResultado['return'][0]))
-            $arrResultado['return'] = [$arrResultado['return']];
-
+        $objMdLitParamSaidaRN = new MdLitMapearParamSaidaRN();
+        $objMdLitParamSaidaDTO = new MdLitMapearParamSaidaDTO();
+        $objMdLitParamSaidaDTO->retTodos();
+        $objMdLitParamSaidaDTO->setNumIdMdLitIntegracao($objMdLitIntegracaoDTO->getNumIdMdLitIntegracao());
+        $arrObjMdLitParamSaidaDTO = $objMdLitParamSaidaRN->listar($objMdLitParamSaidaDTO);
         $arrResultadoParametrizado = array();
+
         foreach($arrResultado['return'] as $key => $resultado){
             foreach ($arrObjMdLitParamSaidaDTO as $objMdLitParamEntradaDTO){
                 switch ($objMdLitParamEntradaDTO->getNumIdMdLitNomeFuncional()){
@@ -308,29 +325,42 @@ class MdLitDadoInteressadoINT extends InfraINT {
                         }
 
                         break;
-                    case MdLitNomeFuncionalRN::$ABRANGENCIA:
-                        if($resultado[$objMdLitParamEntradaDTO->getStrCampo()]) {
-                            $objMdLitAbrangenciaDTO = new MdLitAbrangenciaDTO();
-                            $objMdLitAbrangenciaRN = new MdLitAbrangenciaRN();
-                            $arrObjMdLitAbrangenciaDTO = self::buscarDTOUtilWS($objMdLitAbrangenciaDTO, $objMdLitAbrangenciaRN, array('Nome'), $resultado[$objMdLitParamEntradaDTO->getStrCampo()]);
+                    case MdLitNomeFuncionalRN::$TIPO_OUTORGA:
 
-                            if (!$arrObjMdLitAbrangenciaDTO){
-                                continue;
+                        if($resultado[$objMdLitParamEntradaDTO->getStrCampo()]) {
+                            $objMdLitAdmTipoOutorDTO = new MdLitAdmTipoOutorDTO();
+                            $objMdLitAdmTipoOutorRN = new MdLitAdmTipoOutorRN();
+
+                            $arrObjMdLitAdmTipoOutorDTO = self::buscarDTOUtilWS($objMdLitAdmTipoOutorDTO, $objMdLitAdmTipoOutorRN, array('Nome'), utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]));
+
+                            if (!$arrObjMdLitAdmTipoOutorDTO){
+                                $objMdLitAdmTipoOutorDTO = new MdLitAdmTipoOutorDTO();
+                                $objMdLitAdmTipoOutorDTO->setStrNome(utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]));
+                                $objMdLitAdmTipoOutorDTO->setStrSinAtivo('S');
+                                $objMdLitAdmTipoOutorDTO = $objMdLitAdmTipoOutorRN->cadastrar($objMdLitAdmTipoOutorDTO);
+
+                                $arrObjMdLitAdmTipoOutorDTO = array($objMdLitAdmTipoOutorDTO);
                             }
 
-                            $arrItensTabela = self::gerarItensTabela($arrObjMdLitAbrangenciaDTO , 'IdMdLitAbrangencia', 'Nome');
-                            $arrResultadoParametrizado[$key]['id_abrangencia'] = $arrItensTabela['id'];
-                            $arrResultadoParametrizado[$key]['nome_abrangencia'] = $arrItensTabela['nome'];
+                            $arrItensTabela = self::gerarItensTabela($arrObjMdLitAdmTipoOutorDTO , 'IdMdLitAdmTipoOutor', 'Nome');
+                            $arrResultadoParametrizado[$key]['id_tipo_outorga'] = $arrItensTabela['id'];
+                            $arrResultadoParametrizado[$key]['nome_tipo_outorga'] = $arrItensTabela['nome'];
                         }
                         break;
                     case MdLitNomeFuncionalRN::$MODALIDADE:
                         if($resultado[$objMdLitParamEntradaDTO->getStrCampo()]) {
                             $objMdLitModalidadeDTO = new MdLitModalidadeDTO();
                             $objMdLitModalidadeRN = new MdLitModalidadeRN();
-                            $arrObjMdLitModalidadeDTO = self::buscarDTOUtilWS($objMdLitModalidadeDTO, $objMdLitModalidadeRN, array('Nome'), $resultado[$objMdLitParamEntradaDTO->getStrCampo()]);
+                            $arrObjMdLitModalidadeDTO = self::buscarDTOUtilWS($objMdLitModalidadeDTO, $objMdLitModalidadeRN, array('Nome'), utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]));
 
-                            if (!$arrObjMdLitModalidadeDTO)
-                                continue;
+                            if (!$arrObjMdLitModalidadeDTO){
+                                $objMdLitModalidadeDTO = new MdLitModalidadeDTO();
+                                $objMdLitModalidadeDTO->setStrNome(utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]));
+                                $objMdLitModalidadeDTO->setStrSinAtivo('S');
+                                $objMdLitModalidadeDTO = $objMdLitModalidadeRN->cadastrar($objMdLitModalidadeDTO);
+
+                                $arrObjMdLitModalidadeDTO = array($objMdLitModalidadeDTO);
+                            }
 
 
                             $arrItensTabela = self::gerarItensTabela($arrObjMdLitModalidadeDTO , 'IdMdLitModalidade', 'Nome');
@@ -343,42 +373,11 @@ class MdLitDadoInteressadoINT extends InfraINT {
                             $arrResultadoParametrizado[$key]['cnpj_cpf'] = utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]);
                         }
                         break;
-                    case MdLitNomeFuncionalRN::$ESTADO:
-                        if($resultado[$objMdLitParamEntradaDTO->getStrCampo()]) {
-
-                            $objUfDTO = new UfDTO();
-                            $objUfRN = new UfRN();
-                            $arrObjUfDTO = self::buscarDTOUtilWS($objUfDTO, $objUfRN, array('Sigla', 'Nome'), $resultado[$objMdLitParamEntradaDTO->getStrCampo()]);
-
-                            if (!$arrObjUfDTO)
-                                continue;
-
-
-                            $arrItensTabela = self::gerarItensTabela($arrObjUfDTO , 'IdUf', 'Nome');
-                            $arrResultadoParametrizado[$key]['id_estado'] = $arrItensTabela['id'];
-                            $arrResultadoParametrizado[$key]['nome_estado'] = $arrItensTabela['nome'];
-                        }
-                        break;
-                    case MdLitNomeFuncionalRN::$CIDADE:
-                        if($resultado[$objMdLitParamEntradaDTO->getStrCampo()]) {
-                            $objCidadeDTO = new CidadeDTO();
-                            $objCidadeRN = new CidadeRN();
-                            $arrObjCidadeDTO = self::buscarDTOUtilWS($objCidadeDTO, $objCidadeRN, array('Nome'), $resultado[$objMdLitParamEntradaDTO->getStrCampo()]);
-
-                            if (!$arrObjCidadeDTO)
-                                continue;
-
-
-                            $arrItensTabela = self::gerarItensTabela($arrObjCidadeDTO , 'IdCidade', 'Nome');
-                            $arrResultadoParametrizado[$key]['id_cidade'] = $arrItensTabela['id'];
-                            $arrResultadoParametrizado[$key]['nome_cidade'] = $arrItensTabela['nome'];
-                        }
-                        break;
                 }
 
             }
         }
-        return self::gerarXMLItensArr($arrResultadoParametrizado);
+        return $arrResultadoParametrizado;
     }
 
     private static function gerarItensTabela($arrObj, $idAtributo, $nomeAtributo){
@@ -458,16 +457,6 @@ class MdLitDadoInteressadoINT extends InfraINT {
             $operadoresAtributos,
             $valoresAtributos,
             $operadoresLogico);
-
-        //listar estado não usa o padrão de metodos listar
-        if($objRN instanceof UfRN){
-            return $objRN->listarRN0401($objDTO);
-        }
-
-        //listar cidade não usa o padrão de metodos listar
-        if($objRN instanceof CidadeRN){
-            return $objRN->listarRN0410($objDTO);
-        }
 
         return $objRN->listar($objDTO);
 
@@ -567,52 +556,21 @@ class MdLitDadoInteressadoINT extends InfraINT {
             }
 
             //abrangencia
-            $objMdLitRelNumInterAbrangDTO = new MdLitRelNumInterAbrangDTO();
-            $objMdLitRelNumInterAbrangDTO->retStrNomeMdLitAbrangencia();
-            $objMdLitRelNumInterAbrangDTO->retNumIdMdLitAbrangencia();
+            $objMdLitRelNumInterAbrangDTO = new MdLitRelNumInterTpOutorDTO();
+            $objMdLitRelNumInterAbrangDTO->retStrNomeTipoOutorga();
+            $objMdLitRelNumInterAbrangDTO->retNumIdMdLitAdmTipoOutor();
             $objMdLitRelNumInterAbrangDTO->setNumIdMdLitNumeroInteressado($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado());
 
-            $objMdLitRelNumInterAbrangRN = new MdLitRelNumInterAbrangRN();
-            $arrObjMdLitRelNumInterAbrangenciaDTO = $objMdLitRelNumInterAbrangRN->listar($objMdLitRelNumInterAbrangDTO);
+            $objMdLitRelNumInterTpOutorRN = new MdLitRelNumInterTpOutorRN();
+            $arrObjMdLitRelNumInterAbrangenciaDTO = $objMdLitRelNumInterTpOutorRN->listar($objMdLitRelNumInterAbrangDTO);
 
             if($arrObjMdLitRelNumInterAbrangenciaDTO){
                 foreach ($arrObjMdLitRelNumInterAbrangenciaDTO as $objMdLitRelNumInterAbrangDTO) {
-                    $arrResultado[$key]['nome_abrangencia'] .= isset($arrResultado[$key]['nome_abrangencia']) ? ',<br> '.$objMdLitRelNumInterAbrangDTO->getStrNomeMdLitAbrangencia() : $objMdLitRelNumInterAbrangDTO->getStrNomeMdLitAbrangencia();
-                    $arrResultado[$key]['id_abrangencia'] .= isset($arrResultado[$key]['id_abrangencia']) ? ',€ '.$objMdLitRelNumInterAbrangDTO->getNumIdMdLitAbrangencia() : $objMdLitRelNumInterAbrangDTO->getNumIdMdLitAbrangencia();
+                    $arrResultado[$key]['nome_tipo_outorga'] .= isset($arrResultado[$key]['nome_tipo_outorga']) ? ',<br> '.$objMdLitRelNumInterAbrangDTO->getStrNomeTipoOutorga() : $objMdLitRelNumInterAbrangDTO->getStrNomeTipoOutorga();
+                    $arrResultado[$key]['id_tipo_outorga'] .= isset($arrResultado[$key]['id_tipo_outorga']) ? ',€ '.$objMdLitRelNumInterAbrangDTO->getNumIdMdLitAdmTipoOutor() : $objMdLitRelNumInterAbrangDTO->getNumIdMdLitAdmTipoOutor();
                 }
             }
 
-            //Estado
-            $objMdLitRelNumInterEstadoDTO = new MdLitRelNumInterEstadoDTO();
-            $objMdLitRelNumInterEstadoDTO->retStrNomeEstado();
-            $objMdLitRelNumInterEstadoDTO->retNumIdUf();
-            $objMdLitRelNumInterEstadoDTO->setNumIdMdLitNumeroInteressado($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado());
-
-            $objMdLitRelNumInterEstadoRN = new MdLitRelNumInterEstadoRN();
-            $arrobjMdLitRelNumInterEstadoDTO = $objMdLitRelNumInterEstadoRN->listar($objMdLitRelNumInterEstadoDTO);
-
-            if($arrobjMdLitRelNumInterEstadoDTO){
-                foreach ($arrobjMdLitRelNumInterEstadoDTO as $objMdLitRelNumInterEstadoDTO) {
-                    $arrResultado[$key]['nome_estado'] .= isset($arrResultado[$key]['nome_estado']) ? ',<br> '.$objMdLitRelNumInterEstadoDTO->getStrNomeEstado() : $objMdLitRelNumInterEstadoDTO->getStrNomeEstado();
-                    $arrResultado[$key]['id_estado'] .= isset($arrResultado[$key]['id_estado']) ? ',€ '.$objMdLitRelNumInterEstadoDTO->getNumIdUf() : $objMdLitRelNumInterEstadoDTO->getNumIdUf();
-                }
-            }
-
-            //Cidade
-            $objMdLitRelNumInterCidadeDTO = new MdLitRelNumInterCidadeDTO();
-            $objMdLitRelNumInterCidadeDTO->retStrNomeCidade();
-            $objMdLitRelNumInterCidadeDTO->retNumIdCidade();
-            $objMdLitRelNumInterCidadeDTO->setNumIdMdLitNumeroInteressado($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado());
-
-            $objMdLitRelNumInterCidadeRN = new MdLitRelNumInterCidadeRN();
-            $arrobjMdLitRelNumInterCidadeDTO = $objMdLitRelNumInterCidadeRN->listar($objMdLitRelNumInterCidadeDTO);
-
-            if($arrobjMdLitRelNumInterCidadeDTO){
-                foreach ($arrobjMdLitRelNumInterCidadeDTO as $objMdLitRelNumInterCidadeDTO) {
-                    $arrResultado[$key]['nome_cidade'] .= isset($arrResultado[$key]['nome_cidade']) ? ',<br> '.$objMdLitRelNumInterCidadeDTO->getStrNomeCidade() : $objMdLitRelNumInterCidadeDTO->getStrNomeCidade();
-                    $arrResultado[$key]['id_cidade'] .= isset($arrResultado[$key]['id_cidade']) ? ',€ '.$objMdLitRelNumInterCidadeDTO->getNumIdCidade() : $objMdLitRelNumInterCidadeDTO->getNumIdCidade();
-                }
-            }
 
             //buscar Lancamento
             $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
@@ -621,7 +579,7 @@ class MdLitDadoInteressadoINT extends InfraINT {
 
             $objMdLitLancamentoRN = new MdLitLancamentoRN();
             $arrResultado[$key]['contar_lancamento'] = $objMdLitLancamentoRN->contar($objMdLitLancamentoDTO);
-        }//var_dump($arrResultado);exit;
+        }
         return self::gerarXMLItensArr($arrResultado);
     }
 

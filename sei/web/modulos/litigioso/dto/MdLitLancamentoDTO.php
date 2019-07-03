@@ -93,7 +93,8 @@ class MdLitLancamentoDTO extends InfraDTO {
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'CorSituacao', 'cor_situacao', 'md_lit_situacao_lancamento');
 
     //Get Dados Procedimento
-    $this->configurarFK('IdProcedimento', 'procedimento', 'id_procedimento');
+    $this->configurarFK('IdProcedimento', 'protocolo', 'id_protocolo');
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'ProtocoloProcedimentoFormatado', 'protocolo_formatado', 'protocolo');
 
     //GET numero Interessado
 //    $this->configurarFK('IdMdLitNumeroInteressado', 'md_lit_numero_interessado', 'id_md_lit_numero_interessado',InfraDTO::$TIPO_FK_OPCIONAL);

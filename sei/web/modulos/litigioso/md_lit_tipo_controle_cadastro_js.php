@@ -32,7 +32,7 @@ function inicializar(){
     
     objAutoCompletarGestor = new infraAjaxAutoCompletar('hdnIdGestor','txtGestor','<?=$strLinkAjaxGestor?>');
 	objAutoCompletarGestor.limparCampo = true;
-	
+	objAutoCompletarGestor.tamanhoMinimo = 3;
 	objAutoCompletarGestor.prepararExecucao = function(){
 	    return 'palavras_pesquisa='+document.getElementById('txtGestor').value;
 	};
@@ -80,7 +80,7 @@ function inicializar(){
 
     objAutoCompletarMotivos = new infraAjaxAutoCompletar('hdnIdMotivos','txtMotivos','<?=$strLinkAjaxMotivos?>');
     objAutoCompletarMotivos.limparCampo = true;
-
+    objAutoCompletarMotivos.tamanhoMinimo = 3;
     objAutoCompletarMotivos.prepararExecucao = function(){
         return 'palavras_pesquisa='+document.getElementById('txtMotivos').value;
     };
@@ -128,7 +128,7 @@ function inicializar(){
    
    objAutoCompletarTipoProcesso = new infraAjaxAutoCompletar('hdnIdTipoProcesso','txtTipoProcesso','<?=$strLinkAjaxTipoProcesso?>');
 	objAutoCompletarTipoProcesso.limparCampo = true;
-	
+	objAutoCompletarTipoProcesso.tamanhoMinimo = 3;
 	objAutoCompletarTipoProcesso.prepararExecucao = function(){
 	    return 'palavras_pesquisa='+document.getElementById('txtTipoProcesso').value;
 	};
@@ -173,7 +173,7 @@ function inicializar(){
 	// ================== INICIO - JS para selecao de unidades
 	objAutoCompletarUnidade = new infraAjaxAutoCompletar('hdnIdUnidade','txtUnidade','<?=$strLinkAjaxUnidade?>');
 	objAutoCompletarUnidade.limparCampo = true;
-	
+	objAutoCompletarUnidade.tamanhoMinimo = 3;
 	objAutoCompletarUnidade.prepararExecucao = function(){
 	    return 'palavras_pesquisa='+document.getElementById('txtUnidade').value;
 	};
@@ -217,7 +217,7 @@ function inicializar(){
    
    objAutoCompletarTipoProcessoSobrestado = new infraAjaxAutoCompletar('hdnIdTipoProcessoSobrestado','txtTipoProcessoSobrestado','<?=$strLinkAjaxTipoProcessoSobrestado?>');
 	objAutoCompletarTipoProcessoSobrestado.limparCampo = true;
-	
+	objAutoCompletarTipoProcessoSobrestado.tamanhoMinimo = 3;
 	objAutoCompletarTipoProcessoSobrestado.prepararExecucao = function(){
 	    return 'palavras_pesquisa='+document.getElementById('txtTipoProcessoSobrestado').value;
 	};

@@ -30,6 +30,7 @@ class MdLitMapearParamSaidaDTO extends InfraDTO {
     $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'ChaveUnica', 'chave_unica');
 
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeMdLitIntegracao', 'nome', 'md_lit_integracao');
+    $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdFuncionalidadeMdLitIntegracao', 'id_md_lit_funcionalidade', 'md_lit_integracao');
 
     $this->configurarPK('IdMdLitMapearParamSaida',InfraDTO::$TIPO_PK_NATIVA);
 

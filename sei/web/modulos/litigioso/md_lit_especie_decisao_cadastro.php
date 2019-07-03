@@ -359,7 +359,7 @@
 
         objAutoCompletarObrigacao = new infraAjaxAutoCompletar('hdnIdObrigacao', 'txtObrigacao', '<?=$strLinkAjaxObrigacao?>');
         objAutoCompletarObrigacao.limparCampo = true;
-
+        objAutoCompletarObrigacao.tamanhoMinimo = 3;
         objAutoCompletarObrigacao.prepararExecucao = function () {
             return 'palavras_pesquisa=' + document.getElementById('txtObrigacao').value;
         };

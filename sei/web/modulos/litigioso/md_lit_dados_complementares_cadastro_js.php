@@ -6,10 +6,6 @@
     var objTblDadosComplementares = null;
     var objTblDadosComplementaresConsulta = null;
     var objTblDadosComplementaresConsultaNaoOutorgado = null;
-    var objLupaEstadoNaoOutorgado = null;
-    var objAutoCompletarEstadoNaoOutorgado = null;
-    var objLupaCidadeNaoOutorgado = null;
-    var objAutoCompletarCidadeNaoOutorgado = null;
 
     function inicializar(){
 
@@ -28,6 +24,7 @@
             objLupaServicos = new infraLupaSelect('selServicos', 'hdnServicos', '<?=$strLinkServicoSelecao?>');
             objAutoCompletarServicos = new infraAjaxAutoCompletar('hdnIdServicos', 'txtServicos', '<?=$strLinkAjaxServico?>');
             objAutoCompletarServicos.limparCampo = true;
+            objAutoCompletarServicos.tamanhoMinimo = 3;
             objAutoCompletarServicos.prepararExecucao = function () {
                 return 'palavras_pesquisa=' + document.getElementById('txtServicos').value;
             };
@@ -72,6 +69,7 @@
             objLupaServicosNaoOutorga = new infraLupaSelect('selServicosNaoOutorga', 'hdnServicosNaoOutorga', '<?=$strLinkServicoNaoOutorgadaSelecao?>');
             objAutoCompletarServicosNaoOutorga = new infraAjaxAutoCompletar('hdnIdServicosNaoOutorga', 'txtServicosNaoOutorga', '<?=$strLinkAjaxServico?>');
             objAutoCompletarServicosNaoOutorga.limparCampo = true;
+            objAutoCompletarServicosNaoOutorga.tamanhoMinimo = 3;
             objAutoCompletarServicosNaoOutorga.prepararExecucao = function () {
                 return 'palavras_pesquisa=' + document.getElementById('txtServicosNaoOutorga').value;
             };
@@ -80,125 +78,6 @@
                     objLupaServicosNaoOutorga.adicionar(id, descricao, document.getElementById('txtServicosNaoOutorga'));
                 }
             };
-        }
-
-        //Estados
-        if(document.getElementById('selEstado') != null) {
-            objLupaEstado = new infraLupaSelect('selEstado', 'hdnEstado', '<?=$strLinkEstadoSelecao?>');
-            objAutoCompletarEstado = new infraAjaxAutoCompletar('hdnIdEstado', 'txtEstado', '<?=$strLinkAjaxEstado?>');
-            objAutoCompletarEstado.limparCampo = true;
-            objAutoCompletarEstado.prepararExecucao = function () {
-                return 'palavras_pesquisa=' + document.getElementById('txtEstado').value;
-            };
-            objAutoCompletarEstado.processarResultado = function (id, descricao, complemento) {
-                if (id != '') {
-                    objLupaEstado.adicionar(id, descricao, document.getElementById('txtEstado'));
-
-                    if(verificarPaiFieldSet(document.getElementById('selEstado')) && verificarPaiFieldSet(document.getElementById('txtNumero')) ){
-                        if(document.getElementById('hdnEstado').value == ''){
-                            document.getElementById('txtNumero').disabled = false;
-                        }else{
-                            document.getElementById('txtNumero').disabled = true;
-                            document.getElementById('txtNumero').value = '';
-                        }
-                    }
-                }
-            };
-            objLupaEstado.finalizarRemocao = function(item){
-                if(verificarPaiFieldSet(document.getElementById('selEstado')) && verificarPaiFieldSet(document.getElementById('txtNumero')) ){
-                    if(document.getElementById('hdnEstado').value == ''){
-                        document.getElementById('txtNumero').disabled = false;
-                    }else{
-                        document.getElementById('txtNumero').disabled = true;
-                        document.getElementById('txtNumero').value = '';
-                    }
-                }
-            }
-            objLupaEstado.finalizarSelecao = function(){
-                if(verificarPaiFieldSet(document.getElementById('selEstado')) && verificarPaiFieldSet(document.getElementById('txtNumero')) ){
-                    if(document.getElementById('hdnEstado').value == ''){
-                        document.getElementById('txtNumero').disabled = false;
-                    }else{
-                        document.getElementById('txtNumero').disabled = true;
-                        document.getElementById('txtNumero').value = '';
-                    }
-                }
-            }
-        }
-
-        //Estados Não outorgado
-        if(document.getElementById('selEstadoNaoOutorgado') != null) {
-            objLupaEstadoNaoOutorgado = new infraLupaSelect('selEstadoNaoOutorgado', 'hdnEstadoNaoOutorgado', '<?=$strLinkEstadoSelecaoNaoOutorgado?>');
-            objAutoCompletarEstadoNaoOutorgado = new infraAjaxAutoCompletar('hdnIdEstadoNaoOutorgado', 'txtEstadoNaoOutorgado', '<?=$strLinkAjaxEstado?>');
-            objAutoCompletarEstadoNaoOutorgado.limparCampo = true;
-            objAutoCompletarEstadoNaoOutorgado.prepararExecucao = function () {
-                return 'palavras_pesquisa=' + document.getElementById('txtEstadoNaoOutorgado').value;
-            };
-            objAutoCompletarEstadoNaoOutorgado.processarResultado = function (id, descricao, complemento) {
-                if (id != '') {
-                    objLupaEstadoNaoOutorgado.adicionar(id, descricao, document.getElementById('txtEstadoNaoOutorgado'));
-                }
-            };
-        }
-
-
-        //Cidades Não Outorgado
-        if(document.getElementById('selCidadeNaoOutorgado') != null){
-            objLupaCidadeNaoOutorgado = new infraLupaSelect('selCidadeNaoOutorgado','hdnCidadeNaoOutorgado','<?=$strLinkCidadeSelecaoNaoOutorgado?>');
-            objAutoCompletarCidadeNaoOutorgado = new infraAjaxAutoCompletar('hdnIdCidadeNaoOutorgada','txtCidadeNaoOutorgado','<?=$strLinkAjaxCidade?>');
-            objAutoCompletarCidadeNaoOutorgado.limparCampo = true;
-            objAutoCompletarCidadeNaoOutorgado.prepararExecucao = function(){
-                return 'palavras_pesquisa='+document.getElementById('txtCidadeNaoOutorgado').value+'&idsUf='+document.getElementById('hdnEstadoNaoOutorgado').value;
-            };
-            objAutoCompletarCidadeNaoOutorgado.processarResultado = function(id,descricao,complemento){
-                if (id!=''){
-                    objLupaCidadeNaoOutorgado.adicionar(id,descricao,document.getElementById('txtCidadeNaoOutorgado'));
-                }
-            };
-        }
-
-        //Cidades
-        if(document.getElementById('selCidade') != null){
-            objLupaCidade = new infraLupaSelect('selCidade','hdnCidade','<?=$strLinkCidadeSelecao?>');
-            objAutoCompletarCidade = new infraAjaxAutoCompletar('hdnIdCidade','txtCidade','<?=$strLinkAjaxCidade?>');
-            objAutoCompletarCidade.limparCampo = true;
-            objAutoCompletarCidade.prepararExecucao = function(){
-                return 'palavras_pesquisa='+document.getElementById('txtCidade').value+'&idsUf='+document.getElementById('hdnEstado').value;
-            };
-            objAutoCompletarCidade.processarResultado = function(id,descricao,complemento){
-                if (id!=''){
-                    objLupaCidade.adicionar(id,descricao,document.getElementById('txtCidade'));
-
-                    if(verificarPaiFieldSet(document.getElementById('selCidade')) && verificarPaiFieldSet(document.getElementById('txtNumero')) ){
-                        if(document.getElementById('hdnCidade').value == ''){
-                            document.getElementById('txtNumero').disabled = false;
-                        }else{
-                            document.getElementById('txtNumero').disabled = true;
-                            document.getElementById('txtNumero').value = '';
-                        }
-                    }
-                }
-            };
-            objLupaCidade.finalizarRemocao = function(item){
-                if(verificarPaiFieldSet(document.getElementById('selCidade')) && verificarPaiFieldSet(document.getElementById('txtNumero')) ){
-                    if(document.getElementById('hdnCidade').value == ''){
-                        document.getElementById('txtNumero').disabled = false;
-                    }else{
-                        document.getElementById('txtNumero').disabled = true;
-                        document.getElementById('txtNumero').value = '';
-                    }
-                }
-            }
-            objLupaCidade.finalizarSelecao = function(){
-                if(verificarPaiFieldSet(document.getElementById('selCidade')) && verificarPaiFieldSet(document.getElementById('txtNumero')) ){
-                    if(document.getElementById('hdnCidade').value == ''){
-                        document.getElementById('txtNumero').disabled = false;
-                    }else{
-                        document.getElementById('txtNumero').disabled = true;
-                        document.getElementById('txtNumero').value = '';
-                    }
-                }
-            }
         }
 
         //pegar do fieldset do interessado na tela de controle litigioso
@@ -323,11 +202,11 @@
                     if($(this).attr('id_modalidade') != undefined)
                         objDadosComplementares[7] = $(this).attr('id_modalidade');
 
-                    if($(this).attr('nome_abrangencia') != undefined)
-                        objDadosComplementares[3] = $(this).attr('nome_abrangencia');
+                    if($(this).attr('nome_tipo_outorga') != undefined)
+                        objDadosComplementares[3] = $(this).attr('nome_tipo_outorga');
 
-                    if($(this).attr('id_abrangencia') != undefined)
-                        objDadosComplementares[8] = $(this).attr('id_abrangencia');
+                    if($(this).attr('id_tipo_outorga') != undefined)
+                        objDadosComplementares[8] = $(this).attr('id_tipo_outorga');
 
                     if($(this).attr('id_cidade') != undefined)
                         objDadosComplementares[10] = $(this).attr('id_cidade');
@@ -482,17 +361,6 @@
                 }
             }
 
-            if(!verificarPaiFieldSet(document.getElementById('txtEstado')) && document.getElementById('txtEstado') != null && document.getElementById('lblEstado').className == 'infraLabelObrigatorio' && infraTrim(document.getElementById('hdnEstado').value) == '' ){
-                var nomeCampo = infraTrim(document.getElementById('lblEstado').textContent).replace(':', '');
-                alert("selecione ao menos um "+nomeCampo+"!");
-                return false;
-            }
-
-            if(!verificarPaiFieldSet(document.getElementById('txtCidade')) && document.getElementById('txtCidade') != null && document.getElementById('lblCidade').className == 'infraLabelObrigatorio' && infraTrim(document.getElementById('hdnCidade').value) == '' ){
-                var nomeCampo = infraTrim(document.getElementById('lblCidade').textContent).replace(':', '');
-                alert("selecione ao menos um "+nomeCampo+"!");
-                return false;
-            }
             if(document.getElementById('fldInfoComplementares') != null && objTblDadosComplementaresConsulta.tbl.rows.length <= 1){
                 alert("Consultar as informações complementares antes de adicionar!");
                 return false;
@@ -517,6 +385,24 @@
 
             if(objTblDadosComplementaresConsulta.tbl.rows.length > 1){
                 var inputCheckbox = document.getElementById('dvDadosComplementaresConsulta').getElementsByTagName('input');
+
+                //verificando se esta selecionando o numero mais do que uma vez repetido, numero do interessado tem que ser unico
+                var arrNumeroSelecionado = [];
+                for(var i = 0;i < inputCheckbox.length; i++){
+                    if(document.getElementById('dvDadosComplementaresConsulta').getElementsByTagName('input')[i].checked){
+                        var arrResultado = objTblDadosComplementaresConsulta.obterItens().reverse()[i];
+                        numero          = arrResultado[4] == 'null' ? numero :arrResultado[4];
+                        if(infraInArray(numero, arrNumeroSelecionado)){
+                            var nomeCampo = infraTrim(document.getElementById('lblNumero').textContent).replace(':', '');
+                            alert('Não é possível selecionar mais de um registro de Dados Complementares utilizando o mesmo '+nomeCampo);
+                            return false;
+                        }
+                        arrNumeroSelecionado.push(numero);
+                    }
+
+                }
+
+
                 for(var i = 0;i < inputCheckbox.length; i++){
                     if(document.getElementById('dvDadosComplementaresConsulta').getElementsByTagName('input')[i].checked){
                         var arrResultado = objTblDadosComplementaresConsulta.obterItens().reverse()[i];
@@ -524,14 +410,14 @@
                         idServico       = arrResultado[1] == 'null'? idServico :  arrResultado[1];
                         idModalidade    = arrResultado[2] == 'null' ? idModalidade : arrResultado[2];
                         idAbrangencia   = arrResultado[3] == 'null' ? idAbrangencia :arrResultado[3];
-                        idEstado        = arrResultado[4] == 'null' ? idEstado :arrResultado[4];
-                        idCidade        = arrResultado[5] == 'null' ? idCidade :arrResultado[5];
-                        numero          = arrResultado[6] == 'null' ? numero :arrResultado[6];
-                        nomeServico     = arrResultado[7] == 'null' ? nomeServico :arrResultado[7];
-                        nomeModalidade  = arrResultado[8] == 'null' ? nomeModalidade :arrResultado[8];
-                        nomeAbrangencia = arrResultado[9] == 'null' ? nomeAbrangencia :arrResultado[9];
-                        nomeEstado      = arrResultado[10] == 'null' ? nomeEstado :arrResultado[10];
-                        nomeCidade      = arrResultado[11] == 'null' ? nomeCidade :arrResultado[11];
+                        idEstado        = null;
+                        idCidade        = null;
+                        numero          = arrResultado[4] == 'null' ? numero :arrResultado[4];
+                        nomeServico     = arrResultado[5] == 'null' ? nomeServico :arrResultado[5];
+                        nomeModalidade  = arrResultado[6] == 'null' ? nomeModalidade :arrResultado[6];
+                        nomeAbrangencia = arrResultado[7] == 'null' ? nomeAbrangencia :arrResultado[7];
+                        nomeEstado      = '';
+                        nomeCidade      = '';
 
                         objTblDadosComplementares.adicionar([
                             numero,
@@ -574,8 +460,6 @@
 
             //limpando os campos
             objLupaServicos.limpar();
-            objLupaCidade.limpar();
-            objLupaEstado.limpar();
             document.getElementById('txtNumero').value = '';
         }
     }
@@ -610,17 +494,6 @@
                 }
             }
 
-            if(document.getElementById('txtEstadoNaoOutorgado') != null && document.getElementById('lblEstadoNaoOutorgado').className == 'infraLabelObrigatorio' && infraTrim(document.getElementById('hdnEstadoNaoOutorgado').value) == '' ){
-                var nomeCampo = infraTrim(document.getElementById('lblEstadoNaoOutorgado').textContent).replace(':', '');
-                alert("selecione ao menos um "+nomeCampo+"!");
-                return false;
-            }
-
-            if(document.getElementById('txtCidadeNaoOutorgado') != null && document.getElementById('lblCidadeNaoOutorgado').className == 'infraLabelObrigatorio' && infraTrim(document.getElementById('hdnCidadeNaoOutorgado').value) == '' ){
-                var nomeCampo = infraTrim(document.getElementById('lblCidadeNaoOutorgado').textContent).replace(':', '');
-                alert("selecione ao menos um "+nomeCampo+"!");
-                return false;
-            }
             // if(document.getElementById('optOutorgadaNao').getAttribute('campo-mapeado') == 'S' && objTblDadosComplementaresConsultaNaoOutorgado.tbl.rows.length > 1){
             //     alert("Consultar as informações complementares antes de adicionar!");
             //     return false;
@@ -629,10 +502,10 @@
             var numero      = document.getElementById('txtNumeroNaoOutorgado') == null? null: document.getElementById('txtNumeroNaoOutorgado').value;
             var idServico   = getOptionsId(document.getElementById('selServicosNaoOutorga'));
             var nomeServico = getOptionsString(document.getElementById('selServicosNaoOutorga')) ;
-            var idEstado    = getOptionsId(document.getElementById('selEstadoNaoOutorgado'));
-            var idCidade    = getOptionsId(document.getElementById('selCidadeNaoOutorgado'));
-            var nomeEstado  = getOptionsString(document.getElementById('selEstadoNaoOutorgado'));
-            var nomeCidade  = getOptionsString(document.getElementById('selCidadeNaoOutorgado'));
+            var idEstado    = null;
+            var idCidade    = null;
+            var nomeEstado  = null;
+            var nomeCidade  = null;
             // sair do padrão pois não imaginei forma de pegar o radio dinamico
             var nomeModalidade  = document.getElementById('fldModalidadesNaoOutorgada') ? getChecboxString(document.getElementById('fldModalidadesNaoOutorgada').getElementsByTagName('input')): '';
             var idModalidade    = document.getElementById('fldModalidadesNaoOutorgada') ? getChecboxId(document.getElementById('fldModalidadesNaoOutorgada').getElementsByTagName('input')): '';
@@ -649,7 +522,7 @@
                     if(document.getElementById('dvDadosComplementaresConsultaNaoOutorgado').getElementsByTagName('input')[i].checked){
                         var arrResultado = objTblDadosComplementaresConsultaNaoOutorgado.obterItens().reverse()[i];
 
-                        numero          = arrResultado[6] == 'null' ? numero :arrResultado[6];
+                        numero          = arrResultado[4] == 'null' ? numero :arrResultado[4];
 //                        nomeEstado      = nomeEstado;
 //                        nomeCidade      = nomeCidade;
 
@@ -703,8 +576,6 @@
 
             //limpando os campos
             objLupaServicosNaoOutorga.limpar();
-            objLupaCidadeNaoOutorgado.limpar();
-            objLupaEstadoNaoOutorgado.limpar();
         }
     }
 
@@ -787,17 +658,11 @@
             if(verificarPaiFieldSet(document.getElementById('txtServicos')) && document.getElementById('hdnServicos').value != ''){
                 objConsultarNumero.servico = document.getElementById('hdnServicos').value;
             }
-            if(verificarPaiFieldSet(document.getElementById('txtEstado')) && document.getElementById('hdnEstado').value != ''){
-                objConsultarNumero.estados = document.getElementById('hdnEstado').value;
-            }
-            if(verificarPaiFieldSet(document.getElementById('txtCidade')) && document.getElementById('hdnCidade').value != ''){
-                objConsultarNumero.cidades = document.getElementById('hdnCidade').value;
-            }
             if(verificarPaiFieldSet(document.getElementById('fldAbrangencia')) && getChecboxIdArr(document.getElementsByName('rdoAbrangencia[]')).length != 0 ){
                 objConsultarNumero.abrangencia = getChecboxIdArr(document.getElementsByName('rdoAbrangencia[]'));
             }
-            if(verificarPaiFieldSet(document.getElementById('fldModalidadesOutorga')) && getChecboxIdArr(document.getElementsByName('rdoOutorga[]')).length != 0 ){
-                objConsultarNumero.modalidade = getChecboxIdArr(document.getElementsByName('rdoOutorga[]'));
+            if(verificarPaiFieldSet(document.getElementById('fldModalidadesOutorga')) && getChecboxIdArr(document.getElementsByName('rdoModalidade[]')).length != 0 ){
+                objConsultarNumero.modalidade = getChecboxIdArr(document.getElementsByName('rdoModalidade[]'));
             }
 
         }else if(document.getElementById('optOutorgadaNao').checked){
@@ -835,50 +700,32 @@
                     objDadosComplementares[1] = null;//ID Serviços
                     objDadosComplementares[2] = null;//ID Modalidades
                     objDadosComplementares[3] = null;//ID Abrangencias
-                    objDadosComplementares[4] = null;//ID Estados
-                    objDadosComplementares[5] = null;//ID Cidades
                     objDadosComplementares[6] = null;//Número
                     objDadosComplementares[7] = null;//Serviço
                     objDadosComplementares[8] = null;//Modalidade de Outorga
                     objDadosComplementares[9] = null;//Abrangências
-                    objDadosComplementares[10] = null;//Estado
-                    objDadosComplementares[11] = null;//Cidade
 
                     objDadosComplementares[0] = '<input type="checkbox" onclick="toggleSelecionarTabela(this)" id="chkInfraItem'+count+'" name="chkInfraItem'+count+'" class="infraCheckbox" value="'+count+'">';
                     if($(this).attr('id_servico') != undefined)
                         objDadosComplementares[1] = $(this).attr('id_servico');
 
                     if($(this).attr('nome_servico') != undefined)
-                        objDadosComplementares[7] = $(this).attr('nome_servico');
+                        objDadosComplementares[5] = $(this).attr('nome_servico');
 
                     if($(this).attr('numero') != undefined)
-                        objDadosComplementares[6] = $(this).attr('numero');
+                        objDadosComplementares[4] = $(this).attr('numero');
 
-                    if($(this).attr('id_abrangencia') != undefined)
-                        objDadosComplementares[3] = $(this).attr('id_abrangencia');
+                    if($(this).attr('id_tipo_outorga') != undefined)
+                        objDadosComplementares[3] = $(this).attr('id_tipo_outorga');
 
-                    if($(this).attr('nome_abrangencia') != undefined)
-                        objDadosComplementares[9] = $(this).attr('nome_abrangencia');
+                    if($(this).attr('nome_tipo_outorga') != undefined)
+                        objDadosComplementares[7] = $(this).attr('nome_tipo_outorga');
 
                     if($(this).attr('id_modalidade') != undefined)
                         objDadosComplementares[2] = $(this).attr('id_modalidade');
 
                     if($(this).attr('nome_modalidade') != undefined)
-                        objDadosComplementares[8] = $(this).attr('nome_modalidade');
-
-                    if($(this).attr('id_estado') != undefined)
-                        objDadosComplementares[4] = $(this).attr('id_estado');
-
-                    if($(this).attr('nome_estado') != undefined)
-                        objDadosComplementares[10] = $(this).attr('nome_estado');
-
-                    if($(this).attr('id_cidade') != undefined)
-                        objDadosComplementares[5] = $(this).attr('id_estado');
-
-                    if($(this).attr('nome_cidade') != undefined)
-                        objDadosComplementares[11] = $(this).attr('nome_estado');
-
-
+                        objDadosComplementares[6] = $(this).attr('nome_modalidade');
 
                     if(document.getElementById('optOutorgadaSim').checked){
                         objTblDadosComplementaresConsulta.adicionar(objDadosComplementares, false);

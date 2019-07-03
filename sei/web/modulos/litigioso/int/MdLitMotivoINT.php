@@ -55,6 +55,7 @@ class MdLitMotivoINT extends InfraINT {
 
 
       $mdLitMotivoDTO->setStrDescricao('%'.$dados['palavras_pesquisa'].'%',InfraDTO::$OPER_LIKE);
+      $mdLitMotivoDTO->setNumMaxRegistrosRetorno(50);
       $mdLitMotivoDTO->retTodos();
       $mdLitMotivo = $mdLitMotivoRN->listar($mdLitMotivoDTO);
 

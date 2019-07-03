@@ -34,7 +34,7 @@
 
             $objDispositivoNormativoLitigiosoDTO = new MdLitDispositivoNormativoDTO();
             $objDispositivoNormativoLitigiosoDTO->retTodos();
-
+            $objDispositivoNormativoLitigiosoDTO->setNumMaxRegistrosRetorno(50);
 
             if ($txtConduta != "") {
                 $objDispositivoNormativoLitigiosoDTO->setStrCondutaFiltro($txtConduta);

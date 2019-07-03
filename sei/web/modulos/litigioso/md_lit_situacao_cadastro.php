@@ -368,7 +368,7 @@
 
         objAutoCompletarTipoDocumento = new infraAjaxAutoCompletar('hdnIdSerie', 'txtSerie', '<?=$strLinkAjaxTipoDocumento?>');
         objAutoCompletarTipoDocumento.limparCampo = true;
-
+        objAutoCompletarTipoDocumento.tamanhoMinimo = 3;
         objAutoCompletarTipoDocumento.prepararExecucao = function () {
             return 'palavras_pesquisa=' + document.getElementById('txtSerie').value;
         };
