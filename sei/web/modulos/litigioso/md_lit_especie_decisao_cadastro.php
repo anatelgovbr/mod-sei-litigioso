@@ -24,6 +24,8 @@
         $arrComandos             = array();
         $strLinkObrigacaoSelecao = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_obrigacao_selecionar&tipo_selecao=2&id_object=objLupaObrigacao');
         $strLinkAjaxObrigacao    = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_obrigacao_auto_completar');
+        $strLinkValidarCadastroIntegracao = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_validar_cadastro_integracao_multa');
+        $strLinkValidarAlteracaoIntegracao = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_validar_alteracao_integracao_multa');
 
         switch ($_GET['acao']) {
             case 'md_lit_especie_decisao_cadastrar':
@@ -38,6 +40,27 @@
                 $objEspecieDecisaoLitigiosoDTO->setStrSinGestaoMulta($_POST['gestaoMulta'] != null ? 'S' : 'N');
                 $objEspecieDecisaoLitigiosoDTO->setStrSinIndicacaoPrazo($_POST['indPrazo'] != null ? 'S' : 'N');
                 $objEspecieDecisaoLitigiosoDTO->setStrSinIndicacaoObrigacoes($_POST['IndObr'] != null ? 'S' : 'N');
+                $objEspecieDecisaoLitigiosoDTO->setStrSinIndicacaoRessarcimentoValor($_POST['IndRessarcimento'] != null ? 'S' : 'N');
+
+                if($_POST['gestaoMulta'] == 'S'){
+                    $objEspecieDecisaoLitigiosoDTO->setStrStaTipoIndicacaoMulta($_POST['tipoMulta']);
+                    $MdLitEspecieDecisaoRN = new MdLitEspecieDecisaoRN();
+                    $responseValicacao = $MdLitEspecieDecisaoRN->validarIntegracaoMulta($_POST);
+                    if($responseValicacao->success == false){
+                        $incompletas = '';
+                        foreach ($responseValicacao->integracaoIncompleta as $integracaoIncompleta){
+                            $incompletas .= "{$integracaoIncompleta->get('Nome')}\n";
+                        }
+                        $objInfraException = new InfraException();
+                        $objInfraException->lancarValidacao("O Mapeamento das Integrações com o Sistema de Arrecadação não".
+                            "foram realizados. Antes de definir que a Gestão de Multa deve ocorrer por meio de Integração, acesse Administração >> Controle de".
+                            "Processo Litigioso >> Mapeamento das Integrações e insira os Mapeamentos de Integrações das funcionalidades abaixo: \n\n".
+                            $incompletas
+                        );
+                    }
+                } else {
+                    $objEspecieDecisaoLitigiosoDTO->setStrStaTipoIndicacaoMulta(null);
+                }
 
 
                 if (isset($_POST['sbmCadastrarEspecieDecisaoLitigioso'])) {
@@ -73,7 +96,18 @@
             case 'md_lit_especie_decisao_alterar':
                 $strTitulo      = 'Alterar Espécie de Decisão';
                 $arrComandos[]  = '<button type="submit" accesskey="S" name="sbmAlterarEspecieDecisaoLitigioso" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
+                $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'])) . '\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
                 $strDesabilitar = 'disabled="disabled"';
+
+                $mdLitRelTipoControleRN = new MdLitRelTipoControleTipoDecisaoRN();
+                $mdLitRelTipoControleDto = new MdLitRelTipoControleTipoDecisaoDTO();
+                $mdLitRelTipoControleDto->ret('IdMdLitEspecieDecisao');
+                $mdLitRelTipoControleDto->set('IdMdLitEspecieDecisao', $_GET['id_especie_decisao_litigioso']);
+
+                //consulta se a especie ja esta relacionada com o tipo de controle litigioso
+                $relTipoControleResult = $mdLitRelTipoControleRN->listar($mdLitRelTipoControleDto);
+
+                $MdLitEspecieDecisaoRN = new MdLitEspecieDecisaoRN();
 
                 if (isset($_GET['id_especie_decisao_litigioso'])) {
                     $objEspecieDecisaoLitigiosoDTO->setNumIdEspecieLitigioso($_GET['id_especie_decisao_litigioso']);
@@ -85,6 +119,15 @@
                     if ($objEspecieDecisaoLitigiosoDTO == null) {
                         throw new InfraException("Registro não encontrado.");
                     }
+
+                    $arrData = [
+                        'hdnIdEspecieDecisaoLitigioso' => $objEspecieDecisaoLitigiosoDTO->get('IdEspecieLitigioso'),
+                        'tipoMulta' => $objEspecieDecisaoLitigiosoDTO->get('StaTipoIndicacaoMulta')
+                    ];
+
+                    //verifica se existe decisao cadastrada com o tipo de multa salvo para bloquear os campos
+                    $isExisteDecisaoCasdatrada = $MdLitEspecieDecisaoRN->existeDecisaoCadastradaParaTipoMulta($arrData);
+
                     if ($objEspecieDecisaoLitigiosoDTO->getStrSinIndicacaoObrigacoes() == 'S') {
                         $objRelEspecieDecisaoObrigacaoDTO = new MdLitRelEspecieDecisaoObrigacaoDTO();
                         $objRelEspecieDecisaoObrigacaoDTO->retTodos();
@@ -112,6 +155,53 @@
                     $objEspecieDecisaoLitigiosoDTO->setStrSinGestaoMulta($_POST['gestaoMulta'] != null ? 'S' : 'N');
                     $objEspecieDecisaoLitigiosoDTO->setStrSinIndicacaoPrazo($_POST['indPrazo'] != null ? 'S' : 'N');
                     $objEspecieDecisaoLitigiosoDTO->setStrSinIndicacaoObrigacoes($_POST['IndObr'] != null ? 'S' : 'N');
+                    $objEspecieDecisaoLitigiosoDTO->setStrSinIndicacaoRessarcimentoValor($_POST['IndRessarcimento'] != null ? 'S' : 'N');
+
+                    //se houver gestao de multa
+                    if($_POST['gestaoMulta'] == 'S'){
+
+                        //aplica a gestão de acordo com o informado
+                        $objEspecieDecisaoLitigiosoDTO->setStrStaTipoIndicacaoMulta($_POST['tipoMulta'] == 1
+                            ? MdLitEspecieDecisaoDTO::$TIPO_MULTA_INTEGRACAO
+                            : MdLitEspecieDecisaoDTO::$TIPO_MULTA_INDICACAO_VALOR
+                        );
+
+                        $responseValicacao = $MdLitEspecieDecisaoRN->validarIntegracaoMulta($_POST);
+                        if($responseValicacao->success == false){
+                            $objInfraException = new InfraException();
+                            $incompletas = '';
+                            foreach ($responseValicacao->integracaoIncompleta as $integracaoIncompleta){
+                                $incompletas .= "{$integracaoIncompleta->get('Nome')}\n";
+                            }
+
+                            $objInfraException->lancarValidacao("O Mapeamento das Integrações com o Sistema de Arrecadação não".
+                                    "foram realizados. Antes de definir que a Gestão de Multa deve ocorrer por meio de Integração, acesse Administração >> Controle de".
+                                    "Processo Litigioso >> Mapeamento das Integrações e insira os Mapeamentos de Integrações das funcionalidades abaixo: \n\n".
+                                    $incompletas
+                            );
+                        }
+
+                        $arrData = [
+                                'hdnIdEspecieDecisaoLitigioso' => $_POST['hdnIdEspecieDecisaoLitigioso'],
+                                //inverte para verificar se havia alguma decisão cadastrado com o tipo que foi mudado
+                                'tipoMulta' => $data['tipoMulta'] == MdLitEspecieDecisaoDTO::$TIPO_MULTA_INTEGRACAO
+                                    ? MdLitEspecieDecisaoDTO::$TIPO_MULTA_INDICACAO_VALOR
+                                    : MdLitEspecieDecisaoDTO::$TIPO_MULTA_INTEGRACAO
+                        ];
+
+                        //validação para alteraçõ do tipo de multa
+                        $MdLitEspecieDecisaoDTO = $MdLitEspecieDecisaoRN->getEspecieDecisoesById(['arrEspeciesId' => [$arrData['hdnIdEspecieDecisaoLitigioso']]]);
+                        $tipoMulta = $MdLitEspecieDecisaoDTO[0]->get('StaTipoIndicacaoMulta');
+                        if($tipoMulta != $arrData['tipoMulta'] && $MdLitEspecieDecisaoRN->existeDecisaoCadastradaParaTipoMulta($arrData)){
+                            $objInfraException = new InfraException();
+                            $objInfraException->lancarValidacao("Não é possivel modificar o tipo de indicação de ".
+                            "multa pois ja existem decisões cadastradas com o tipo anterior. \n".
+                            "Caso esta mudança seja essencial desative esta 'Espécie de Decisão', crie uma nova e vincule ao processo");
+                        }
+
+                    } else {
+                        $objEspecieDecisaoLitigiosoDTO->setStrStaTipoIndicacaoMulta(null);
+                    }
 
 
                     //Set Obrigacoes
@@ -130,8 +220,6 @@
                         $objEspecieDecisaoLitigiosoDTO->setArrObjRelEspecieLitigiosoDTO(array());
                     }
                 }
-
-                $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'])) . '\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
 
                 if (isset($_POST['sbmAlterarEspecieDecisaoLitigioso'])) {
                     try {
@@ -210,6 +298,8 @@
 #imgExcluirObrigacao  {position:absolute;left:75.3%;top:55%;}
 
 <?
+    include_once "md_lit_css_geral.php";
+
     PaginaSEI::getInstance()->fecharStyle();
     PaginaSEI::getInstance()->montarJavaScript();
     PaginaSEI::getInstance()->abrirJavaScript();
@@ -225,7 +315,7 @@
       action="<?= PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'])) ?>">
     <?
         PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
-        PaginaSEI::getInstance()->abrirAreaDados('30em');
+        PaginaSEI::getInstance()->abrirAreaDados('40em');
     ?>
 
     <fieldset id="fldNovaEspDecisao">
@@ -244,27 +334,83 @@
         <legend class="infraLegend">&nbsp;Resultado da Decisão&nbsp;</legend>
         <div>
             <!-- Gestão de Multa  -->
-            <?php $checkedGM = $objEspecieDecisaoLitigiosoDTO->getStrSinGestaoMulta() == 'S' ? 'checked=checked' : ''; ?>
+            <?php
+                $checkedGM = $objEspecieDecisaoLitigiosoDTO->getStrSinGestaoMulta() == 'S' ? 'checked=checked' : '';
+                ($relTipoControleResult || $isExisteDecisaoCasdatrada) ? $multaDisabeld = 'disabled="disabled"' : '';
+            ?>
             <label class="infraLabelCheckbox">
-            <input <?php echo $checkedGM; ?> type="checkbox" class="infraCheckbox resultDecisao" name="gestaoMulta"
-                                             id="gestaoMulta" value="S">
-            Gestão de Multa</label>
-            <br/>
+                <?php if($checkedGM && ($relTipoControleResult || $isExisteDecisaoCasdatrada)): ?>
+                    <input type="hidden" name="gestaoMulta" value="S">
+                <?php endif; ?>
+                <input <?php echo $checkedGM, " ", $multaDisabeld ?> type="checkbox" class="infraCheckbox resultDecisao" name="gestaoMulta"
+                                                                     id="gestaoMulta" value="S">
+
+                Indicação de Multa
+                <span class="tooltipAjuda"
+                    <?= PaginaSEI::montarTitleTooltip('Habilite a Indicação de Multa  para permitir o Usuário atribuir valores de Multa ao selecionar esta Espécie de Decisão no Cadastro de Decisão.') ?>>
+                </span>
+            </label>
+            <br>
+            <div id="opcoesMulta" style="margin-left: 3em; display: none;">
+                <label for="integracao" class="radio-label">
+                    <?php $indicacaoIntegracaoCheck = $objEspecieDecisaoLitigiosoDTO->getStrStaTipoIndicacaoMulta() == MdLitEspecieDecisaoDTO::$TIPO_MULTA_INTEGRACAO ? 'checked': ''?>
+                    <?php if($indicacaoIntegracaoCheck && $multaDisabeld): ?>
+                        <input type="hidden" name="tipoMulta" value="1">
+                    <?php endif; ?>
+                    <input type="radio" name="tipoMulta" id="integracao" value="1" <?php echo $indicacaoIntegracaoCheck, " ", $multaDisabeld;?> >
+                    Gestão por Integração
+                    <span class="tooltipAjuda"
+                        <?= PaginaSEI::montarTitleTooltip('Selecione a opção Gestão por Integração caso a Indicação de Multa deva ocorrer por meio de Integração com o Sistema de Arrecadação. \n\n
+                            Ao selecionar esta opção é necessário realizar o Mapeamento das Integrações com o Sistema de Arrecadação em Administração >> Controle de Processos Litigiosos ') ?>>
+                    </span>
+                </label><br>
+                <label for="indicacao" class="radio-label">
+                    <?php $idicacaoValorCheck =  $objEspecieDecisaoLitigiosoDTO->getStrStaTipoIndicacaoMulta() == MdLitEspecieDecisaoDTO::$TIPO_MULTA_INDICACAO_VALOR ? 'checked': ''?>
+                    <input type="radio" name="tipoMulta" id="indicacao" value="2" <?php echo $idicacaoValorCheck," ", $multaDisabeld ?>>
+                    <?php if($idicacaoValorCheck && $multaDisabeld): ?>
+                        <input type="hidden" name="tipoMulta" value="2">
+                    <?php endif; ?>
+                    Apenas Indicação de Valor
+                    <span class="tooltipAjuda"
+                        <?= PaginaSEI::montarTitleTooltip('Selecione a opção Apenas Indicação de Valor caso a Indicação de Multa não deva ocorrer por meio de Integração com o Sistema de Arrecadação e os valores definidos no Cadastro da Decisão devam ser mantidos somente no SEI.') ?>>
+                    </span>
+                </label>
+            </div>
 
             <!-- Indicação de Prazo -->
             <?php $checkedIP = $objEspecieDecisaoLitigiosoDTO->getStrSinIndicacaoPrazo() == 'S' ? 'checked=checked' : ''; ?>
             <label class="infraLabelCheckbox">
-            <input <?php echo $checkedIP; ?> type="checkbox" class="infraCheckbox resultDecisao" name="indPrazo"
-                                             id="indPrazo" value="S">
-            Indicação de Prazo</label>
+                <input <?php echo $checkedIP; ?> type="checkbox" class="infraCheckbox resultDecisao" name="indPrazo"
+                     id="indPrazo" value="S">
+                Indicação de Prazo
+                <span class="tooltipAjuda"
+                    <?= PaginaSEI::montarTitleTooltip('Habilite a Indicação de Prazo para permitir o Usuário definir o prazo ao selecionar esta Espécie de Decisão no Cadastro de Decisão.') ?>>
+                </span>
+            </label>
             <br/>
 
             <!-- Indicação de Obrigações -->
             <?php $checkedIO = $objEspecieDecisaoLitigiosoDTO->getStrSinIndicacaoObrigacoes() == 'S' ? 'checked=checked' : ''; ?>
             <label class="infraLabelCheckbox">
-            <input <?php echo $checkedIO; ?> type="checkbox" class="infraCheckbox resultDecisao" name="IndObr"
-                                             id="IndObr" value="S" onchange="showObrigacoes();">
-            Indicação de Obrigações</label>
+                <input <?php echo $checkedIO; ?> type="checkbox" class="infraCheckbox resultDecisao" name="IndObr"
+                    id="IndObr" value="S" onchange="showObrigacoes();">
+                Indicação de Obrigações
+                <span class="tooltipAjuda"
+                    <?= PaginaSEI::montarTitleTooltip('Habilite a Indicação de Obrigações para permitir o Usuário definir as obrigações ao selecionar esta Espécie de Decisão no Cadastro de Decisão.') ?>>
+                </span>
+            </label>
+            <br>
+
+            <!-- Indicação de Ressarcimento -->
+            <?php  $checkedIRes = $objEspecieDecisaoLitigiosoDTO->getStrSinIndicacaoRessarcimentoValor() == 'S' ? 'checked=checked' : ''; ?>
+            <label class="infraLabelCheckbox">
+                <input <?php echo $checkedIRes; ?> type="checkbox" class="infraCheckbox" name="IndRessarcimento"
+                    id="IndRessarcimento" value="S">
+                Indicação de Ressarcimento de Valor
+                <span class="tooltipAjuda"
+                    <?= PaginaSEI::montarTitleTooltip('Habilite a opção Indicação de Ressarcimento de Valor para permitir o Usuário definir o Valor de Ressarcimento ao selecionar esta Espécie de Decisão no Cadastro de Decisão.') ?>>
+                </span>
+            </label>
 
         </div>
     </fieldset>
@@ -310,6 +456,29 @@
 ?>
 
 <script type="text/javascript">
+    $(function(){
+        showTipoMulta();
+
+        $('input[type="checkbox"][name="gestaoMulta"]').change(function(){
+            if(validarAlteracaoIndicacaoMulta() ==false){
+                $('input[type="checkbox"][name="gestaoMulta"]').prop('checked', 'checked').prop('readonly', 'readonly');
+                $('input[type="radio"][name="tipoMulta"]').not(":checked").prop('readonly', 'readonly');
+            }
+
+            showTipoMulta();
+        });
+
+        $('input[type="radio"][name="tipoMulta"]').change(function(){
+            if(validarAlteracaoIndicacaoMulta() == false){
+                $('input[type="checkbox"][name="gestaoMulta"]').prop('checked', 'checked').prop('readonly', 'readonly');
+                $('input[type="radio"][name="tipoMulta"]').not(":checked").prop('checked', 'checked').prop('readonly', 'readonly');
+            }
+
+            showTipoMulta();
+        });
+    });
+
+
     function inicializar() {
         carregarComponenteObrigacao();
         if ('<?=$_GET['acao']?>' == 'md_lit_especie_decisao_cadastrar') {
@@ -320,6 +489,15 @@
             document.getElementById('btnCancelar').focus();
         }
         infraEfeitoTabelas();
+    }
+
+    function showTipoMulta(){
+        if($('input[type="checkbox"][name="gestaoMulta"]').is(':checked')){
+            $('#opcoesMulta').show();
+        } else{
+            $('#opcoesMulta').hide();
+            $('input[type="radio"][name="tipoMulta"]').prop('checked', false);
+        }
     }
 
     function showObrigacoes() {
@@ -347,9 +525,105 @@
             }
         }
 
+        if($('[name="gestaoMulta"]:checked').length > 0 && $('[name="tipoMulta"]:checked').length == 0) {
+                alert('Informe o tipo de indicação de multa.');
+                return false;
+        }
+
+        if(validarMultaPorIntegracao() == false){
+            return false;
+        }
+
+        if(validarAlteracaoIndicacaoMulta() == false){
+            return false;
+        }
+
         return true;
     }
 
+    function validarMultaPorIntegracao() {
+        var valid = true;
+        if ($('[name="gestaoMulta"]:checked').length > 0 &&
+            $('[name="tipoMulta"]:checked').val() == <?php echo MdLitEspecieDecisaoDTO::$TIPO_MULTA_INTEGRACAO ?>) {
+                $.ajax({
+                    type: "POST",
+                    url: "<?= $strLinkValidarCadastroIntegracao ?>",
+                    dataType: "xml",
+                    async: false,
+                    data: {'tipoMulta':  $('[name="tipoMulta"]:checked').val()},
+                    success: function (data) {
+                        if ($(data).find('success').text() != '1') {
+                            teste = data;
+
+                            var integracoes = '';
+                            $(data).find('integracoesIncompletas').children().each(function(key, element){
+                                integracoes += ""+$(element).text()+"\n";
+                            });
+
+                            alert("O Mapeamento das Integrações com o Sistema de Arrecadação não " +
+                                "foram realizados. Antes de definir que a Gestão de Multa deve ocorrer " +
+                                "por meio de Integração, acesse Administração >> Controle de " +
+                                "Processo Litigioso >> Mapeamento das Integrações e insira os " +
+                                "Mapeamentos de Integrações das funcionalidades abaixo:\n" +
+                                "\n" +
+                                integracoes);
+                            valid = false;
+                        }
+                    },
+                    error: function (msgError) {
+                        msgCommit = "Erro ao processar o validação do do SEI: " + msgError.responseText;
+                        console.log(msgCommit);
+                    },
+                    complete: function (result) {
+                        infraAvisoCancelar();
+                    }
+                });
+        }
+        return valid;
+    }
+
+    function validarAlteracaoIndicacaoMulta() {
+        var valid = true;
+        var notChecked = $('input[type="radio"][name="tipoMulta"]').not(":checked").parent().text().trim();
+        var checked = $('[name="tipoMulta"]:checked').parent().text().trim();
+
+        //caso seja desmacado direto o checkbox de indicação de multa
+        if($('input[type="checkbox"][name="gestaoMulta"]').is(':checked') == false){
+            //usa o radio marcado
+            var idTipoMulta = $('[name="tipoMulta"]:checked').val();
+            var mensagem = "Não é possível desabilitar a opção Indicação de Multa para esta Espécie de Decisão pois já existem desições com multas cadastradas. \n"+
+                "Caso seja necessário esta mudança desative esta Espécie de Decisão e crie uma nova.";
+        } else{
+            //usa o radio desmarcado
+            var idTipoMulta = $('input[type="radio"][name="tipoMulta"]').not(":checked").val();
+            var mensagem = "Não é possivel modificar a opção Indicação de Multa para "+checked+" pois ja existem Decisões cadastradas com o tipo "+notChecked+". \n "+
+                "Caso seja necessário esta mudança, desative esta Espécie de Decisão e crie uma nova.";
+        }
+
+        if ('md_lit_especie_decisao_alterar' == '<?php echo $_GET['acao'] ?>') {
+                $.ajax({
+                    type: "POST",
+                    url: "<?= $strLinkValidarAlteracaoIntegracao ?>",
+                    dataType: "xml",
+                    async: false,
+                    data: {'tipoMulta': idTipoMulta, 'hdnIdEspecieDecisaoLitigioso': $('[name="hdnIdEspecieDecisaoLitigioso"]').val()},
+                    success: function (data) {
+                        if ($(data).find('resultado').text() == '1') {
+                            alert(mensagem);
+                            valid = false;
+                        }
+                    },
+                    error: function (msgError) {
+                        msgCommit = "Erro ao processar o validação do do SEI: " + msgError.responseText;
+                        console.log(msgCommit);
+                    },
+                    complete: function (result) {
+                        infraAvisoCancelar();
+                    }
+                });
+        }
+        return valid;
+    }
 
     function OnSubmitForm() {
         return validarCadastro();

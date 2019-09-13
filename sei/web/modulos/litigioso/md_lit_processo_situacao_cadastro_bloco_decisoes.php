@@ -41,6 +41,7 @@
                     <th class="infraTh" style="display: none">ID Tipo Decisao</th>
                     <th class="infraTh" style="display: none">ID Especie Decisao</th>
                     <th class="infraTh" style="display: none">multa</th>
+                    <th class="infraTh" style="display: none">Valor Ressarcimento</th>
                     <th class="infraTh" style="display: none">id Obrigação</th>
                     <th class="infraTh" style="display: none">prazo</th>
                     <th class="infraTh" style="display: none">ID Usuário</th>

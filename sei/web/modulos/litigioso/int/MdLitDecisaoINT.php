@@ -78,6 +78,7 @@ class MdLitDecisaoINT extends InfraINT {
           $infracaoArr[$index][] = $decisao['id_md_lit_tipo_decisao'];
           $infracaoArr[$index][] = $decisao['id_md_lit_especie_decisao'];
           $infracaoArr[$index][] = $decisao['multa'];
+          $infracaoArr[$index][] = $decisao['valor_ressarcimento'];
           $infracaoArr[$index][] = $decisao['id_md_lit_obrigacao'];
           $infracaoArr[$index][] = $decisao['prazo'];
           $infracaoArr[$index][] = $decisao['id_usuario'] != ''? $decisao['id_usuario'] : SessaoSEI::getInstance()->getNumIdUsuario();

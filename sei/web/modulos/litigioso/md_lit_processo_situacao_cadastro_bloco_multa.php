@@ -1,7 +1,7 @@
 <div class="clear-margin-3"></div>
 
 <div class="grid grid_13">
-    <fieldset class="infraFieldset" id="fieldsetMulta" style="<?php echo $strGridDecisao == '' && !$objMdLitLancamentoDTO ?'display:none': ''?>">
+    <fieldset class="infraFieldset" id="fieldsetMulta" style="<?php echo (!$blnDecisaoMultaIntegracao || $strGridDecisao == '' && !$objMdLitLancamentoDTO) ?'display:none': ''?>">
         <legend class="infraLegend">Gestão de Multa</legend>
         <div class="clear-margin-1"></div>
 

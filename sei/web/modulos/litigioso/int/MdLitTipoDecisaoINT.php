@@ -47,7 +47,7 @@
             return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $objMdLitTipoDecisaoDTO, 'IdTipoDecisaoLitigioso', 'Nome');
         }
 
-        public static function montarSelectTipoDecisaoPorTipoControle($strPrimeiroItemValor ='null', $strPrimeiroItemDescricao='&nbsp;', $strValorItemSelecionado='', $idTipoControle){
+        public static function montarSelectTipoDecisaoPorTipoControle($strPrimeiroItemValor ='null', $strPrimeiroItemDescricao='&nbsp;', $strValorItemSelecionado='', $idTipoControle, $flagCarregarDesativados = true){
             $objMdLitRelTipoControleTipoDecisaoDTO = new MdLitRelTipoControleTipoDecisaoDTO();
             $objMdLitRelTipoControleTipoDecisaoDTO->retTodos(true);
             $objMdLitRelTipoControleTipoDecisaoDTO->setNumIdTipoControleLitigioso($idTipoControle);
@@ -71,7 +71,9 @@
 
             //se o valor for parametrizado e não existir na parametrização faz uma nova consulta retornando o valor não parametrizado
             //e adicionando na combo
-            if ($strValorItemSelecionado!=null && InfraArray::contarArrInfraDTO($arrObjMdLitRelTipoControleTipoDecisaoDTO, 'IdTipoDecisaoLitigioso',$strValorItemSelecionado ) == 0){
+            if ($strValorItemSelecionado!=null && InfraArray::contarArrInfraDTO($arrObjMdLitRelTipoControleTipoDecisaoDTO, 'IdTipoDecisaoLitigioso',$strValorItemSelecionado ) == 0 &&
+                $flagCarregarDesativados == true
+            ){
                 $objMdLitTipoDecisaoDTO = new MdLitTipoDecisaoDTO();
                 $objMdLitTipoDecisaoDTO->retStrNome();
                 $objMdLitTipoDecisaoDTO->retNumIdTipoDecisaoLitigioso();

@@ -72,8 +72,9 @@ try {
                     $arrTbDecisaoAntigo = PaginaSEI::getInstance()->getArrItensTabelaDinamica($hdnTbDecisaoAntigo);
                     $arrTbDecisaoNovo = PaginaSEI::getInstance()->getArrItensTabelaDinamica($arrTabela);
 
-                    if(count($arrTbDecisaoAntigo) == count($arrTbDecisaoNovo))
+                    if(count($arrTbDecisaoAntigo) == count($arrTbDecisaoNovo)) {
                         $bolHouveMudanca = false;
+                    }
 
                     if(!$bolHouveMudanca){
                         for($i = 0; $i < count($arrTbDecisaoAntigo); $i++){
@@ -83,8 +84,11 @@ try {
                                 $arrTbDecisaoAntigo[$i][4] != $arrTbDecisaoNovo[$i][4] ||
                                 $arrTbDecisaoAntigo[$i][5] != $arrTbDecisaoNovo[$i][5] ||
                                 $arrTbDecisaoAntigo[$i][6] != $arrTbDecisaoNovo[$i][6] ||
-                                $arrTbDecisaoAntigo[$i][15] != $arrTbDecisaoNovo[$i][15] ||
-                                $arrTbDecisaoAntigo[$i][16] != $arrTbDecisaoNovo[$i][16])
+                                $arrTbDecisaoAntigo[$i][7] != $arrTbDecisaoNovo[$i][7] ||
+                                $arrTbDecisaoAntigo[$i][16] != $arrTbDecisaoNovo[$i][16] ||
+                                $arrTbDecisaoAntigo[$i][17] != $arrTbDecisaoNovo[$i][17]||
+                                $arrTbDecisaoAntigo[$i][18] != $arrTbDecisaoNovo[$i][18]
+                            )
                                 $bolHouveMudanca = true;
                         }
                     }
@@ -110,13 +114,14 @@ if($numRegistros > 0){
     $strTbCadastroDecisao .= '<caption class="infraCaption" style="display: none">' . PaginaSEI::getInstance()->gerarCaptionTabela($strCaptionTabela, $numRegistros) . '</caption>';
     $strTbCadastroDecisao .= '<tr>';
 
-    $strTbCadastroDecisao .= '<th class="infraTh" width="20%">&nbsp;Infração&nbsp;</th>' . "\n";
-    $strTbCadastroDecisao .= '<th class="infraTh" width="10%;"style="min-width: 110px;">&nbsp;Localidade&nbsp;</th>' . "\n";
+    $strTbCadastroDecisao .= '<th class="infraTh" width="15%">&nbsp;Infração&nbsp;</th>' . "\n";
+    $strTbCadastroDecisao .= '<th class="infraTh" width="8%;"style="min-width: 110px;">&nbsp;Localidade&nbsp;</th>' . "\n";
     $strTbCadastroDecisao .= '<th class="infraTh" width="20%">&nbsp;Tipo de Decisão&nbsp;</th>' . "\n";
     $strTbCadastroDecisao .= '<th class="infraTh" width="20%">&nbsp;Espécie de Decisão&nbsp;</th>' . "\n";
-    $strTbCadastroDecisao .= '<th class="infraTh" width="10%">&nbsp;Multa&nbsp;</th>' . "\n";
-    $strTbCadastroDecisao .= '<th class="infraTh" width="20%">&nbsp;Obrigação&nbsp;</th>' . "\n";
-    $strTbCadastroDecisao .= '<th class="infraTh" width="5%">&nbsp;Prazo&nbsp;</th>' . "\n";
+    $strTbCadastroDecisao .= '<th class="infraTh multa" style="display: none;" width="10%">&nbsp;Multa&nbsp;</th>' . "\n";
+    $strTbCadastroDecisao .= '<th class="infraTh ressarcimento" width="10%" style="display: none;">&nbsp;Valor de Ressarcimento&nbsp;</th>' . "\n";
+    $strTbCadastroDecisao .= '<th class="infraTh obrigacoes" style="display:none;" width="15%">&nbsp;Obrigação&nbsp;</th>' . "\n";
+    $strTbCadastroDecisao .= '<th class="infraTh prazo" style="display: none" width="5%">&nbsp;Prazo&nbsp;</th>' . "\n";
     $strTbCadastroDecisao .= '</tr>' . "\n";
     $strComboTipoDecosao = MdLitTipoDecisaoINT::montarSelectTipoDecisaoPorTipoControle('null', '&nbsp;', '', $objMdLitControleDTO->getNumIdMdLitTipoControle());
 
@@ -147,13 +152,14 @@ if($numRegistros > 0){
         $strTbCadastroDecisao .= "<select></div>";
         $strTbCadastroDecisao .= "</td>";
         $strTbCadastroDecisao .= "<td align='center'>";
-        $strTbCadastroDecisao .= "<select id='tipo_decisao_{$idLinha}' name='decisao[idDispositivoNormativo_{$idLinha}][id_md_lit_tipo_decisao]' style='width: 100%;' onchange='carregarComboEspecieDecisao(this)'>";
+        $strTbCadastroDecisao .= "<select id='tipo_decisao_{$idLinha}' name='decisao[idDispositivoNormativo_{$idLinha}][id_md_lit_tipo_decisao]' style='width: 100%;' onchange='carregarComboEspecieDecisao(this); carregarTipoDecisao(this, $(this).val(), false)'>";
         $strTbCadastroDecisao .= $strComboTipoDecosao;
         $strTbCadastroDecisao .= "</select></td>";
-        $strTbCadastroDecisao .= "<td align='center'><select id='id_md_lit_especie_decisao_{$idLinha}' name='decisao[idDispositivoNormativo_{$idLinha}][id_md_lit_especie_decisao]' onchange='carregarEspecieDecisao(this)' style='width: 100%;display: none'></select></td>";
-        $strTbCadastroDecisao .= "<td align='center'><input id='multa_{$idLinha}' onkeypress='return infraMascaraDinheiro(this,event,2,12);' type='text' name='decisao[idDispositivoNormativo_{$idLinha}][multa]' style='width: 90%;display: none'></td>";
-        $strTbCadastroDecisao .= "<td align='center'><select id='id_md_lit_obrigacao_{$idLinha}' name='decisao[idDispositivoNormativo_{$idLinha}][id_md_lit_obrigacao]' style='width: 100%;display: none'></select></td>";
-        $strTbCadastroDecisao .= "<td align='center'>";
+        $strTbCadastroDecisao .= "<td align='center'><select class='especie-decisao' id='id_md_lit_especie_decisao_{$idLinha}' name='decisao[idDispositivoNormativo_{$idLinha}][id_md_lit_especie_decisao]' onchange='refreshEspecieAtivos(this); carregarEspecieDecisao(this)' style='width: 100%;display: none'></select></td>";
+        $strTbCadastroDecisao .= "<td align='center' class='multa' style='display: none;'><input id='multa_{$idLinha}' onkeypress='return infraMascaraDinheiro(this,event,2,12);' type='text' name='decisao[idDispositivoNormativo_{$idLinha}][multa]' style='width: 90%;display: none'></td>";
+        $strTbCadastroDecisao .= "<td align='center' class='ressarcimento' style='display: none;'><input id='valor_ressarcimento_{$idLinha}' onkeypress='return infraMascaraDinheiro(this,event,2,12);' type='text' name='decisao[idDispositivoNormativo_{$idLinha}][valor_ressarcimento]' style='width: 90%; display: none'></td>";
+        $strTbCadastroDecisao .= "<td align='center' class='obrigacoes' style='display: none;'><select id='id_md_lit_obrigacao_{$idLinha}' name='decisao[idDispositivoNormativo_{$idLinha}][id_md_lit_obrigacao]' style='width: 100%;display: none'></select></td>";
+        $strTbCadastroDecisao .= "<td align='center' class='prazo' style='display: none;'>";
         $strTbCadastroDecisao .= "<input id='prazo_{$idLinha}' type='text'  onkeypress='return infraMascaraNumero(this,event,16);' name='decisao[idDispositivoNormativo_{$idLinha}][prazo]' style='width: 90%;display: none'>";
         $strTbCadastroDecisao .= "<input type='hidden' name='decisao[idDispositivoNormativo_{$idLinha}][id_usuario]'>";
         $strTbCadastroDecisao .= "<input type='hidden' name='decisao[idDispositivoNormativo_{$idLinha}][id_unidade]'>";

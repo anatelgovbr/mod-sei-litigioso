@@ -11,9 +11,16 @@ require_once dirname(__FILE__). '/../../../SEI.php';
 
 class MdLitDecisaoDTO extends InfraDTO {
 
+    private $numTipoFkEspecieDecisao = null;
+
   public function getStrNomeTabela() {
   	 return 'md_lit_decisao';
   }
+
+    public function __construct(){
+        $this->numTipoFkEspecieDecisao = InfraDTO::$TIPO_FK_OPCIONAL;
+        parent::__construct();
+    }
 
   public function montar() {
 
@@ -47,6 +54,10 @@ class MdLitDecisaoDTO extends InfraDTO {
 
       $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinUltimaDecisao', 'sin_ultima_decisao');
 
+      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_DBL, 'ValorRessarcimento', 'valor_ressarcimento');
+
+      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_DBL, 'ValorMultaSemIntegracao', 'valor_multa_sem_integracao');
+
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdMdLitProcessoSituacaoMdLitProcessoSituacao', 'mps.id_md_lit_processo_situacao', 'md_lit_processo_situacao mps');
 
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_DBL, 'IdProcedimentoMdLitProcessoSituacao', 'mps.id_procedimento', 'md_lit_processo_situacao mps');
@@ -56,6 +67,8 @@ class MdLitDecisaoDTO extends InfraDTO {
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeMdLitObrigacao', 'nome', 'md_lit_obrigacao');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeMdLitTipoDecisao', 'nome', 'md_lit_tipo_decisao');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeMdLitEspecieDecisao', 'nome', 'md_lit_especie_decisao');
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'StaTipoIndicacaoMulta', 'sta_tipo_indicacao_multa', 'md_lit_especie_decisao');
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'SinGestaoMulta', 'sin_rd_gestao_multa', 'md_lit_especie_decisao');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeUsuario', 'nome', 'usuario');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'SiglaUsuario', 'sigla', 'usuario');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'DescricaoUnidade', 'descricao', 'unidade');
@@ -80,7 +93,7 @@ class MdLitDecisaoDTO extends InfraDTO {
     $this->configurarFK('IdCondutaMdLitRelDisNorConCtr', 'md_lit_conduta cond', 'cond.id_md_lit_conduta', InfraDTO::$TIPO_FK_OPCIONAL, InfraDTO::$FILTRO_FK_WHERE);
     $this->configurarFK('IdMdLitObrigacao', 'md_lit_obrigacao', 'id_md_lit_obrigacao',InfraDTO::$TIPO_FK_OPCIONAL);
     $this->configurarFK('IdMdLitTipoDecisao', 'md_lit_tipo_decisao', 'id_md_lit_tipo_decisao',InfraDTO::$TIPO_FK_OPCIONAL);
-    $this->configurarFK('IdMdLitEspecieDecisao', 'md_lit_especie_decisao', 'id_md_lit_especie_decisao',InfraDTO::$TIPO_FK_OPCIONAL);
+    $this->configurarFK('IdMdLitEspecieDecisao', 'md_lit_especie_decisao', 'id_md_lit_especie_decisao', $this->getNumTipoFkEspecieDecisao(), InfraDTO::$FILTRO_FK_WHERE);
     $this->configurarFK('IdUsuario', 'usuario', 'id_usuario');
     $this->configurarFK('IdUnidade', 'unidade', 'id_unidade');
     $this->configurarFK('IdDocumentoMdLitProcessoSituacao', 'documento d', 'd.id_documento');
@@ -134,6 +147,14 @@ class MdLitDecisaoDTO extends InfraDTO {
 
     public function getStrDispositivoNormativo(){
       return $this->getStrNorma().' - '.$this->getStrDispositivo();
+    }
+
+    public function getNumTipoFkEspecieDecisao(){
+      return $this->numTipoFkEspecieDecisao;
+    }
+
+    public function setNumTipoFkEspecieDecisao($numTipoFkEspecieDecisao){
+        $this->numTipoFkEspecieDecisao = $numTipoFkEspecieDecisao;
     }
 }
 ?>

@@ -6,6 +6,8 @@
      *
      */
 
+    $strLinkValidarEspecieDecisao = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_validar_especie_decisao');
+
     try {
         require_once dirname(__FILE__) . '/../../SEI.php';
 
@@ -233,7 +235,7 @@
     PaginaSEI::getInstance()->montarJavaScript();
     PaginaSEI::getInstance()->abrirJavaScript();
 ?>
-
+    //<script>
     var objLupaEspecies = null;
     var objAutoCompletarEspecies = null;
     var objAjaxHipoteseLegal = null;
@@ -254,34 +256,41 @@
     };
 
     objAutoCompletarEspecies.processarResultado = function(id,descricao,complemento){
-    if (id!=''){
-    var options = document.getElementById('selEspecies').options;
+        if (id!=''){
+            var options = document.getElementById('selEspecies').options;
+            var arrEspecies = new Array();
 
-    for(var i=0;i < options.length;i++){
-    if (options[i].value == id){
-    alert('Espécie já consta na lista.');
-    break;
-    }
-    }
+            for(var i=0;i < options.length;i++){
+                if (options[i].value == id){
+                    alert('Espécie já consta na lista.');
+                    break;
+                }
 
-    if (i==options.length){
+                //recupera os ids ja vinculados
+                arrEspecies.push(options[i].value);
+            }
 
-    for(i=0;i < options.length;i++){
-    options[i].selected = false;
-    }
-    var desc = $("<pre>").html(descricao).text();
-    opt = infraSelectAdicionarOption(document.getElementById('selEspecies'),desc,id);
+            arrEspecies.push(id);
+            var objValidado = validarEspecieDecisaoGestaoMultasDiferentes(arrEspecies);
+            if(objValidado.valid == false){
+                alert(objValidado.mensagem);
+                $('[name="txtEspecies"]').val('');
+                return false;
+            }
 
-    objLupaEspecies.atualizar();
+            if (i==options.length){
+                for(i=0;i < options.length;i++){
+                    options[i].selected = false;
+                }
+                var desc = $("<pre>").html(descricao).text();
+                opt = infraSelectAdicionarOption(document.getElementById('selEspecies'),desc,id);
+                objLupaEspecies.atualizar();
+                opt.selected = true;
+            }
 
-    opt.selected = true;
-    }
-
-
-    document.getElementById('txtEspecies').value = '';
-    document.getElementById('txtEspecies').focus();
-
-    }
+            document.getElementById('txtEspecies').value = '';
+            document.getElementById('txtEspecies').focus();
+        }
     };
 
     objLupaEspecies = new infraLupaSelect('selEspecies','hdnEspecies','<?= $strLinkEspeciesSelecao ?>');
@@ -308,6 +317,9 @@
     return false;
     }
 
+    if(validarTiposGestaoMulta() == false){
+        return false;
+    }
     /*
     if (infraTrim(document.getElementById('txaDescricao').value)=='') {
     alert('Informe a Descrição.');
@@ -366,6 +378,100 @@
 <? } ?>
     }
 
+
+    function validarTiposGestaoMulta(){
+        var options = document.getElementById('selEspecies').options;
+        var arrEspecies = new Array();
+
+        for(var i=0;i < options.length;i++){
+            arrEspecies.push(options[i].value);
+        }
+
+        var objValidado = validarEspecieDecisaoGestaoMultasDiferentes(arrEspecies);
+        if(objValidado.valid == false){
+            var menssagem = "Não é possivel associar Espécies de Decisão com Indicação de Multa de tipos distintos (Gestão por Integração e Apenas Indicação de Valor).\n" +
+                "\n" +
+                "Revise as Espécies de Decisão abaixo listadas que está pretendendo associar:\n\n";
+
+
+            //mostrar a lista de especies conflitantes
+            var arrEspeciesDto = recuperarEspecies(arrEspecies);
+            var especies = '';
+            $.each(arrEspeciesDto, function(key, value) {
+                //se tem tipo de indicação de multa entra na lista
+                if(parseInt($(value).find('StaTipoIndicacaoMulta').text()) == $(value).find('StaTipoIndicacaoMulta').text()){
+                    especies += ' - '+ $(value).find('Nome').text() +' \n';
+                }
+            });
+
+            menssagem = menssagem + especies;
+            alert(menssagem);
+            $('[name="txtEspecies"]').val('');
+            return false;
+        }
+
+        return true;
+    }
+
+    function recuperarEspecies(arrEspecies){
+        var dados;
+        $.ajax({
+            type: "POST",
+            url: "<?=SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_recuperar_especie_decisao') ?>",
+            dataType: "xml",
+            async: false,
+            data: {'arrEspeciesId':arrEspecies},
+            success: function (data) {
+                if($(data).find('MdLitEspecieDecisaoDTO').length > 0){
+                    dados = $(data).find('MdLitEspecieDecisaoDTO');
+                }
+            },
+            error: function (msgError) {
+                msgCommit = "Erro ao processar o validação do do SEI: " + msgError.responseText;
+                console.log(msgCommit);
+            },
+            complete: function (result) {
+                infraAvisoCancelar();
+            }
+        });
+
+        return dados;
+    }
+
+    /**
+     * Validação para nao permitir que um tipo de decisão tenha associada especies com tipo de miltas diferentes, por integracao e por valor
+     * @param arrEspecies
+     * @returns {boolean}
+     */
+    function validarEspecieDecisaoGestaoMultasDiferentes(arrEspecies) {
+        var valid = true;
+
+        $.ajax({
+            type: "POST",
+            url: "<?= $strLinkValidarEspecieDecisao ?>",
+            dataType: "xml",
+            async: false,
+            data: {'arrEspeciesId': arrEspecies},
+            success: function (data) {
+                if ($(data).find('resultado').text() == '0') {
+                    valid = false;
+                }
+            },
+            error: function (msgError) {
+                msgCommit = "Erro ao processar o validação do do SEI: " + msgError.responseText;
+                console.log(msgCommit);
+            },
+            complete: function (result) {
+                infraAvisoCancelar();
+            }
+        });
+
+        return {'valid': valid, 'mensagem': "Não é possivel associar Espécies de Decisão com Indicação de Multa de tipos distintos (Gestão por Integração e Apenas Indicação de Valor).\n" +
+            "\nEscolha Espécies de Decisão diferentes ou entre em contato com o Gestor do SEI para dúvidas a respeito."
+        };
+    }
+
+    //</script>
 <?
     PaginaSEI::getInstance()->fecharJavaScript();
     PaginaSEI::getInstance()->fecharHead();

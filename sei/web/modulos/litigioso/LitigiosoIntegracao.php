@@ -10,7 +10,7 @@
 
         public function getVersao()
         {
-            return '1.4.0';
+            return '1.5.0';
         }
 
         public function getInstituicao()
@@ -504,7 +504,7 @@
                     break;
 
                 case 'md_lit_rel_tipo_decisao_montar_select':
-                    $arrObjEspecieDecisaoDTO = MdLitTipoDecisaoINT::montarSelectTipoDecisaoPorTipoControle('null', '%20', $_POST['id_md_lit_tipo_decisao'], $_POST['id_md_lit_tipo_controle']);
+                    $arrObjEspecieDecisaoDTO = MdLitTipoDecisaoINT::montarSelectTipoDecisaoPorTipoControle('null', '%20', $_POST['id_md_lit_tipo_decisao'], $_POST['id_md_lit_tipo_controle'], $_POST['flagCarregarDesativados']);
                     $xml              = InfraAjax::gerarXMLSelect($arrObjEspecieDecisaoDTO);
                     break;
 
@@ -556,6 +556,18 @@
                     $arrConduta = PaginaSEI::getInstance()->getArrOptionsSelect($_POST['hdnConduta']);
                     $arrIdConduta = InfraArray::simplificarArr($arrConduta, 0);
                     $xml = MdLitRelatorioReincidenteAntecedenteINT::associarDispositivoConduta($arrIdDispositivos,$arrIdConduta);
+                    break;
+                case 'md_lit_validar_cadastro_integracao_multa':
+                    $xml = MdLitEspecieDecisaoINT::validarIntergecaoMulta($_POST);
+                    break;
+                case 'md_lit_validar_alteracao_integracao_multa':
+                    $xml = MdLitEspecieDecisaoINT::existeDecisaoCadastradaParaTipoMulta($_POST);
+                    break;
+                case 'md_lit_validar_especie_decisao':
+                    $xml = MdLitEspecieDecisaoINT::validarTipoDecisaoDiferente($_POST);
+                    break;
+                case 'md_lit_recuperar_especie_decisao':
+                    $xml = "<resultado>".InfraArray::converterArrayXml((MdLitEspecieDecisaoINT::recuperarEspecieDecisoes($_POST)))."</resultado>";
                     break;
             }
 

@@ -10,6 +10,8 @@
 
     class MdLitEspecieDecisaoDTO extends InfraDTO
     {
+        public static $TIPO_MULTA_INTEGRACAO = 1;
+        public static $TIPO_MULTA_INDICACAO_VALOR = 2;
 
         public function getStrNomeTabela()
         {
@@ -42,6 +44,14 @@
             $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
                                            'SinAtivo',
                                            'sin_ativo');
+
+            $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
+                                           'StaTipoIndicacaoMulta',
+                                           'sta_tipo_indicacao_multa');
+
+            $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
+                                           'SinIndicacaoRessarcimentoValor',
+                                           'sin_ressarcimento_valor');
 
 
             $this->configurarPK('IdEspecieLitigioso', InfraDTO::$TIPO_PK_NATIVA);

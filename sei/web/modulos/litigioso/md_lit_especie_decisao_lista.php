@@ -159,6 +159,7 @@
                 $bolAcaoExcluir   = false;
                 $bolAcaoDesativar = false;
                 $bolCheck         = true;
+                $bolValidarTiposMulta = true;
             } else if ($_GET['acao'] == 'md_lit_especie_decisao_reativar') {
                 $bolAcaoReativar  = SessaoSEI::getInstance()->verificarPermissao('md_lit_especie_decisao_reativar');
                 $bolAcaoConsultar = SessaoSEI::getInstance()->verificarPermissao('md_lit_especie_decisao_consultar');
@@ -227,7 +228,11 @@
                 $strResultado .= $strCssTr;
 
                 if ($bolCheck) {
-                    $strResultado .= '<td valign="top">' . PaginaSEI::getInstance()->getTrCheck($i, $arrObjEspecieLitigiosoDTO[$i]->getNumIdEspecieLitigioso(), $arrObjEspecieLitigiosoDTO[$i]->getStrNome()) . '</td>';
+                    if($bolValidarTiposMulta){
+                        //concatena  o evento ao click ao componente para validar a selecção
+                        $strAtributos = 'onclick="return isValidSelecao()"';
+                    }
+                    $strResultado .= '<td valign="top">' . PaginaSEI::getInstance()->getTrCheck($i, $arrObjEspecieLitigiosoDTO[$i]->getNumIdEspecieLitigioso(), $arrObjEspecieLitigiosoDTO[$i]->getStrNome(), 'N', 'Infra', $strAtributos) . '</td>';
                 }
                 $strResultado .= '<td>' . PaginaSEI::tratarHTML($arrObjEspecieLitigiosoDTO[$i]->getStrNome()) . '</td>';
                 $strResultado .= '<td align="center">';
@@ -285,6 +290,20 @@
     PaginaSEI::getInstance()->montarJavaScript();
     PaginaSEI::getInstance()->abrirJavaScript();
 ?>
+    //<script>
+    function isValidSelecao(){
+        var arrEspecies = new Array();
+        $('.infraCheckbox:checked').each(function(key, element){
+            arrEspecies.push($(element).val());
+        });
+
+        //dispara a função da janela que originou a abertura do componente
+        objValidado = window.opener.validarEspecieDecisaoGestaoMultasDiferentes(arrEspecies);
+        if(objValidado.valid == false){
+            alert(objValidado.mensagem);
+            return false;
+        }
+    }
 
     function inicializar(){
     if ('<?= $_GET['acao'] ?>'=='md_lit_especie_decisao_selecionar'){

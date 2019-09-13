@@ -113,6 +113,19 @@ switch($_GET['acao']) {
         
         //Preencher Grid Decisão
         $strGridDecisao = $objMdLitDecisaoRN->retornaDadosDecisaoCadastradas($idProcedimento);
+
+        $blnDecisaoMultaIntegracao = false;
+        $objMdLitEspecieDecisaoRN = new MdLitEspecieDecisaoRN();
+        if($strGridDecisao != '') {
+            foreach ($strGridDecisao as $arrDesicao) {
+                $arrEspeciesDecisao['arrEspeciesId'][] = $arrDesicao[3];
+            }
+
+            $arrTipoEspecieDesicao = InfraArray::converterArrInfraDTO($objMdLitEspecieDecisaoRN->getEspecieDecisoesById($arrEspeciesDecisao), 'StaTipoIndicacaoMulta');
+            //flag para saber se a decisao possui multa por integracao
+            $blnDecisaoMultaIntegracao = in_array(MdLitEspecieDecisaoDTO::$TIPO_MULTA_INTEGRACAO, $arrTipoEspecieDesicao);
+        }
+
         $strGridDecisao = PaginaSEI::getInstance()->gerarItensTabelaDinamica($strGridDecisao);
 
         $objMdLitTipoControleDTO = $objMdLitTipoControleRN->getObjTipoControlePorId($idTpControle);

@@ -68,7 +68,7 @@ class MdLitRelDecisLancamentRN extends InfraRN {
 
       return $ret;
 
-    }catch(Exception $e){var_dump($e);exit;
+    }catch(Exception $e){
       throw new InfraException('Erro cadastrando decisão do lançamento.',$e);
     }
   }

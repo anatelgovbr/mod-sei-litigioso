@@ -83,6 +83,7 @@
             $xml .= '<SinIndicacaoPrazo>'.$objMdLitEspecieDecisaoDTO->getStrSinIndicacaoPrazo()."</SinIndicacaoPrazo>\n";
             $xml .= '<SinIndicacaoObrigacoes>'.$objMdLitEspecieDecisaoDTO->getStrSinIndicacaoObrigacoes()."</SinIndicacaoObrigacoes>\n";
             $xml .= '<SinAtivo>'.$objMdLitEspecieDecisaoDTO->getStrSinIndicacaoObrigacoes()."</SinAtivo>\n";
+            $xml .= '<SinIndicacaoRessarcimentoValor>'.$objMdLitEspecieDecisaoDTO->getStrSinIndicacaoRessarcimentoValor()."</SinIndicacaoRessarcimentoValor>\n";
 
             if($objMdLitEspecieDecisaoDTO->getStrSinIndicacaoObrigacoes() == 'S'){
                 $objMdLitRelEspecieDecisaoObrigacaoDTO = new MdLitRelEspecieDecisaoObrigacaoDTO();
@@ -142,5 +143,53 @@
 
             return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $arrObjMdLitRelTipoControleTipoDecisaoDTO, 'IdMdLitEspecieDecisao', 'NomeEspecieDecisao');
 
+        }
+
+        /**
+         * Valida se as integrações estão foram feitas antes do cadastro da gestão de multa por integração
+         * @param $data
+         * @return string
+         */
+        public static function validarIntergecaoMulta($data){
+            $MdLitEspecieDecisaoRN = new MdLitEspecieDecisaoRN();
+            $integracao = $MdLitEspecieDecisaoRN->validarIntegracaoMulta($data);
+            $incompletas = '';
+            foreach ($integracao->integracaoIncompleta as $integracaoIncompleta){
+                $incompletas .= "<integracao>{$integracaoIncompleta->get('Nome')}</integracao>";
+            }
+
+            $completas ='';
+            foreach ($integracao->integracaoCompleta as $integracaoCompleta){
+                $completas .= "<integracao>{$integracaoCompleta->get('NomeMdLitFuncionalidade')}</integracao>";
+            }
+
+            $xml = "<resultado>";
+            $xml.= "<success>{$integracao->success}</success>";
+            $xml.= "<integracoesCompletas>$completas</integracoesCompletas>";
+            $xml.= "<integracoesIncompletas>$incompletas</integracoesIncompletas>";
+            $xml .= "</resultado>";
+            return $xml;
+        }
+
+        /**
+         * Valida se alteração do tipo de multa é permitida
+         * @param $data
+         * @return string
+         */
+        public static function existeDecisaoCadastradaParaTipoMulta($data){
+            $MdLitEspecieDecisaoRN = new MdLitEspecieDecisaoRN();
+            return  "<resultado>{$MdLitEspecieDecisaoRN->existeDecisaoCadastradaParaTipoMulta($data)}</resultado>";
+        }
+
+        public static function validarTipoDecisaoDiferente($data){
+            $MdLitEspecieDecisaoRN = new MdLitEspecieDecisaoRN();
+            return  "<resultado>{$MdLitEspecieDecisaoRN->validarTipoDecisoesDirentes($data)}</resultado>";
+        }
+
+        public static function recuperarEspecieDecisoes($data){
+            $MdLitEspecieDecisaoRN = new MdLitEspecieDecisaoRN();
+            $infraArray = InfraArray::converterArrInfraDTO($MdLitEspecieDecisaoRN->getEspecieDecisoesById($data));
+            //return  InfraArray::converterArrayXml($infraArray);
+            return $infraArray;
         }
     }

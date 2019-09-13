@@ -324,7 +324,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
           ) ?>">
 
         <?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
-        PaginaSEI::getInstance()->abrirAreaDados('440px');
+        PaginaSEI::getInstance()->abrirAreaDados('auto');
         ?>
 
 

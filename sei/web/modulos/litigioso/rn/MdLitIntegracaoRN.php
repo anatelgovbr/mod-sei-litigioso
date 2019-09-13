@@ -470,4 +470,29 @@ class MdLitIntegracaoRN extends InfraRN {
         return $objMdLitIntegracaoDTO;
     }
 
+    public function getFuncionalidadesIntegracaoArrecadacaoCadastradas()
+    {
+        //lista de funcionalidades obrigatorias para multa com integracao WS
+        $arrFuncionalidadesIntegracao = [
+            self::$ARRECADACAO_LANCAMENTO_CREDITO,
+            self::$ARRECADACAO_CONSULTAR_LANCAMENTO,
+            self::$ARRECADACAO_CANCELAR_LANCAMENTO,
+            self::$ARRECADACAO_RETIFICAR_LANCAMENTO,
+            self::$ARRECADACAO_SUSPENDER_LANCAMENTO,
+            self::$ARRECADACAO_DENEGAR_RECURSO,
+            self::$ARRECADACAO_CANCELAR_RECURSO,
+            self::$ARRECADACAO_LISTA_MOTIVO_CANCELAMENTO,
+        ];
+
+        $objMdLitIntegracaoDTO = new MdLitIntegracaoDTO();
+        $objMdLitIntegracaoDTO->retTodos(false);
+        $objMdLitIntegracaoDTO->retStrNomeMdLitFuncionalidade();
+        $objMdLitIntegracaoDTO->setBolExclusaoLogica(false);
+        $objMdLitIntegracaoDTO->setStrSinAtivo('S');
+        $objMdLitIntegracaoDTO->setNumIdMdLitFuncionalidade($arrFuncionalidadesIntegracao, InfraDTO::$OPER_IN);
+
+        //consulta se esta cadastrado todas as funcionalidades de integração de arrecadação
+        return $arrObjMdLitIntegracao = $this->listar($objMdLitIntegracaoDTO);
+    }
+
 }

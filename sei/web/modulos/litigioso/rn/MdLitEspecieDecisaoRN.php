@@ -350,4 +350,118 @@
                 throw new InfraException ('Erro desativando Especie Litigiosa.', $e);
             }
         }
+
+        /**
+         * Verifica se existe alguma decisão cadastrada para o tipo gestao de multa
+         */
+        public function existeDecisaoCadastradaParaTipoMulta($data)
+        {
+                $decisao =  new MdLitDecisaoRN();
+
+                $arrDecisoes = $decisao->recuperarDesicoesComMultaPorTipo([
+                    'IdMdLitEspecieDecisao' => $data['hdnIdEspecieDecisaoLitigioso'],
+                    'StaTipoIndicacaoMulta' =>$data['tipoMulta']
+                    ]);
+                if(count($arrDecisoes) == 0 ){
+                    return 0;
+                }
+                return 1;
+        }
+
+        /**
+         * Valida se os serviços de integração com a multa estão configurados
+         */
+        public function validarIntegracaoMulta($arrDados)
+        {
+            try {
+                $objectResponse = new stdClass();
+                $objectResponse->success = 1;
+                $objectResponse->integracaoCompleta = [];
+                $objectResponse->integracaoIncompleta = [];
+
+                //ser o tipo de multa não for por integração ignora
+                if ($arrDados['tipoMulta'] != MdLitEspecieDecisaoDTO::$TIPO_MULTA_INTEGRACAO) {
+                    return $objectResponse;
+                }
+
+                //lista de funcionalidades obrigatorias para multa com integracao WS
+                $arrFuncionalidadesIntegracao = [
+                    MdLitIntegracaoRN::$ARRECADACAO_LANCAMENTO_CREDITO,
+                    MdLitIntegracaoRN::$ARRECADACAO_CONSULTAR_LANCAMENTO,
+                    MdLitIntegracaoRN::$ARRECADACAO_CANCELAR_LANCAMENTO,
+                    MdLitIntegracaoRN::$ARRECADACAO_RETIFICAR_LANCAMENTO,
+                    MdLitIntegracaoRN::$ARRECADACAO_SUSPENDER_LANCAMENTO,
+                    MdLitIntegracaoRN::$ARRECADACAO_DENEGAR_RECURSO,
+                    MdLitIntegracaoRN::$ARRECADACAO_CANCELAR_RECURSO,
+                    MdLitIntegracaoRN::$ARRECADACAO_LISTA_MOTIVO_CANCELAMENTO,
+                ];
+
+                $MdLitIntegracaoRN = new MdLitIntegracaoRN();
+                $arrObjMdLitIntegracao = $MdLitIntegracaoRN->getFuncionalidadesIntegracaoArrecadacaoCadastradas();
+
+                //se o total de funcionalidas cadastradas para integração for igual ao esta ok
+                if (count($arrObjMdLitIntegracao) == count($arrFuncionalidadesIntegracao)) {
+                    $objectResponse->success = 1;
+                    $objectResponse->integracaoCompleta = $arrObjMdLitIntegracao;
+                    return $objectResponse;
+                }
+
+                $arrExistsIntegracao = [];
+                foreach ($arrObjMdLitIntegracao as $integracaoDto) {
+                    if (in_array($integracaoDto->get('IdMdLitFuncionalidade'), $arrFuncionalidadesIntegracao)) {
+                        $arrExistsIntegracao[] = $integracaoDto->get('IdMdLitFuncionalidade');
+                    }
+                }
+
+                //recupera os ids da funcionalidades sem integracao
+                $arrNotExistIntegracao = array_diff($arrFuncionalidadesIntegracao, $arrExistsIntegracao);
+
+                $mdLitFucionalidadeDTO = new MdLitFuncionalidadeDTO();
+                $mdLitFucionalidadeDTO->retTodos(false);
+                $mdLitFucionalidadeDTO->ret('NomeMdLitIntegracao');
+                $mdLitFucionalidadeDTO->setNumIdMdLitFuncionalidade($arrNotExistIntegracao, InfraDTO::$OPER_IN);
+
+                $mdLitFuncionalidadeRN = new MdLitFuncionalidadeRN();
+                $arrMdLitFucionalidadeDTO = $mdLitFuncionalidadeRN->listar($mdLitFucionalidadeDTO);
+
+                $objectResponse->success = 0;
+                $objectResponse->integracaoCompleta = $arrObjMdLitIntegracao;
+                $objectResponse->integracaoIncompleta = $arrMdLitFucionalidadeDTO;
+                return $objectResponse;
+            } catch(Exception $e){
+                throw new Exception($e->getMessage());
+            }
+
+        }
+
+        public function validarTipoDecisoesDirentes($data)
+        {
+            //consulta as especies de decisão que serão vinculadas ao tipo de decisao
+            $mdLitEspecieDecisaoDTO = new MdLitEspecieDecisaoDTO();
+            $mdLitEspecieDecisaoDTO->setDistinct(true);
+            $mdLitEspecieDecisaoDTO->ret('StaTipoIndicacaoMulta');
+            $mdLitEspecieDecisaoDTO->set('IdEspecieLitigioso', $data['arrEspeciesId'], InfraDTO::$OPER_IN);
+            $mdLitEspecieDecisaoDTO->set('SinGestaoMulta', "S");
+
+            $mdLitEspecieDecisaoRN =  new MdLitEspecieDecisaoRN();
+            $result = $mdLitEspecieDecisaoRN->listar($mdLitEspecieDecisaoDTO);
+
+            if(count($result)>1){
+                return 0;
+            }
+             return 1;
+        }
+
+        public function getEspecieDecisoesById($data)
+        {
+            //consulta as especies por id
+            $mdLitEspecieDecisaoDTO = new MdLitEspecieDecisaoDTO();
+            $mdLitEspecieDecisaoDTO->retTodos();
+            $mdLitEspecieDecisaoDTO->set('IdEspecieLitigioso', $data['arrEspeciesId'], InfraDTO::$OPER_IN);
+
+            $mdLitEspecieDecisaoRN = new MdLitEspecieDecisaoRN();
+            $result = $mdLitEspecieDecisaoRN->listar($mdLitEspecieDecisaoDTO);
+
+            return $result;
+        }
     }

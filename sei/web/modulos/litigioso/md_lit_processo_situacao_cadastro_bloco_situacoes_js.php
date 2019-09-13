@@ -153,6 +153,7 @@
         document.getElementById("lblDtaTipoSituacao").innerHTML = '';
         document.getElementById("txtSituacao").style.color = '';
         document.getElementById("divBtnAdicionar").style.display = 'none';
+        document.getElementById("btnAdicionar").disabled = false;
         document.getElementById("rdNaoAlteraPrescricao").checked = false;
         document.getElementById("rdAlteraPrescricao").checked = false;
         document.getElementById("txtSituacao").innerHTML = '';
@@ -209,6 +210,7 @@
 //                    document.getElementById('divsDatasBdPrescricao').style.display = 'none';
                     document.getElementById('divsDatasPrescricao').style.display = 'none';
                     document.getElementById("divBtnAdicionar").style.display = 'none';
+                    document.getElementById("btnAdicionar").disabled = true;
                     document.getElementById("txtSituacao").style.color = 'red';
                 } else {
                     if(sinPrimeiraIntimacao == 'S'){
@@ -216,6 +218,7 @@
                         document.getElementById('rdAlteraPrescricao').checked = true;
                         changePrescricao(document.getElementById('rdAlteraPrescricao'), false);
                         document.getElementById("divBtnAdicionar").style.display = '';
+                        document.getElementById("btnAdicionar").disabled = false;
                     }else if('<?= $idMdLitProcessoSituacaoPrimeiraIntimacao ?>' != '' ){
                         document.getElementById('divsDatasPrescricao').style.display = '';
 //                        document.getElementById('divsDatasBdPrescricao').style.display = '';
@@ -225,6 +228,7 @@
                         changePrescricao(document.getElementById('rdNaoAlteraPrescricao'), false);
                     }
                     document.getElementById('divBtnAdicionar').style.display = '';
+                    document.getElementById("btnAdicionar").disabled = false;
                 }
 
                 document.getElementById('hdnStrSituacao').value = tipoSituacao;
@@ -292,6 +296,7 @@
         var hdnSinInst = isAlterarSit ? document.getElementById('hdnSinInstauracaoAlt').value : document.getElementById('hdnSinInstauracao').value;
 
         document.getElementById("divBtnAdicionar").style.display = '';
+        document.getElementById("btnAdicionar").disabled = false;
 
         var vlRadio = el.value;
 
@@ -694,6 +699,7 @@
 
             if (bloquear) {
                 document.getElementById("divBtnAdicionar").style.display = 'none';
+                document.getElementById("btnAdicionar").disabled = true;
             }
 
             for (var i = 0; i < objs.length; i++) {
@@ -935,6 +941,7 @@
             }
 
             document.getElementById('divBtnAdicionar').style.display = '';
+            document.getElementById("btnAdicionar").disabled = false;
             //Situação Recursal
             if(tipoSituacao == 'Recursal'){
                 controlarExibicaoRecursalAlteracao(tipoSituacao, arr);

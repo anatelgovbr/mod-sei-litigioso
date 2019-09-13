@@ -38,8 +38,8 @@ try {
         case 'md_lit_decisao_historico':
             $strTitulo = 'Histórico Geral de Decisões';
 
-            $arrComandos[] = '<button type="button" accesskey="I" name="sbmImprimir" value="Imprimir" onclick="infraImprimirDiv(\'div-tabela-historico\')" class="infraButton"><span class="infraTeclaAtalho">I</span>mprimir</button>';
-            $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Fechar" onclick="window.close();" class="infraButton"><span class="infraTeclaAtalho">F</span>echar</button>';
+            $arrComandos[] = '<button type="button" accesskey="I" name="sbmImprimir" value="Imprimir" onclick="window.print()" class="infraButton noprint"><span class="infraTeclaAtalho">I</span>mprimir</button>';
+            $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Fechar" onclick="window.close();" class="infraButton noprint"><span class="infraTeclaAtalho">F</span>echar</button>';
             $idMdLitControle = $_GET['id_md_lit_controle'];
 
 
@@ -68,6 +68,8 @@ try {
                     $objMdLitDecisaoDTO->retDblMulta();
                     $objMdLitDecisaoDTO->retStrNomeMdLitObrigacao();
                     $objMdLitDecisaoDTO->retNumPrazo();
+                    $objMdLitDecisaoDTO->retDblValorMultaSemIntegracao();
+                    $objMdLitDecisaoDTO->retDblValorRessarcimento();
                     $objMdLitDecisaoDTO->setNumIdMdLitRelDisNorConCtr($objRelDispositivoNormativoCondutaControleLitigiosoDTO->getNumIdDispositivoNormativoNormaCondutaControle());
 
                     $objMdLitDecisaoRN = new MdLitDecisaoRN();
@@ -96,17 +98,18 @@ if($numRegistros > 0){
     foreach ($arrObjRelDispositivoNormativoCondutaControleLitigiosoDTO as $idLinha =>$objRelDispositivoNormativoCondutaControleLitigiosoDTO){
         $strTbCadastroDecisao .= '<table width="98%" id="tableDadosComplementarInteressado" class="infraTable" summary="' . $strCaptionTabela . '">' . "\n";
         $strTbCadastroDecisao .= '<tr class="infraTrEscura">';
-        $strTbCadastroDecisao .= '<th class="tabela-th" colspan="9">'.PaginaSEI::tratarHTML($objRelDispositivoNormativoCondutaControleLitigiosoDTO->getStrInfracao()).'</th>';
+        $strTbCadastroDecisao .= '<th class="tabela-th" colspan="10">'.PaginaSEI::tratarHTML($objRelDispositivoNormativoCondutaControleLitigiosoDTO->getStrInfracao()).'</th>';
         $strTbCadastroDecisao .= '</tr>';
 
         $strTbCadastroDecisao .= '<tr>';
         $strTbCadastroDecisao .= '<th class="infraTh" width="10%">&nbsp;Documento&nbsp;</th>' . "\n";
-        $strTbCadastroDecisao .= '<th class="infraTh" width="10%">&nbsp;Data&nbsp;</th>' . "\n";
+        $strTbCadastroDecisao .= '<th class="infraTh">&nbsp;Data&nbsp;</th>' . "\n";
         $strTbCadastroDecisao .= '<th class="infraTh" width="20%">&nbsp;Usuário&nbsp;</th>' . "\n";
         $strTbCadastroDecisao .= '<th class="infraTh" width="5%">&nbsp;Unidade&nbsp;</th>' . "\n";
         $strTbCadastroDecisao .= '<th class="infraTh" width="20%">&nbsp;Decisão&nbsp;</th>' . "\n";
-        $strTbCadastroDecisao .= '<th class="infraTh" width="25%">&nbsp;Espécie da decisão&nbsp;</th>' . "\n";
+        $strTbCadastroDecisao .= '<th class="infraTh" width="25%">&nbsp;Espécie da Decisão&nbsp;</th>' . "\n";
         $strTbCadastroDecisao .= '<th class="infraTh" width="10%">&nbsp;Multa&nbsp;</th>' . "\n";
+        $strTbCadastroDecisao .= '<th class="infraTh">&nbsp;Valor Ressarcimento&nbsp;</th>' . "\n";
         $strTbCadastroDecisao .= '<th class="infraTh" width="25%">&nbsp;Obrigação&nbsp;</th>' . "\n";
         $strTbCadastroDecisao .= '<th class="infraTh" width="5%">&nbsp;Prazo&nbsp;</th>' . "\n";
         $strTbCadastroDecisao .= '</tr>' . "\n";
@@ -134,8 +137,12 @@ if($numRegistros > 0){
             $strTbCadastroDecisao .= PaginaSEI::tratarHTML($objMdLitDecisao->getStrNomeMdLitEspecieDecisao());
             $strTbCadastroDecisao .= "</td>";
             $strTbCadastroDecisao .= "<td align='right'>";
-            $strTbCadastroDecisao .= $objMdLitDecisao->getDblMulta() == ''? '': 'R$ ';
-            $strTbCadastroDecisao .= PaginaSEI::tratarHTML($objMdLitDecisao->getDblMulta());
+            $strTbCadastroDecisao .= ($objMdLitDecisao->getDblMulta() == '' && !$objMdLitDecisao->getDblValorMultaSemIntegracao()) ? '' : 'R$ ';
+            $strTbCadastroDecisao .= PaginaSEI::tratarHTML($objMdLitDecisao->getDblMulta() ?: $objMdLitDecisao->getDblValorMultaSemIntegracao());
+            $strTbCadastroDecisao .= "</td>";
+            $strTbCadastroDecisao .= "<td align='right'>";
+            $strTbCadastroDecisao .= $objMdLitDecisao->getDblValorRessarcimento()? 'R$ ': '';
+            $strTbCadastroDecisao .= PaginaSEI::tratarHTML($objMdLitDecisao->getDblValorRessarcimento());
             $strTbCadastroDecisao .= "</td>";
             $strTbCadastroDecisao .= "<td>";
             $strTbCadastroDecisao .= PaginaSEI::tratarHTML($objMdLitDecisao->getStrNomeMdLitObrigacao());
@@ -158,6 +165,12 @@ PaginaSEI::getInstance()->montarStyle();
 PaginaSEI::getInstance()->abrirStyle();
 //require_once ('md_lit_css_geral.php');
 ?>
+@media print{
+.noprint{
+    display:none;
+    }
+}
+
 th.tabela-th{font-size: 1em;font-weight: bold;color: #fff;background-color: #909090;border-spacing: 0;padding: 10px;}
 table.infraTable{margin-bottom: 10px;}
 <?
