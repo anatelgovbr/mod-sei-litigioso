@@ -71,6 +71,11 @@
     }
 
     function consultarExtratoMulta(){
+        //se o tipo da multa for por indicação de valor igonora as validações e exibição do fildset de multa
+        if(isTipoMultaIndicacaValor() == true){
+            return;
+        }
+
         var valueDecisao = objTabelaDinamicaDecisao.hdn.value;
         document.getElementById('btnRetificarLancamento').style.display = 'none';
         document.getElementById('btnIncluirLancamento').style.display = 'none';
@@ -144,7 +149,7 @@
                     }else{
                         document.getElementById('fieldsetMulta').style.display = 'none';
                     }
-debugger;
+
                     if($(result).find('creditoNaoLancado').text() != '0,00' && $(result).find('isNovoLancamento').text() == 'S' && document.getElementById('selCreditosProcesso').value == ''){
 
 
@@ -461,6 +466,11 @@ debugger;
             return true;
         }
 
+        //se o tipo da multa for por indicacao de valor não valida o lancamento da multa
+        if(isTipoMultaIndicacaValor()){
+            return true;
+        }
+
         if(document.getElementById('hdnVlCreditoNaoLancado').value != '0,00' && document.getElementById('hdnJustificativaLancamento').value == '' && infraTrim(document.getElementById('hdnIdMdLitFuncionalidade').value == '') && document.getElementById('hdnTbVincularLancamento').value == '' ){
             alert('Foram identificados valores da Gestão de Multa pendentes de atualização no SISTEMA DE ARRECADAÇÃO. Verifique se a ação para atualização dos valores foi acionada.');
             return false;
@@ -486,6 +496,54 @@ debugger;
         }
 
         return true;
+    }
+
+    function isTipoMultaIndicacaValor(){
+        var flagMultaIntegracao = false;
+         var arrDecisao = objTabelaDinamicaDecisao.obterItens();
+         var arrEspecies = new Array();
+         for(var i = 0; i < arrDecisao.length;i++){
+             if(arrDecisao[i][3] != 'null'){
+                 //armazena o id das especies de decisão para validar a multa com ou sem integração
+                 arrEspecies.push(arrDecisao[i][3]);
+             }
+         }
+
+         if(arrEspecies.length == 0){
+             return false;
+         }
+
+        $.ajax({
+            type: "POST",
+            url: "<?=SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_recuperar_especie_decisao') ?>",
+            dataType: "xml",
+            async: false,
+            data: {'arrEspeciesId':arrEspecies},
+            success: function (data) {
+                $.each($(data).find('MdLitEspecieDecisaoDTO'), function(key, value) {
+                    if($(value).find('StaTipoIndicacaoMulta').text() == "<?=MdLitEspecieDecisaoDTO::$TIPO_MULTA_INTEGRACAO ?>"){
+                        flagMultaIntegracao = true;
+                    }
+
+                });
+            },
+            error: function (msgError) {
+                msgCommit = "Erro ao processar o validação do do SEI: " + msgError.responseText;
+                console.log(msgCommit);
+            },
+            complete: function (result) {
+                infraAvisoCancelar();
+            }
+        });
+
+        //se for multa por integração retorna pra cair na validação
+        if(flagMultaIntegracao){
+            return false;
+        }
+
+        //se for multa por indicação de valor não precisa validar o lancamento do valor por integração
+        return true;
+
     }
 
     function calcularData(){

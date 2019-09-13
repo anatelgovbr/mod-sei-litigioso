@@ -119,19 +119,46 @@ class MdLitDecisaoRN extends InfraRN {
         $ret = array();
         foreach ($arrDecisao['lista'] as $decisao){
             $decisao[4] = str_replace('.', '',$decisao[4]);
+            $decisao[5] = str_replace('.', '',$decisao[5]);
             $objMdLitDecisaoDTO = new MdLitDecisaoDTO();
+            $objMdLitEspecieDecisaoRN = new MdLitEspecieDecisaoRN();
+
+            //se decisão nao informada
+            if($decisao[3] == "null"){
+                $tipoDecisao = null;
+            } else {
+                $arrIdEspecieDesicao['arrEspeciesId'][0] = $decisao[3];
+                $mdLitEspecieDecisaoDTO = $objMdLitEspecieDecisaoRN->getEspecieDecisoesById($arrIdEspecieDesicao)[0];
+                $tipoDecisao = $mdLitEspecieDecisaoDTO->getStrStaTipoIndicacaoMulta();
+            }
+
+            //salvar o valor da multa de acordo com o tipo, conforme definicão do gestor
+            switch ($tipoDecisao) {
+                case MdLitEspecieDecisaoDTO::$TIPO_MULTA_INTEGRACAO:
+                    $objMdLitDecisaoDTO->setDblMulta($decisao[4]);
+                    $objMdLitDecisaoDTO->setDblValorMultaSemIntegracao('');
+                    break;
+                case MdLitEspecieDecisaoDTO::$TIPO_MULTA_INDICACAO_VALOR:
+                    $objMdLitDecisaoDTO->setDblValorMultaSemIntegracao($decisao[4]);
+                    $objMdLitDecisaoDTO->setDblMulta('');
+                    break;
+                default:
+                    $objMdLitDecisaoDTO->setDblValorMultaSemIntegracao('');
+                    $objMdLitDecisaoDTO->setDblMulta('');
+            }
+
             $objMdLitDecisaoDTO->setNumIdMdLitRelDisNorConCtr($decisao[1]);
             $objMdLitDecisaoDTO->setNumIdMdLitTipoDecisao($decisao[2]);
             $objMdLitDecisaoDTO->setNumIdMdLitEspecieDecisao($decisao[3]);
-            $objMdLitDecisaoDTO->setDblMulta($decisao[4]);
-            $objMdLitDecisaoDTO->setNumIdMdLitObrigacao($decisao[5]);
-            $objMdLitDecisaoDTO->setNumPrazo($decisao[6]);
-            $objMdLitDecisaoDTO->setNumIdUsuario($decisao[7]);
-            $objMdLitDecisaoDTO->setNumIdUnidade($decisao[8]);
+            $objMdLitDecisaoDTO->setDblValorRessarcimento($decisao[5]);
+            $objMdLitDecisaoDTO->setNumIdMdLitObrigacao($decisao[6]);
+            $objMdLitDecisaoDTO->setNumPrazo($decisao[7]);
+            $objMdLitDecisaoDTO->setNumIdUsuario($decisao[8]);
+            $objMdLitDecisaoDTO->setNumIdUnidade($decisao[9]);
             $objMdLitDecisaoDTO->setStrSinAtivo('S');
-            $objMdLitDecisaoDTO->setDtaInclusao($decisao[12]);
-            $objMdLitDecisaoDTO->setStrStaLocalidade($decisao[15]);
-            $objMdLitDecisaoDTO->setStrSinCadastroParcial($decisao[17]);
+            $objMdLitDecisaoDTO->setDtaInclusao($decisao[13]);
+            $objMdLitDecisaoDTO->setStrStaLocalidade($decisao[16]);
+            $objMdLitDecisaoDTO->setStrSinCadastroParcial($decisao[18]);
 
             if(preg_match('/^novo_/', $decisao[0])){
                 $objMdLitDecisaoDTO->setStrSinUltimaDecisao('S');
@@ -158,8 +185,8 @@ class MdLitDecisaoRN extends InfraRN {
             }
 
             if($objMdLitDecisaoDTO->getStrStaLocalidade() == MdLitDecisaoRN::$STA_LOCALIDADE_UF){
-                if(!empty($decisao[16])){
-                    $arrUf = explode('#',$decisao[16]);
+                if(!empty($decisao[17])){
+                    $arrUf = explode('#',$decisao[17]);
                     foreach ($arrUf as $idUf){
                         $objMdLitRelDecisaoUfDTO = new MdLitRelDecisaoUfDTO();
                         $objMdLitRelDecisaoUfDTO->setNumIdUf($idUf);
@@ -474,11 +501,14 @@ class MdLitDecisaoRN extends InfraRN {
 
       foreach ($arrObjMdLitDecisaoDTO as $key => $objMdLitDecisaoDTO){
 
+          //atendendo conforme soliticação para valores em colunas diferentes
+          $valorMulta = $objMdLitDecisaoDTO->getDblMulta()?: $objMdLitDecisaoDTO->getDblValorMultaSemIntegracao();
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getNumIdMdLitDecisao();
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getNumIdMdLitRelDisNorConCtr();
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getNumIdMdLitTipoDecisao();
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getNumIdMdLitEspecieDecisao();
-          $infracaoArr[$key][] = InfraUtil::formatarDin(InfraUtil::prepararDbl($objMdLitDecisaoDTO->getDblMulta()));
+          $infracaoArr[$key][] = InfraUtil::formatarDin(InfraUtil::prepararDbl($valorMulta));
+          $infracaoArr[$key][] = InfraUtil::formatarDin(InfraUtil::prepararDbl($objMdLitDecisaoDTO->getDblValorRessarcimento()));
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getNumIdMdLitObrigacao();
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getNumPrazo();
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getNumIdUsuario();
@@ -657,6 +687,25 @@ class MdLitDecisaoRN extends InfraRN {
             }
             return $arrMdLitDecisaoDTO;
         }
+    }
+
+    public function recuperarDesicoesComMultaPorTipo($data)
+    {
+        $objMdLitDecisaoDTO = new MdLitDecisaoDTO();
+        //inner/left join
+        $objMdLitDecisaoDTO->ret('IdMdLitProcessoSituacao');
+        $objMdLitDecisaoDTO->ret('IdMdLitDecisao');
+        $objMdLitDecisaoDTO->ret('IdDocumentoMdLitProcessoSituacao');
+        $objMdLitDecisaoDTO->ret('StaTipoIndicacaoMulta');
+        $objMdLitDecisaoDTO->setNumTipoFkEspecieDecisao(InfraDTO::$TIPO_FK_OBRIGATORIA);
+        //where
+        $objMdLitDecisaoDTO->set('IdMdLitEspecieDecisao', $data['IdMdLitEspecieDecisao']);
+        $objMdLitDecisaoDTO->set('StaTipoIndicacaoMulta', $data['StaTipoIndicacaoMulta']);
+        $objMdLitDecisaoDTO->set('SinGestaoMulta', 'S');
+
+        //recupera as decisoes cadastradas por tipo
+        $arrObjMdLitDecisao = $this->listar($objMdLitDecisaoDTO);
+        return $arrObjMdLitDecisao;
     }
 
 }

@@ -17,7 +17,7 @@
             var arrDecisao = objTabelaDinamicaDecisao.obterItens();
 
             for(var i = 0; i < arrDecisao.length;i++){
-                if(arrDecisao[i][17] == 'S'){
+                if(arrDecisao[i][18] == 'S'){
                     sinParcial = true;
                     break;
                 }
@@ -34,7 +34,7 @@
     function abrirModalHistoricoDecisao(){
         infraAbrirJanela('<?= $urlHistoricoDecisao ?>',
             'HistoricoDecisao',
-            780,
+            1200,
             600);
     }
 

@@ -11,10 +11,10 @@ require_once dirname(__FILE__) . '/../../../SEI.php';
 class MdLitAtualizadorSeiRN extends InfraRN {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '1.4.0';
+    private $versaoAtualDesteModulo = '1.5.0';
     private $nomeDesteModulo = 'MÓDULO DE CONTROLE LITIGIOSO';
     private $nomeParametroModulo = 'VERSAO_MODULO_LITIGIOSO';
-    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4','1.0.0','1.1.0','1.2.0','1.3.0', '1.4.0');
+    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4','1.0.0','1.1.0','1.2.0','1.3.0', '1.4.0', '1.5.0');
 
     public function __construct(){
         parent::__construct();
@@ -115,6 +115,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv120();
                 $this->instalarv130();
                 $this->instalarv140();
+                $this->instalarv150();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.1') {
@@ -126,6 +127,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv120();
                 $this->instalarv130();
                 $this->instalarv140();
+                $this->instalarv150();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.2') {
@@ -136,6 +138,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv120();
                 $this->instalarv130();
                 $this->instalarv140();
+                $this->instalarv150();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.3') {
@@ -145,6 +148,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv120();
                 $this->instalarv130();
                 $this->instalarv140();
+                $this->instalarv150();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.4') {
@@ -153,6 +157,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv120();
                 $this->instalarv130();
                 $this->instalarv140();
+                $this->instalarv150();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.0.0') {
@@ -160,24 +165,32 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv120();
                 $this->instalarv130();
                 $this->instalarv140();
+                $this->instalarv150();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.1.0') {
                 $this->instalarv120();
                 $this->instalarv130();
                 $this->instalarv140();
+                $this->instalarv150();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.2.0') {
                 $this->instalarv130();
                 $this->instalarv140();
+                $this->instalarv150();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.3.0') {
                 $this->instalarv140();
+                $this->instalarv150();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.4.0') {
+                $this->instalarv150();
+                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
+                $this->finalizar('FIM', false);
+            } else if ($strVersaoModuloLitigioso == '1.5.0') {
                 $this->logar('A VERSÃO MAIS ATUAL DO '.$this->nomeDesteModulo.' (v'.$this->versaoAtualDesteModulo.') JÁ ESTÁ INSTALADA.');
                 $this->finalizar('FIM', false);
             }
@@ -1884,6 +1897,29 @@ class MdLitAtualizadorSeiRN extends InfraRN {
         $this->logar('ATUALIZANDO PARÂMETRO '.$this->nomeParametroModulo.' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
         BancoSEI::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.4.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
 
+    }
+
+    protected function instalarv150(){
+        $instanciaBanco = BancoSEI::getInstance();
+        $objInfraMetaBD = new InfraMetaBD($instanciaBanco);
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.5.0 DO '.$this->nomeDesteModulo.' NA BASE DO SEI');
+
+        $this->logar('ADICIONANDO A COLUNA DE INDICAÇÃO DE TIPO DE MULTA NA ESPÉCIE DE DECISÃO');
+        $objInfraMetaBD->adicionarColuna('md_lit_especie_decisao', 'sta_tipo_indicacao_multa', $objInfraMetaBD->tipoTextoFixo(1), 'NULL');
+        $instanciaBanco->executarSql("UPDATE md_lit_especie_decisao set sta_tipo_indicacao_multa = 1 WHERE sin_rd_gestao_multa = 'S' ");
+
+        $this->logar('ADICIONANDO A COLUNA DE INDICAÇÃO DE RESSARCIMENTO DE VALOR NA ESPÉCIE DE DECISÃO');
+        $objInfraMetaBD->adicionarColuna('md_lit_especie_decisao', 'sin_ressarcimento_valor', $objInfraMetaBD->tipoTextoFixo(1), 'NULL');
+        $instanciaBanco->executarSql("UPDATE md_lit_especie_decisao set sin_ressarcimento_valor = 'N' ");
+
+        $this->logar('ADICIONANDO A COLUNA PARA CADASTRO DE VALOR DE RESSARCIMENTO NA DECISÃO NOS PROCESSOS');
+        $objInfraMetaBD->adicionarColuna('md_lit_decisao', 'valor_ressarcimento', $objInfraMetaBD->tipoNumeroDecimal(19,2), 'NULL');
+
+        $this->logar('ADICIONANDO A COLUNA PARA CADASTRO DE MULTA SEM INTEGRAÇÃO NA DECISÃO NOS PROCESSOS');
+        $objInfraMetaBD->adicionarColuna('md_lit_decisao', 'valor_multa_sem_integracao', $objInfraMetaBD->tipoNumeroDecimal(19,2), 'NULL');
+
+        $this->logar('ATUALIZANDO PARÂMETRO '.$this->nomeParametroModulo.' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+        $instanciaBanco->executarSql('UPDATE infra_parametro SET valor = \'1.5.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
     }
 }
 ?>

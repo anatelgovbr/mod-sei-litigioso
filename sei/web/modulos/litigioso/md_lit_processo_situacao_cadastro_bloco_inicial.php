@@ -1,12 +1,12 @@
 
 <div class="grid grid_13">
 <!-- Tipo de Controle Litigioso -->
-  <div class="grid grid_7">
+  <div class="grid grid_7" style="width: auto; margin-right: auto;">
         <label class="infraLabelObrigatorio" id="lblTipoCtrlTitulo" name="lblTipoCtrlTitulo">Tipo de Controle Litigioso:</label>
         <label class="infraLabelOpcional" id="lblTipoCtrlDetalhe" name="lblTipoCtrlDetalhe"> <?php echo !is_null($objMdLitTipoControleDTO) ? $objMdLitTipoControleDTO->getStrSigla() : '' ?>
         </label>
   </div>
-    <img onclick="modalParametrizarSituacao()" src="modulos/litigioso/imagens/icone-parametrizar.png" title="Consultar Parametrização de Situações" style="position:relative; top:-4px; margin-left: 5px;height: 24px;right:200px; " />
+    <img onclick="modalParametrizarSituacao()" src="modulos/litigioso/imagens/icone-parametrizar.png" title="Consultar Parametrização de Situações" style="position:relative; top:-4px; height: 24px; " />
 
     <!-- Tempo desde Intimação da Instauração -->
     <?php if($diferencaEntreDias): ?>
