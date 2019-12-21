@@ -7,6 +7,21 @@
     var CANCELAR_LANCAMENTO = 3;
     var objAjaxNumeroInteressado;
 
+    /**
+     * Função utilizada no change do campo "Data da Intimação da Decisão de Aplicação da Multa" num campo hidden par considerar
+     * as alterações do lancamento ao alterar
+     * @param element
+     */
+    function armazenarDataIntimacaoMulta(element){
+            var index = $('[name="selCreditosProcesso"]').val();
+            var value = $(element).val();
+            if($('.hdnDtaIntimacaoDecisaoMulta[data-id="'+index+'"]').length > 0){
+                $('.hdnDtaIntimacaoDecisaoMulta[data-id="'+index+'"]').val(value);
+            } else {
+                $('#divDadosIntimacaoAplicaocaoMulta').append('<input type="hidden" name="hdnDtaIntimacaoDecisaoMulta['+index+']" class="hdnDtaIntimacaoDecisaoMulta" data-id="'+index+'"value="'+value+'"/>');
+            }
+    }
+
     function carregarDependenciaMulta(){
 
         objAjaxNumeroInteressado = new infraAjaxMontarSelectDependente('selInteressado', 'selNumeroInteressado', '<?=$strLinkComboNumeroInteressado?>');
@@ -71,7 +86,7 @@
     }
 
     function consultarExtratoMulta(){
-        //se o tipo da multa for por indicação de valor igonora as validações e exibição do fildset de multa
+        //se o tipo da multa for por indicação de valor ignora as validações e exibição do fieldset de multa
         if(isTipoMultaIndicacaValor() == true){
             return;
         }
@@ -90,7 +105,6 @@
         $.ajax({
             type: "POST",
             url: "<?= $strLinkAjaxConsultarExtratoMulta ?>",
-//            dataType: "xml",
             data: {
                 valor_decisao: valueDecisao,
                 id_procedimento: document.getElementById('hdnIdProcedimento').value,
@@ -232,6 +246,39 @@
                         document.getElementById('lblSaldoDevAtualizado').style.color = 'black';
                         document.getElementById('lblVlSaldoDevAtualizado').style.color = 'black';
                     }
+                }
+
+
+                if($.trim($(result).find('dtIntimacaoDecisaoAplicacaoMulta').text()) != ''){
+                    //seta o campo como obrigatorio e replica a data da intimação
+                    $('#lblDtIntimacaoAplMulta').addClass('infraLabelObrigatorio');
+                } else {
+                    $('#lblDtIntimacaoAplMulta').removeClass('infraLabelObrigatorio');
+                }
+
+
+                //replicação automatica da "data da intimação da decisao que aplicou a multa"
+                if($('[name="hdnIntimacaoPosDecisao"]').val() != ''){
+
+                    //recupera o lancamento exibido
+                    var idLancamento = $('[name="selCreditosProcesso"]').val();
+                    /** se a Data da Intimação da Decisão de Aplicação da Multa foi alterada alternando os lancamentos usa esta data
+                     * senão utiliza a data da intimação
+                    */
+                    if($('.hdnDtaIntimacaoDecisaoMulta[data-id="'+idLancamento+'"]').length > 0) {
+                        var dataIntimacao = $('.hdnDtaIntimacaoDecisaoMulta[data-id="'+idLancamento+'"]').val()
+                        $('[name="txtDtIntimacaoAplMulta"]').val(dataIntimacao);
+                    } else if($('[name="txtDtIntimacaoAplMulta"]').val() == ''){
+                        var dataIntimacao = $('[name="hdnIntimacaoPosDecisao"]').val();
+                        $('[name="txtDtIntimacaoAplMulta"]').val(dataIntimacao);
+                    }
+
+                    //seta estilo para o campo como obrigatorio
+                    $('#lblDtIntimacaoAplMulta').addClass('infraLabelObrigatorio');
+                } else if($.trim($(result).find('dtIntimacaoDecisaoAplicacaoMulta').text()) != ''){
+                    $('#lblDtIntimacaoAplMulta').addClass('infraLabelObrigatorio');
+                } else {
+                    $('#lblDtIntimacaoAplMulta').removeClass('infraLabelObrigatorio');
                 }
 
                 var txtConst    = document.getElementById('txtDtConstituicao');
@@ -491,6 +538,12 @@
         }
         if(document.getElementById('hdnVlTotalMulta').value != '0,00' && infraTrim(document.getElementById('txtDtIntimacaoAplMulta').value) != '' && infraCompararDatas(document.getElementById('txtDecisaoAplicacaoMulta').value, document.getElementById('txtDtIntimacaoAplMulta').value) < 0){
             alert('A data da intimação da decisão de aplicação da multa deve ser igual ou maior que a Data da decisão de aplicação da multa.');
+            document.getElementById('txtDtIntimacaoAplMulta').focus();
+            return false;
+        }
+        //validação no submit do campo Data da Intimação da Decisão de Aplicação da Multa
+        if(($('[name="hdnIntimacaoPosDecisao"]').val() != '' && $('[name="hdnIntimacaoPosDecisao"]').val() != undefined) && infraTrim(document.getElementById('txtDtIntimacaoAplMulta').value) == '' ){
+            alert('A Data da Intimação da Decisão de Aplicação da Multa é de preenchimento obrigatório.');
             document.getElementById('txtDtIntimacaoAplMulta').focus();
             return false;
         }

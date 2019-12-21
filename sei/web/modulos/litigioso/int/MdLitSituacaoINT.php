@@ -80,6 +80,53 @@
             $objMdLitProcessoSitDTOIntimacao = $objMdLitProcessoSitRN->consultarPrimeiraIntimacao($idProcedimento);
             $sinPrimeiraIntimacao = $objMdLitProcessoSitDTOIntimacao == null && $objMdLitSituacaoDTO->getStrSinIntimacao() == 'S' ? 'S' : 'N';
 
+            $MdLitLancamentoDTO = new MdLitLancamentoDTO();
+            $MdLitLancamentoDTO->ret('IdMdLitLancamento');
+            $MdLitLancamentoDTO->ret('IdProcedimento');
+            $MdLitLancamentoDTO->set('Intimacao', null);
+            $MdLitLancamentoDTO->set('IdProcedimento', $idProcedimento);
+            $MdLitLancamentoDTO->setOrd('IdProcedimento', 'asc');
+
+            $MdLitLancamentoRn = new MdLitLancamentoRN();
+            //Lista todos os lancamentos com data de intimação nula
+            $arrLancamentoSemDataIntimacao = $MdLitLancamentoRn->listar($MdLitLancamentoDTO);
+
+            $MdLitProcessoSituacaoRn = new MdLitProcessoSituacaoRN();
+
+            $MdLitProcessoSituacaoDtoExists = new MdLitProcessoSituacaoDTO();
+            $MdLitProcessoSituacaoDtoExists->ret('IdMdLitProcessoSituacao');
+            $MdLitProcessoSituacaoDtoExists->ret('IdProcedimento');
+            $MdLitProcessoSituacaoDtoExists->ret('SinDecisoriaSit');
+            $MdLitProcessoSituacaoDtoExists->ret('IdMdLitFase');
+            $MdLitProcessoSituacaoDtoExists->set('SinDecisoriaSit','S');
+            $MdLitProcessoSituacaoDtoExists->set('IdProcedimento',$idProcedimento);
+            $MdLitProcessoSituacaoDtoExists->setOrd('IdProcedimento', InfraDTO::$TIPO_ORDENACAO_ASC);
+            $MdLitProcessoSituacaoDtoExists->setOrd('IdMdLitProcessoSituacao', InfraDTO::$TIPO_ORDENACAO_ASC);
+            //Lista todas a decisões do processo
+            $arrProcessoSituacaoDecisao = $MdLitProcessoSituacaoRn->listar($MdLitProcessoSituacaoDtoExists);
+
+            $cancelamento = [];
+            //se existir lancamento sem data de intimação este lançamento não pode estar cancelado
+            if(count($arrLancamentoSemDataIntimacao)){
+                $arrMdLitLancamento = InfraArray::simplificarArr(InfraArray::converterArrInfraDTO($arrLancamentoSemDataIntimacao)['MdLitLancamentoDTO'],'IdMdLitLancamento');
+                $mdLitCancelaLancamentoDto =  new MdLitCancelaLancamentoDTO();
+                $mdLitCancelaLancamentoDto->ret('IdMdLitLancamento');
+                $mdLitCancelaLancamentoDto->set('IdMdLitLancamento', $arrMdLitLancamento, InfraDTO::$OPER_IN);
+
+                $mdLitCancelaLancamentoRn = new MdLitCancelaLancamentoRN();
+                $cancelamento = $mdLitCancelaLancamentoRn->listar($mdLitCancelaLancamentoDto);
+            }
+
+            //se houver lancamento nao cancelados sem data de intimação e ja houver decisao e a proxima situação for intimação, faz a validação
+            if(count($arrProcessoSituacaoDecisao) > 0 &&
+                $objMdLitSituacaoDTO->get('SinIntimacao') == 'S' &&
+                (!$cancelamento && !$arrLancamentoSemDataIntimacao || count($cancelamento) < count($arrLancamentoSemDataIntimacao))
+            ){
+                $validar = 1;
+            } else {
+                $validar = 0;
+            }
+
             $xml = '<Dados>';
             if (!is_null($objMdLitSituacaoDTO)) {
                 if ($isLivre) {
@@ -90,6 +137,7 @@
                     $xml .= '<NomeLabel>  </NomeLabel>';
                     $xml .= '<Erro>  0 </Erro>';
                     $xml .= '<SinPrimeiraIntimacao>'.$sinPrimeiraIntimacao.'</SinPrimeiraIntimacao>';
+                    $xml .= "<ValidarDataIntimacaoMulta>0</ValidarDataIntimacaoMulta>";
                 } else {
                     $xml .= '<' . $dadosSit['tipoSituacao'] . '> S </' . $dadosSit['tipoSituacao'] . '>';
                     $xml .= '<IdSituacao> ' . $dadosSit['idSituacao'] . ' </IdSituacao>';
@@ -98,6 +146,7 @@
                     $xml .= '<NomeLabel> ' . $dadosSit['nomeLabel'] . ' </NomeLabel>';
                     $xml .= '<Erro> ' . $erro . ' </Erro>';
                     $xml .= '<SinPrimeiraIntimacao>'.$sinPrimeiraIntimacao.'</SinPrimeiraIntimacao>';
+                    $xml .= "<ValidarDataIntimacaoMulta>$validar</ValidarDataIntimacaoMulta>";
                 }
             }
             

@@ -11,10 +11,10 @@ require_once dirname(__FILE__) . '/../../../SEI.php';
 class MdLitAtualizadorSeiRN extends InfraRN {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '1.5.0';
+    private $versaoAtualDesteModulo = '1.6.0';
     private $nomeDesteModulo = 'MÓDULO DE CONTROLE LITIGIOSO';
     private $nomeParametroModulo = 'VERSAO_MODULO_LITIGIOSO';
-    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4','1.0.0','1.1.0','1.2.0','1.3.0', '1.4.0', '1.5.0');
+    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4','1.0.0','1.1.0','1.2.0','1.3.0', '1.4.0', '1.5.0', '1.6.0');
 
     public function __construct(){
         parent::__construct();
@@ -116,6 +116,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv130();
                 $this->instalarv140();
                 $this->instalarv150();
+                $this->instalarv160();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.1') {
@@ -128,6 +129,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv130();
                 $this->instalarv140();
                 $this->instalarv150();
+                $this->instalarv160();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.2') {
@@ -139,6 +141,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv130();
                 $this->instalarv140();
                 $this->instalarv150();
+                $this->instalarv160();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.3') {
@@ -149,6 +152,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv130();
                 $this->instalarv140();
                 $this->instalarv150();
+                $this->instalarv160();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.4') {
@@ -158,6 +162,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv130();
                 $this->instalarv140();
                 $this->instalarv150();
+                $this->instalarv160();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.0.0') {
@@ -166,6 +171,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv130();
                 $this->instalarv140();
                 $this->instalarv150();
+                $this->instalarv160();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.1.0') {
@@ -173,24 +179,32 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv130();
                 $this->instalarv140();
                 $this->instalarv150();
+                $this->instalarv160();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.2.0') {
                 $this->instalarv130();
                 $this->instalarv140();
                 $this->instalarv150();
+                $this->instalarv160();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.3.0') {
                 $this->instalarv140();
                 $this->instalarv150();
+                $this->instalarv160();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.4.0') {
                 $this->instalarv150();
-                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
+                $this->instalarv160();
+                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO  '.$this->nomeDesteModulo.' (v'.$this->versaoAtualDesteModulo.') REALIZADA COM SUCESSO NA BASE DO SEI.');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.5.0') {
+                $this->instalarv160();
+                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO  '.$this->nomeDesteModulo.' (v'.$this->versaoAtualDesteModulo.') REALIZADA COM SUCESSO NA BASE DO SEI.');
+                $this->finalizar('FIM', false);
+            } else if ($strVersaoModuloLitigioso == '1.6.0') {
                 $this->logar('A VERSÃO MAIS ATUAL DO '.$this->nomeDesteModulo.' (v'.$this->versaoAtualDesteModulo.') JÁ ESTÁ INSTALADA.');
                 $this->finalizar('FIM', false);
             }
@@ -1899,27 +1913,155 @@ class MdLitAtualizadorSeiRN extends InfraRN {
 
     }
 
+    //Contem atualizações da versao 1.5.0
     protected function instalarv150(){
         $instanciaBanco = BancoSEI::getInstance();
         $objInfraMetaBD = new InfraMetaBD($instanciaBanco);
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.5.0 DO '.$this->nomeDesteModulo.' NA BASE DO SEI');
 
-        $this->logar('ADICIONANDO A COLUNA DE INDICAÇÃO DE TIPO DE MULTA NA ESPÉCIE DE DECISÃO');
+        $this->logar('Adicionanda a coluna de indicação de tipo de multa na na Espécie de decisão');
         $objInfraMetaBD->adicionarColuna('md_lit_especie_decisao', 'sta_tipo_indicacao_multa', $objInfraMetaBD->tipoTextoFixo(1), 'NULL');
         $instanciaBanco->executarSql("UPDATE md_lit_especie_decisao set sta_tipo_indicacao_multa = 1 WHERE sin_rd_gestao_multa = 'S' ");
 
-        $this->logar('ADICIONANDO A COLUNA DE INDICAÇÃO DE RESSARCIMENTO DE VALOR NA ESPÉCIE DE DECISÃO');
+        $this->logar('Adicionnda a coluna de indicação de ressarcimento de valor na Espécie de decisão');
         $objInfraMetaBD->adicionarColuna('md_lit_especie_decisao', 'sin_ressarcimento_valor', $objInfraMetaBD->tipoTextoFixo(1), 'NULL');
         $instanciaBanco->executarSql("UPDATE md_lit_especie_decisao set sin_ressarcimento_valor = 'N' ");
 
-        $this->logar('ADICIONANDO A COLUNA PARA CADASTRO DE VALOR DE RESSARCIMENTO NA DECISÃO NOS PROCESSOS');
+        $this->logar('Adicionada a coluna para inclusão de valor de ressarcimento na decisão');
         $objInfraMetaBD->adicionarColuna('md_lit_decisao', 'valor_ressarcimento', $objInfraMetaBD->tipoNumeroDecimal(19,2), 'NULL');
 
-        $this->logar('ADICIONANDO A COLUNA PARA CADASTRO DE MULTA SEM INTEGRAÇÃO NA DECISÃO NOS PROCESSOS');
+        $this->logar('Adicionanda a coluna para inclusão de valor de ressarcimento na decisão');
+        //adcição da coluna de valor de multa sem integracao(por idicação de valor) na tabela de decisão
         $objInfraMetaBD->adicionarColuna('md_lit_decisao', 'valor_multa_sem_integracao', $objInfraMetaBD->tipoNumeroDecimal(19,2), 'NULL');
 
         $this->logar('ATUALIZANDO PARÂMETRO '.$this->nomeParametroModulo.' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
         $instanciaBanco->executarSql('UPDATE infra_parametro SET valor = \'1.5.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+    }
+
+
+    protected function instalarv160(){
+        $instanciaBanco = BancoSEI::getInstance();
+        $objInfraMetaBD = new InfraMetaBD($instanciaBanco);
+
+        try{
+                $instanciaBanco->abrirTransacao();
+                $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.6.0 DO '.$this->nomeDesteModulo.' NA BASE DO SEI');
+
+                $this->logar('ADIÇÃO DA COLUNA DE OBRIGATORIEDADE NA PARAMETRIZAÇÃO DA "SITUAÇÃO".');
+                $objInfraMetaBD->adicionarColuna('md_lit_situacao', 'sin_obrigatoria', $objInfraMetaBD->tipoTextoFixo(1), 'NULL');
+                $instanciaBanco->executarSql("UPDATE md_lit_situacao set sin_obrigatoria = 'N'; ");
+
+                $this->logar('ADIÇÃO DA COLUNA DE "ALEGAÇÕES" NA PARAMETRIZAÇÃO DA "SITUAÇÃO".');
+                $objInfraMetaBD->adicionarColuna('md_lit_situacao', 'sin_alegacoes', $objInfraMetaBD->tipoTextoFixo(1), 'NULL');
+                $instanciaBanco->executarSql("UPDATE md_lit_situacao set sin_alegacoes = 'N'; ");
+
+                $this->logar('REALIZANDO CARGA DA INFORMAÇÃO DA "DATA DA INTIMAÇÃO DA DECISÃO DE APLICAÇÃO DA MULTA".');
+
+                $MdLitLancamentoDTO = new MdLitLancamentoDTO();
+                $MdLitLancamentoDTO->ret('IdMdLitLancamento');
+                $MdLitLancamentoDTO->ret('IdProcedimento');
+                $MdLitLancamentoDTO->ret('Inclusao');
+                $MdLitLancamentoDTO->set('Intimacao', null);
+                $MdLitLancamentoDTO->setOrd('IdProcedimento', 'asc');
+
+                $MdLitLancamentoRn = new MdLitLancamentoRN();
+                //Lista todas os lancamentos com data de intimação nula
+                $arrLancamento = $MdLitLancamentoRn->listar($MdLitLancamentoDTO);
+
+                if($arrLancamento) {
+                    $arrIdProcedimentosLancamentos = array_unique(InfraArray::simplificarArr(InfraArray::converterArrInfraDTO($arrLancamento)['MdLitLancamentoDTO'], 'IdProcedimento'));
+                    $MdLitProcessoSituacaoDto = new MdLitProcessoSituacaoDTO();
+                    $MdLitProcessoSituacaoDto->ret('Data');
+                    $MdLitProcessoSituacaoDto->ret('Inclusao');
+                    $MdLitProcessoSituacaoDto->ret('IdMdLitProcessoSituacao');
+                    $MdLitProcessoSituacaoDto->ret('IdProcedimento');
+                    $MdLitProcessoSituacaoDto->ret('IdMdLitFase');
+                    $MdLitProcessoSituacaoDto->ret('SinIntimacaoSit');
+                    $MdLitProcessoSituacaoDto->set('SinIntimacaoSit', 'S');
+                    $MdLitProcessoSituacaoDto->set('IdProcedimento', $arrIdProcedimentosLancamentos, InfraDTO::$OPER_IN);
+
+                    $MdLitProcessoSituacaoRn = new MdLitProcessoSituacaoRN();
+                    //Lista todas a intimações dos processos
+                    $arrProcessoSituacao = $MdLitProcessoSituacaoRn->listar($MdLitProcessoSituacaoDto);
+
+                    $MdLitProcessoSituacaoDtoExists = new MdLitProcessoSituacaoDTO();
+                    $MdLitProcessoSituacaoDtoExists->ret('IdMdLitProcessoSituacao');
+                    $MdLitProcessoSituacaoDtoExists->ret('IdProcedimento');
+                    $MdLitProcessoSituacaoDtoExists->ret('SinDecisoriaSit');
+                    $MdLitProcessoSituacaoDtoExists->ret('IdMdLitFase');
+                    $MdLitProcessoSituacaoDtoExists->ret('Data');
+                    $MdLitProcessoSituacaoDtoExists->set('SinDecisoriaSit', 'S');
+                    $MdLitProcessoSituacaoDtoExists->set('IdProcedimento', $arrIdProcedimentosLancamentos, InfraDTO::$OPER_IN);
+                    $MdLitProcessoSituacaoDtoExists->setOrd('IdProcedimento', InfraDTO::$TIPO_ORDENACAO_ASC);
+                    $MdLitProcessoSituacaoDtoExists->setOrd('IdMdLitProcessoSituacao', InfraDTO::$TIPO_ORDENACAO_ASC);
+                    //Lista todas a decisões dos processos
+                    $arrProcessoSituacaoDecisaoExists = $MdLitProcessoSituacaoRn->listar($MdLitProcessoSituacaoDtoExists);
+
+                    //se existir lancamento sem data de intimação e este lançamento não pode estar cancelado
+                    if (count($arrLancamento)) {
+                        $mdLitCancelaLancamentoDto = new MdLitCancelaLancamentoDTO();
+                        $mdLitCancelaLancamentoDto->ret('IdMdLitLancamento');
+
+                        $arrCancelamento = [];
+                        $mdLitCancelaLancamentoRn = new MdLitCancelaLancamentoRN();
+                        $cancelamento = $mdLitCancelaLancamentoRn->listar($mdLitCancelaLancamentoDto);
+                        if (count($cancelamento) > 0) {
+                            $arrCancelamento = InfraArray::simplificarArr(InfraArray::converterArrInfraDTO($cancelamento)['MdLitCancelaLancamentoDTO'], 'IdMdLitLancamento');
+                        }
+                    }
+
+                    //verificar quais processos possuem intimação após a formalização da decisão para cada lancamento com data nula
+                    foreach ($arrLancamento as $keyLancamento => $lancamento) {
+                        //se o lancamento foi cancelado ignora
+                        if (in_array($lancamento->get('IdMdLitLancamento'), $arrCancelamento)) {
+                            continue;
+                        }
+
+                        $idProcedimento = $lancamento->get('IdProcedimento');
+                        //verifica a intimação
+                        foreach ($arrProcessoSituacao as $keyIntimacao => $intimacao) {
+                            //procedimento (processo) diferente pula
+                            if ($idProcedimento != $intimacao->get('IdProcedimento')) {
+                                continue;
+                            }
+
+                            //verifica se existe decisao anterior a intimacao
+                            foreach ($arrProcessoSituacaoDecisaoExists as $keyDecisao => $decisao) {
+                                $dataInclusaoLancamento = DateTime::createFromFormat('d/m/Y H:i:s', $lancamento->get('Inclusao'))->setTime(0, 0, 0);
+                                $dataInclusaoIntimacao = DateTime::createFromFormat('d/m/Y H:i:s', $intimacao->get('Inclusao'))->setTime(0, 0, 0);
+                                //se mesmo procedimento (processo) e a intimação posterior a decisao dentro da mesma fase, alimenta o array para update.
+                                if (
+                                    $idProcedimento == $decisao->get('IdProcedimento') &&
+                                    $decisao->get('IdMdLitProcessoSituacao') < $intimacao->get('IdMdLitProcessoSituacao') &&
+                                    $decisao->get('IdMdLitFase') == $intimacao->get('IdMdLitFase') &&
+                                    $dataInclusaoLancamento <= $dataInclusaoIntimacao
+                                ) {
+                                    //update da data de intimação de acordo com a intimação subsequente a decisao, conforme regra de negocio.
+                                    $result[] = $instanciaBanco->executarSql("UPDATE md_lit_lancamento set dta_intimacao = {$instanciaBanco->formatarGravacaoDth($intimacao->get('Data'))} where dta_intimacao is null and id_md_lit_lancamento = {$lancamento->get('IdMdLitLancamento')} and id_procedimento = {$idProcedimento}");
+                                    break(2);
+                                }
+                                continue;
+                            }
+                        }
+                    }
+                }
+
+
+        $this->logar('ATUALIZANDO PARÂMETRO '.$this->nomeParametroModulo.' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+        $instanciaBanco->executarSql('UPDATE infra_parametro SET valor = \'1.6.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+        //efetiva as transações DML no banco de dados
+        $instanciaBanco->confirmarTransacao();
+
+        } catch (Exception $e){
+            //rollback DML
+            $instanciaBanco->cancelarTransacao();
+            $this->logar('ROLLBACK DA OPERAÇÃO');
+            //rollback do DDL
+            $objInfraMetaBD->excluirColuna('md_lit_situacao', 'sin_obrigatoria');
+            $objInfraMetaBD->excluirColuna('md_lit_situacao', 'sin_alegacoes');
+            throw new Exception($e->getMessage());
+        }
+
     }
 }
 ?>

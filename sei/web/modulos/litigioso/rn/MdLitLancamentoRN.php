@@ -483,6 +483,57 @@ class MdLitLancamentoRN extends InfraRN {
 
         if($post['hdnIdMdLitFuncionalidade'] == '' && isset($post['txtDtIntimacaoAplMulta']) && !empty($post['txtDtIntimacaoAplMulta'])){
             $this->alterarData($post['selCreditosProcesso'], $post['txtDtIntimacaoAplMulta']);
+
+            //se houver alteração da Data da Intimação da Decisão de Aplicação da Multa e NÃO seja a situacao de intimação posterior a decisao
+            if(!$post['hdnIntimacaoPosDecisao'] && isset($post['hdnDtaIntimacaoDecisaoMulta'])){
+                foreach ($post['hdnDtaIntimacaoDecisaoMulta'] as $key => $value) {
+                    if($key != $post['selCreditosProcesso']) {
+                        $this->alterarData($key, $value);
+                    }
+                }
+            }
+        }
+
+        //Se for intimação apos a decisao que aplicou multa o campo hdnIntimacaoPosDecisao vem preechido com a data da intimação
+        if($post['hdnIntimacaoPosDecisao']){
+            $MdLitLancamentoDTO = new MdLitLancamentoDTO();
+            $MdLitLancamentoDTO->ret('IdMdLitLancamento');
+            $MdLitLancamentoDTO->ret('IdProcedimento');
+            $MdLitLancamentoDTO->set('Intimacao', null);
+            $MdLitLancamentoDTO->set('IdProcedimento', $post['hdnIdProcedimento']);
+            $MdLitLancamentoDTO->setOrd('IdProcedimento', 'asc');
+
+            $MdLitLancamentoRn = new MdLitLancamentoRN();
+            //Lista todos os lancamentos com data de intimação nula para o processo
+            $arrLancamentoSemDataIntimacao = $MdLitLancamentoRn->listar($MdLitLancamentoDTO);
+
+            $cancelamento = [];
+            //se existir lancamento sem data de intimação este lançamento não pode estar cancelado
+            if(count($arrLancamentoSemDataIntimacao)){
+                $arrMdLitLancamento = InfraArray::simplificarArr(InfraArray::converterArrInfraDTO($arrLancamentoSemDataIntimacao)['MdLitLancamentoDTO'],'IdMdLitLancamento');
+                $mdLitCancelaLancamentoDto =  new MdLitCancelaLancamentoDTO();
+                $mdLitCancelaLancamentoDto->ret('IdMdLitLancamento');
+                $mdLitCancelaLancamentoDto->set('IdMdLitLancamento', $arrMdLitLancamento, InfraDTO::$OPER_IN);
+
+                $mdLitCancelaLancamentoRn = new MdLitCancelaLancamentoRN();
+                $cancelamento = $mdLitCancelaLancamentoRn->listar($mdLitCancelaLancamentoDto);
+            }
+
+            //itera os lancamentos com data nula
+            foreach ($arrLancamentoSemDataIntimacao as $lancamento){
+                //se o lancamento estiver cancelado ignora
+                if(in_array($lancamento->get('IdMdLitLancamento'), $cancelamento)){
+                    continue;
+                }
+
+                //se a data foi informada utiliza a data
+                if(isset($post['hdnDtaIntimacaoDecisaoMulta'][$lancamento->get('IdMdLitLancamento')])){
+                    $this->alterarData($lancamento->get('IdMdLitLancamento'), $post['hdnDtaIntimacaoDecisaoMulta'][$lancamento->get('IdMdLitLancamento')]);
+                } else {
+                    //se a data nao foi informada para algum lancamento isere a data da intimação logo apos a decisao
+                    $this->alterarData($lancamento->get('IdMdLitLancamento'), $post['hdnIntimacaoPosDecisao']);
+                }
+            }
         }
     }
 

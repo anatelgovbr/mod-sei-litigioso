@@ -588,6 +588,17 @@
                 $dados['nomeLabel']    = 'do Trânsito em Julgado';
                 $dados['nome']         = 'Conclusiva';
             }
+
+            if($objMdLitSituacaoDTO->getStrSinObrigatoria() == 'S'){
+                $dados['tipoSituacao'] = 'Obrigatoria';
+                $dados['nomeLabel']    = 'Obrigatória';
+                $dados['nome']         = 'Obrigatória';
+            }
+            if($objMdLitSituacaoDTO->getStrSinAlegacoes() == 'S'){
+                $dados['tipoSituacao'] = 'Alegacoes';
+                $dados['nomeLabel']    = 'Alegações';
+                $dados['nome']         = 'Alegações';
+            }
             
             if(!array_key_exists('tipoSituacao', $dados)){
                 $dados['tipoSituacao'] = 'Livre';
@@ -645,6 +656,9 @@
             }
 
             if($objMdLitSituacaoDTO->getStrSinConclusiva() == 'S'){
+                $isLivre = false;
+            }
+            if($objMdLitSituacaoDTO->getStrSinAlegacoes() == 'S'){
                 $isLivre = false;
             }
 

@@ -242,7 +242,7 @@
                 </div>
 
                 <div class="grid grid_3" id="divDtaIntimacaoAplMulta">
-                    <input onchange="verificarMudancaMulta();return validarFormatoData(this);" class="campoData" type="text" id="txtDtIntimacaoAplMulta" name="txtDtIntimacaoAplMulta"
+                    <input onchange="armazenarDataIntimacaoMulta(this); verificarMudancaMulta();return validarFormatoData(this);" class="campoData" type="text" id="txtDtIntimacaoAplMulta" name="txtDtIntimacaoAplMulta"
                            onkeypress="return infraMascara(this, event, '##/##/####');" value=""/>
                     <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/calendario.gif"
                          title="Selecionar Data da Intimação da Decisão de Aplicação da Multa" alt="Selecionar Data da Intimação da Decisão de Aplicação da Multa"

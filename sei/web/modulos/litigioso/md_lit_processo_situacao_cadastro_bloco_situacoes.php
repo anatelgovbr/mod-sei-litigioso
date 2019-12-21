@@ -324,6 +324,13 @@
         <!--Tipo Situação -->
         <input type="hidden" name="hdnStrSituacao" id="hdnStrSituacao" value=""/>
 
+        <!--Intimação após decisão de multa -->
+        <input type="hidden" name="hdnIntimacaoPosDecisao" id="hdnIntimacaoPosDecisao" value=""/>
+
+        <div id="divDadosIntimacaoAplicaocaoMulta">
+            <!-- Data da Intimação da Decisão de Aplicação da Multa alteradas -->
+        </div>
+
         <!--Id Situação -->
         <input type="hidden" name="hdnIdProcessoSituacao" id="hdnIdProcessoSituacao" value="0"/>
 

@@ -295,12 +295,14 @@ try {
 
                         $objSituacaoLitigiosoDTO3 = $objSituacaoLitigiosoRN->consultar($objSituacaoLitigiosoDTO3);
 
-                        $instauracaoSin = isset($_POST['instauracao_' . $value]) ? 'S' : 'N';
+                        $instauracaoSin = (isset($_POST['instauracao']) && $_POST['instauracao'] == $value) ? 'S' : 'N';
                         $intimacaoSin   = isset($_POST['intimacao_' . $value]) ? 'S' : 'N';
                         $decisoriaSin   = isset($_POST['decisoria_' . $value]) ? 'S' : 'N';
-                        $defesaSin      = isset($_POST['defesa_' . $value]) ? 'S' : 'N';
+                        $defesaSin      = (isset($_POST['defesa']) && $_POST['defesa'] == $value) ? 'S' : 'N';
+                        $sinAlegacoes   = isset($_POST['alegacoes_'. $value]) ? 'S': 'N';
                         $recursalSin    = isset($_POST['recursal_' . $value]) ? 'S' : 'N';
-                        $conclusivaSin  = isset($_POST['conclusiva_' . $value]) ? 'S' : 'N';
+                        $conclusivaSin  = (isset($_POST['conclusiva']) && $_POST['conclusiva'] == $value) ? 'S' : 'N';
+                        $sinObrigatoria = isset($_POST['obrigatoria_'.$value]) ? 'S' : 'N';
                         $sinOpcional    = isset($_POST['opcional_' . $value]) ? 'S' : 'N';
                         $ordem          = $_POST['ordem_' . $value];
 
@@ -311,8 +313,20 @@ try {
                         $objSituacaoLitigiosoDTO3->setStrSinRecursal($recursalSin);
                         $objSituacaoLitigiosoDTO3->setStrSinConclusiva($conclusivaSin);
                         $objSituacaoLitigiosoDTO3->setStrSinOpcional($sinOpcional);
+                        $objSituacaoLitigiosoDTO3->setStrSinAlegacoes($sinAlegacoes);
                         $objSituacaoLitigiosoDTO3->setNumOrdem($ordem);
 
+                        //A situação so pode ser obrigatoria caso a situação seja livre.
+                        if($objSituacaoLitigiosoRN->verificaSeSituacaoLivre($objSituacaoLitigiosoDTO3)){
+                            $objSituacaoLitigiosoDTO3->setStrSinObrigatoria($sinObrigatoria);
+                        } else{
+                            $objSituacaoLitigiosoDTO3->setStrSinObrigatoria('N');
+                        }
+
+                        //Se a aleção foi marcada obrigatoriamente o intimação tambem deve ser
+                        if($sinAlegacoes == 'S'){
+                            $intimacaoSin =  'S';
+                        }
 
                         if ($objSituacaoLitigiosoDTO3->getStrSinAtivo() === 'N') {
                             if ($objSituacaoLitigiosoDTO3->getStrSinInstauracao() === 'S') {
@@ -329,12 +343,6 @@ try {
                             }
 
                         } else {
-                            //$suspensivaSin = isset($_POST['suspensiva_' . $value]) ? 'S' : 'N';
-                            //$livreSin      = isset($_POST['livre_' . $value]) ? 'S' : 'N';
-
-                            //$objSituacaoLitigiosoDTO3->setStrSinSuspensiva($suspensivaSin);
-                            //$objSituacaoLitigiosoDTO3->setStrSinLivre($livreSin);
-
                             $objSituacaoLitigiosoDTO3->setNumPrazo($_POST['prazo_' . $value]);
 
                             if ($instauracaoSin === 'S') {
@@ -406,11 +414,8 @@ try {
 
     $objSituacaoLitigiosoDTO = new MdLitSituacaoDTO();
 
-//        $objSituacaoLitigiosoDTO->retTodos();
     $objSituacaoLitigiosoDTO->retStrSinInstauracao();
     $objSituacaoLitigiosoDTO->retStrSinIntimacao();
-//        $objSituacaoLitigiosoDTO->retStrSinSuspensiva();
-//        $objSituacaoLitigiosoDTO->retStrSinLivre();
     $objSituacaoLitigiosoDTO->retStrSinDecisoria();
     $objSituacaoLitigiosoDTO->retStrSinDefesa();
     $objSituacaoLitigiosoDTO->retStrSinRecursal();
@@ -421,6 +426,8 @@ try {
     $objSituacaoLitigiosoDTO->retNumIdSituacaoLitigioso();
     $objSituacaoLitigiosoDTO->retStrNome();
     $objSituacaoLitigiosoDTO->retNumIdFaseLitigioso();
+    $objSituacaoLitigiosoDTO->retStrSinObrigatoria();
+    $objSituacaoLitigiosoDTO->retStrSinAlegacoes();
 
     $objSituacaoLitigiosoDTO->retStrNomeFase();
 
@@ -428,8 +435,6 @@ try {
 
     $objSituacaoLitigiosoRN = new MdLitSituacaoRN();
 
-    //forma antiga de chamar listar
-    //forma nova
     $idTipoControle = $_GET['id_tipo_processo_litigioso'];
     $objSituacaoLitigiosoDTO->setNumIdTipoControleLitigioso($idTipoControle);
     $arrObjSituacaoLitigiosoDTO = $objSituacaoLitigiosoRN->listarComTipoDeControle($objSituacaoLitigiosoDTO, $idTipoControle);
@@ -454,7 +459,7 @@ try {
                 $bolAcaoExcluir   = SessaoSEI::getInstance()->verificarPermissao('md_lit_situacao_excluir');
                 $bolAcaoDesativar = false;
             } else {
-                $bolAcaoReativar  = false;
+                $bolAcaoReativar  = SessaoSEI::getInstance()->verificarPermissao('md_lit_situacao_reativar');
                 $bolAcaoConsultar = SessaoSEI::getInstance()->verificarPermissao('md_lit_situacao_consultar');
                 $bolAcaoAlterar   = SessaoSEI::getInstance()->verificarPermissao('md_lit_situacao_alterar');
                 $bolAcaoExcluir   = SessaoSEI::getInstance()->verificarPermissao('md_lit_situacao_excluir');
@@ -488,42 +493,40 @@ try {
         $strResultado .= '<tr>';
 
 
-        $strResultado .= '<th class="infraTh" width="0%" style="display: none">Ordem</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="12%"><span style="font-size: 1em; font-weight: bold;text-align: center;">Fase</span></th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="12%">Situação</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="7%"><label class="labelTH">Ordem</label></th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="10%" name="rdInstConcl[]"><label class="labelTH">Instauração</label></th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="9%"><label class="labelTH">Intimação</label></th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="7%"><label class="labelTH">Defesa</label></th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="9%"><label class="labelTH">Decisão</label></th>' . "\n";
-//            $strResultado .= '<th class="infraTh" width="5%">&nbsp;Suspensiva&nbsp;</th>' . "\n";
-//            $strResultado .= '<th class="infraTh" width="5%">&nbsp;Livre&nbsp;</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="8%"><label class="labelTH">Recurso</label></th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="9%" name="rdInstConcl[]"><label class="labelTH">Conclusão</label></th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="8%"><label class="labelTH">Opcional</label></th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="8%" style="text-align: left"> <label class="labelTH" style="width: 71% !important;">Prazo (dias)</label></th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="20%;" style="min-width: 60px;">Ações</th>' . "\n";
+        $strResultado .= '<th class="infraTh" style="display: none">Ordem</th>' . "\n";
+        $strResultado .= '<th class="infraTh" style="min-width: 60px;"><span style="font-size: 1em; font-weight: bold;text-align: center;">Fase</span></th>' . "\n";
+        $strResultado .= '<th class="infraTh" style="min-width: 80px">Situação</th>' . "\n";
+        $strResultado .= '<th class="infraTh"><label class="labelTH">&nbsp;Ordem&nbsp;</label></th>' . "\n";
+        $strResultado .= '<th class="infraTh" name="rdInstConcl[]"><label class="labelTH">&nbsp;Instauração&nbsp;</label></th>' . "\n";
+        $strResultado .= '<th class="infraTh"><label class="labelTH">&nbsp;Intimação&nbsp;</label></th>' . "\n";
+        $strResultado .= '<th class="infraTh"><label class="labelTH">&nbsp;Defesa&nbsp;</label></th>' . "\n";
+        $strResultado .= '<th class="infraTh"><label class="labelTH">&nbsp;Alegações&nbsp;</label></th>' . "\n";
+        $strResultado .= '<th class="infraTh"><label class="labelTH">&nbsp;Decisão&nbsp;</label></th>' . "\n";
+        $strResultado .= '<th class="infraTh"><label class="labelTH">&nbsp;Recurso&nbsp;</label></th>' . "\n";
+        $strResultado .= '<th class="infraTh" name="rdInstConcl[]"><label class="labelTH">&nbsp;Conclusão&nbsp;</label></th>' . "\n";
+        $strResultado .= '<th class="infraTh"><label class="labelTH">&nbsp;Opcional&nbsp;</label></th>' . "\n";
+        $strResultado .= '<th class="infraTh"><label class="labelTH">&nbsp;Obrigatória&nbsp;</label></th>' . "\n";
+        $strResultado .= '<th class="infraTh" align="center"> <label class="labelTH" >&nbsp;Prazo (dias)&nbsp;</label></th>' . "\n";
+        $strResultado .= '<th class="infraTh" style="min-width: 60px;">Ações</th>' . "\n";
         $strResultado .= '</tr>' . "\n";
         $strResultado .= '</thead>';
         $strCssTr     = '';
+
         for ($i = 0; $i < $numRegistros; $i++) {
+            $idLinha = $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso();
 
             if ($arrObjSituacaoLitigiosoDTO[$i]->getStrSinAtivo() == 'S') {
-
-
-                $idLinha = $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso();
-
                 if ($_GET['id_situacao_litigioso'] == $idLinha) {
-                    $strCssTr = ($strCssTr == '<tr id="sitLitTable_' . $idLinha . '" name="sitLitTable_' . $idLinha . '" class="infraTrAcessada">') ? '<tr id="sitLitTable_' . $idLinha . '" name="sitLitTable_' . $idLinha . '" class="infraTrClara">' : '<tr id="sitLitTable_' . $idLinha . '" name="sitLitTable_' . $idLinha . '" class="infraTrAcessada">';
+                    $strCssTr = ($strCssTr == '<tr data-linha="'.$idLinha.'" id="sitLitTable_' . $idLinha . '" name="sitLitTable_' . $idLinha . '" class="infraTrAcessada">') ?
+                        '<tr data-linha="'.$idLinha.'" id="sitLitTable_' . $idLinha . '" name="sitLitTable_' . $idLinha . '" class="infraTrClara">' :
+                        '<tr data-linha="'.$idLinha.'" id="sitLitTable_' . $idLinha . '" name="sitLitTable_' . $idLinha . '" class="infraTrAcessada">';
                 } else {
-                    //	$strCssTr = ($strCssTr=='<tr id="sitLitTable_'.$idLinha.'" class="infraTrClara">')?'<tr class="infraTrEscura">':'<tr class="infraTrClara">';
-                    $strCssTr = (($i + 2) % 2) ? '<tr id="sitLitTable_' . $idLinha . '" name="sitLitTable_' . $idLinha . '" class="infraTrClara">' : '<tr id="sitLitTable_' . $idLinha . '" name="sitLitTable_' . $idLinha . '" class="infraTrClara">';
+                    $strCssTr = (($i + 2) % 2) ? '<tr data-linha="'.$idLinha.'" id="sitLitTable_' . $idLinha . '" name="sitLitTable_' . $idLinha . '" class="infraTrClara">' :
+                        '<tr data-linha="'.$idLinha.'" id="sitLitTable_' . $idLinha . '" name="sitLitTable_' . $idLinha . '" class="infraTrClara">';
                 }
-
             } else {
-                $strCssTr = '<tr id="sitLitTable_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" name="sitLitTable_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" class="trVermelha">';
+                $strCssTr = '<tr data-linha="'.$idLinha.'" id="sitLitTable_' . $idLinha . '" name="sitLitTable_' . $idLinha . '" class="trVermelha">';
             }
-
 
             $idAnterior     = $i - 1;
             $idPosterior    = $i + 1;
@@ -546,33 +549,34 @@ try {
             $instauracao = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinInstauracao() === 'S' ? 'checked="checked"' : '';
             $intimacao   = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinIntimacao() === 'S' ? 'checked="checked"' : '';
             $decisoria   = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinDecisoria() === 'S' ? 'checked="checked"' : '';
-            //$suspensiva  = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinSuspensiva() === 'S' ? 'checked="checked"' : '';
-            //$livre       = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinLivre() === 'S' ? 'checked="checked"' : '';
             $defesa     = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinDefesa() === 'S' ? 'checked="checked"' : '';
             $recursal   = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinRecursal() === 'S' ? 'checked="checked"' : '';
             $conclusiva = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinConclusiva() === 'S' ? 'checked="checked"' : '';
             $disabled   = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinAtivo() === 'N' ? 'disabled="disabled"' : '';
             $opcional   = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinOpcional() === 'S' ? 'checked="checked"' : '';
+            $obrigatoria   = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinObrigatoria() === 'S' ? 'checked="checked"' : '';
+            $alegacoes   = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinAlegacoes() === 'S' ? 'checked="checked"' : '';
             $readOnlyPrazo = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinDefesa() === 'S' ? '' : 'readonly';
 
             $strResultado .= $strCssTr;
-            $strResultado .= '<td style="display: none"><input type="hidden" value="' . ($i + 1) . '" name="ordem_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '"> </td>';
-            $strResultado .= '<td style="word-break:break-all">' . PaginaSEI::tratarHTML($arrObjSituacaoLitigiosoDTO[$i]->getStrNomeFase()) . '</td>';
-            $strResultado .= '<td style="word-break:break-all">' . PaginaSEI::tratarHTML($arrObjSituacaoLitigiosoDTO[$i]->getStrNome()) . '</td>';
+            $idSituacao = $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso();
+            $strResultado .= '<td style="display: none"><input type="hidden" value="' . ($i + 1) . '" name="ordem_' . $idSituacao . '"> </td>';
+            $strResultado .= '<td style="word-break:break-all" class="fase">' . PaginaSEI::tratarHTML($arrObjSituacaoLitigiosoDTO[$i]->getStrNomeFase()) . '</td>';
+            $strResultado .= '<td style="word-break:break-all" class="situacao">' . PaginaSEI::tratarHTML($arrObjSituacaoLitigiosoDTO[$i]->getStrNome()) . '</td>';
             $strResultado .= '<td align="center">' . $strImagem . '</td>';
-            $strResultado .= '<td align="center" title="Instauração"><input ' . $instauracao . ' ' . $disabled . ' type="radio" class="instauracao" onchange="controlarRadios(this)" id="instauracao_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" name="instauracao_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '[]"> </input> </td>';
-            $strResultado .= '<td align="center" title="Intimação"><input type="checkbox" ' . $intimacao . ' ' . $disabled . ' onchange="controlarRadios(this)" name="intimacao_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" > </input> </td>';
-            $strResultado .= '<td align="center" title="Defesa"><input ' . $defesa . ' ' . $disabled . ' type="radio" class="defesa" onchange="controlarRadios(this)" id="defesa_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" name="defesa_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '[]"> </input> </td>';
-            $strResultado .= '<td align="center" title="Decisão"><input type="checkbox"' . $decisoria . ' ' . $disabled . ' onchange="controlarRadios(this)" name="decisoria_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '"> </input> </td>';
-//                $strResultado .= '<td align="center"><input type="checkbox" ' . $suspensiva . ' ' . $disabled . ' name="suspensiva_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" > </input> </td>';
-//                $strResultado .= '<td align="center"><input type="checkbox"' . $livre . ' ' . $disabled . ' name="livre_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '"> </input> </td>';
-            $strResultado .= '<td align="center" title="Recurso"><input type="checkbox"' . $recursal . ' ' . $disabled . ' onchange="controlarRadios(this)" name="recursal_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '"> </input> </td>';
-            $strResultado .= '<td align="center" title="Conclusão"><input type="radio" ' . $conclusiva . ' ' . $disabled . '  class="conclusao" name="conclusiva_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" class="conclusiva" onchange="controlarRadios(this)" id="conclusiva_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" name="conclusiva_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '[]"> </input> </td>';
-            $strResultado .= '<td align="center" title="Opcional"><input type="checkbox"' . $opcional . ' ' . $disabled . ' onclick="selecionarOpcionalObrigatorio(this)" name="opcional_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '"> </input> </td>';
-            $strResultado .= '<td align="center" title="Prazo (dias)"> <input maxlength="3" size="1" ' . $disabled . ' '.$readOnlyPrazo.'   onkeypress="return SomenteNumero(event)"  name="prazo_' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso() . '" type="text"  value="' . PaginaSEI::tratarHTML($arrObjSituacaoLitigiosoDTO[$i]->getNumPrazo()) . '"></td>';
+            $strResultado .= '<td align="center" title="Instauração"><input class="instauracao" ' . $instauracao . ' ' . $disabled . ' type="radio" onchange="controlarRadios(this)" name="instauracao" data-linha="'.$idSituacao.'" value="'.$idSituacao.'"></td>';
+            $strResultado .= '<td align="center" title="Intimação"><input class="intimacao" type="checkbox" ' . $intimacao . ' ' . $disabled . ' onchange="controlarRadios(this)" name="intimacao_' . $idSituacao . '" data-linha="'.$idSituacao.'"></td>';
+            $strResultado .= '<td align="center" title="Defesa"><input class="defesa" ' . $defesa . ' ' . $disabled . ' type="radio" onchange="controlarRadios(this)" name="defesa" data-linha="'.$idSituacao.'"  value="'.$idSituacao.'"></td>';
+            $strResultado .= '<td align="center" title="Alegações"><input class="alegacoes" type="checkbox"' . $alegacoes . ' ' . $disabled . ' onmouseup="selecionarAlegacoes('.$idSituacao.')" onchange="selecionarAlegacoes('.$idSituacao.')" name="alegacoes_' . $idSituacao . '" data-linha="'.$idSituacao.'"  value="'.$idSituacao.'"> </td>';
+            $strResultado .= '<td align="center" title="Decisão"><input class="decisoria" type="checkbox"' . $decisoria . ' ' . $disabled . ' onchange="controlarRadios(this)" name="decisoria_' . $idSituacao . '" data-linha="'.$idSituacao.'"></td>';
+            $strResultado .= '<td align="center" title="Recurso"><input class="recursal" type="checkbox"' . $recursal . ' ' . $disabled . ' onchange="controlarRadios(this)" name="recursal_' . $idSituacao . '" data-linha="'.$idSituacao.'"></td>';
+            $strResultado .= '<td align="center" title="Conclusão"><input class="conclusiva" type="radio" ' . $conclusiva . ' ' . $disabled . '  class="conclusao" name="conclusiva" onchange="controlarRadios(this)" data-linha="'.$idSituacao.'"  value="'.$idSituacao.'"></td>';
+            $strResultado .= '<td align="center" title="Opcional"><input class="opcional" type="checkbox"' . $opcional . ' ' . $disabled . ' onclick="selecionarOpcional(this)" name="opcional_' . $idSituacao . '" data-linha="'.$idSituacao.'"></td>';
+            $strResultado .= '<td align="center" title="Obrigatória"><input class="obrigatoria" type="checkbox"' . $obrigatoria . ' ' . $disabled . ' onclick="selecionarObrigatoria('.$idSituacao.')" name="obrigatoria_'.$idSituacao.'" data-linha="'.$idSituacao.'"> </td>';
+            $strResultado .= '<td align="center" title="Prazo (dias)"> <input class="prazo" maxlength="3" size="1" ' . $disabled . ' '.$readOnlyPrazo.'   onkeypress="return SomenteNumero(event)"  name="prazo_' . $idSituacao . '" type="text"  value="' . PaginaSEI::tratarHTML($arrObjSituacaoLitigiosoDTO[$i]->getNumPrazo()) . '" data-linha="'.$idSituacao.'"></td>';
             $strResultado .= '<td align="center">';
 
-            $strResultado .= PaginaSEI::getInstance()->getAcaoTransportarItem($i, $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso());
+            $strResultado .= PaginaSEI::getInstance()->getAcaoTransportarItem($i, $idSituacao);
 
             if ($bolAcaoConsultar) {
                 $strResultado .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_situacao_consultar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_tipo_processo_litigioso=' . $_GET['id_tipo_processo_litigioso'] . '&id_situacao_litigioso=' . $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso())) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/consultar.gif" title="Consultar Situação" alt="Consultar Situação" class="infraImg" /></a>&nbsp;';
@@ -588,7 +592,6 @@ try {
             }
 
             if ($bolAcaoDesativar && $arrObjSituacaoLitigiosoDTO[$i]->getStrSinAtivo() == 'S') {
-//                $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($strId) . '" onclick="acaoDesativar(\'' . $strId . '\',\'' . $strDescricao . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/desativar.gif" title="Desativar Situação" alt="Desativar Situação" class="infraImg" /></a>&nbsp;';
                 $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($strId) . '" onclick="acaoDesativar(this,\'' . $strId . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/desativar.gif" title="Desativar Situação" alt="Desativar Situação" class="infraImg"  id="imgDesativar_' . $strId . '"/></a>&nbsp;';
             } elseif($bolAcaoReativar) {
                 $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($strId) . '" onclick="acaoReativar(this,\'' . $strId . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/reativar.gif" title="Reativar Situação" alt="Reativar Situação" class="infraImg" /></a>&nbsp;';
@@ -627,60 +630,11 @@ th label.labelTH{position: relative;top: 0px;float: unset;}
 <?
 PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
-#PaginaSEI::getInstance()->abrirJavaScript();
 ?>
 <script>
-    //    function controlarRadios(id, tipo) {
-    //
-    //        var classe = '';
-    //        if (tipo === 'I') {
-    //            classe = 'instauracao';
-    //        } else if (tipo === 'D') {
-    //            classe = 'defesa';
-    //        } else {
-    //            classe = 'conclusiva';
-    //        }
-    //
-    //// Garante somente um como checado no grupo de instauracao ou conclusiva
-    //        var objs = document.getElementsByClassName(classe);
-    //        for (i = 0; i < objs.length; i++) {
-    //            objs[i].checked = false;
-    //        }
-    //
-    //        idCampo = classe + '_' + id;
-    //        document.getElementById(idCampo).checked = true;
-    //
-    //// Garante que a mesma instauracao não possua os dois status
-    //        var classe2 = '';
-    //        var classe3 = '';
-    //        if (tipo === 'I') {
-    //            classe2 = 'conclusiva';
-    //            classe3 = 'defesa';
-    //        } else if (tipo === 'D') {
-    //            classe2 = 'instauracao';
-    //            classe3 = 'conclusiva';
-    //        } else {
-    //            classe2 = 'instauracao';
-    //            classe3 = 'defesa';
-    //        }
-    //
-    //        idCampo2 = classe2 + '_' + id;
-    //        if (document.getElementById(idCampo2).checked == true) {
-    //            document.getElementById(idCampo2).checked = false;
-    //        }
-    //
-    //        idCampo3 = classe3 + '_' + id;
-    //        if (document.getElementById(idCampo3).checked == true) {
-    //            document.getElementById(idCampo3).checked = false;
-    //        }
-    //
-    //    }
-
     <? if ($bolAcaoDesativar) { ?>
     function acaoDesativar(el, id) {
-        var tr = el.parentNode.parentNode;
-        var td = tr.getElementsByTagName('td');
-        var descricao = td[2].innerText;
+        var descricao = $('#tbSituacao tr[data-linha="'+id+'"] td.situacao').text();
         if (confirm("Confirma desativação da Situação \"" + descricao + "\"?")) {
             verificarVinculo(id).success(function (r) {
                 var possuiVinculo = $(r).find('Vinculo').text();
@@ -697,9 +651,7 @@ PaginaSEI::getInstance()->montarJavaScript();
     <? } ?>
 
     function acaoReativar(el, id) {
-        var tr = el.parentNode.parentNode;
-        var td = tr.getElementsByTagName('td');
-        var descricao = td[2].innerText;
+        var descricao = $('#tbSituacao tr[data-linha="'+id+'"] td.situacao').text();;
         if (confirm("Confirma reativação da Situação \"" + descricao + "\"?")) {
             ativarTr(el, id);
         }
@@ -708,16 +660,15 @@ PaginaSEI::getInstance()->montarJavaScript();
 
     <? if ($bolAcaoExcluir) { ?>
     function acaoExcluir(el, id) {
-        var tr = el.parentNode.parentNode;
-        var td = tr.getElementsByTagName('td');
-        var descricao = td[2].innerText;
+        var descricao = $('#tbSituacao tr[data-linha="'+id+'"] td.situacao').text();
         if (confirm("Confirma exclusão da Situação \"" + descricao + "\"?")) {
             verificarVinculo(id).success(function (r) {
                 var possuiVinculo = $(r).find('Vinculo').text();
                 if (possuiVinculo) {
                     alert('A exclusão da situação não é permitida, pois existem registros vinculados');
                 } else {
-                    excluirTr(tr, id);
+                    // excluirTr(tr, id);
+                    excluirTr(id);
                 }
             });
         }
@@ -726,9 +677,6 @@ PaginaSEI::getInstance()->montarJavaScript();
 
     <? } ?>
 
-    //function validarLinha(){
-    //    document.getElementById('tbSituacao');
-    //}
 </script>
 <?
 #PaginaSEI::getInstance()->fecharJavaScript();
@@ -772,8 +720,7 @@ PaginaSEI::getInstance()->fecharHtml();
 
 
     function inicializar() {
-        //infraEfeitoTabelas();
-        controlarCheckboxOpcional();
+        validarCampos();
 
         if ('<?= $_GET['acao'] ?>'=='md_lit_situacao_visualizar_parametrizar'){
             //desabilitando somente os inputs da tabela, o infraDesabilitarCamposDiv remove a imagem de consultar situação
@@ -805,58 +752,6 @@ PaginaSEI::getInstance()->fecharHtml();
 
         return true;
     }
-
-    //    function subirOrdem(idSituacao, idSituacao2, desabilitar) {
-    //
-    //        if (desabilitar != '1') {
-    //            //AGORA estou alterando a ordem, mas não estou salvando os demais dados de parametrizaçao
-    //            document.getElementById("hdnIdAlteracaoOrdem").value = '';
-    //            document.getElementById("hdnOperacaoOrdem").value = '';
-    //            document.getElementById("hdnIdAlteracaoOrdenacaoContraria").value = '';
-    //
-    //            var mensagem = "A Situação teve a ordem alterada e será salva imediatamente. Outras alterações nas situações ainda não salvas serão perdidas. \n\nDeseja continuar?";
-    //
-    //            if (confirm(mensagem)) {
-    //
-    //                document.getElementById("hdnIdAlteracaoOrdem").value = idSituacao;
-    //                document.getElementById("hdnIdAlteracaoOrdenacaoContraria").value = idSituacao2;
-    //                document.getElementById("hdnOperacaoOrdem").value = "sobe";
-    //
-    //                //setou no campo hidden o id do registro que tera a ordem alterada
-    //                //setou no campo qual a operacao de alteraçao da ordem (se sobe a ordem ou se desce a ordem)
-    //                //agora submete o formulario e salva as novas ordens
-    //                document.getElementById("frmSituacaoLitigiosoLista").submit();
-    //            }
-    //        }
-    //
-    //
-    //    }
-
-    //    function descerOrdem(idSituacao, idSituacao2, desabilitar) {
-    //
-    //        if (desabilitar != '1') {
-    //
-    //            //AGORA estou alterando a ordem, mas não estou salvando os demais dados de parametrizaçao
-    //            document.getElementById("hdnIdAlteracaoOrdem").value = '';
-    //            document.getElementById("hdnOperacaoOrdem").value = '';
-    //            document.getElementById("hdnIdAlteracaoOrdenacaoContraria").value = '';
-    //
-    //            var mensagem = "A Situação teve a ordem alterada e será salva imediatamente. Outras alterações nas situações ainda não salvas serão perdidas. \n\nDeseja continuar?";
-    //
-    //            if (confirm(mensagem)) {
-    //
-    //                document.getElementById("hdnIdAlteracaoOrdem").value = idSituacao;
-    //                document.getElementById("hdnIdAlteracaoOrdenacaoContraria").value = idSituacao2;
-    //                document.getElementById("hdnOperacaoOrdem").value = "desce";
-    //
-    //                //setou no campo hidden o id do registro que tera a ordem alterada
-    //                //setou no campo qual a operacao de alteraçao da ordem (se sobe a ordem ou se desce a ordem)
-    //                //agora submete o formulario e salva as novas ordens
-    //                document.getElementById("frmSituacaoLitigiosoLista").submit();
-    //            }
-    //        }
-    //
-    //    }
 
     function preencherHddIds() {
 
@@ -907,122 +802,131 @@ PaginaSEI::getInstance()->fecharHtml();
 
 
     function validarParametrizacao() {
-        var table = document.getElementById('tbSituacao');
-        if (table == null) {
+
+        if ($('[name="tbSituacao"]').length == 0) {
             return false;
         }
-        var tr = table.getElementsByTagName('tr');
-
-        var tdInstauracao = 4, tdIntimacao = 5,
-            tdDecisoria = 7, tdDefesa = 6,
-            tdRecursal = 8, tdConclusao = 9;
-
         var instauracao = false, intimacao = false,
             defesa = false, decisoria = false,
             intimacaoDecisao = false, recurso = false,
             decisaoRecurso = false,
-            conclusao = false, temIntimacaoDaConclusiva = false;
+            conclusao = false, temIntimacaoDaConclusiva = false,
+            prazoDefesa = false, prazoAlegacoes = false;
+
 
         var salvar = true;
 
-        for(var i = 1; i < tr.length; i++) {
-            var linhaLivre = trLivre(tr[i]);
+        $('#tbSituacao tr[data-linha]').each(function (key, elementoTr) {
+            var linha = $(elementoTr ).data('linha');
+            var linhaLivre = isSituacaoLivre(linha);
 
             if(!linhaLivre) {
-
                 if (!instauracao) {
-                    if (!tdChecked(tr[i], tdInstauracao)) {
-                        break;
-                    } else {
-                        instauracao = true;
-                        continue;
+                    if ($('input.instauracao[data-linha="'+linha+'"]').prop('checked') == false){
+                        return false;
+                    }
+
+                    instauracao = true;
+                    return true;
+                }
+
+                if($('input.alegacoes[data-linha="'+linha+'"]').prop('checked') == true){
+                    //verifica se o prazo foi informado
+                    if($('input.prazo[data-linha="'+linha+'"]').val() == ''){
+                        prazoAlegacoes = true;
                     }
                 }
 
                 if (!intimacao) {
-                    if (!tdChecked(tr[i], tdIntimacao)) {
-                        break;
-                    } else {
-                        intimacao = true;
-                        continue;
+                    if ($('input.intimacao[data-linha="'+linha+'"]').prop('checked') == false){
+                        return false;
                     }
+
+                    intimacao = true;
+                    return true;
                 }
 
-                if (tdChecked(tr[i], tdDefesa)) {
+                if ($('input.defesa[data-linha="'+linha+'"]').prop('checked') == true){
                     defesa = true;
-                    continue;
+                    if($('input.prazo[data-linha="'+linha+'"]').val() == ''){
+                        prazoDefesa = true;
+                    }
+
+                    return true;
                 }
 
                 //No fluxo, após a defesa não deve ser obrigatória somente a decisão, mas pode ser intimação também pois a decisão pode ser feita posteriormente
                 if (!decisoria) {
-                    if (tdChecked(tr[i], tdIntimacao)) {
-                        continue;
-                    }
-                    if(!tdChecked(tr[i], tdDecisoria)){
-                        break;
+                     if ($('input.intimacao[data-linha="'+linha+'"]').prop('checked') == true){
+                         return true;
+                     }
+
+                    if($('input.decisoria[data-linha="'+linha+'"]').prop('checked') == false){
+                        return false;
                     } else {
                         decisoria = true;
-                        continue;
+                        return true;
                     }
                 }
 
                 if (!intimacaoDecisao) {
-                    if(!tdChecked(tr[i], tdIntimacao)){
-                        break;
+                    if($('input.intimacao[data-linha="'+linha+'"]').prop('checked') == false){
+                        return false;
                     } else {
                         intimacaoDecisao = true;
                         recurso = false;
-                        continue;
+                        return true;
                     }
                 }
 
                 if (intimacaoDecisao) {
                     if(!recurso){
-                        if (tdChecked(tr[i], tdRecursal)) {
+                        if ($('input.recursal[data-linha="'+linha+'"]').prop('checked') == true) {
                             recurso = true;
                             decisaoRecurso = false;
-                            continue;
+                            return true;
                         }
                     }
 
                     if(!conclusao) {
-                        if(tdChecked(tr[i], tdConclusao)){
+                        if($('input.conclusiva[data-linha="'+linha+'"]').prop('checked') == true){
                             //No fluxo, a Situação de Conclusão deverá ser antecedida SEMPRE por uma Intimação, ou seja, não deverá existir uma conclusão, sem que tenha existido uma Intimação imediatamente anterior.
-                            var trAnterior =  pegarTrAnterior(i);
+                            var linhaAnterior = $('#tbSituacao tr[data-linha="'+linha+'"]').prev().data('linha');
 
-                            if (tdChecked(trAnterior, tdIntimacao)) {
+                            if (!isSituacaoLivre(linhaAnterior) && $('input.intimacao[data-linha="'+linhaAnterior+'"]').prop('checked') == true) {
                                 temIntimacaoDaConclusiva = true;
                             }
 
                             conclusao = true;
-                            continue;
+                            return true;
                         }
                     }
                 }
 
-                if(tdChecked(tr[i], tdDecisoria)){
-                    var trProximo =  pegarTrProximo(i);
-                    if(!tdChecked(trProximo, tdIntimacao)){
+                if($('input.decisoria[data-linha="'+linha+'"]').prop('checked') == true){
+                    var linhaPosterior = $('#tbSituacao tr[data-linha="'+linha+'"]').next().data('linha');
+                    if($('input.intimacao[data-linha="'+linhaPosterior+'"]').prop('checked') == false){
                         intimacaoDecisao = false;
                     }
                 }
 
                 //No fluxo, após o recurso não deve ser obrigatória somente a decisão, mas pode ser intimação também pois a decisão pode ser feita posteriormente.
                 if (recurso) {
-                    if (tdChecked(tr[i], tdIntimacao)) {
-                        continue;
+                    if ($('input.intimacao[data-linha="'+linha+'"]').prop('checked') == true) {
+                        return true;
                     }
-                    if (!tdChecked(tr[i], tdDecisoria)) {
-                        break;
+                    if ($('input.decisoria[data-linha="'+linha+'"]').prop('checked') == false) {
+                        return false;
                     } else {
                         decisaoRecurso = true;
                         intimacaoDecisao = false;
-                        continue;
+                        return true;
                     }
                 }
 
             }
-        }
+
+        });
 
         //msgs
         if (!instauracao) {
@@ -1065,157 +969,101 @@ PaginaSEI::getInstance()->fecharHtml();
             return;
         }
 
+        if(prazoDefesa){
+            alert('O prazo é obrigatório para a situção marcada como Defesa.');
+            salvar = false;
+            return;
+        }
+
+        if(prazoAlegacoes){
+            alert('O prazo é obrigatório para a situção marcada como Alegações.');
+            salvar = false;
+            return;
+        }
+
         return salvar;
 
     }
 
-    function trLivre(tr) {
-        var td = tr.getElementsByTagName('td');
-        var livre = true;
-        for (var i = 4; i < td.length - 2; i++) {
-            var chk = td[i].children[0];
-            if (chk.checked) {
-                livre = false;
-                break;
-            }
-        }
-        return livre;
-    }
-
-    function tdChecked(tr, iTd) {
-        var tdChecked = false;
-        var td = tr.getElementsByTagName('td');
-        if (td[iTd].children[0].checked) {
-            tdChecked = true;
-        }
-        return tdChecked;
-    }
-
-    function pegarTrAnterior(idTrAtual){
-        var table = document.getElementById('tbSituacao');
-        if (table == null) {
-            return false;
-        }
-        var tr = table.getElementsByTagName('tr');
-        idTrAtual -= 1;
-        if(idTrAtual < 1){
-            return null;
-        }
-        for(var i = idTrAtual; i != 1; i--) {
-            var linhaLivre = trLivre(tr[i]);
-
-            if (!linhaLivre) {
-                return tr[i];
-            }
-        }
-    }
-
-    function pegarTrProximo(idTrAtual){
-        var table = document.getElementById('tbSituacao');
-        if (table == null) {
-            return false;
-        }
-        var tr = table.getElementsByTagName('tr');
-        idTrAtual += 1;
-        if(idTrAtual < 1){
-            return null;
-        }
-        for(var i = idTrAtual; i <= tr.length; i++) {
-            var linhaLivre = trLivre(tr[i]);
-
-            if (!linhaLivre) {
-                return tr[i];
-            }
-        }
-    }
-
-    function controlarRadios(el) {
-        var tr = el.parentNode.parentNode;
-        var td = tr.getElementsByTagName('td');
+    function controlarRadios(element){
+        var linha = $(element).data('linha');
 
         //desabilitando o checkbox Opcional
-        td[10].children[0].disabled = true;
+        $('input.opcional[data-linha="'+linha+'"]').prop('checked', false);
 
-        if (tr.className == "trVermelha") {
-            limparLinha(tr);
+        if ($('#tbSituacao tr[data-linha="'+linha+'"]').hasClass('trVermelha')) {
+            limparLinha(linha);
             return;
         }
 
         var checkar = false;
-        if (el.checked) {
+        if ($(element).prop('checked')) {
             checkar = true;
         }
 
-        //garante que só vai checar 1 por linha
-        for (var i = 4; i < td.length - 2; i++) {
-            var chk = td[i].children[0];
-            chk.checked = false;
-        }
-
-        //só pode ter 1 instauração
-        //só pode ter 1 defesa
-        //só pode ter 1 conclusao
-        var objs = document.getElementsByClassName(el.className);
-        for (var i = 0; i < objs.length; i++) {
-            objs[i].checked = false;
-        }
-
-        el.checked = checkar;
-
-        //verificar se opcional pode ser checked
-        controlarCheckboxOpcional();
-
-        //verificar se o prazo pode ser preenchido
-        controlarImputPrazo();
-    }
-
-    function controlarImputPrazo(){
-        var table = document.getElementById('tbSituacao');
-        if (table == null) {
+        if($('input.alegacoes[data-linha="'+linha+'"]').prop('checked') == true && $('input.intimacao[data-linha="'+linha+'"]').prop('checked') == false){
+            $('input.intimacao[data-linha="'+linha+'"]').prop('checked', true);
+            alert('Não é possível desmarcar a Intimação desta Situação, pois ela está parametrizada como Alegações e por esse motivo a Intimação deve obrigatoriamente estar parametrizada');
             return false;
         }
 
-        var tr = table.getElementsByTagName('tr');
-        for(var i = 1; i < tr.length; i++) {
-            var td = tr[i].getElementsByTagName('td');
-            //verificar se input prazo pode ser preenchido
-            //so pode se for defesa
-            if ( td[6].children[0].checked ) {
-                td[11].children[0].readOnly = false;
-            }else{
-                td[11].children[0].readOnly = true;
-                td[11].children[0].value = '';
-            }
+        //garante que só vai checar 1 por linha
+        $('input[data-linha="'+linha+'"]:checked').prop('checked', false);
+
+        $(element).prop('checked', checkar);
+
+        validarCampos();
+    }
+
+    function controlarImputPrazo(){
+        //var table = document.getElementById('tbSituacao');
+        if ($('[name="tbSituacao"]').length == 0) {
+            return false;
         }
+
+        $('#tbSituacao tr[data-linha]').each(function (key, elementoTr) {
+            var linha = $(elementoTr).data('linha');
+
+            if($('input.defesa[data-linha="'+linha+'"]').prop('checked') == true || $('input.alegacoes[data-linha="'+linha+'"]').prop('checked') == true){
+                $('input.prazo[data-linha="'+linha+'"]').prop('readonly', false).show();
+            }else{
+                $('input.prazo[data-linha="'+linha+'"]').prop('readonly', true).val('').hide();
+
+            }
+
+        });
 
     }
 
     function controlarCheckboxOpcional(){
-        var table = document.getElementById('tbSituacao');
-        if (table == null) {
+        // var table = document.getElementById('tbSituacao');
+        if ($('[name="tbSituacao"]').length == 0) {
             return false;
         }
 
-        var tr = table.getElementsByTagName('tr');
         var primeiraIntimacao = true;
-        for(var i = 1; i < tr.length; i++) {
-            var td = tr[i].getElementsByTagName('td');
+        $('#tbSituacao tr[data-linha]').each(function (key, elementoTr) {
+            var linha = $(elementoTr).data('linha');
+
             //verificar se opcional pode ser checked
             //so pode se for defesa ou recursal ou decisão ou a partir da segunda intimação
-            if(td[6].children[0].checked || td[8].children[0].checked){
-                td[10].children[0].disabled = false;
-                td[10].children[0].checked = true;
-            }else if( td[5].children[0].checked && !primeiraIntimacao || td[7].children[0].checked  ){
-                td[10].children[0].disabled = false;
+            if( $('input.defesa[data-linha="'+linha+'"]').prop('checked') == true || $('input.recursal[data-linha="'+linha+'"]').prop('checked') == true) {
+                $('input.opcional[data-linha="' + linha + '"]').prop('disabled', false).prop('checked', true);
+                //alegacoes deve ter intimação e não pode ser opcional
+             }else if($('input.alegacoes[data-linha="'+linha+'"]').prop('checked') == true){
+                 $('input.opcional[data-linha="'+linha+'"]').prop('disabled', true).prop('checked', false);
+            }else if(!primeiraIntimacao && $('input.intimacao[data-linha="'+linha+'"]').prop('checked') == true || $('input.decisoria[data-linha="'+linha+'"]').prop('checked') == true){
+                $('input.opcional[data-linha="'+linha+'"]').prop('disabled', false);
             }else{
-                td[10].children[0].disabled = true;
-                td[10].children[0].checked = false;
+                $('input.opcional[data-linha="'+linha+'"]').prop('disabled', true).prop('checked', false);
             }
 
             //passou da primeira intimação
-            if(td[5].children[0].checked)
+            if($('input.intimacao[data-linha="'+linha+'"]').prop('checked') == true){
                 primeiraIntimacao = false;
-        }
+            }
+        });
+
     }
     function retornaProximaTr(tr) {
         if (tr == null) {
@@ -1278,71 +1126,61 @@ PaginaSEI::getInstance()->fecharHtml();
         ordem2.value = ordemAux;
     }
 
-    function excluirTr(tr, id) {
+    function excluirTr(id) {
         arrIdExclusao.push(id);
-        tr.remove();
+        $('#tbSituacao tr[data-linha="'+id+'"]').remove();
+        // tr.remove();
     }
 
-    function desativarTr(el, id) {
-        var tr = el.parentNode.parentNode
-        var td = tr.getElementsByTagName('td');
-        var a = td[11].children[2];
-        var img = a.children[0];
-        a.onclick = function () {
-            acaoReativar(el, id);
-        }
-        img.src = "/infra_css/imagens/reativar.gif";
-        img.title = "Reativar Situação";
-        tr.className = "trVermelha";
-        limparLinha(tr);
-        habilitarDesabilitarLinha(tr, true);
+    function desativarTr(element, id) {
+        var img = $(element).children();
+        $(element).click(function () {
+            acaoReativar(element, id);
+        });
+
+        img.attr('src', '/infra_css/imagens/reativar.gif');
+        img.attr('title', 'Reativar Situação');
+        $('#tbSituacao tr[data-linha="'+id+'"]').attr('class', 'trVermelha');
+        limparLinha(id);
+        habilitarDesabilitarLinha(id, true);
+
         //remover o id do array arrIdReativar
         var idx = arrIdReativar.indexOf(id);
         if (idx !== -1) {
             arrIdReativar.splice(idx, 1);
         }
         arrIdDesativar.push(id);
+
     }
 
-    function ativarTr(el, id) {
-        var tr = el.parentNode.parentNode
-        var td = tr.getElementsByTagName('td');
-        var a = td[11].children[2];
-        var img = a.children[0];
-        a.onclick = function () {
-            acaoDesativar(el, id);
-        }
-        img.src = "/infra_css/imagens/desativar.gif";
-        img.title = "Desativar Situação";
-        tr.className = "infraTrClara";
-        limparLinha(tr);
-        habilitarDesabilitarLinha(tr, false);
-        //remover o Id do array arrIdDesativar
+    function ativarTr(element, id) {
+        var img = $(element).children();
+        $(element).click(function () {
+            acaoDesativar(element, id);
+        });
+
+        img.attr('src', '/infra_css/imagens/desativar.gif');
+        img.attr('title', 'Desativar Situação');
+        $('#tbSituacao tr[data-linha="'+id+'"]').attr('class', 'infraTrClara');
+        limparLinha(id);
+        habilitarDesabilitarLinha(id, false);
+
+        //remover o id do array arrIdReativar
         var idx = arrIdDesativar.indexOf(id);
         if (idx !== -1) {
             arrIdDesativar.splice(idx, 1);
         }
         arrIdReativar.push(id);
+
     }
 
-    function limparLinha(tr) {
-        var td = tr.getElementsByTagName('td');
-        for (var i = 4; i < td.length - 1; i++) {
-            var input = td[i].children[0];
-            if (input.type == 'text') {
-                input.value = '';
-            } else {
-                input.checked = false;
-            }
-        }
+    function limparLinha(idLinha) {
+        $('input[data-linha="'+idLinha+'"]').prop('checked', false);
+        $('input[data-linha="'+idLinha+'"][type="text"]').val('');
     }
 
-    function habilitarDesabilitarLinha(tr, disabled) {
-        var td = tr.getElementsByTagName('td');
-        for (var i = 4; i < td.length - 1; i++) {
-            var chk = td[i].children[0];
-            chk.disabled = disabled;
-        }
+    function habilitarDesabilitarLinha(linha, disabled) {
+        $('input[data-linha="'+linha+'"]').prop('disabled', disabled);
     }
 
     function verificarVinculo(id) {
@@ -1361,18 +1199,78 @@ PaginaSEI::getInstance()->fecharHtml();
             580);
     }
 
-    function selecionarOpcionalObrigatorio(element){
-        var tr = element.parentNode.parentNode;
-        var td = tr.getElementsByTagName('td');
-        if(td[6].children[0].checked){
+    function selecionarOpcional(element){
+        var linha = $(element).data('linha');
+        if($('input.defesa[data-linha="'+linha+'"]').prop('checked')){
             alert("A situação defesa e obrigatório ser opcional!");
-            element.checked = true;
+            $(element).prop('checked',true);
         }
-        if(td[8].children[0].checked){
+        if($('input.recursal[data-linha="'+linha+'"]').prop('checked')){
             alert("A situação recurso e obrigatório ser opcional!");
-            element.checked = true;
+            $(element).prop('checked',true);
         }
+        selecionarObrigatoria(linha);
+
         return true;
+    }
+
+    /**
+     * Situação livre é caraterizado quando não ha nenhuma sinalização de instrução, Intimação, defesa, decisão, recurso ou conclusão
+     * @param idLinha
+     * @returns {boolean}
+     */
+    function isSituacaoLivre(idLinha){
+        var qtdPrenchido = $('tr#sitLitTable_'+idLinha+'> td > input:checked').not('[name="obrigatoria_'+idLinha+'"], [type="hidden"]').length;
+
+        if(qtdPrenchido > 0){
+            return false;
+        }
+
+        return true;
+    }
+
+    function selecionarObrigatoria(linha){
+        if(!isSituacaoLivre(linha)){
+            $('input.obrigatoria[data-linha="'+linha+'"]').prop('checked', false).prop('disabled', true);
+        } else{
+            $('input.obrigatoria[data-linha="'+linha+'"]').prop('disabled', false);
+            if($('input.obrigatoria[data-linha="'+linha+'"]').prop('checked')){
+                $('input[type="radio"][data-linha="'+linha+'"], input[type="checkbox"][data-linha="'+linha+'"]').not('input[data-linha="'+linha+'"].obrigatoria').prop('disabled', 'true');
+            } else {
+                $('input[type="radio"][data-linha="'+linha+'"], input[type="checkbox"][data-linha="'+linha+'"]').not('input[data-linha="'+linha+'"].obrigatoria, input[data-linha="'+linha+'"].opcional').prop('disabled', false)
+            }
+        }
+    }
+
+    function validarCheckboxObrigatoria() {
+        $('[name^="obrigatoria_"]').each(function(key, element){
+            var linha = $(element).data('linha');
+            selecionarObrigatoria(linha);
+        });
+    }
+
+    function selecionarAlegacoes(linha){
+        //caso a alegação esteja marcada marca a intimação tambem
+        if($('input.alegacoes[data-linha="'+linha+'"]').prop('checked') == true){
+            //limpa a linha pra garantir
+              limparLinha(linha);
+            //marca a alegação e a intimação
+            $('input.alegacoes[data-linha="'+linha+'"]').prop('checked', true);
+            $('input.intimacao[data-linha="'+linha+'"]').prop('checked', true);
+            $('input.opcional[data-linha="'+linha+'"]').prop('checked', false).prop('disabled', true);
+        }
+
+        validarCampos();
+
+    }
+
+    function validarCampos(){
+        controlarCheckboxOpcional();
+
+        //revalida o campo obrigatoria
+        validarCheckboxObrigatoria();
+
+        controlarImputPrazo();
     }
 
 
