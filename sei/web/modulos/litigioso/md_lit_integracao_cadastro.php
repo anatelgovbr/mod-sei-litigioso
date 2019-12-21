@@ -53,6 +53,8 @@ switch ($_GET['acao']) {
         $objMdLitIntegracaoDTO->setNumIdMdLitFuncionalidade($_POST['selFuncionalidade']);
         $objMdLitIntegracaoDTO->setStrEnderecoWsdl($_POST['txtEnderecoWsdl']);
         $objMdLitIntegracaoDTO->setStrOperacaWsdl($_POST['selOperacao']);
+        $objMdLitIntegracaoDTO->setStrTipoClienteWs($_POST['tipoWs']);
+        $objMdLitIntegracaoDTO->setStrVersaoSoap($_POST['tipoWs'] == 'SOAP' ? $_POST['versaoSoap']: '');
         $objMdLitIntegracaoDTO->setNumIdMdLitIntegracao(null);
 
         $objMdLitIntegracaoDTO->setStrSinVincularLancamento('N');
@@ -154,6 +156,8 @@ switch ($_GET['acao']) {
         $objMdLitIntegracaoDTO->setStrEnderecoWsdl($_POST['txtEnderecoWsdl']);
         $objMdLitIntegracaoDTO->setStrOperacaWsdl($_POST['selOperacao']);
         $objMdLitIntegracaoDTO->setNumIdMdLitIntegracao($_POST['hdnIdMdLitIntegracao']);
+        $objMdLitIntegracaoDTO->setStrTipoClienteWs($_POST['tipoWs']);
+        $objMdLitIntegracaoDTO->setStrVersaoSoap($_POST['tipoWs'] == 'SOAP' ? $_POST['versaoSoap']: '');
         $objMdLitIntegracaoDTO->setStrSinVincularLancamento('N');
         if(isset($_POST['chkSinVincularLancamento'])){
             $objMdLitIntegracaoDTO->setStrSinVincularLancamento('S');
@@ -287,12 +291,13 @@ switch ($_GET['acao']) {
 }
 if(!empty($objMdLitIntegracaoDTO->getStrEnderecoWsdl()) && !empty($objMdLitIntegracaoDTO->getStrOperacaWsdl()) && !empty($objMdLitIntegracaoDTO->getNumIdMdLitFuncionalidade())){
     $objMdLitSoapClienteRN = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(), 'wsdl');
+    $objMdLitSoapClienteRN->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
     try {
-        $arrMontarTabelaParamEntrada = MdLitMapearParamEntradaINT::montarTabelaParamEntrada($objMdLitSoapClienteRN, $objMdLitIntegracaoDTO->getNumIdMdLitFuncionalidade(), $objMdLitIntegracaoDTO->getStrOperacaWsdl(), $objMdLitIntegracaoDTO->getNumIdMdLitIntegracao());
-        $arrMontarTabelaParamSaida = MdLitMapearParamSaidaINT::montarTabelaParamSaida($objMdLitSoapClienteRN, $objMdLitIntegracaoDTO->getNumIdMdLitFuncionalidade(), $objMdLitIntegracaoDTO->getStrOperacaWsdl(), $objMdLitIntegracaoDTO->getNumIdMdLitIntegracao());
+        $arrMontarTabelaParamEntrada = MdLitMapearParamEntradaINT::montarTabelaParamEntrada($objMdLitSoapClienteRN, $objMdLitIntegracaoDTO->getNumIdMdLitFuncionalidade(), $objMdLitIntegracaoDTO->getStrOperacaWsdl(), $objMdLitIntegracaoDTO->getNumIdMdLitIntegracao(), $objMdLitIntegracaoDTO);
+        $arrMontarTabelaParamSaida = MdLitMapearParamSaidaINT::montarTabelaParamSaida($objMdLitSoapClienteRN, $objMdLitIntegracaoDTO->getNumIdMdLitFuncionalidade(), $objMdLitIntegracaoDTO->getStrOperacaWsdl(), $objMdLitIntegracaoDTO->getNumIdMdLitIntegracao(), $objMdLitIntegracaoDTO);
     }catch (Exception $e){
         $exception = new InfraException();
-        $exception->adicionarValidacao('Não foi possível carregar o web-service.');
+        $exception->adicionarValidacao('Não foi possível carregar o web-service. '.$e->getStrDescricao());
         PaginaSEI::getInstance()->processarExcecao($exception);
     }
 }
@@ -338,6 +343,25 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
 ?>
 
 <?if(0){?><script><?}?>
+
+    $(document).ready(function(){
+        $('[name="tipoWs"]').click(function(){
+            validarTipoClienteWS()
+        });
+
+        validarTipoClienteWS();
+    });
+
+    function validarTipoClienteWS(){
+        if($('[name="tipoWs"][value="SOAP"]').prop('checked')){
+            $('.soap').show()
+            $('[name="versaoSoap"]').prop('disabled', false);
+        } else {
+            $('.soap').hide();
+            $('[name="txtEnderecoWsdl"]').val('').trigger('change');
+            $('[name="versaoSoap"]').prop('disabled', true);
+        }
+    }
 
     function inicializar() {
         if ('<?= $_GET['acao'] ?>'=='md_lit_integracao_cadastrar')
@@ -1085,10 +1109,23 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
     }
 
     function validarWsdl(){
+        var consultar  = <?php echo $_GET['acao'] != 'md_lit_integracao_consultar' ? 'true' : 'false'; ?>//;
         var enderecoWsdl = document.getElementById('txtEnderecoWsdl').value;
-        if(enderecoWsdl == ''){
-            alert('Preenche o campo Endereço WSDL.');
+        var tipoWs = $('[name="tipoWs"]:checked').val();
+
+        var versaoSoap = $('[name="versaoSoap"]').val();
+        if(consultar){
+            versaoSoap = $('[name="versaoSoap"]').not(':disabled').val();
+        }
+
+        if (enderecoWsdl == '') {
+            alert('Preencher o campo Endereço WSDL.');
             return false;
+        }
+
+        if(tipoWs != 'SOAP' || versaoSoap == undefined){
+            alert('Para validar este serviço informe o Tipo de Cliente WS como SOAP e sua Versão Soap');
+             return false;
         }
 
         $.ajax({
@@ -1096,7 +1133,7 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             url: "<?= $strLinkAjaxValidarWsdl ?>",
             dataType: "xml",
             data: {
-            endereco_wsdl: enderecoWsdl,
+                endereco_wsdl: enderecoWsdl, tipoWs: tipoWs, versaoSoap: versaoSoap
             },
             beforeSend: function(){
                 infraExibirAviso(false);
@@ -1140,6 +1177,10 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
     }
 
     function mapear(){
+        if($('[name="tipoWs"]:not(:disabled):checked').val() != 'SOAP'){
+            alert('Para mapear as integrações informe a opção SOAP.');
+            return false;
+        }
         if (infraTrim(document.getElementById('txtEnderecoWsdl').value) == '') {
             alert('Informe o Endereço do WSDL.');
             document.getElementById('txtEnderecoWsdl').focus();
@@ -1298,8 +1339,40 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 <?= $comboFuncionalidade?>
             </select>
         </div>
+        <div class="clear-margin-2"></div>
         <div class="clear"></div>
-        <div style="margin-top: 13px;"  class="grid grid_10-1">
+        <div class="grid grid_3">
+            <label id="lbltipoWs" for="tipoWs" class="infraLabelObrigatorio">
+                Tipo Cliente WS:
+            </label>
+            <div class="clear"></div>
+
+            <input type="radio" name="tipoWs" value="SOAP" <?=$objMdLitIntegracaoDTO->getStrTipoClienteWs() != 'REST' ?'checked' : ''; ?> >
+            <span>
+                <label for="tipoWs" class="infraLabelCheckbox">
+                    SOAP
+                </label>
+            </span>
+<!-- O campo com  apção rest deve ser desabilidado quando houver suporte -->
+<!--            <input type="radio" name="tipoWs" value="REST" disabled <?//=PaginaSEI::tratarHTML( $objMdLitIntegracaoDTO->getStrTipoClienteWs() ) == 'REST' ?'checked' : '';?>> -->
+<!--            <span>-->
+<!--                <label for="tipoWs" class="infraLabelCheckbox">-->
+<!--                    REST-->
+<!--                </label>-->
+<!--            </span>-->
+        </div>
+        <div class="grid grid_2 soap">
+            <label id="lbltipoWs" for="tipoWs" class="infraLabelObrigatorio">
+                Versão SOAP:
+            </label>
+            <div class="clear"></div>
+            <select id="versaoSoap" name="versaoSoap">
+                <option value="1.2" <?= PaginaSEI::tratarHTML( $objMdLitIntegracaoDTO->getStrVersaoSoap() ) == '1.2' ?'selected' : '';?>>1.2</option>
+                <option value="1.1" <?= PaginaSEI::tratarHTML( $objMdLitIntegracaoDTO->getStrVersaoSoap() ) == '1.1' ?'selected' : '';?>>1.1</option>
+            </select>
+        </div>
+        <div class="clear"></div>
+        <div style="margin-top: 13px;"  class="grid grid_10-1 soap">
             <label id="lblEnderecoWsdl" for="txtEnderecoWsdl" class="infraLabelObrigatorio">
                 Endereço WSDL:
             </label>
@@ -1312,7 +1385,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         </div>
         <div class="clear"></div>
 
-        <div class="grid grid_11" id="gridOperacao">
+        <div class="grid grid_11 soap" id="gridOperacao">
             <div style="margin-top: 13px;"  class="grid grid_10-1">
                 <label id="lblOperacao" for="selOperacao" class="infraLabelObrigatorio">
                     Operação:

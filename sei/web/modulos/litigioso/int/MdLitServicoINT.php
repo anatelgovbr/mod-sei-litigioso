@@ -52,7 +52,8 @@
             return $arrObjServicoDTO;
         }
 
-        public static function montarXMLBuscarOperacaoWSDL($enderecoWSDL){
+        public static function montarXMLBuscarOperacaoWSDL($data){
+            $enderecoWSDL = $data['endereco_wsdl'];
             $xml = "";
             $xml .= "<operacoes>\n";
             try{
@@ -64,7 +65,12 @@
                     return $xml;
                 }
 
-                $client = new MdLitSoapClienteRN($enderecoWSDL, 'wsdl');
+                if($data['tipoWs'] != 'SOAP'){
+                    throw new Exception('O tipo de cliente informado deve ser do tipo SOAP.');
+                }
+
+                $client = new MdLitSoapClienteRN($data['endereco_wsdl'], 'wsdl');
+                $client->setSoapVersion($data['versaoSoap']);
                 $operacaoArr = $client->getFunctions();
 
                 if(empty($operacaoArr)){

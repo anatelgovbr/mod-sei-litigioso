@@ -157,6 +157,7 @@ class MdLitNumeroInteressadoRN extends InfraRN {
         }
 
         $objMdLitSoapClienteRN  = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(),'wsdl');
+        $objMdLitSoapClienteRN->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
 
         //monta os parametros de entrada do web-service
         $montarParametroEntrada = array();

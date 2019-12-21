@@ -257,7 +257,7 @@ class MdLitDadoInteressadoRN extends InfraRN {
     }
 
 
-    protected function removerInteressadoControlado($arrObjMdLitDadoInteressadoDTO)
+    protected function removerInteressadoControlado($arrObjMdLitDadoInteressadoDTO, $boolRemoverTodosInteressados = false)
     {
         $arrIdProcedimento = InfraArray::converterArrInfraDTO($arrObjMdLitDadoInteressadoDTO, 'IdProcedimentoMdLitTipoControle');
         $arrIdContato = InfraArray::converterArrInfraDTO($arrObjMdLitDadoInteressadoDTO, 'IdContato');
@@ -292,7 +292,9 @@ class MdLitDadoInteressadoRN extends InfraRN {
         $arrIdContato = InfraArray::converterArrInfraDTO($arrObjMdLitDadoInteressadoDTO, 'IdContato');
         $objMdLitDadoInteressadoDTO = new MdLitDadoInteressadoDTO();
         $objMdLitDadoInteressadoDTO->retTodos(false);
-        $objMdLitDadoInteressadoDTO->setNumIdContato($arrIdContato, InfraDTO::$OPER_NOT_IN);
+        if(!$boolRemoverTodosInteressados){
+            $objMdLitDadoInteressadoDTO->setNumIdContato($arrIdContato, InfraDTO::$OPER_NOT_IN);
+        }
         $objMdLitDadoInteressadoDTO->setNumIdMdLitControle($arrIdMdLitControle,InfraDTO::$OPER_IN);
 
         $arrObjMdLitDadoInteressadoDTOConsulta = $this->listar($objMdLitDadoInteressadoDTO);
@@ -300,6 +302,14 @@ class MdLitDadoInteressadoRN extends InfraRN {
         if(count($arrObjMdLitDadoInteressadoDTOConsulta)){
             $this->excluir($arrObjMdLitDadoInteressadoDTOConsulta);
         }
+    }
+
+    /**
+     * Remove o interessado e suas dependencias inclusive o interessado obrigatorio do processo para retornar o processo ao estagio inicial
+     * @param $arrObjMdLitDadoInteressadoDTO
+     */
+    protected function removerInteressadoLimparControleLitigiosoControlado($arrObjMdLitDadoInteressadoDTO){
+        $this->removerInteressadoControlado($arrObjMdLitDadoInteressadoDTO, true);
     }
 
     private function _excluirDadoInteressado($idMdLitControle)

@@ -50,6 +50,12 @@ $strLinkAjaxFasesSituacao    = SessaoSEI::getInstance()->assinarLink('controlado
 //URL Ajax Validar se o Documento Possui essa situação
 $strUrlAjaxValidarSituacao   = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_verificar_vinculo_situacao_doc');
 
+//verifica se existe dependencias de lancamentos para cancelar
+$strVerificarDependencias   = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_verificar_dependencias_lancamentos_situacao');
+
+//verifica se existe dependencias de decisoes preenchidaspara cancelar
+$strVerificarDependenciasDecisoesPreenchidas   = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_verificar_dependencias_decisoes_situacao');
+
 //URL Ajax Validar Número SEI
 $strUrlAjaxNumeroSei              = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_validar_numero_sei_situacao');
 

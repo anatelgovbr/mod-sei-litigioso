@@ -56,6 +56,8 @@ try {
             $selOperacao            = $_POST['selOperacao'];
             $txtEnderecoWsdl        = $_POST['txtEnderecoWsdl'];
             $txtIntegracao          = $_POST['txtIntegracao'];
+            $txtTipoWs              = $_POST['tipoWs'];
+            $txtVersaoSoap          = $_POST['versaoSoap'];
 
             if(!empty($rdoSinCancelamento))
                 $strRadioCancelamento  =  MdLitSituacaoLancamentoINT::montarRadioCancelamento($rdoSinCancelamento);
@@ -85,6 +87,8 @@ try {
                     $objMdLitSituacaoLancamIntDTO->setStrOperacaoWsdl($_POST['selOperacao']);
                     $objMdLitSituacaoLancamIntDTO->setNumSituacaoCancelamento($_POST['rdoSinCancelamentoIntegracao']);
                     $objMdLitSituacaoLancamIntDTO->setArrCoresSelecionados($_POST['selCores']);
+                    $objMdLitSituacaoLancamIntDTO->setStrTipoClienteWs($_POST['tipoWs']);
+                    $objMdLitSituacaoLancamIntDTO->setStrVersaoSoap($_POST['versaoSoap']);
 
                     if(count($arrMapeamento) > 0){
                         foreach ($arrMapeamento as $mapeamento) {
@@ -169,6 +173,8 @@ try {
                     $objMdLitSituacaoLancamIntDTO->setStrOperacaoWsdl($_POST['selOperacao']);
                     $objMdLitSituacaoLancamIntDTO->setNumSituacaoCancelamento($_POST['rdoSinCancelamentoIntegracao']);
                     $objMdLitSituacaoLancamIntDTO->setArrCoresSelecionados($_POST['selCores']);
+                    $objMdLitSituacaoLancamIntDTO->setStrTipoClienteWs($_POST['tipoWs']);
+                    $objMdLitSituacaoLancamIntDTO->setStrVersaoSoap($_POST['versaoSoap']);
 
                     if($arrMapeamento){
                         foreach ($arrMapeamento as $mapeamento) {
@@ -241,6 +247,8 @@ try {
                 $selOperacao            = $objMdLitSituacaoLancamIntDTO->getStrOperacaoWsdl();
                 $txtEnderecoWsdl        = $objMdLitSituacaoLancamIntDTO->getStrEnderecoWsdl();
                 $txtIntegracao          = $objMdLitSituacaoLancamIntDTO->getStrNomeIntegracao();
+                $txtTipoWs              = $objMdLitSituacaoLancamIntDTO->getStrTipoClienteWs();
+                $txtVersaoSoap          = $objMdLitSituacaoLancamIntDTO->getStrVersaoSoap();
             }
 
             break;
@@ -275,22 +283,25 @@ try {
                 $selCor       = $objMdLitSituacaoLancamentoDTO->getStrCorSituacao();
                 $rdoSinCancelamento = $objMdLitSituacaoLancamentoDTO->getStrSinCancelamento();
 
-            }elseif( !empty($objMdLitSituacaoLancamentoRN->getNumIdMdLitServicoIntegracao()) ){
+            }elseif( !empty($objMdLitSituacaoLancamentoDTO->getNumIdMdLitSituacaoLancInt()) ){
 
-                $objMdLitServicoIntegracaoRN = new MdLitServicoIntegracaoRN();
-                $objMdLitServicoIntegracaoDTO = new MdLitServicoIntegracaoDTO();
-                $objMdLitServicoIntegracaoDTO->retTodos(true);
-                $objMdLitServicoIntegracaoDTO->setNumIdMdLitServicoIntegracao($objMdLitServicoDTO->getNumIdMdLitServicoIntegracao());
+                $idMdLitSituacaoIntegracao = $objMdLitSituacaoLancamentoDTO->getNumIdMdLitSituacaoLancInt();
+                $objMdLitSituacaoLancamIntRN = new MdLitSituacaoLancamIntRN();
+                $objMdLitSituacaoLancamIntDTO = new MdLitSituacaoLancamIntDTO();
+                $objMdLitSituacaoLancamIntDTO->retTodos(true);
+                $objMdLitSituacaoLancamIntDTO->setNumIdMdLitSituacaoLancamInt($idMdLitSituacaoIntegracao);
 
-                $objMdLitServicoIntegracaoDTO = $objMdLitServicoIntegracaoRN->consultar($objMdLitServicoIntegracaoDTO);
+                $objMdLitSituacaoLancamIntDTO = $objMdLitSituacaoLancamIntRN->consultar($objMdLitSituacaoLancamIntDTO);
 
-                if (!$objMdLitServicoIntegracaoDTO) {
-                    throw new InfraException('Situação de lannçamento por integração não encontrado!');
+                if (!$objMdLitSituacaoLancamIntDTO) {
+                    throw new InfraException('Situação do lançamento por integração não encontrado!');
                 }
 
-                $selOperacao            = $objMdLitServicoIntegracaoDTO->getStrOperacaoWsdl();
-                $txtEnderecoWsdl        = $objMdLitServicoIntegracaoDTO->getStrEnderecoWsdl();
-                $txtIntegracao          = $objMdLitServicoIntegracaoDTO->getStrNomeIntegracao();
+                $selOperacao            = $objMdLitSituacaoLancamIntDTO->getStrOperacaoWsdl();
+                $txtEnderecoWsdl        = $objMdLitSituacaoLancamIntDTO->getStrEnderecoWsdl();
+                $txtIntegracao          = $objMdLitSituacaoLancamIntDTO->getStrNomeIntegracao();
+                $txtTipoWs              = $objMdLitSituacaoLancamIntDTO->getStrTipoClienteWs();
+                $txtVersaoSoap          = $objMdLitSituacaoLancamIntDTO->getStrVersaoSoap();
             }
 
             break;
@@ -316,6 +327,14 @@ if (isset($_POST['hdnMapeamentoJson']) && !empty($_POST['hdnMapeamentoJson'])) {
     $arrMapeamento                = json_decode($_POST['hdnMapeamentoJson']);
     $objMdLitSituacaoLancamIntDTO->setStrEnderecoWsdl($_POST['txtEnderecoWsdl']);
     $objMdLitSituacaoLancamIntDTO->setStrOperacaoWsdl($_POST['selOperacao']);
+    $objMdLitSituacaoLancamIntDTO->setStrTipoClienteWs($_POST['tipoWs']);
+    $objMdLitSituacaoLancamIntDTO->setStrVersaoSoap($_POST['versaoSoap']);
+
+    $txtIntegracao          = $_POST['txtIntegracao'];
+    $selOperacao            = $_POST['selOperacao'];
+    $txtEnderecoWsdl        = $_POST['txtEnderecoWsdl'];
+    $txtTipoWs              = $_POST['tipoWs'];
+    $txtVersaoSoap          = $_POST['versaoSoap'];
 
     foreach ($arrMapeamento as $mapeamento) {
 
@@ -426,6 +445,37 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 <div class="grid grid_8">
                     <label class="infraLabelObrigatorio" id="lblIntegracao" for="txtIntegracao">Nome da Integração:</label>
                     <input type="text" id="txtIntegracao" name="txtIntegracao" value="<?= $txtIntegracao ?>" />
+                </div>
+                <div class="clear-margin-2"></div>
+                <div class="clear"></div>
+                <div class="grid grid_3">
+                    <label id="lbltipoWs" for="tipoWs" class="infraLabelObrigatorio">
+                        Tipo Cliente WS:
+                    </label>
+                    <div class="clear"></div>
+                    <input type="radio" name="tipoWs" value="SOAP" <?=$txtTipoWs != 'REST' ?'checked' : ''; ?> >
+                    <span>
+                        <label for="tipoWs" class="infraLabelCheckbox">
+                            SOAP
+                        </label>
+                    </span>
+                    <!--         O campo com  apção rest deve ser desabilidado quando houver suporte -->
+                    <!--        <input type="radio" name="tipoWs" value="REST" disabled>-->
+                    <!--        <span>-->
+                    <!--            <label for="tipoWs" class="infraLabelCheckbox">-->
+                    <!--                REST-->
+                    <!--            </label>-->
+                    <!--        </span>-->
+                </div>
+                <div class="grid grid_2 soap">
+                    <label id="lbltipoWs" for="tipoWs" class="infraLabelObrigatorio">
+                        Versão SOAP:
+                    </label>
+                    <div class="clear"></div>
+                    <select id="versaoSoap" name="versaoSoap">
+                        <option value="1.2" <?= PaginaSEI::tratarHTML( $txtVersaoSoap ) == '1.2' ?'selected' : '';?>>1.2</option>
+                        <option value="1.1" <?= PaginaSEI::tratarHTML( $txtVersaoSoap ) == '1.1' ?'selected' : '';?>>1.1</option>
+                    </select>
                 </div>
                 <div class="clear-margin-2"></div>
                 <div class="grid grid_11">

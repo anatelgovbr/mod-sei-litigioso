@@ -31,6 +31,10 @@ class MdLitSituacaoLancamIntDTO extends InfraDTO {
 
     $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'ChaveUnica', 'chave_unica');
 
+      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'TipoClienteWs', 'tipo_cliente_ws');
+
+      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'VersaoSoap', 'versao_soap');
+
     $this->configurarPK('IdMdLitSituacaoLancamInt',InfraDTO::$TIPO_PK_NATIVA);
 
       $this->adicionarAtributo(InfraDTO::$PREFIXO_NUM, 'SituacaoCancelamento');

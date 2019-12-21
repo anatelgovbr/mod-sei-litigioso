@@ -11,10 +11,10 @@ require_once dirname(__FILE__) . '/../../../SEI.php';
 class MdLitAtualizadorSeiRN extends InfraRN {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '1.6.0';
+    private $versaoAtualDesteModulo = '1.7.0';
     private $nomeDesteModulo = 'MÓDULO DE CONTROLE LITIGIOSO';
     private $nomeParametroModulo = 'VERSAO_MODULO_LITIGIOSO';
-    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4','1.0.0','1.1.0','1.2.0','1.3.0', '1.4.0', '1.5.0', '1.6.0');
+    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4','1.0.0','1.1.0','1.2.0','1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0');
 
     public function __construct(){
         parent::__construct();
@@ -117,6 +117,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv140();
                 $this->instalarv150();
                 $this->instalarv160();
+                $this->instalarv170();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.1') {
@@ -130,6 +131,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv140();
                 $this->instalarv150();
                 $this->instalarv160();
+                $this->instalarv170();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.2') {
@@ -142,6 +144,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv140();
                 $this->instalarv150();
                 $this->instalarv160();
+                $this->instalarv170();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.3') {
@@ -153,6 +156,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv140();
                 $this->instalarv150();
                 $this->instalarv160();
+                $this->instalarv170();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '0.0.4') {
@@ -163,6 +167,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv140();
                 $this->instalarv150();
                 $this->instalarv160();
+                $this->instalarv170();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.0.0') {
@@ -172,6 +177,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv140();
                 $this->instalarv150();
                 $this->instalarv160();
+                $this->instalarv170();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.1.0') {
@@ -180,6 +186,7 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv140();
                 $this->instalarv150();
                 $this->instalarv160();
+                $this->instalarv170();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.2.0') {
@@ -187,24 +194,32 @@ class MdLitAtualizadorSeiRN extends InfraRN {
                 $this->instalarv140();
                 $this->instalarv150();
                 $this->instalarv160();
+                $this->instalarv170();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.3.0') {
                 $this->instalarv140();
                 $this->instalarv150();
                 $this->instalarv160();
+                $this->instalarv170();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '.$this->versaoAtualDesteModulo.' DO '.$this->nomeDesteModulo.' REALIZADA COM SUCESSO NA BASE DO SEI');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.4.0') {
                 $this->instalarv150();
                 $this->instalarv160();
+                $this->instalarv170();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO  '.$this->nomeDesteModulo.' (v'.$this->versaoAtualDesteModulo.') REALIZADA COM SUCESSO NA BASE DO SEI.');
                 $this->finalizar('FIM', false);
             } else if ($strVersaoModuloLitigioso == '1.5.0') {
                 $this->instalarv160();
+                $this->instalarv170();
                 $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO  '.$this->nomeDesteModulo.' (v'.$this->versaoAtualDesteModulo.') REALIZADA COM SUCESSO NA BASE DO SEI.');
                 $this->finalizar('FIM', false);
-            } else if ($strVersaoModuloLitigioso == '1.6.0') {
+            }  else if ($strVersaoModuloLitigioso == '1.6.0') {
+                $this->instalarv170();
+                $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO  '.$this->nomeDesteModulo.' (v'.$this->versaoAtualDesteModulo.') REALIZADA COM SUCESSO NA BASE DO SEI.');
+                $this->finalizar('FIM', false);
+            } else if ($strVersaoModuloLitigioso == '1.7.0') {
                 $this->logar('A VERSÃO MAIS ATUAL DO '.$this->nomeDesteModulo.' (v'.$this->versaoAtualDesteModulo.') JÁ ESTÁ INSTALADA.');
                 $this->finalizar('FIM', false);
             }
@@ -2062,6 +2077,55 @@ class MdLitAtualizadorSeiRN extends InfraRN {
             throw new Exception($e->getMessage());
         }
 
+    }
+
+    protected function instalarv170()
+    {
+        $instanciaBanco = BancoSEI::getInstance();
+        $objInfraMetaBD = new InfraMetaBD($instanciaBanco);
+        try {
+            $instanciaBanco->abrirTransacao();
+
+            $this->logar('INCLUSÂO DE COLUNA NA TABELA md_lit_integracao PARA DEFINIÇÃO DOS TIPOS DE CLIENTE WS');
+            $objInfraMetaBD->adicionarColuna('md_lit_integracao', 'tipo_cliente_ws', $objInfraMetaBD->tipoTextoFixo(4), 'NULL');
+            $instanciaBanco->executarSql("UPDATE md_lit_integracao SET tipo_cliente_ws = 'SOAP' ");
+
+            $this->logar('INCLUSÂO DE COLUNA NA TABELA md_lit_integracao PARA DEFINIÇÃO DAS VERSÕES DO SOAP');
+            $objInfraMetaBD->adicionarColuna('md_lit_integracao', 'versao_soap', $objInfraMetaBD->tipoTextoFixo(5), 'NULL');
+            $instanciaBanco->executarSql("UPDATE md_lit_integracao SET versao_soap = '1.2' ");
+
+            $this->logar('INCLUSÂO DE COLUNA NA TABELA md_lit_servico_integracao PARA DEFINIÇÃO DOS TIPOS DE CLIENTE WS');
+            $objInfraMetaBD->adicionarColuna('md_lit_servico_integracao', 'tipo_cliente_ws', $objInfraMetaBD->tipoTextoFixo(4), 'NULL');
+            $instanciaBanco->executarSql("UPDATE md_lit_servico_integracao SET tipo_cliente_ws = 'SOAP' ");
+
+            $this->logar('INCLUSÂO DE COLUNA NA TABELA md_lit_servico_integracao PARA DEFINIÇÃO DAS VERSÕES DO SOAP');
+            $objInfraMetaBD->adicionarColuna('md_lit_servico_integracao', 'versao_soap', $objInfraMetaBD->tipoTextoFixo(5), 'NULL');
+            $instanciaBanco->executarSql("UPDATE md_lit_servico_integracao SET versao_soap = '1.2' ");
+
+            $this->logar('INCLUSÂO DE COLUNA NA TABELA md_lit_situacao_lancam_int PARA DEFINIÇÃO DOS TIPOS DE CLIENTE WS');
+            $objInfraMetaBD->adicionarColuna('md_lit_situacao_lancam_int', 'tipo_cliente_ws', $objInfraMetaBD->tipoTextoFixo(4), 'NULL');
+            $instanciaBanco->executarSql("UPDATE md_lit_situacao_lancam_int SET tipo_cliente_ws = 'SOAP' ");
+
+            $this->logar('INCLUSÂO DE COLUNA NA TABELA md_lit_situacao_lancam_int PARA DEFINIÇÃO DAS VERSÕES DO SOAP');
+            $objInfraMetaBD->adicionarColuna('md_lit_situacao_lancam_int', 'versao_soap', $objInfraMetaBD->tipoTextoFixo(5), 'NULL');
+            $instanciaBanco->executarSql("UPDATE md_lit_situacao_lancam_int SET versao_soap = '1.2' ");
+
+            $this->logar('ATUALIZANDO PARÂMETRO '.$this->nomeParametroModulo.' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+            $instanciaBanco->executarSql('UPDATE infra_parametro SET valor = \'1.7.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+            //efetiva as transações DML no banco de dados
+            $instanciaBanco->confirmarTransacao();
+        } catch (Exception $e){
+            //rollback DML
+            $instanciaBanco->cancelarTransacao();
+            $this->logar('ROLLBACK DA OPERAÇÃO');
+            $objInfraMetaBD->excluirColuna('md_lit_integracao', 'tipo_cliente_ws');
+            $objInfraMetaBD->excluirColuna('md_lit_integracao', 'versao_soap');
+            $objInfraMetaBD->excluirColuna('md_lit_servico_integracao', 'tipo_cliente_ws');
+            $objInfraMetaBD->excluirColuna('md_lit_servico_integracao', 'versao_soap');
+            $objInfraMetaBD->excluirColuna('md_lit_situacao_lancam_int', 'tipo_cliente_ws');
+            $objInfraMetaBD->excluirColuna('md_lit_situacao_lancam_int', 'versao_soap');
+            throw new Exception($e->getMessage());
+        }
     }
 }
 ?>

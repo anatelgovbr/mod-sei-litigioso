@@ -27,6 +27,7 @@ class MdLitRecursoLancamentoRN extends InfraRN {
 
         $objMdLitIntegracaoDTO  = $objMdLitIntegracaoRN->retornarObjIntegracaoDTOPorFuncionalidade($post['hdnIdMdLitFuncionalidade']);
         $objMdLitSoapClienteRN  = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(),'wsdl');
+        $objMdLitSoapClienteRN->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
         $objInfraException      = $objMdLitLancamentoRN->realizarValidacoesGerais($objMdLitIntegracaoDTO, $post, $objInfraException);
 
         $objMdLitLancamentoDTO->retTodos(false);
@@ -102,6 +103,7 @@ class MdLitRecursoLancamentoRN extends InfraRN {
 
         $objMdLitIntegracaoDTO  = $objMdLitIntegracaoRN->retornarObjIntegracaoDTOPorFuncionalidade($post['hdnIdMdLitFuncionalidade']);
         $objMdLitSoapClienteRN  = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(),'wsdl');
+        $objMdLitSoapClienteRN->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
         $objInfraException      = $objMdLitLancamentoRN->realizarValidacoesGerais($objMdLitIntegracaoDTO, $post, $objInfraException);
 
         $objMdLitLancamentoDTO->retTodos(false);
@@ -157,6 +159,7 @@ class MdLitRecursoLancamentoRN extends InfraRN {
 
         $objInfraException      = $objMdLitLancamentoRN->realizarValidacoesGerais($objMdLitIntegracaoDTO, $post, $objInfraException);
         $objMdLitSoapClienteRN  = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(),'wsdl');
+        $objMdLitSoapClienteRN->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
 
         $objMdLitLancamentoDTO->retTodos(false);
         $objMdLitLancamentoDTO->setNumIdMdLitLancamento($post['selCreditosProcesso']);

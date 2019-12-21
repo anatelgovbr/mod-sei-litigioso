@@ -25,6 +25,8 @@ class MdLitServicoIntegracaoINT extends InfraINT {
     }
 
     public static function montarTabelaParamSaida(MdLitSoapClienteRN $objMdLitSoapClienteRN, $operacao, $objMdLitServicoIntegracaoDTO = null){
+        $versaoSoap = $_POST['versaoSoap'] ?: $objMdLitServicoIntegracaoDTO->getStrVersaoSoap();
+        $objMdLitSoapClienteRN->setSoapVersion($versaoSoap);
         $arrParametroSaida = $objMdLitSoapClienteRN->getParamsOutput($operacao);
         $strResultadoParamSaida = '';
 
@@ -84,8 +86,7 @@ class MdLitServicoIntegracaoINT extends InfraINT {
     public static function montarTabelaServicoIntegracao(MdLitServicoIntegracaoDTO $objMdLitServicoIntegracaoDTO){
 
         $objMdLitSoapClientRN = new MdLitSoapClienteRN($objMdLitServicoIntegracaoDTO->getStrEnderecoWsdl(), 'wsdl');
-        $objMdLitServicoRN = new MdLitServicoRN();
-
+        $objMdLitSoapClientRN->setSoapVersion($objMdLitServicoIntegracaoDTO->getStrVersaoSoap());
         $arrResultadoWebService = $objMdLitSoapClientRN->call($objMdLitServicoIntegracaoDTO->getStrOperacaoWsdl(), array('soap_version'=>SOAP_1_2,'cache_wsdl' => WSDL_CACHE_NONE));
 
         $arrResultadoWebService = $arrResultadoWebService['listaTipoServico'];

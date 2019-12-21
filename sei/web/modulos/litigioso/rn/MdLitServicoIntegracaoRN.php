@@ -157,6 +157,7 @@ class MdLitServicoIntegracaoRN extends InfraRN {
   private function cadastrarServicoPorIntegracao(MdLitServicoIntegracaoDTO $objMdLitServicoIntegracaoDTO, $arrModalidade, $arrAbrangencia){
       //cadastrando o servico pela integração
       $objMdLitSoapClientRN = new MdLitSoapClienteRN($objMdLitServicoIntegracaoDTO->getStrEnderecoWsdl(), 'wsdl');
+      $objMdLitSoapClientRN->setSoapVersion($objMdLitServicoIntegracaoDTO->getStrVersaoSoap());
       $arrResultadoWebService = $objMdLitSoapClientRN->call($objMdLitServicoIntegracaoDTO->getStrOperacaoWsdl(), array());
 
       $arrResultadoWebService = $arrResultadoWebService['listaTipoServico'];

@@ -39,6 +39,8 @@ class MdLitSituacaoLancamIntINT extends InfraINT {
     }
 
     public static function montarTabelaParamSaida(MdLitSoapClienteRN $objMdLitSoapClienteRN, $operacao, $objMdLitSituacaoLancamIntDTO = null){
+        $versaoSoap = $_POST['versaoSoap'] ?: $objMdLitSituacaoLancamIntDTO->getStrVersaoSoap();
+        $objMdLitSoapClienteRN->setSoapVersion($versaoSoap);
         $arrParametroSaida = $objMdLitSoapClienteRN->getParamsOutput($operacao);
         $strResultadoParamSaida = '';
 
@@ -91,6 +93,7 @@ class MdLitSituacaoLancamIntINT extends InfraINT {
     public static function montarTabelaSituacaoLancamentoIntegracao(MdLitSituacaoLancamIntDTO $objMdLitSituacaoLancamIntDTO){
 
         $objMdLitSoapClientRN = new MdLitSoapClienteRN($objMdLitSituacaoLancamIntDTO->getStrEnderecoWsdl(), 'wsdl');
+        $objMdLitSoapClientRN->setSoapVersion($objMdLitSituacaoLancamIntDTO->getStrVersaoSoap());
         $objMdLitSituacaoLancamentoRN = new MdLitSituacaoLancamentoRN();
         $arrResultadoWebService = $objMdLitSoapClientRN->enviarDados($objMdLitSituacaoLancamIntDTO->getStrOperacaoWsdl(), array());
 

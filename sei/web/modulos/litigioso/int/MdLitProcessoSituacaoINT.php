@@ -45,6 +45,101 @@ class MdLitProcessoSituacaoINT extends InfraINT {
     return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $arrObjMdLitProcessoSituacaoDTO, 'IdMdLitProcessoSituacao', 'IdMdLitProcessoSituacao');
   }
 
+    /**
+     * Recupera os lancamentos vinculados a situação informada
+     *
+     * @param $data
+     * @return array
+     * @throws InfraException
+     */
+    public static function verificarDependenciasSituacaoComLancamentos($data)
+    {
+        $mdLitSituacaoDto = new MdLitProcessoSituacaoDTO();
+        $mdLitSituacaoDto->ret('IdProcedimento');
+        $mdLitSituacaoDto->set('IdProcedimento', $data['id_procedimento']);
+        $mdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+        $mdLitProcessoSituacaoRN->listar($mdLitSituacaoDto);
+
+        $instanciaBanco = BancoSEI::getInstance();
+        //recupera somente os lancamentos vinculados a situação informada pois o sistema vincula os lancamentos anteriores a cada nova situação de decisao
+        $arr = $instanciaBanco->consultarSql("select distinct
+                            dl.id_md_lit_lancamento
+                        from md_lit_processo_situacao ps
+                                 inner join md_lit_decisao d on d.id_md_lit_processo_situacao = ps.id_md_lit_processo_situacao
+                                 inner join md_lit_rel_decis_lancament dl on dl.id_md_lit_decisao = d.id_md_lit_decisao
+                                 inner join md_lit_lancamento l on l.id_procedimento = ps.id_procedimento
+                        where ps.id_md_lit_processo_situacao =  " . (int)$data['id_processo_situacao'] . "
+                        and not exists(select * from md_lit_cancela_lancamento lc where lc.id_md_lit_lancamento =  dl.id_md_lit_lancamento)
+                        and ps.id_procedimento = " . (int)$data['id_procedimento'] . "
+                        -- menos os que estao relacionados a outras decisoes no mesmo processo
+                        and dl.id_md_lit_lancamento not in (
+                            select distinct
+                                dl.id_md_lit_lancamento
+                            from md_lit_processo_situacao ps
+                                  inner join md_lit_decisao d on d.id_md_lit_processo_situacao = ps.id_md_lit_processo_situacao
+                                  inner join md_lit_rel_decis_lancament dl on dl.id_md_lit_decisao = d.id_md_lit_decisao
+                                  inner join md_lit_lancamento l on l.id_procedimento = ps.id_procedimento
+                            where ps.id_md_lit_processo_situacao <>  " . (int)$data['id_processo_situacao'] . "
+                            and ps.id_procedimento = " . (int)$data['id_procedimento'] . "
+                        );");
+
+        $arrIdLancamentos = [];
+        $lista = [];
+        if($arr){
+            foreach ($arr as $idLancamento){
+                $arrIdLancamentos[]= $idLancamento['id_md_lit_lancamento'];
+            }
+
+            //recupera de forma detalhada os lancamentos para informar ao usuario quais devem ser cancelados
+            $mdLitLancamentoRn = new MdLitLancamentoRN();
+            $mdLitLancamentoDto = new MdLitLancamentoDTO();
+            $mdLitLancamentoDto->ret('IdMdLitLancamento');
+            $mdLitLancamentoDto->ret('TipoLancamento');
+            $mdLitLancamentoDto->ret('Sequencial');
+            $mdLitLancamentoDto->ret('Decisao');
+            $mdLitLancamentoDto->ret('Vencimento');
+            $mdLitLancamentoDto->ret('VlrLancamento');
+            $mdLitLancamentoDto->setNumIdMdLitLancamento($arrIdLancamentos, InfraDTO::$OPER_IN);
+            $lista = $mdLitLancamentoRn->listar($mdLitLancamentoDto);
+        }
+
+        return $lista;
+    }
+
+    /**
+     * Verifica se existem dependencias de decisões a situação informada
+     *
+     * @param $data
+     * @return array
+     * @throws InfraException
+     */
+    public static function verificarDependenciasSituacaoComDecisoes($data)
+    {
+        $mdLitSituacaoDto = new MdLitProcessoSituacaoDTO();
+        $mdLitSituacaoDto->ret('IdProcedimento');
+        $mdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+        $mdLitProcessoSituacaoRN->listar($mdLitSituacaoDto);
+
+        $instanciaBanco = BancoSEI::getInstance();
+        $arr = $instanciaBanco->consultarSql("select d.*
+            from md_lit_processo_situacao ps
+            inner join md_lit_decisao d on d.id_md_lit_processo_situacao = ps.id_md_lit_processo_situacao
+            where ps.id_md_lit_processo_situacao = " . (int)$data['id_processo_situacao'] . "
+            and d.sin_ativo = 'S' -- decisoes ativas
+            and (d.valor_ressarcimento is not null
+                or d.multa is not null
+                or d.id_md_lit_especie_decisao is not null
+                or d.id_md_lit_tipo_decisao is not null
+                or d.prazo is not null
+                or d.valor_multa_sem_integracao is not null
+                or d.id_md_lit_obrigacao is not null
+                )
+            order by ps.id_md_lit_processo_situacao desc;"
+        );
+
+        return $arr;
+    }
+
   public static function diferencaEntreDias($data1, $data2 = null){
       if(!$data2)
           $data2 = InfraData::getStrDataAtual();

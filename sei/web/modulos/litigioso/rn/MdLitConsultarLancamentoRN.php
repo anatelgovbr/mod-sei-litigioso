@@ -32,6 +32,7 @@ class MdLitConsultarLancamentoRN extends InfraRN
 
         $sucesso = false;
         $objMdLitSoapClienteRN   = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(),'wsdl');
+        $objMdLitSoapClienteRN->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
         $montarParametrosEntrada = $this->montarParametrosEntradaConsultarLancamento($objMdLitIntegracaoDTO, $post, 'S');
         $arrResultado            = $objMdLitSoapClienteRN->enviarDadosSigecLancamento($objMdLitIntegracaoDTO, $montarParametrosEntrada);
 
@@ -282,6 +283,7 @@ class MdLitConsultarLancamentoRN extends InfraRN
         $dadosEntrada = array();
         $sucesso = false;
         $objMdLitSoapClienteRN   = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(),'wsdl');
+        $objMdLitSoapClienteRN->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
         $dadosEntrada['hdnNumInteressado'] = $numeroInteressado;
         $dadosEntrada['numIdentificacaoLancamento'] = $numIdentificacaoLancamento;
         $montarParametrosEntrada = $this->montarParametrosEntradaConsultarLancamento($objMdLitIntegracaoDTO, $dadosEntrada);
