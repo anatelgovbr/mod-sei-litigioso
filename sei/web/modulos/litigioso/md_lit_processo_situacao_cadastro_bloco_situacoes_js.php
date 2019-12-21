@@ -551,6 +551,7 @@
 
             objTabelaDinamicaSituacao.recarregar();
             objTabelaDinamicaSituacao.adicionar(arrLinha);
+            montarIconeRemover();
             //document.getElementById("linkDoc").innerHTML = linkDocumento;
             objTabelaDinamicaSituacao.adicionarAcoes(idTabela, "", false, isRemoverTabela);
 
@@ -723,20 +724,93 @@
     }
     
     function validarVinculoDecisao(idProcSituacao){
-        var hdnSituacaoIsDecisao = document.getElementById("hdnSituacaoIsDecisao").value;
 
-        if(hdnSituacaoIsDecisao != ''){
-
-        var ret = JSON.parse(hdnSituacaoIsDecisao);
-
-        for (i in ret) {
-          if(ret[i] == idProcSituacao){
-              alert('A exclusão da situação não é permitida, pois existem registros vinculados.');
-              return false;
-          }
+        //verificar os lancamentos associados a situaca e não cancelados
+        if(validarDependenciasDeLancamentosNaoCancelados(idProcSituacao) == false){
+            return false;
         }
+
+        //verficiar as dependencias de decisões com a situacao
+        if(validarDependenciasDeDecisoesPreenchidas(idProcSituacao) == false){
+            return false;
         }
         return true;
+    }
+
+    function validarDependenciasDeLancamentosNaoCancelados(idProcSituacao) {
+        var valid = true;
+        $.ajax({
+            type: "POST",
+            url: "<?= $strVerificarDependencias ?>",
+            dataType: "xml",
+            async: false,
+            data: {
+                id_procedimento: $('#hdnIdProcedimento').val(),
+                id_processo_situacao: idProcSituacao
+            },
+            success: function (result) {
+                var dtoResult = $(result).find('MdLitLancamentoDTO');
+                var lancamentos = '';
+                if(dtoResult.length > 0){
+                    $.each(dtoResult, function(key, value){
+                        var tipoLancamento = 'Principal';
+                        if($(value).find('TipoLancamento').text().trim() == 'M') {
+                          tipoLancamento = 'Majorado'
+                        }
+
+                        lancamentos += 'Sequencial: '+ $(value).find('Sequencial').text() +'\n';
+                        lancamentos += 'Tipo de lançamento: '+ tipoLancamento +'\n';
+                        lancamentos += 'Valor do lançamento: '+ $(value).find('VlrLancamento').text() +'\n';
+                        lancamentos += 'Vencimento: '+ $(value).find('Vencimento').text() +'\n';
+                        lancamentos += 'Data da decisão: '+ $(value).find('Decisao').text() +'\n';
+                        lancamentos += '\n';
+                    });
+
+                    alert('Antes de excluir a Situação de Decisão, é necessário efetivar o Cancelamento do(s) Lançamento(s).\n\n' +
+                            lancamentos+
+                        'Para efetivar o Cancelamento do Lançamento, em Gestão de Multa acione o botão Cancelar.');
+                    valid = false;
+                }
+            },
+            error: function (msgError) {
+                msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;
+                console.log(msgCommit);
+                valid = false;
+            }
+        });
+
+        return valid;
+    }
+
+    function validarDependenciasDeDecisoesPreenchidas(idProcSituacao) {
+        var valid = true;
+        $.ajax({
+            type: "POST",
+            url: "<?= $strVerificarDependenciasDecisoesPreenchidas ?>",
+            dataType: "xml",
+            async: false,
+            data: {
+                id_procedimento: $('#hdnIdProcedimento').val(),
+                id_processo_situacao: idProcSituacao
+            },
+            success: function (result) {
+                var boolResult = $(result).find('resultado').text();
+                if(boolResult == 1){
+                    if(confirm('Ao realizar a exclusão da Situação de Decisão todas as decisões vinculadas a ela tambem serão excluídas.\n\n Deseja seguir com esta operação?')){
+                        valid = true;
+                    } else {
+                        valid = false;
+                    }
+                }
+            },
+            error: function (msgError) {
+                msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;
+                console.log(msgCommit);
+                valid = false;
+            }
+        });
+
+        return valid;
     }
 
     function validarOrdemExclusao(ordemEx){
@@ -765,6 +839,13 @@
         }
     }
 
+    /**
+     * deixa habilitado somente a opção de excluir para o primeiro item da lista de situações
+     */
+    function montarIconeRemover() {
+        $('img[src="/infra_css/imagens/remover.gif"]:gt(0)').remove()
+    }
+
     function inicializarGridSituacao(){
         var hdnStrIsGestor  = document.getElementById('hdnIsGestor').value;
         var hdnOpenProcesso = document.getElementById('hdnOpenProcesso').value;
@@ -775,6 +856,9 @@
 
         objTabelaDinamicaSituacao = new infraTabelaDinamica('tbSituacao', 'hdnTbSituacoes', alterar, excluir);
         objTabelaDinamicaSituacao.gerarEfeitoTabela = true;
+
+        //tratamento para exibir o icone excluir
+        montarIconeRemover();
 
         objTabelaDinamicaSituacao.remover = function (arr) {
             var possuiDecisao = document.getElementById('hdnProcessoSitIsDecisao') == '1' ? true : false;
@@ -1060,11 +1144,6 @@
 
     function verificarCondicionaisSituacao(){
         var tabelaVazia = objTabelaDinamicaSituacao.verificarTabelaVazia();
-
-        if(tabelaVazia){
-            alert('É obrigatório vincular ao menos uma situação.');
-            return false;
-        }
 
         if(isTpSitDecisoria && document.getElementById('hdnErroSituacao').value == 0 && document.getElementById('hdnTbDecisao').value == '' && adicionouSit){
             alert('É obrigatório adicionar ao menos uma decisão.');

@@ -11,6 +11,7 @@ require_once dirname(__FILE__). '/../../../SEI.php';
 
 class MdLitProcessoSituacaoRN extends InfraRN
 {
+    protected $isEsclusaoSituacao = false;
 
   public function __construct()
   {
@@ -232,29 +233,219 @@ class MdLitProcessoSituacaoRN extends InfraRN
     }
   }
 
-  protected function excluirControlado($arrObjMdLitProcessoSituacaoDTO)
-  {
-    try {
+    protected function excluirControlado($arrObjMdLitProcessoSituacaoDTO)
+    {
+        try {
+            //Valida Permissao
+            SessaoSEI::getInstance()->validarPermissao('md_lit_processo_situacao_excluir');
 
-      //Valida Permissao
-      SessaoSEI::getInstance()->validarPermissao('md_lit_processo_situacao_excluir');
+            //Regras de Negocio
+            $objInfraException = new InfraException();
 
-      //Regras de Negocio
-      //$objInfraException = new InfraException();
+            $arrayAtributos = [
+                'id_processo_situacao' => $arrObjMdLitProcessoSituacaoDTO[0]->get('IdMdLitProcessoSituacao'),
+                'id_procedimento' => $arrObjMdLitProcessoSituacaoDTO[0]->get('IdProcedimento')
+            ];
 
-      //$objInfraException->lancarValidacoes();
+            //se existir lancamentos nao cancelados dispara a mensagem
+            if(MdLitProcessoSituacaoINT::verificarDependenciasSituacaoComLancamentos($arrayAtributos)) {
+                $objInfraException->adicionarValidacao('A situação ainda possui multa(s) não cancelada(s)');
+                $objInfraException->lancarValidacoes();
+                throw new InfraException('Dependências de multa devem ser canceladas antes da exlusão da situação.');
+            }
 
-      $objMdLitProcessoSituacaoBD = new MdLitProcessoSituacaoBD($this->getObjInfraIBanco());
-      for ($i = 0; $i < count($arrObjMdLitProcessoSituacaoDTO); $i++) {
-        $objMdLitProcessoSituacaoBD->excluir($arrObjMdLitProcessoSituacaoDTO[$i]);
-      }
+            $objMdLitLancamentoCancelamento = new MdLitCancelaLancamentoBD($this->getObjInfraIBanco());
+            $objMdLitLancamento = new MdLitLancamentoBD($this->getObjInfraIBanco());
+            $objMdLitDecisao = new MdLitDecisaoBD($this->getObjInfraIBanco());
+            $objMdLitRelDecisaoLancamento = new MdLitRelDecisLancamentBD($this->getObjInfraIBanco());
+            $objMdLitHistoricoLancamento = new MdLitHistoricLancamentoBD($this->getObjInfraIBanco());
+            $objMdLitRelDecisaoUf = new MdLitRelDecisaoUfBD($this->getObjInfraIBanco());
 
-      //Auditoria
+            $arrLancamentos = $this->getLancamentosByIdSituacao($arrayAtributos);
+            $arrDecisao = $this->getDecisaoByIdSituacao($arrayAtributos);
 
-    } catch (Exception $e) {
-      throw new InfraException('Erro excluindo Situação.', $e);
+            foreach ($arrDecisao as $decisao) {
+                //exclusao dos relacionamentos entre decisao e lancamento
+                $mdLitReLDecisLancamentoDto = new MdLitRelDecisLancamentDTO();
+                $mdLitReLDecisLancamentoDto->retTodos();
+                $mdLitReLDecisLancamentoDto->set('IdMdLitDecisao', $decisao['id_md_lit_decisao']);
+
+                $mdLitReLDecisLancamentoRn = new MdLitRelDecisLancamentRN();
+                $arrRelDecisaoLancamento = $mdLitReLDecisLancamentoRn->listar($mdLitReLDecisLancamentoDto);
+
+                foreach ($arrRelDecisaoLancamento as $relDecisaoLancamento){
+                    $objMdLitRelDecisaoLancamento->excluir($relDecisaoLancamento);
+                }
+
+                //exclusao dos relacionamentos entre decisao e UF
+                $mdLitRelDecisaoUfDto = new MdLitRelDecisaoUfDTO();
+                $mdLitRelDecisaoUfDto->retTodos();
+                $mdLitRelDecisaoUfDto->set('IdMdLitDecisao', $decisao['id_md_lit_decisao']);
+
+                $mdLitRelDecisaoUfRn  = new MdLitRelDecisaoUfRN();
+                $arrRelDecisaoUf = $mdLitRelDecisaoUfRn->listar($mdLitRelDecisaoUfDto);
+
+                foreach ($arrRelDecisaoUf as $relDecisaoUf){
+                    $objMdLitRelDecisaoUf->excluir($relDecisaoUf);
+                }
+
+                //exclusao da decisao
+                $mdLitDecisaoDto = new MdLitDecisaoDTO();
+                $mdLitDecisaoDto->set('IdMdLitDecisao', $decisao['id_md_lit_decisao']);
+                $objMdLitDecisao->excluir($mdLitDecisaoDto);
+            }
+
+            foreach($arrLancamentos as $lancamento){
+                //exclusão dos cancelamentos de lancamento
+                $mdLitCancelamentoLancamentoDto = new MdLitCancelaLancamentoDTO();
+                $mdLitCancelamentoLancamentoDto->retTodos();
+                $mdLitCancelamentoLancamentoDto->set('IdMdLitLancamento', $lancamento['id_md_lit_lancamento']);
+                $mdLitLancamentoRn = new MdLitCancelaLancamentoRN();
+                $arrCancelamentos = $mdLitLancamentoRn->listar($mdLitCancelamentoLancamentoDto);
+
+                foreach ($arrCancelamentos as $cancelamento){
+                    $objMdLitLancamentoCancelamento->excluir($cancelamento);
+                }
+
+                //exclusão do historico dos lancamentos
+                $mdLitHistoricoLancamentoDto = new MdLitHistoricLancamentoDTO();
+                $mdLitHistoricoLancamentoDto->retTodos();
+                $mdLitHistoricoLancamentoDto->set('IdMdLitLancamento', $lancamento['id_md_lit_lancamento']);
+
+                $mdLitHistoricoLancamentoRn = new MdLitHistoricLancamentoRN();
+                $arrHistoricoLancamento = $mdLitHistoricoLancamentoRn->listar($mdLitHistoricoLancamentoDto);
+                foreach ($arrHistoricoLancamento as $historico){
+                    $objMdLitHistoricoLancamento->excluir($historico);
+                }
+
+                //exlusao do lancamento
+                $mdLitLancamentoDto = new MdLitLancamentoDTO();
+                $mdLitLancamentoDto->set('IdMdLitLancamento', $lancamento['id_md_lit_lancamento']);
+                $objMdLitLancamento->excluir($mdLitLancamentoDto);
+            }
+
+
+            $objMdLitProcessoSituacaoBD = new MdLitProcessoSituacaoBD($this->getObjInfraIBanco());
+            for ($i = 0; $i < count($arrObjMdLitProcessoSituacaoDTO); $i++) {
+
+                //se for a situação de instauração recupera
+                $resultInstauracao = $this->getSituacaoInstauracao($arrayAtributos);
+                $objMdLitProcessoSituacaoBD->excluir($arrObjMdLitProcessoSituacaoDTO[$i]);
+
+                //se a situcação for a situação de instauração remove os dados do controle litigioso
+                if($resultInstauracao) {
+
+                    //recupera o id do controle litigioso
+                    $mdLitControleDto = new MdLitControleDTO();
+                    $mdLitControleDto->set('IdProcedimento', $resultInstauracao[0]['id_procedimento']);
+                    $mdLitControleDto->ret('IdControleLitigioso');
+                    $mdLitControleRn = new MdLitControleRN();
+                    $mdLitControleDto = $mdLitControleRn->listar($mdLitControleDto);
+                    $idControle = $mdLitControleDto[0]->get('IdControleLitigioso');
+
+                    //Exclusão dos dispositivos normativos vinculados ao controle litigioso
+                    $objRelDispositivoNormativoCondutaControleLitigiosoDTO = new MdLitRelDispositivoNormativoCondutaControleDTO();
+                    $objRelDispositivoNormativoCondutaControleLitigiosoRN = new MdLitRelDispositivoNormativoCondutaControleRN();
+                    $objRelDispositivoNormativoCondutaControleLitigiosoDTO->ret('IdControleLitigioso');
+                    $objRelDispositivoNormativoCondutaControleLitigiosoDTO->ret('IdDispositivoNormativoNormaCondutaControle');
+                    $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setNumIdControleLitigioso($idControle);
+                    $objRelDispositivoNormativoCondutaControleLitigiosoDTO = $objRelDispositivoNormativoCondutaControleLitigiosoRN->listar($objRelDispositivoNormativoCondutaControleLitigiosoDTO);
+
+                    $objRelDispositivoNormativoCondutaControleLitigiosoRN->excluir($objRelDispositivoNormativoCondutaControleLitigiosoDTO);
+
+                    //excluindo SOBRESTAMENTO - LITIGIOSO
+
+                    $objRelProtocoloProtocoloLitigiosoDTO = new MdLitRelProtocoloProtocoloDTO();
+                    $objRelProtocoloProtocoloLitigiosoRN  = new MdLitRelProtocoloProtocoloRN();
+                    $objRelProtocoloProtocoloLitigiosoDTO->ret('IdRelProtocoloProtocolo');
+                    $objRelProtocoloProtocoloLitigiosoDTO->setNumIdControleLitigioso($idControle);
+                    $objRelProtocoloProtocoloLitigiosoDTO = $objRelProtocoloProtocoloLitigiosoRN->listar($objRelProtocoloProtocoloLitigiosoDTO);
+
+                    $objRelProtocoloProtocoloLitigiosoRN->excluir($objRelProtocoloProtocoloLitigiosoDTO);
+
+                    //Excluindo Dados do interessado
+                    $dadosInteressadoRN = new MdLitDadoInteressadoRN();
+
+                    $mdLitDadoInteressadoDTO = new MdLitDadoInteressadoDTO();
+                    $mdLitDadoInteressadoDTO->ret('IdProcedimentoMdLitTipoControle');
+                    $mdLitDadoInteressadoDTO->ret('IdContato');
+                    $mdLitDadoInteressadoDTO->ret('IdMdLitControle');
+                    $mdLitDadoInteressadoDTO->setNumIdMdLitControle($idControle);
+                    $arrDadoInteressadoDTO = $dadosInteressadoRN->listar($mdLitDadoInteressadoDTO);
+                    $dadosInteressadoRN->removerInteressadoLimparControleLitigioso($arrDadoInteressadoDTO);
+
+                    $mdLitRelControleMotivoDTO = new MdLitRelControleMotivoDTO();
+                    $mdLitRelControleMotivoRN = new MdLitRelControleMotivoRN();
+                    $mdLitRelControleMotivoDTO->setNumIdMdLitControle($idControle);
+                    $mdLitRelControleMotivoRN->excluirRelacionamentoExistente($mdLitRelControleMotivoDTO);
+
+                    //Excluindo Controle litigioso
+                    $mdLitControleDto = new MdLitControleDTO();
+                    $mdLitControleDto->set('IdControleLitigioso', $idControle);
+
+                    $controleLitigiosoRn = new MdLitControleRN();
+                    $controleLitigiosoRn->excluir($mdLitControleDto);
+                }
+            }
+
+            //Auditoria
+
+        } catch (Exception $e) {
+            throw new InfraException('Erro excluindo Situação.', $e);
+        }
     }
-  }
+
+    public function getSituacaoInstauracao($data)
+    {
+        $sql = " select s.sin_instauracao, ps.* 
+                from md_lit_situacao s
+                inner join md_lit_processo_situacao ps on ps.id_md_lit_situacao = s.id_md_lit_situacao
+                where s.sin_instauracao = 'S' and s.sin_ativo = 'S'
+                and ps.id_md_lit_processo_situacao =  " . (int) $data['id_processo_situacao'];
+
+        $instanciaBanco = BancoSEI::getInstance();
+        $arr = $instanciaBanco->consultarSql($sql);
+        return $arr;
+
+    }
+    
+    public function getLancamentosByIdSituacao($data)
+    {
+        $sql = "select distinct
+                    dl.id_md_lit_lancamento
+                from md_lit_processo_situacao ps
+                         inner join md_lit_decisao d on d.id_md_lit_processo_situacao = ps.id_md_lit_processo_situacao
+                         inner join md_lit_rel_decis_lancament dl on dl.id_md_lit_decisao = d.id_md_lit_decisao
+                         inner join md_lit_lancamento l on l.id_procedimento = ps.id_procedimento
+                where ps.id_md_lit_processo_situacao =  " . (int)$data['id_processo_situacao']."
+                    and ps.id_procedimento = " . (int)$data['id_procedimento']."
+                    -- menos os que estao relacionados a outras decisoes no mesmo processo
+                    and dl.id_md_lit_lancamento not in (
+                        select distinct dl.id_md_lit_lancamento
+                        from md_lit_processo_situacao ps
+                                 inner join md_lit_decisao d on d.id_md_lit_processo_situacao = ps.id_md_lit_processo_situacao
+                                 inner join md_lit_rel_decis_lancament dl on dl.id_md_lit_decisao = d.id_md_lit_decisao
+                                 inner join md_lit_lancamento l on l.id_procedimento = ps.id_procedimento
+                        where ps.id_md_lit_processo_situacao <> " . (int)$data['id_processo_situacao']."
+                        and ps.id_procedimento = " . (int)$data['id_procedimento']."
+                    )";
+
+        $instanciaBanco = BancoSEI::getInstance();
+        $arr = $instanciaBanco->consultarSql($sql);
+        return $arr;
+    }
+
+    public function getDecisaoByIdSituacao($data)
+    {
+        $sql = "select distinct d.*
+                from md_lit_processo_situacao ps
+                         inner join md_lit_decisao d on d.id_md_lit_processo_situacao = ps.id_md_lit_processo_situacao
+                where ps.id_md_lit_processo_situacao =" . (int)$data['id_processo_situacao'].";";
+
+        $instanciaBanco = BancoSEI::getInstance();
+        $arr = $instanciaBanco->consultarSql($sql);
+        return $arr;
+    }
 
   protected function consultarConectado(MdLitProcessoSituacaoDTO $objMdLitProcessoSituacaoDTO)
   {
@@ -903,6 +1094,10 @@ class MdLitProcessoSituacaoRN extends InfraRN
         $arrIdSituacao   = $this->_prepararCadastroAlteracaoSituacao($arrSituacao);
         //$id_md_lit_processo_situacao = $this->cadastrar($arrSituacao);
 
+        //se nao for esclusao da situacao deve alterar/cadastrar
+        if($this->isEsclusaoSituacao) {
+            return;
+        }
         // o cadastrar situação colocar o $id_md_lit_processo_situacao cadastrado/alterado
         $arrDecisao['id_md_lit_processo_situacao'] = count($arrIdSituacao)> 0 ? end($arrIdSituacao): null;
         $arrDecisao['id_procedimento'] = $post['hdnIdProcedimento'];
@@ -961,6 +1156,7 @@ class MdLitProcessoSituacaoRN extends InfraRN
     $objMdLitProcessoSituacaoDTO = new MdLitProcessoSituacaoDTO();
     $objMdLitProcessoSituacaoDTO->setNumIdMdLitProcessoSituacao($idsExcluidos, InfraDTO::$OPER_IN);
     $objMdLitProcessoSituacaoDTO->retNumIdMdLitProcessoSituacao();
+    $objMdLitProcessoSituacaoDTO->ret('IdProcedimento');
 
     if ($this->contar($objMdLitProcessoSituacaoDTO) > 0) {
       $this->excluir($this->listar($objMdLitProcessoSituacaoDTO));
@@ -985,6 +1181,8 @@ class MdLitProcessoSituacaoRN extends InfraRN
           $arrIdSituacaoCadastro[] = $objMdLitProcessoSitDTO->getNumIdMdLitProcessoSituacao();
         }elseif($isAlteracao){
           $objMdLitProcessoSitDTO = $this->_realizaAlteracaoSituacao($arrDados);
+        } elseif ($arrIdsExcluidos){
+            $this->isEsclusaoSituacao = true;
         }
       }
     }

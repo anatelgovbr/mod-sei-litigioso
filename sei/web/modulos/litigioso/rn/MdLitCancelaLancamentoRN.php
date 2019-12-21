@@ -213,7 +213,7 @@ class MdLitCancelaLancamentoRN extends InfraRN {
 
       try{
           $objMdlitSoapClient = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(),'wsdl');
-
+          $objMdlitSoapClient->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
           $err = $objMdlitSoapClient->getError();
           if($err)
               throw new InfraException($err);
@@ -221,8 +221,13 @@ class MdLitCancelaLancamentoRN extends InfraRN {
           $objMdlitSoapClient->soap_defencoding = 'UTF-8';
           $objMdlitSoapClient->decode_utf8 = false;
 
-          //@todo retirar quanto verificar a configuração do wso2 da anatel
-          $objMdlitSoapClient->forceEndpoint = 'http://sistemasnetds/services/financeiroService.financeiroServiceHttpsSoap11Endpoint';
+          // alteração da URL do endpoint para sincronizar com a URL parametrizada do WSDL as duas http ou https
+          $opData = $objMdlitSoapClient->getOperationData($objMdLitIntegracaoDTO->getStrOperacaWsdl());
+          if(!empty($opData['endpoint'])){
+              $http = preg_match('/^https/', $objMdLitIntegracaoDTO->getStrEnderecoWsdl()) ? 'https' : 'http';
+              $objMdlitSoapClient->forceEndpoint = str_replace('https', $http, $opData['endpoint']);
+          }
+
           $arrResultado = $objMdlitSoapClient->call($objMdLitIntegracaoDTO->getStrOperacaWsdl(), array());
 
           $err = $objMdlitSoapClient->getError();
@@ -282,6 +287,7 @@ class MdLitCancelaLancamentoRN extends InfraRN {
         try {
 
             $objMdLitSoapClienteRN = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(), 'wsdl');
+            $objMdLitSoapClienteRN->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
 
             $objInfraException = $objMdLitLancamentoRN->realizarValidacoesGerais($objMdLitIntegracaoDTO, $post, $objInfraException);
             $montarParametroEntrada = $this->_montarParametroEntradaCancelamentoCredito($objMdLitIntegracaoDTO, $post);

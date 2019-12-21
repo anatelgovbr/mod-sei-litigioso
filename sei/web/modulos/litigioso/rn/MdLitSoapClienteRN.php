@@ -13,7 +13,7 @@ require_once dirname(__FILE__).'/../lib/nusoap/nusoap.php';
 class MdLitSoapClienteRN extends nusoap_client{
 
 	protected $wsdl;
-
+    protected $soapVersion = SOAP_1_2;
 	protected $options;
 	
 	function __construct($endpoint,$wsdl = false,$proxyhost = false,$proxyport = false,$proxyusername = false, $proxypassword = false, $timeout = 0, $response_timeout = 30, $portName = ''){
@@ -39,6 +39,42 @@ class MdLitSoapClienteRN extends nusoap_client{
         return $functions;
     }
 
+    /**
+     * Sobreescrita do metodo da biblioteca nusoap para permitir a parametrização da versão do SOAP (1.2 e 1.1),
+     * metodo sobreescrito pois quando o WSLD atende tanto soap1.1 quanto soap1.2 por defalt caia no 1.1 entao
+     * para não impactar na biblioteca do componetente do nusoap
+     *
+     * @see checkWSDL() - sei/web/modulos/litigioso/lib/nusoap/nusoap.php
+     */
+    public function checkWSDL() {
+        $this->appendDebug($this->wsdl->getDebug());
+        $this->wsdl->clearDebug();
+        $this->debug('checkWSDL');
+        // catch errors
+        if ($errstr = $this->wsdl->getError()) {
+            $this->appendDebug($this->wsdl->getDebug());
+            $this->wsdl->clearDebug();
+            $this->debug('got wsdl error: '.$errstr);
+            $this->setError('wsdl error: '.$errstr);
+        } elseif ($this->bindingType == 'soap' && $this->operations = $this->wsdl->getOperations($this->portName, 'soap')) {
+            $this->appendDebug($this->wsdl->getDebug());
+            $this->wsdl->clearDebug();
+            $this->bindingType = 'soap';
+            $this->debug('got '.count($this->operations).' operations from wsdl '.$this->wsdlFile.' for binding type '.$this->bindingType);
+        } elseif ($this->bindingType == 'soap12' && $this->operations = $this->wsdl->getOperations($this->portName, 'soap12')) {
+            $this->appendDebug($this->wsdl->getDebug());
+            $this->wsdl->clearDebug();
+            $this->bindingType = 'soap12';
+            $this->debug('got '.count($this->operations).' operations from wsdl '.$this->wsdlFile.' for binding type '.$this->bindingType);
+            $this->debug('**************** WARNING: SOAP 1.2 BINDING *****************');
+        } else {
+            $this->appendDebug($this->wsdl->getDebug());
+            $this->wsdl->clearDebug();
+            $this->debug('getOperations returned false');
+            $this->setError('no operations defined in the WSDL document!');
+        }
+    }
+
     public function getParamsInput($nameOperations, $recursivo = false)
     {
         $operations = $this->getOperationData($nameOperations);
@@ -49,7 +85,7 @@ class MdLitSoapClienteRN extends nusoap_client{
             $returnType = $nameOperations;
         } else {
             if (!$operations) {
-                throw new InfraException('Nome da operação não existe.');
+                throw new InfraException('Nome da operação não existe ou não encontrada para essa versão SOAP.');
             }
 
             $nameType = $this->getEntidadePorUrlWSDL($operations['input']['parts']['parameters']);
@@ -105,7 +141,7 @@ class MdLitSoapClienteRN extends nusoap_client{
          * @todo if para tratar o web-service da ANATEL de serviço aonde o wsdl não possui assinatura de output
          */
         if(empty($operations['output']['parts'])){
-            $resp = $this->call($nameOperations, array('soap_version'=>SOAP_1_2,'cache_wsdl' => WSDL_CACHE_NONE));
+            $resp = $this->call($nameOperations, array('soap_version'=>$this->soapVersion,'cache_wsdl' => WSDL_CACHE_NONE));
             if($this->responseData === false){
                 $objInfraException = new InfraException();
                 $objInfraException->adicionarValidacao('Não foi possível comunicação com o servidor.');
@@ -461,5 +497,13 @@ class MdLitSoapClienteRN extends nusoap_client{
         return false;
     }
 
-
+    public function setSoapVersion($soapVersion = '1.2')
+    {
+        $this->soapVersion = SOAP_1_2;
+        $this->bindingType = 'soap12';
+        if ($soapVersion == '1.1') {
+            $this->soapVersion = SOAP_1_1;
+            $this->bindingType = 'soap';
+        }
+    }
 }

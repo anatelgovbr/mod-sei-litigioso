@@ -10,7 +10,7 @@
 
         public function getVersao()
         {
-            return '1.6.0';
+            return '1.7.0';
         }
 
         public function getInstituicao()
@@ -442,11 +442,11 @@
                     break;
 
                 case 'md_lit_integracao_busca_operacao_wsdl':
-                    $xml      = MdLitIntegracaoINT::montarXMLBuscarOperacaoWSDL($_POST['endereco_wsdl']);
+                    $xml = MdLitIntegracaoINT::montarXMLBuscarOperacaoWSDL($_POST);
                     break;
 
                 case 'md_lit_servico_busca_operacao_wsdl':
-                    $xml      = MdLitServicoINT::montarXMLBuscarOperacaoWSDL($_POST['endereco_wsdl']);
+                    $xml = MdLitServicoINT::montarXMLBuscarOperacaoWSDL($_POST);
                     break;
 
                 case 'md_lit_interessado_processo':
@@ -482,6 +482,16 @@
 
                 case 'md_lit_verificar_vinculo_situacao_doc':
                     $xml = MdLitProcessoSituacaoINT::validarVinculoNumeroSeiSituacao($_POST['numeroSei'], $_POST['idTipoControle'], $_POST['idProcedimento'], $_POST['idSituacao']);
+                    break;
+
+                case 'md_lit_verificar_dependencias_lancamentos_situacao':
+                    $result = MdLitProcessoSituacaoINT::verificarDependenciasSituacaoComLancamentos($_POST);
+                    $xml = '<resultado>'.InfraArray::converterArrayXml(InfraArray::converterArrInfraDTO($result)).'</resultado>';
+                    break;
+
+                case 'md_lit_verificar_dependencias_decisoes_situacao':
+                    $result = MdLitProcessoSituacaoINT::verificarDependenciasSituacaoComDecisoes($_POST) ? 1 : 0;
+                    $xml = '<resultado>'.$result.'</resultado>';
                     break;
 
                 case 'md_lit_dado_complementar_listar':

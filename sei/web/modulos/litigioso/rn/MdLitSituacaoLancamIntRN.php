@@ -132,6 +132,7 @@ class MdLitSituacaoLancamIntRN extends InfraRN {
     private function cadastrarSituacaoPorIntegracao(MdLitSituacaoLancamIntDTO $objMdLitSituacaoLancamIntDTO){
         //cadastrando o servico pela integração
         $objMdLitSoapClientRN = new MdLitSoapClienteRN($objMdLitSituacaoLancamIntDTO->getStrEnderecoWsdl(), 'wsdl');
+        $objMdLitSoapClientRN->setSoapVersion($objMdLitSituacaoLancamIntDTO->getStrVersaoSoap());
         $arrResultadoWebService = $objMdLitSoapClientRN->enviarDados($objMdLitSituacaoLancamIntDTO->getStrOperacaoWsdl(), array());
 
         $arrResultadoWebService = $arrResultadoWebService['return'];

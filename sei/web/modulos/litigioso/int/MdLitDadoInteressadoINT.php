@@ -176,6 +176,7 @@ class MdLitDadoInteressadoINT extends InfraINT {
 
         $filtroWS = self::mapearParamentroEntrada($objMdLitIntegracaoDTO,$filtro);
         $objMdlitSoapClient = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(), 'wsdl');
+        $objMdlitSoapClient->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
 
         $err = $objMdlitSoapClient->getError();
         if($err) {
@@ -188,6 +189,14 @@ class MdLitDadoInteressadoINT extends InfraINT {
 
         $objMdlitSoapClient->soap_defencoding = 'UTF-8';
         $objMdlitSoapClient->decode_utf8 = false;
+
+        // alteração da URL do endpoint para sincronizar com a URL parametrizada do WSDL as duas http ou https
+        $opData = $objMdlitSoapClient->getOperationData($objMdLitIntegracaoDTO->getStrOperacaWsdl());
+        if(!empty($opData['endpoint'])){
+            $http = preg_match('/^https/', $objMdLitIntegracaoDTO->getStrEnderecoWsdl()) ? 'https' : 'http';
+            $objMdlitSoapClient->forceEndpoint = str_replace('https', $http, $opData['endpoint']);
+        }
+
         $arrResultado = $objMdlitSoapClient->call($objMdLitIntegracaoDTO->getStrOperacaWsdl(), array('filtro' => $filtroWS));
 
         $err = $objMdlitSoapClient->getError();

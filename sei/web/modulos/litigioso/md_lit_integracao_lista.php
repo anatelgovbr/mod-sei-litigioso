@@ -187,6 +187,7 @@ if ($numRegistros > 0) {
     $strResultado .= '<th class="infraTh" align="center" width="1%">' . PaginaSEI::getInstance()->getThCheck() . '</th>';
     $strResultado .= '<th class="infraTh" width="auto">' . PaginaSEI::getInstance()->getThOrdenacao($objMdLitIntegracaoDTO, 'Nome', 'Nome', $arrObjMdLitIntegracao) . '</th>';
     $strResultado .= '<th class="infraTh" width="auto">' . PaginaSEI::getInstance()->getThOrdenacao($objMdLitIntegracaoDTO, 'Funcionalidade', 'NomeMdLitFuncionalidade', $arrObjMdLitIntegracao) . '</th>';
+    $strResultado .= '<th class="infraTh" width="auto">' . PaginaSEI::getInstance()->getThOrdenacao($objMdLitIntegracaoDTO, 'Tipo Cliente WS', 'TipoClienteWs', $arrObjMdLitIntegracao) . '</th>';
     $strResultado .= '<th class="infraTh" width="15%">Ações</th>';
     $strResultado .= '</tr>';
 
@@ -218,6 +219,11 @@ if ($numRegistros > 0) {
         #Linha funcionalidade
         $strResultado .= '<td>';
         $strResultado .= PaginaSEI::tratarHTML($arrObjMdLitIntegracao[$i]->getStrNomeMdLitFuncionalidade());
+        $strResultado .= '</td>';
+
+        //Tipo cliente WS
+        $strResultado .= '<td>';
+        $strResultado .= PaginaSEI::tratarHTML($arrObjMdLitIntegracao[$i]->getStrTipoClienteWs());
         $strResultado .= '</td>';
 
         $strResultado .= '<td align="center">';

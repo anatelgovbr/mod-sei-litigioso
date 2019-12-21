@@ -595,6 +595,7 @@ class MdLitLancamentoRN extends InfraRN {
       
         $objMdLitIntegracaoDTO  = $objMdLitIntegracaoRN->retornarObjIntegracaoDTOPorFuncionalidade($post['hdnIdMdLitFuncionalidade']);
         $objMdLitSoapClienteRN  = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(),'wsdl');
+        $objMdLitSoapClienteRN->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
         $objInfraException      = $this->realizarValidacoesGerais($objMdLitIntegracaoDTO, $post, $objInfraException);
 
         $montarParametroEntrada = $this->_montarParametroEntradaLancamentoCredito($objMdLitIntegracaoDTO, $post, $objMdLitLancamentoNovo);
@@ -654,6 +655,7 @@ class MdLitLancamentoRN extends InfraRN {
 
         $objMdLitIntegracaoDTO  = $objMdLitIntegracaoRN->retornarObjIntegracaoDTOPorFuncionalidade($post['hdnIdMdLitFuncionalidade']);
         $objMdLitSoapClienteRN  = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(),'wsdl');
+        $objMdLitSoapClienteRN->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
         $objInfraException      = $this->realizarValidacoesGerais($objMdLitIntegracaoDTO, $post, $objInfraException);
 
         $objMdLitLancamentoDTO->retTodos(false);
@@ -1111,7 +1113,17 @@ class MdLitLancamentoRN extends InfraRN {
 
         $arrObjMdLitLancamentoDTO = $this->listar($objMdLitLancamentoDTO);
 
+        $mdLitCancelaLancamentoRN = new MdLitCancelaLancamentoRN();
         foreach ($arrObjMdLitLancamentoDTO as $objMdLitLancamentoDTO){
+
+            $mdLitCancelaLancamentoDTO = new MdLitCancelaLancamentoDTO();
+            $mdLitCancelaLancamentoDTO->retTodos(false);
+            $mdLitCancelaLancamentoDTO->set('IdMdLitLancamento', $objMdLitLancamentoDTO->get('IdMdLitLancamento'));
+            $lancamentoCancelado = $mdLitCancelaLancamentoRN->listar($mdLitCancelaLancamentoDTO);
+            //tratamento para desconsiderar os lancamentos cancelados no calculo totalCreditoLancado
+            if($lancamentoCancelado){
+                continue;
+            }
 
             //calculando o valor lançado e o não lançado e a multa aplicada
             $creditoLancado = InfraUtil::prepararDbl($objMdLitLancamentoDTO->getDblVlrLancamento());

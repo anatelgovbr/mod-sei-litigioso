@@ -716,5 +716,9 @@
             $objMdLitControleBD->alterar($objMdLitControleDTO);
         }
 
+        protected function excluirControlado($objMdLitControleDTO){
+            $objMdLitControleBD = new MdLitControleBD($this->getObjInfraIBanco());
+            $objMdLitControleBD->excluir($objMdLitControleDTO);
+        }
 
     }

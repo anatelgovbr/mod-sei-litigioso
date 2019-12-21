@@ -29,7 +29,11 @@ class MdLitIntegracaoDTO extends InfraDTO {
 
     $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinAtivo', 'sin_ativo');
 
-      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinVincularLancamento', 'sin_vincular_lancamento');
+    $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinVincularLancamento', 'sin_vincular_lancamento');
+
+    $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'TipoClienteWs', 'tipo_cliente_ws');
+
+    $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'VersaoSoap', 'versao_soap');
 
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeMdLitFuncionalidade', 'nome', 'md_lit_funcionalidade');
 

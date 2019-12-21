@@ -117,9 +117,21 @@
 
 
     function validarWsdl() {
+        var consultar  = <?php echo $_GET['acao'] != 'md_lit_situacao_lancamento_consultar' ? 'true' : 'false'; ?>//;
         var enderecoWsdl = document.getElementById('txtEnderecoWsdl').value;
+        var tipoWs = $('[name="tipoWs"]:checked').val();
+        var versaoSoap = $('[name="versaoSoap"]').val();
+        if(consultar){
+             versaoSoap = $('[name="versaoSoap"]').not(':disabled').val();
+        }
+
         if (enderecoWsdl == '') {
-            alert('Preenche o campo Endereço WSDL.');
+            alert('Preencher o campo Endereço WSDL.');
+            return false;
+        }
+
+        if(tipoWs != 'SOAP' || versaoSoap == undefined){
+            alert('Paraaaaa validar este serviço informe o Tipo de Cliente WS como SOAP e sua Versão Soap');
             return false;
         }
 
@@ -128,7 +140,7 @@
             url: "<?= $strLinkAjaxValidarWsdl ?>",
             dataType: "xml",
             data: {
-                endereco_wsdl: enderecoWsdl,
+                endereco_wsdl: enderecoWsdl, tipoWs: tipoWs, versaoSoap: versaoSoap
             },
             beforeSend: function(){
                 infraExibirAviso(false);
@@ -174,6 +186,8 @@
     function abrirJanelaMapeamento() {
         var txtEnderecoWsdl = document.getElementById('txtEnderecoWsdl').value;
         var selOperacao = document.getElementById('selOperacao').value;
+        var tipoWs = $('[name="tipoWs"]').val();
+        var versaoSoap = $('[name="versaoSoap"]').val();
 
         if(txtEnderecoWsdl == ''){
             alert('Informe o Endereço do WSDL');
@@ -205,6 +219,20 @@
         operacaoInput.name = "txtOperacao";
         operacaoInput.value = selOperacao;
         modalForm.appendChild(operacaoInput);
+        modalForm.style.display = 'none';
+
+        var tipoWsInput = document.createElement("input");
+        tipoWsInput.type = "text";
+        tipoWsInput.name = "tipoWs";
+        tipoWsInput.value = tipoWs;
+        modalForm.appendChild(tipoWsInput);
+        modalForm.style.display = 'none';
+
+        var versaoSoapInput = document.createElement("input");
+        versaoSoapInput.type = "text";
+        versaoSoapInput.name = "versaoSoap";
+        versaoSoapInput.value = versaoSoap;
+        modalForm.appendChild(versaoSoapInput);
         modalForm.style.display = 'none';
 
         //adiciona no final da pagina

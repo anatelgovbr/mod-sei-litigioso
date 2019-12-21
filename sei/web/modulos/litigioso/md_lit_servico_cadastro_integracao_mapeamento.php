@@ -27,6 +27,7 @@ switch ($_GET['acao']) {
         $strTitulo = 'Mapeamento de Campos';
         try {
             $objMdLitSoapClientRN = new MdLitSoapClienteRN($_POST['txtEnderecoWsdl'], 'wsdl');
+            $objMdLitSoapClientRN->setSoapVersion($_POST['versaoSoap']);
             $objMdLitServicoIntegracaoDTO = null;
             if($_GET['id_md_lit_servico_integracao']){
                 $objMdLitServicoIntegracaoDTO = new MdLitServicoIntegracaoDTO();

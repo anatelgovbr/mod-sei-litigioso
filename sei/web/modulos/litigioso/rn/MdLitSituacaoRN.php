@@ -597,7 +597,7 @@
             if($objMdLitSituacaoDTO->getStrSinAlegacoes() == 'S'){
                 $dados['tipoSituacao'] = 'Alegacoes';
                 $dados['nomeLabel']    = 'Alegações';
-                $dados['nome']         = 'Alegações';
+                $dados['nome']         = 'Intimação para Alegações';
             }
             
             if(!array_key_exists('tipoSituacao', $dados)){

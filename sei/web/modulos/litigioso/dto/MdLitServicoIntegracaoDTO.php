@@ -35,6 +35,10 @@ class MdLitServicoIntegracaoDTO extends InfraDTO {
 
     $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'ChaveUnica', 'chave_unica');
 
+    $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'TipoClienteWs', 'tipo_cliente_ws');
+
+    $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'VersaoSoap', 'versao_soap');
+
       $this->adicionarAtributo(InfraDTO::$PREFIXO_ARR, 'Modalidade');
 
       $this->adicionarAtributo(InfraDTO::$PREFIXO_ARR, 'Abrangencia');

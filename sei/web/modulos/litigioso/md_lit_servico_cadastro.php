@@ -53,6 +53,8 @@ try {
             $selOperacao            = $_POST['selOperacao'];
             $txtEnderecoWsdl        = $_POST['txtEnderecoWsdl'];
             $txtIntegracao          = $_POST['txtIntegracao'];
+            $tipoWs                 = $_POST['tipoWs'];
+            $versaoSoap             = $_POST['versaoSoap'];
 
 
             if (isset($_POST['hdnSalvarServico'])) {
@@ -76,6 +78,8 @@ try {
                     $objMdLitServicoIntegracaoDTO->setStrEnderecoWsdl($_POST['txtEnderecoWsdl']);
                     $objMdLitServicoIntegracaoDTO->setStrNomeIntegracao($_POST['txtIntegracao']);
                     $objMdLitServicoIntegracaoDTO->setStrOperacaoWsdl($_POST['selOperacao']);
+                    $objMdLitServicoIntegracaoDTO->setStrTipoClienteWs($_POST['tipoWs']);
+                    $objMdLitServicoIntegracaoDTO->setStrVersaoSoap($_POST['versaoSoap']);
                     $objMdLitServicoIntegracaoDTO->setArrModalidade($_POST['selModalidade']);
                     $objMdLitServicoIntegracaoDTO->setArrAbrangencia($_POST['selAbrangencia']);
                     $objMdLitServicoIntegracaoDTO->setStrMapeamentoSituacao('');
@@ -169,6 +173,8 @@ try {
                     $objMdLitServicoIntegracaoDTO->setStrEnderecoWsdl($_POST['txtEnderecoWsdl']);
                     $objMdLitServicoIntegracaoDTO->setStrNomeIntegracao($_POST['txtIntegracao']);
                     $objMdLitServicoIntegracaoDTO->setStrOperacaoWsdl($_POST['selOperacao']);
+                    $objMdLitServicoIntegracaoDTO->setStrTipoClienteWs($_POST['tipoWs']);
+                    $objMdLitServicoIntegracaoDTO->setStrVersaoSoap($_POST['versaoSoap']);
                     $objMdLitServicoIntegracaoDTO->setArrModalidade($_POST['selModalidade']);
                     $objMdLitServicoIntegracaoDTO->setArrAbrangencia($_POST['selAbrangencia']);
                     $objMdLitServicoIntegracaoDTO->setStrMapeamentoSituacao('');
@@ -246,9 +252,11 @@ try {
                     throw new InfraException('Serviço por integração não encontrado!');
                 }
 
-                $selOperacao            = $objMdLitServicoIntegracaoDTO->getStrOperacaoWsdl();
-                $txtEnderecoWsdl        = $objMdLitServicoIntegracaoDTO->getStrEnderecoWsdl();
-                $txtIntegracao          = $objMdLitServicoIntegracaoDTO->getStrNomeIntegracao();
+                $selOperacao = $objMdLitServicoIntegracaoDTO->getStrOperacaoWsdl();
+                $txtEnderecoWsdl = $objMdLitServicoIntegracaoDTO->getStrEnderecoWsdl();
+                $txtIntegracao = $objMdLitServicoIntegracaoDTO->getStrNomeIntegracao();
+                $tipoWs = $objMdLitServicoIntegracaoDTO->getStrTipoClienteWs();
+                $versaoSoap = $objMdLitServicoIntegracaoDTO->getStrVersaoSoap();
             }
 
             break;
@@ -284,6 +292,7 @@ try {
                 $txtDescricao = $objMdLitServicoDTO->getStrDescricao();
 
 
+
             }elseif( !empty($objMdLitServicoDTO->getNumIdMdLitServicoIntegracao()) ){
 
                 $objMdLitServicoIntegracaoRN = new MdLitServicoIntegracaoRN();
@@ -300,6 +309,8 @@ try {
                 $selOperacao            = $objMdLitServicoIntegracaoDTO->getStrOperacaoWsdl();
                 $txtEnderecoWsdl        = $objMdLitServicoIntegracaoDTO->getStrEnderecoWsdl();
                 $txtIntegracao          = $objMdLitServicoIntegracaoDTO->getStrNomeIntegracao();
+                $tipoWs                 = $objMdLitServicoIntegracaoDTO->getStrTipoClienteWs();
+                $versaoSoap             = $objMdLitServicoIntegracaoDTO->getStrVersaoSoap();
             }
 
             break;
@@ -320,6 +331,8 @@ if (isset($_POST['hdnMapeamentoJson']) && !empty($_POST['hdnMapeamentoJson'])) {
     $arrMapeamento                = json_decode($_POST['hdnMapeamentoJson']);
     $objMdLitServicoIntegracaoDTO->setStrEnderecoWsdl($_POST['txtEnderecoWsdl']);
     $objMdLitServicoIntegracaoDTO->setStrOperacaoWsdl($_POST['selOperacao']);
+    $objMdLitServicoIntegracaoDTO->setStrTipoClienteWs($_POST['tipoWs']);
+    $objMdLitServicoIntegracaoDTO->setStrVersaoSoap($_POST['versaoSoap']);
 
     foreach ($arrMapeamento as $mapeamento) {
 
@@ -518,9 +531,22 @@ PaginaSEI::getInstance()->montarJavaScript();
 
 
         function validarWsdl() {
+            var consultar  = <?php echo $_GET['acao'] != 'md_lit_servico_consultar' ? 'true' : 'false'; ?>//;
             var enderecoWsdl = document.getElementById('txtEnderecoWsdl').value;
+            var tipoWs = $('[name="tipoWs"]:checked').val();
+
+            var versaoSoap = $('[name="versaoSoap"]').val();
+            if(consultar){
+                versaoSoap = $('[name="versaoSoap"]').not(':disabled').val();
+            }
+
             if (enderecoWsdl == '') {
-                alert('Preenche o campo Endereço WSDL.');
+                alert('Preencher o campo Endereço WSDL.');
+                return false;
+            }
+
+            if(tipoWs != 'SOAP' || versaoSoap == undefined){
+                alert('Para validar este serviço informe o Tipo de Cliente WS como SOAP e sua Versão SOAP');
                 return false;
             }
 
@@ -529,7 +555,7 @@ PaginaSEI::getInstance()->montarJavaScript();
                 url: "<?= $strLinkAjaxValidarWsdl ?>",
                 dataType: "xml",
                 data: {
-                    endereco_wsdl: enderecoWsdl,
+                    endereco_wsdl: enderecoWsdl, tipoWs: tipoWs, versaoSoap: versaoSoap
                 },
                 beforeSend: function(){
                     infraExibirAviso(false);
