@@ -178,8 +178,13 @@ class MdLitDadoInteressadoINT extends InfraINT {
         $objMdlitSoapClient = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(), 'wsdl');
 
         $err = $objMdlitSoapClient->getError();
-        if($err)
-            return '<erros><erro descricao="'.$err.'"></erro></erros>';
+        if($err) {
+            return '<erros><erro descricao="' . $err . '"></erro></erros>';
+        }
+
+        if($filtroWS && $filtroWS['numeroServicos']){
+            $filtroWS['numeroServicos'] = implode(',', $filtroWS['numeroServicos']);
+        }
 
         $objMdlitSoapClient->soap_defencoding = 'UTF-8';
         $objMdlitSoapClient->decode_utf8 = false;

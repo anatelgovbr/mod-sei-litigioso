@@ -97,6 +97,9 @@ PaginaSEI::getInstance()->abrirAreaDados();
                         </ol>
                     </li>
                     <li>A Situação de Conclusão deverá ser antecedida SEMPRE por uma Intimação, ou seja, não deverá existir uma conclusão, sem que tenha existido uma Intimação imediatamente anterior.</li>
+                    <li>
+                        Se a Situação for parametrizada como Obrigatória ou Alegações, esta Situação obrigatoriamente deve ser marcada pelo Usuário no momento cronológico em que foi parametrizada.
+                    </li>
                 </ol>
             </li>
         </ol>

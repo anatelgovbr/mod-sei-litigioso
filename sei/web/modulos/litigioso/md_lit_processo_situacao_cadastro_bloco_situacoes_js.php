@@ -1,5 +1,7 @@
 <script type="text/javascript">
 
+    var validarDataIntimacaoMulta = '';
+
     function validarDocumento(idDocAlterar){
         if(isDadosFinalizadosAlt){
            validarDocumentoAlterar();
@@ -194,7 +196,8 @@
                 var nomeLabel = $.trim($(r).find('NomeLabel').text());
                 var tipoSituacao = $.trim($(r).find('TipoSituacao').text());
                 var sinPrimeiraIntimacao = $.trim($(r).find('SinPrimeiraIntimacao').text());
-                
+                validarDataIntimacaoMulta = $.trim($(r).find('ValidarDataIntimacaoMulta').text());
+
                 var lblDtaTipoSituacao = document.getElementById('lblDtaTipoSituacao');
                 var divDataTipoSituacao = document.getElementById('divDataTipoSituacao');
 
@@ -227,6 +230,7 @@
                         document.getElementById('rdNaoAlteraPrescricao').checked = true;
                         changePrescricao(document.getElementById('rdNaoAlteraPrescricao'), false);
                     }
+
                     document.getElementById('divBtnAdicionar').style.display = '';
                     document.getElementById("btnAdicionar").disabled = false;
                 }
@@ -434,9 +438,7 @@
             if(!addSituacao) {
                 return false;
             }
-
         }
-
 
         return true;
     }
@@ -463,6 +465,14 @@
             //Init vars
             if (!isAlterarSit) {
                 adicionouSit = true;
+            }
+
+            //Caso a seja a intimação posterior a decisao que aplicou a multa armazena o valor
+            if(validarDataIntimacaoMulta == '1' && $('[name="txtDtTipoSituacao"]').val() != ''){
+                //adiciona a data da intimação que aplicou multa (intimação apos a decisao) para uso na validacoes
+                $('[name="hdnIntimacaoPosDecisao"]').val($('[name="txtDtTipoSituacao"]').val());
+            } else {
+                $('[name="hdnIntimacaoPosDecisao"]').val('');
             }
 
             var hdnStrIsGestor  = document.getElementById('hdnIsGestor').value;
@@ -609,7 +619,10 @@
 
     function replicarDataParaFieldsetGestaoMulta(){
         var isConclusiva        = $.trim(document.getElementById('hdnStrSituacao').value) == 'Conclusiva';
-        var isVisibleFieldMulta = document.getElementById('fieldsetMulta').style.display != "none";
+        var isVisibleFieldMulta = false;
+        if(document.getElementById('fieldsetMulta') != null){
+            isVisibleFieldMulta = document.getElementById('fieldsetMulta').style.display != "none";
+        }
 
         if(isConclusiva && isVisibleFieldMulta){
             var valorDt = document.getElementById('txtDtTipoSituacao').value;

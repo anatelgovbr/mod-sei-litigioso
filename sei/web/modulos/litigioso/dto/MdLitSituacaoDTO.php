@@ -84,6 +84,14 @@
                                             'SinOpcional',
                                             'sin_opcional');
 
+            $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
+                                            'SinObrigatoria',
+                                            'sin_obrigatoria');
+
+            $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
+                                            'SinAlegacoes',
+                                            'sin_alegacoes');
+
             $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeFase', 'nome', 'md_lit_fase');
             $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'SinAtivoFase', 'sin_ativo', 'md_lit_fase');
 

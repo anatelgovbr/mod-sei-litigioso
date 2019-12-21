@@ -770,10 +770,10 @@ class MdLitProcessoSituacaoRN extends InfraRN
         array($ordemAnterior));
 
     //Add diferente de Livre
-    $objMdLitSituacaoDTO->adicionarCriterio(array('SinInstauracao', 'SinConclusiva', 'SinDecisoria', 'SinIntimacao', 'SinDefesa', 'SinRecursal'),
-        array(InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL),
-        array('S', 'S', 'S', 'S', 'S', 'S'),
-        array(InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR));
+    $objMdLitSituacaoDTO->adicionarCriterio(array('SinInstauracao', 'SinConclusiva', 'SinDecisoria', 'SinIntimacao', 'SinDefesa', 'SinRecursal', 'SinObrigatoria', 'SinAlegacoes'),
+        array(InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL),
+        array('S', 'S', 'S', 'S', 'S', 'S', 'S', 'S'),
+        array(InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR));
 
     $objMdLitSituacaoDTO = $objMdLitSituacaoRN->consultar($objMdLitSituacaoDTO);
 
@@ -1171,6 +1171,8 @@ class MdLitProcessoSituacaoRN extends InfraRN
     $objMdLitSitProcessoDTO->retDblIdProcedimento();
     $objMdLitSitProcessoDTO->retDtaData();
     $objMdLitSitProcessoDTO->retStrSinIntimacaoSit();
+    $objMdLitSitProcessoDTO->retStrSinObrigatoria();
+    $objMdLitSitProcessoDTO->retStrSinAlegacoes();
     $objMdLitSitProcessoDTO->setDblIdProcedimento($idProcedimento);
     $objMdLitSitProcessoDTO->setOrdDthInclusao(InfraDTO::$TIPO_ORDENACAO_DESC);
     $objMdLitSitProcessoDTO->setNumMaxRegistrosRetorno('1');
@@ -1296,10 +1298,10 @@ class MdLitProcessoSituacaoRN extends InfraRN
   }
 
   private function _addDiferenteSinLivre(&$objMdLitSitProcessoDTO){
-    $campos   = array('SinInstauracaoSit', 'SinIntimacaoSit', 'SinDecisoriaSit', 'SinDefesaSit', 'SinRecursalSit', 'SinConclusivaSit');
-    $oper     = array(InfraDTO::$OPER_IGUAL,InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL);
-    $valor    = array('S','S','S','S','S','S');
-    $operLog  = array(InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR);
+    $campos   = array('SinInstauracaoSit', 'SinIntimacaoSit', 'SinDecisoriaSit', 'SinDefesaSit', 'SinRecursalSit', 'SinConclusivaSit', 'SinObrigatoria', 'SinAlegacoes');
+    $oper     = array(InfraDTO::$OPER_IGUAL,InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL);
+    $valor    = array('S','S','S','S','S','S','S','S');
+    $operLog  = array(InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR);
 
 
     $objMdLitSitProcessoDTO->adicionarCriterio($campos ,$oper , $valor , $operLog);
