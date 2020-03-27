@@ -127,17 +127,56 @@
                 $validar = 0;
             }
 
+            //recupera a ultima situação cadastrada
+            $ultimaSituacaoCadastrada = $objMdLitProcessoSitRN->retornaDadosUltimaSituacaoCadastrada($idProcedimento);
+
+            //recupera todas a situações cadastradas para o processo
+            $processoSituacaoDTO = new MdLitProcessoSituacaoDTO();
+            $processoSituacaoDTO->ret('IdMdLitSituacao');
+            $processoSituacaoDTO->set('IdProcedimento', $idProcedimento);
+            $arrProcessoSituacao = $objMdLitProcessoSitRN->listar($processoSituacaoDTO);
+
+            $arrMdLitSitucao = InfraArray::simplificarArr(InfraArray::converterArrInfraDTO($arrProcessoSituacao)['MdLitProcessoSituacaoDTO'],'IdMdLitSituacao');
+            // retorna as situacoes obrigatorias/alegacoes que devem ser adicionadas antes da situacao informada
+            $situacaoDto = new MdLitSituacaoDTO();
+            $situacaoDto->ret('IdSituacaoLitigioso');
+            $situacaoDto->ret('Nome');
+            $situacaoDto->ret('Ordem');
+            $situacaoDto->ret('NomeFase');
+            // situação obrigatoria anterior a selecionada e  situacao posterior a ultima cadastrada
+            $situacaoDto->adicionarCriterio(array('Ordem', 'Ordem'), array(InfraDTO::$OPER_MENOR, InfraDTO::$OPER_MAIOR), array($objMdLitSituacaoDTO->get('Ordem'), $ultimaSituacaoCadastrada->get('OrdemParametrizarSit')), InfraDTO::$OPER_LOGICO_AND);
+
+            $situacaoDto->set('IdTipoControleLitigioso',$idTipoControle);
+            $situacaoDto->set('SinAtivo','S');
+            $situacaoDto->set('IdSituacaoLitigioso', $arrMdLitSitucao, InfraDTO::$OPER_NOT_IN);
+            $situacaoDto->setOrd('Ordem', InfraDTO::$TIPO_ORDENACAO_ASC);
+            $situacaoDto->adicionarCriterio(array('SinAlegacoes', 'SinObrigatoria'), array(InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL), array('S', 'S'), InfraDTO::$OPER_LOGICO_OR);
+
+            $arrSituacoesObrigatoriasSeguinte = $objMdLitSituacaoRN->listar($situacaoDto);
+
             $xml = '<Dados>';
             if (!is_null($objMdLitSituacaoDTO)) {
+                //se a situacao informada for livre
                 if ($isLivre) {
                     $xml .= '<Livre> S </Livre>';
                     $xml .= '<IdSituacao> S </IdSituacao>';
                     $xml .= '<TipoSituacao> Livre </TipoSituacao>';
-                    $xml .= '<MsgExibicao>  </MsgExibicao>';
-                    $xml .= '<NomeLabel>  </NomeLabel>';
-                    $xml .= '<Erro>  0 </Erro>';
-                    $xml .= '<SinPrimeiraIntimacao>'.$sinPrimeiraIntimacao.'</SinPrimeiraIntimacao>';
-                    $xml .= "<ValidarDataIntimacaoMulta>0</ValidarDataIntimacaoMulta>";
+                    //se nao houver pendencia de situacoes obrigatorias/alegacoes deixa cadastrar
+                    if(!$arrSituacoesObrigatoriasSeguinte){
+                        $xml .= '<MsgExibicao>  </MsgExibicao>';
+                        $xml .= '<NomeLabel>  </NomeLabel>';
+                        $xml .= '<Erro>  0 </Erro>';
+                        $xml .= '<SinPrimeiraIntimacao>' . $sinPrimeiraIntimacao . '</SinPrimeiraIntimacao>';
+                        $xml .= "<ValidarDataIntimacaoMulta>0</ValidarDataIntimacaoMulta>";
+                    } else{
+                        //se existir pendencia de situacao obrigatoria/alegacoes dispara o erro da pendencia
+                        $msgErro = $objMdLitProcessoSitRN->retornaMsgSituacaoObrigatoria($ultimaSituacaoCadastrada, $objMdLitSituacaoDTO, current($arrSituacoesObrigatoriasSeguinte));
+                        $xml .= "<MsgExibicao>$msgErro</MsgExibicao>";
+                        $xml .= "<NomeLabel>{$dadosSit['nomeLabel']}</NomeLabel>";
+                        $xml .=  "<Erro>1</Erro>";
+                        $xml .= '<SinPrimeiraIntimacao>' . $sinPrimeiraIntimacao . '</SinPrimeiraIntimacao>';
+                        $xml .= "<ValidarDataIntimacaoMulta>0</ValidarDataIntimacaoMulta>";
+                    }
                 } else {
                     $xml .= '<' . $dadosSit['tipoSituacao'] . '> S </' . $dadosSit['tipoSituacao'] . '>';
                     $xml .= '<IdSituacao> ' . $dadosSit['idSituacao'] . ' </IdSituacao>';

@@ -384,6 +384,7 @@
 
                 </div>
                 <input type="hidden" name="hdnIdDispositivoNormativoNormaCondutaControle" id="hdnIdDispositivoNormativoNormaCondutaControle" value="">
+                <input type="hidden" name="hdnIdsInfracoesExcluidas" id="hdnIdsInfracoesExcluidas">
 
                 <div style="clear:both;">&nbsp;</div>
 

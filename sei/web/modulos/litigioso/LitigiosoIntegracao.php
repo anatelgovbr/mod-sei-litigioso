@@ -10,7 +10,7 @@
 
         public function getVersao()
         {
-            return '1.7.0';
+            return '1.8.0';
         }
 
         public function getInstituicao()
@@ -578,6 +578,9 @@
                     break;
                 case 'md_lit_recuperar_especie_decisao':
                     $xml = "<resultado>".InfraArray::converterArrayXml((MdLitEspecieDecisaoINT::recuperarEspecieDecisoes($_POST)))."</resultado>";
+                    break;
+                case 'md_lit_recuperar_lancamentos_procedimento':
+                    $xml = "<resultado>".InfraArray::converterArrayXml(InfraArray::converterArrInfraDTO(MdLitLancamentoINT::getLancamentos($_POST['idProcedimento'])))."</resultado>";
                     break;
             }
 

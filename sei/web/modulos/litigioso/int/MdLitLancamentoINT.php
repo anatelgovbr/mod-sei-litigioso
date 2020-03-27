@@ -216,5 +216,17 @@ class MdLitLancamentoINT extends InfraINT {
       }
       return $strRet;
   }
+
+  public static function getLancamentos($idProcedimento)
+  {
+      $MdLitLancamentoDTO = new MdLitLancamentoDTO();
+      $MdLitLancamentoDTO->ret('IdMdLitLancamento');
+      $MdLitLancamentoDTO->set('IdProcedimento', $idProcedimento);
+
+      $MdLitLancamentoRn = new MdLitLancamentoRN();
+      $arrLancamentoDTO = $MdLitLancamentoRn->listar($MdLitLancamentoDTO);
+
+      return $arrLancamentoDTO;
+  }
 }
 ?>

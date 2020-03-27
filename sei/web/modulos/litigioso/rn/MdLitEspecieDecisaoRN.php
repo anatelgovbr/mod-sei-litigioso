@@ -436,6 +436,10 @@
 
         public function validarTipoDecisoesDirentes($data)
         {
+            foreach ($data['arrEspeciesId'] as $key => $value){
+                $data['arrEspeciesId'][$key] = $value == "null" ? '' : $value;
+            }
+
             //consulta as especies de decisão que serão vinculadas ao tipo de decisao
             $mdLitEspecieDecisaoDTO = new MdLitEspecieDecisaoDTO();
             $mdLitEspecieDecisaoDTO->setDistinct(true);

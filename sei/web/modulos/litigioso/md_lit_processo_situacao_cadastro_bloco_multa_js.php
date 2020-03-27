@@ -86,8 +86,9 @@
     }
 
     function consultarExtratoMulta(){
-        //se o tipo da multa for por indicação de valor ignora as validações e exibição do fieldset de multa
-        if(isTipoMultaIndicacaValor() == true){
+        //se o tipo da multa for por indicação de valor e nao houver ignora as validações e exibição do fieldset de multa
+        if(isTipoMultaIndicacaoValor() == true && existeLancamentoProcedimento() == false){
+            document.getElementById('fieldsetMulta').style.display = 'none';
             return;
         }
 
@@ -514,7 +515,7 @@
         }
 
         //se o tipo da multa for por indicacao de valor não valida o lancamento da multa
-        if(isTipoMultaIndicacaValor()){
+        if(isTipoMultaIndicacaoValor() && existeLancamentoProcedimento() == false){
             return true;
         }
 
@@ -551,7 +552,7 @@
         return true;
     }
 
-    function isTipoMultaIndicacaValor(){
+    function isTipoMultaIndicacaoValor(){
         var flagMultaIntegracao = false;
          var arrDecisao = objTabelaDinamicaDecisao.obterItens();
          var arrEspecies = new Array();
@@ -597,6 +598,32 @@
         //se for multa por indicação de valor não precisa validar o lancamento do valor por integração
         return true;
 
+    }
+
+    function existeLancamentoProcedimento(){
+        var idProcedimento = document.getElementById('hdnIdProcedimento').value;
+        var existeLancamento = false;
+        $.ajax({
+            type: "POST",
+            url: "<?=SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_recuperar_lancamentos_procedimento') ?>",
+            dataType: "xml",
+            async: false,
+            data: {'idProcedimento': idProcedimento},
+            success: function (data) {
+                if($(data).find('MdLitLancamentoDTO').length > 0) {
+                    existeLancamento = true;
+                }
+            },
+            error: function (msgError) {
+                msgCommit = "Erro ao processar o validação do do SEI: " + msgError.responseText;
+                console.log(msgCommit);
+            },
+            complete: function (result) {
+                infraAvisoCancelar();
+            }
+        });
+
+        return existeLancamento;
     }
 
     function calcularData(){
