@@ -479,30 +479,8 @@
                 }
 
 
-                if ($paramsPost['hdnListaDIIndicados'] != '') {
-                    $arrDI = PaginaSEI::getInstance()->getArrItensTabelaDinamica($paramsPost['hdnListaDIIndicados']);
+                $arrDI = PaginaSEI::getInstance()->getArrItensTabelaDinamica($paramsPost['hdnListaDIIndicados']);
 
-                    $arrChaveDI = array();
-                    foreach($arrDI as $di){
-                        if(is_numeric($di[0]))
-                            $arrChaveDI[] = $di[0];
-                    }
-                    // DOCUMENTOS INFRIGIDOS
-                    // Excluindo
-                    try {
-                        $objRelDispositivoNormativoCondutaControleLitigiosoDTO = new MdLitRelDispositivoNormativoCondutaControleDTO();
-                        $objRelDispositivoNormativoCondutaControleLitigiosoRN = new MdLitRelDispositivoNormativoCondutaControleRN();
-                        $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retTodos();
-                        $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setNumIdControleLitigioso($objControleLitigiosoDTO->getNumIdControleLitigioso());
-                        if(count($arrChaveDI) > 0)
-                            $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setNumIdDispositivoNormativoNormaCondutaControle($arrChaveDI, InfraDTO::$OPER_NOT_IN);
-
-                        $objRelDispositivoNormativoCondutaControleLitigiosoDTO = $objRelDispositivoNormativoCondutaControleLitigiosoRN->listar($objRelDispositivoNormativoCondutaControleLitigiosoDTO);
-
-                        $objRelDispositivoNormativoCondutaControleLitigiosoRN = new MdLitRelDispositivoNormativoCondutaControleRN();
-                        $objRelDispositivoNormativoCondutaControleLitigiosoRN->excluir($objRelDispositivoNormativoCondutaControleLitigiosoDTO);
-                    }catch (Exception $e){
-                    }
 
                     if (count($arrDI) > 0) {
                         $qtdDI = count($arrDI);
@@ -541,6 +519,35 @@
                                 }
                             }
                         }
+                }
+
+                if($paramsPost['hdnIdsInfracoesExcluidas'] != '') {
+
+                    $arrJson = json_decode($paramsPost['hdnIdsInfracoesExcluidas']);
+
+                    $arrChaveIdDIExcluir = array();
+                    foreach ($arrJson as $idRel) {
+                        if (is_numeric($idRel)) {
+                            $arrChaveIdDIExcluir[] = $idRel;
+                        }
+                    }
+                    // DOCUMENTOS INFRIGIDOS
+                    // Excluindo
+                    try {
+                        $objRelDispositivoNormativoCondutaControleLitigiosoDTO = new MdLitRelDispositivoNormativoCondutaControleDTO();
+                        $objRelDispositivoNormativoCondutaControleLitigiosoRN = new MdLitRelDispositivoNormativoCondutaControleRN();
+                        $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retTodos();
+                        $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setNumIdControleLitigioso($objControleLitigiosoDTO->getNumIdControleLitigioso());
+
+                        if (count($arrChaveIdDIExcluir) > 0) {
+                            $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setNumIdDispositivoNormativoNormaCondutaControle($arrChaveIdDIExcluir, InfraDTO::$OPER_IN);
+                        }
+
+                        $objRelDispositivoNormativoCondutaControleLitigiosoDTO = $objRelDispositivoNormativoCondutaControleLitigiosoRN->listar($objRelDispositivoNormativoCondutaControleLitigiosoDTO);
+
+                        $objRelDispositivoNormativoCondutaControleLitigiosoRN = new MdLitRelDispositivoNormativoCondutaControleRN();
+                        $objRelDispositivoNormativoCondutaControleLitigiosoRN->excluir($objRelDispositivoNormativoCondutaControleLitigiosoDTO);
+                    } catch (Exception $e) {
                     }
                 }
 

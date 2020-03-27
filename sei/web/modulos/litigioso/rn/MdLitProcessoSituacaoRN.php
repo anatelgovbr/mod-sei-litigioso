@@ -408,7 +408,7 @@ class MdLitProcessoSituacaoRN extends InfraRN
         return $arr;
 
     }
-    
+
     public function getLancamentosByIdSituacao($data)
     {
         $sql = "select distinct
@@ -441,6 +441,59 @@ class MdLitProcessoSituacaoRN extends InfraRN
                 from md_lit_processo_situacao ps
                          inner join md_lit_decisao d on d.id_md_lit_processo_situacao = ps.id_md_lit_processo_situacao
                 where ps.id_md_lit_processo_situacao =" . (int)$data['id_processo_situacao'].";";
+
+        $instanciaBanco = BancoSEI::getInstance();
+        $arr = $instanciaBanco->consultarSql($sql);
+        return $arr;
+    }
+
+    public function getRelacionamentodecisaoLancamento($data)
+    {
+        $sql = "select rdl.*
+                    from md_lit_rel_decis_lancament rdl
+                where rdl.id_md_lit_decisao  =" . (int)$data['id_md_lit_decisao'].";";
+
+        $instanciaBanco = BancoSEI::getInstance();
+        $arr = $instanciaBanco->consultarSql($sql);
+        return $arr;
+    }
+
+    public function getRelacionamentoDecisaoUf($data)
+    {
+        $sql = "select rduf.*
+                    from md_lit_rel_decisao_uf rduf
+                where rduf.id_md_lit_decisao  =" . (int)$data['id_md_lit_decisao'].";";
+
+        $instanciaBanco = BancoSEI::getInstance();
+        $arr = $instanciaBanco->consultarSql($sql);
+        return $arr;
+    }
+
+    public function getCancelamentosLancamento($data)
+    {
+        $sql = "select  c.*
+                    from md_lit_cancela_lancamento c
+                where c.id_md_lit_lancamento = " . (int)$data['id_md_lit_lancamento'].";";
+
+        $instanciaBanco = BancoSEI::getInstance();
+        $arr = $instanciaBanco->consultarSql($sql);
+        return $arr;
+    }
+
+    public function getHistoricoLancamento($data)
+    {
+        $sql = "select hl.*
+                    from md_lit_historic_lancamento hl
+                where hl.id_md_lit_lancamento = " . (int)$data['id_md_lit_lancamento'].";";
+
+        $instanciaBanco = BancoSEI::getInstance();
+        $arr = $instanciaBanco->consultarSql($sql);
+        return $arr;
+    }
+
+    public function getControleLitigioso($data)
+    {
+        $sql = "select * from md_lit_controle where id_procedimento = " . (int)$data.";";
 
         $instanciaBanco = BancoSEI::getInstance();
         $arr = $instanciaBanco->consultarSql($sql);
@@ -843,10 +896,10 @@ class MdLitProcessoSituacaoRN extends InfraRN
 
         //Formatar Nome Unidade
         $rdAlteraPresc = $objDTO->getStrSinAlteraPrescricao() == 'S' ? '1' : '0';
-        $nomeUnidade = htmlentities('<a alt="'.$objDTO->getStrDescricaoUnidade().'" title="'.$objDTO->getStrDescricaoUnidade().'" class="ancoraSigla"> '.$objDTO->getStrSiglaUnidade().' </a>');
-        $nomeUsuario = htmlentities('<a alt="'.$objDTO->getStrNomeUsuario().'" title="'.$objDTO->getStrNomeUsuario().'" class="ancoraSigla"> '.$objDTO->getStrSiglaUsuario().' </a>');
+        $nomeUnidade = '<a alt="'.$objDTO->getStrDescricaoUnidade().'" title="'.$objDTO->getStrDescricaoUnidade().'" class="ancoraSigla"> '.$objDTO->getStrSiglaUnidade().' </a>';
+        $nomeUsuario = '<a alt="'.$objDTO->getStrNomeUsuario().'" title="'.$objDTO->getStrNomeUsuario().'" class="ancoraSigla"> '.$objDTO->getStrSiglaUsuario().' </a>';
         $linkDocFormt  = $this->_retornaLinkDocFormatado($objDTO->getStrProtocoloFormatadoDocumento(), $objDTO->getDblIdProcedimento(), $objDTO->getDblIdDocumento(), $objDTO->getStrNomeSerie(), $objDTO->getStrNumeroDocumento());
-        $urlLink       = htmlentities($this->_retornaLinkDocFormatado($objDTO->getStrProtocoloFormatadoDocumento(), $objDTO->getDblIdProcedimento(), $objDTO->getDblIdDocumento(), $objDTO->getStrNomeSerie(), $objDTO->getStrNumeroDocumento(), true));
+        $urlLink       = $this->_retornaLinkDocFormatado($objDTO->getStrProtocoloFormatadoDocumento(), $objDTO->getDblIdProcedimento(), $objDTO->getDblIdDocumento(), $objDTO->getStrNomeSerie(), $objDTO->getStrNumeroDocumento(), true);
         $sinDepositoExtrajudicial = $objDTO->getStrSinDepositoExtrajudicial();
 
         $arrGrid[]     = array($objDTO->getNumIdMdLitProcessoSituacao(), 'B',$objDTO->getDblIdProcedimento(), $objDTO->getNumIdMdLitFase(), $objDTO->getNumIdMdLitSituacao(), $objDTO->getNumIdUsuario(), $objDTO->getNumIdUnidade(), $dtIntercor,  $dtQuinq, $linkDocFormt, $objDTO->getStrNomeSerie(), $objDTO->getDtaData(), $objDTO->getStrNomeFase(), $nomeSit, $dth, $nomeUsuario, $nomeUnidade, $tipoSituacao, $valorDep, $dtDep, $objDTO->getNumIdMdLitProcessoSituacao(), $ordem, $rdAlteraPresc, $labelSituacao, $objDTO->getDblIdDocumento(), $isInstauracao, $objDTO->getStrProtocoloFormatadoDocumento(), $urlLink,$sinDepositoExtrajudicial);
@@ -871,7 +924,7 @@ class MdLitProcessoSituacaoRN extends InfraRN
     $conteudoHtml .= $numDoc;
     $conteudoHtml .= '</a>';
 
-    return htmlentities($conteudoHtml);
+    return $conteudoHtml;
   }
 
   private function _retornaTitleDocumento($tipoDoc, $numero){
@@ -1007,6 +1060,15 @@ class MdLitProcessoSituacaoRN extends InfraRN
 
     return $dadosRet;
   }
+
+    public function retornaDadosUltimaSituacaoCadastrada($idProcedimento){
+        return $this->_retornaDadosSituacaoAnteriorCadastrada($idProcedimento);
+    }
+
+    public function retornaMsgSituacaoObrigatoria($ultimaSituacaoCadastrada, $situacaoInformada, $situacaoObrigatoria)
+    {
+        return 'A situação ' . $situacaoInformada->getStrNomeFase() . ' / ' . $situacaoInformada->getStrNome() . ' selecionada acima estará associada à Situação ' . $ultimaSituacaoCadastrada->getStrNomeFase().' / '.$ultimaSituacaoCadastrada->getStrNomeSituacao() . ', já adicionada na lista abaixo, para qual a Situação esperada seria ' . $situacaoObrigatoria->getStrNomeFase().' / '.$situacaoObrigatoria->getStrNome() . '. Favor selecionar a Fase e Situação correta, de acordo com a ordem da parametrização do Tipo de Controle Litigioso acima.';
+    }
 
   private function _retornaMsgExibicao($excecao, $nomeSituacaoUltima, $dadosSitAtual, $objMdLitSituacaoEsperadaDTO = null){
     $msg = '';

@@ -599,9 +599,9 @@
                     infracaoParcial = true;
                 }
 
-                // if((ressarcimento.value == 'null' || ressarcimento.value == '' || ressarcimento.value == '0,00') && ressarcimento.style.display == '' ){
-                //     infracaoParcial = true;
-                // }
+                if((ressarcimento.value == 'null' || ressarcimento.value == '' || ressarcimento.value == '0,00') && ressarcimento.style.display == '' ){
+                    infracaoParcial = true;
+                }
 
                 if((obrigacao.value == 'null' || obrigacao.value == '')  && obrigacao.style.display == ''){
                     infracaoParcial = true;

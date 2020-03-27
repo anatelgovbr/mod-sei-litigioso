@@ -2,7 +2,7 @@
 <script type="text/javascript">
 
     var hdnIdMdLitControle = '<?= $hdnIdMdLitControle ?>';
-
+    var arrIdsExcluidosInflacao = new Array();
     var objLupaMotivos = null;
     var objAutoCompletarMotivos = null;
 
@@ -311,11 +311,21 @@
     function OnSubmitForm(formulario) {
         if(validarCadastro(formulario)){
             //exibe o aviso pois o serviço pode deixar a requisição lenta
+            addArrayInflacaoExcluidaNoHidden();
+
             infraExibirAviso(false);
             return true;
         }
         return false;
     }
+
+    function addArrayInflacaoExcluidaNoHidden(){
+        if(arrIdsExcluidosInflacao.length > 0){
+            var arrJson = JSON.stringify(arrIdsExcluidosInflacao);
+            document.getElementById('hdnIdsInfracoesExcluidas').value = arrJson;
+        }
+    }
+
     function validarCadastro(formulario) {
 
         if (infraTrim(document.getElementById('hdnListaDocInstauradores').value) == '') {
@@ -899,7 +909,17 @@
         if (objTabelaDI.tbl.rows.length==2){
             mostrarTabelaDI(false);
         }
+
+        console.log(arr);
+        addIdExcluidoHidden(arr[0]);
         return true;
+    }
+
+    function addIdExcluidoHidden(id){
+
+        if(id.indexOf('novo') == -1) {
+            arrIdsExcluidosInflacao.push(id);
+        }
     }
 
     objTabelaDI.procuraLinha = function (id) {
@@ -1239,6 +1259,7 @@
     }
 
     function mostrarTabelaDI(opcao) {
+
         var qtdDIIndicados = objTabelaDI.tbl.rows.length;
         if (opcao){
             if (qtdDIIndicados>1){

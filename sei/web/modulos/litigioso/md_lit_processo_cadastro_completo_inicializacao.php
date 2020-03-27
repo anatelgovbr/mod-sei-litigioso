@@ -247,7 +247,7 @@
                         , $objDocumentoDTO->getStrNumero()
                         , $objDocumentoDTO->getStrNomeSerie()
                         , $objDocumentoDTO->getStrNomeSerie() . ' ' . $objDocumentoDTO->getStrNumero() . ' (' . $objDocumentoDTO->getStrProtocoloDocumentoFormatado() . ')'
-                        , htmlentities('<a alt="'.$objDocumentoDTO->getStrDescricaoUnidadeGeradoraProtocolo().'" title="'.$objDocumentoDTO->getStrDescricaoUnidadeGeradoraProtocolo().'" class="ancoraSigla" > '.$objDocumentoDTO->getStrSiglaUnidadeGeradoraProtocolo().'</a>')
+                        , '<a alt="'.$objDocumentoDTO->getStrDescricaoUnidadeGeradoraProtocolo().'" title="'.$objDocumentoDTO->getStrDescricaoUnidadeGeradoraProtocolo().'" class="ancoraSigla" > '.$objDocumentoDTO->getStrSiglaUnidadeGeradoraProtocolo().'</a>'
                         , $dataDocumento
                     );
 

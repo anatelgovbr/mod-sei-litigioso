@@ -539,6 +539,7 @@
                 $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
                 $objMdLitSituacaoDTO->setNumIdSituacaoLitigioso($idSituacao);
                 $objMdLitSituacaoDTO->retTodos();
+                $objMdLitSituacaoDTO->ret('NomeFase');
                 $objMdLitSituacaoDTO->setNumMaxRegistrosRetorno('1');
                 
                 return $this->consultar($objMdLitSituacaoDTO);
@@ -662,7 +663,32 @@
                 $isLivre = false;
             }
 
+            if($objMdLitSituacaoDTO->getStrSinObrigatoria() == 'S'){
+                $isLivre = false;
+            }
+
             return $isLivre;
+        }
+
+
+        protected function atualizarSinsSituacaoControlado(){
+            $objSituacaoLitigiosoBD = new MdLitSituacaoBD($this->getObjInfraIBanco());
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->retTodos();
+
+            if($this->contar($objMdLitSituacaoDTO) > 0){
+                $arrObjs = $this->listar($objMdLitSituacaoDTO);
+
+                foreach ($arrObjs as $objDTO) {
+                    $objDTO->setStrSinObrigatoria('N');
+                    $objDTO->setStrSinAlegacoes('N');
+
+                    $objSituacaoLitigiosoBD->alterar($objDTO);
+                }
+
+            }
+
+
         }
 
      

@@ -518,8 +518,8 @@ class MdLitDecisaoRN extends InfraRN {
           $infracaoArr[$key][] = htmlspecialchars($objMdLitDecisaoDTO->getStrNomeMdLitEspecieDecisao());
 
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getDtaInclusao();
-          $infracaoArr[$key][] = htmlentities('<a alt="'.$objMdLitDecisaoDTO->getStrNomeUsuario().'" title="'.$objMdLitDecisaoDTO->getStrNomeUsuario().'" class="ancoraSigla"> '.$objMdLitDecisaoDTO->getStrSiglaUsuario().' </a>');
-          $infracaoArr[$key][] = htmlentities('<a alt="'.$objMdLitDecisaoDTO->getStrDescricaoUnidade().'" title="'.$objMdLitDecisaoDTO->getStrDescricaoUnidade().'" class="ancoraSigla"> '.$objMdLitDecisaoDTO->getStrSiglaUnidade().' </a>');
+          $infracaoArr[$key][] = '<a alt="'.$objMdLitDecisaoDTO->getStrNomeUsuario().'" title="'.$objMdLitDecisaoDTO->getStrNomeUsuario().'" class="ancoraSigla"> '.$objMdLitDecisaoDTO->getStrSiglaUsuario().' </a>';
+          $infracaoArr[$key][] = '<a alt="'.$objMdLitDecisaoDTO->getStrDescricaoUnidade().'" title="'.$objMdLitDecisaoDTO->getStrDescricaoUnidade().'" class="ancoraSigla"> '.$objMdLitDecisaoDTO->getStrSiglaUnidade().' </a>';
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getStrStaLocalidade();
 
           //adicionando as UF's nas decisões separados por # para popular o componente de infraTabelaDinamica

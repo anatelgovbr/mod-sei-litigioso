@@ -339,12 +339,8 @@
                 ($relTipoControleResult || $isExisteDecisaoCasdatrada) ? $multaDisabeld = 'disabled="disabled"' : '';
             ?>
             <label class="infraLabelCheckbox">
-                <?php if($checkedGM && ($relTipoControleResult || $isExisteDecisaoCasdatrada)): ?>
-                    <input type="hidden" name="gestaoMulta" value="S">
-                <?php endif; ?>
                 <input <?php echo $checkedGM, " ", $multaDisabeld ?> type="checkbox" class="infraCheckbox resultDecisao" name="gestaoMulta"
                                                                      id="gestaoMulta" value="S">
-
                 Indicação de Multa
                 <span class="tooltipAjuda"
                     <?= PaginaSEI::montarTitleTooltip('Habilite a Indicação de Multa  para permitir o Usuário atribuir valores de Multa ao selecionar esta Espécie de Decisão no Cadastro de Decisão.') ?>>
@@ -354,9 +350,6 @@
             <div id="opcoesMulta" style="margin-left: 3em; display: none;">
                 <label for="integracao" class="radio-label">
                     <?php $indicacaoIntegracaoCheck = $objEspecieDecisaoLitigiosoDTO->getStrStaTipoIndicacaoMulta() == MdLitEspecieDecisaoDTO::$TIPO_MULTA_INTEGRACAO ? 'checked': ''?>
-                    <?php if($indicacaoIntegracaoCheck && $multaDisabeld): ?>
-                        <input type="hidden" name="tipoMulta" value="1">
-                    <?php endif; ?>
                     <input type="radio" name="tipoMulta" id="integracao" value="1" <?php echo $indicacaoIntegracaoCheck, " ", $multaDisabeld;?> >
                     Gestão por Integração
                     <span class="tooltipAjuda"
@@ -367,9 +360,6 @@
                 <label for="indicacao" class="radio-label">
                     <?php $idicacaoValorCheck =  $objEspecieDecisaoLitigiosoDTO->getStrStaTipoIndicacaoMulta() == MdLitEspecieDecisaoDTO::$TIPO_MULTA_INDICACAO_VALOR ? 'checked': ''?>
                     <input type="radio" name="tipoMulta" id="indicacao" value="2" <?php echo $idicacaoValorCheck," ", $multaDisabeld ?>>
-                    <?php if($idicacaoValorCheck && $multaDisabeld): ?>
-                        <input type="hidden" name="tipoMulta" value="2">
-                    <?php endif; ?>
                     Apenas Indicação de Valor
                     <span class="tooltipAjuda"
                         <?= PaginaSEI::montarTitleTooltip('Selecione a opção Apenas Indicação de Valor caso a Indicação de Multa não deva ocorrer por meio de Integração com o Sistema de Arrecadação e os valores definidos no Cadastro da Decisão devam ser mantidos somente no SEI.') ?>>
@@ -459,19 +449,19 @@
     $(function(){
         showTipoMulta();
 
-        $('input[type="checkbox"][name="gestaoMulta"]').change(function(){
+        $('[name="gestaoMulta"]').change(function(){
             if(validarAlteracaoIndicacaoMulta() ==false){
-                $('input[type="checkbox"][name="gestaoMulta"]').prop('checked', 'checked').prop('readonly', 'readonly');
-                $('input[type="radio"][name="tipoMulta"]').not(":checked").prop('readonly', 'readonly');
+                $('[name="gestaoMulta"]').prop('checked', 'checked').prop('readonly', 'readonly');
+                $('[name="tipoMulta"]').not(":checked").prop('readonly', 'readonly');
             }
 
             showTipoMulta();
         });
 
-        $('input[type="radio"][name="tipoMulta"]').change(function(){
+        $('[name="tipoMulta"]').change(function(){
             if(validarAlteracaoIndicacaoMulta() == false){
-                $('input[type="checkbox"][name="gestaoMulta"]').prop('checked', 'checked').prop('readonly', 'readonly');
-                $('input[type="radio"][name="tipoMulta"]').not(":checked").prop('checked', 'checked').prop('readonly', 'readonly');
+                $('[name="gestaoMulta"]').prop('checked', 'checked').prop('readonly', 'readonly');
+                $('[name="tipoMulta"]').not(":checked").prop('checked', 'checked').prop('readonly', 'readonly');
             }
 
             showTipoMulta();
@@ -492,11 +482,11 @@
     }
 
     function showTipoMulta(){
-        if($('input[type="checkbox"][name="gestaoMulta"]').is(':checked')){
+        if($('[name="gestaoMulta"]').is(':checked')){
             $('#opcoesMulta').show();
         } else{
             $('#opcoesMulta').hide();
-            $('input[type="radio"][name="tipoMulta"]').prop('checked', false);
+            $('[name="tipoMulta"]').prop('checked', false);
         }
     }
 
@@ -584,18 +574,18 @@
 
     function validarAlteracaoIndicacaoMulta() {
         var valid = true;
-        var notChecked = $('input[type="radio"][name="tipoMulta"]').not(":checked").parent().text().trim();
+        var notChecked = $('[name="tipoMulta"]').not(":checked").parent().text().trim();
         var checked = $('[name="tipoMulta"]:checked').parent().text().trim();
 
         //caso seja desmacado direto o checkbox de indicação de multa
-        if($('input[type="checkbox"][name="gestaoMulta"]').is(':checked') == false){
+        if($('[name="gestaoMulta"]').is(':checked') == false){
             //usa o radio marcado
             var idTipoMulta = $('[name="tipoMulta"]:checked').val();
             var mensagem = "Não é possível desabilitar a opção Indicação de Multa para esta Espécie de Decisão pois já existem desições com multas cadastradas. \n"+
                 "Caso seja necessário esta mudança desative esta Espécie de Decisão e crie uma nova.";
         } else{
             //usa o radio desmarcado
-            var idTipoMulta = $('input[type="radio"][name="tipoMulta"]').not(":checked").val();
+            var idTipoMulta = $('[name="tipoMulta"]').not(":checked").val();
             var mensagem = "Não é possivel modificar a opção Indicação de Multa para "+checked+" pois ja existem Decisões cadastradas com o tipo "+notChecked+". \n "+
                 "Caso seja necessário esta mudança, desative esta Espécie de Decisão e crie uma nova.";
         }

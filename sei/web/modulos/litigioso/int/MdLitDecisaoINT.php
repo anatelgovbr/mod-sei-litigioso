@@ -134,7 +134,7 @@ class MdLitDecisaoINT extends InfraINT {
           $infracaoArr[$index][] = $decisao['sin_cadastro_parcial'];
           $index++;
       }
-      return PaginaSEI::getInstance()->gerarItensTabelaDinamica($infracaoArr);
+      return PaginaSEI::getInstance()->gerarItensTabelaDinamica($infracaoArr, false);
   }
 
   public static function existeInfracao($idMdLitRelDisNorConCtr){
