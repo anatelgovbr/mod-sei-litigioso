@@ -138,10 +138,12 @@ class MdLitDadoInteressadoRN extends InfraRN {
           $arrObjMdLitNumeroInteressadoDTO = $objMdLitNumeroInteressadoRN->listar($objMdLitNumeroInteressadoDTO);
 
           if(count($arrObjMdLitNumeroInteressadoDTO)){
-              $objMdLitNumeroInteressadoRN->excluir($arrObjMdLitNumeroInteressadoDTO);
+              foreach($arrObjMdLitNumeroInteressadoDTO as $itemObjMdLitNumeroInteressadoDTO){
+                  $objMdLitDadoInteressadoBD->excluir($itemObjMdLitNumeroInteressadoDTO);
+              }
+          }else {
+              $objMdLitDadoInteressadoBD->excluir($arrObjMdLitDadoInteressadoDTO[$i]);
           }
-
-        $objMdLitDadoInteressadoBD->excluir($arrObjMdLitDadoInteressadoDTO[$i]);
       }
 
       //Auditoria
@@ -231,7 +233,7 @@ class MdLitDadoInteressadoRN extends InfraRN {
 
             SessaoSEI::getInstance()->validarPermissao('md_lit_dado_interessado_cadastrar');
 
-            $this->removerInteressado($arrObjmdLitDadoInteressadoDTO);
+//            $this->removerInteressado($arrObjmdLitDadoInteressadoDTO);
 
             $objMdLitDadoInteressadoBD = new MdLitDadoInteressadoBD($this->getObjInfraIBanco());
 
@@ -262,6 +264,15 @@ class MdLitDadoInteressadoRN extends InfraRN {
         $arrIdProcedimento = InfraArray::converterArrInfraDTO($arrObjMdLitDadoInteressadoDTO, 'IdProcedimentoMdLitTipoControle');
         $arrIdContato = InfraArray::converterArrInfraDTO($arrObjMdLitDadoInteressadoDTO, 'IdContato');
         $arrIdMdLitControle = InfraArray::converterArrInfraDTO($arrObjMdLitDadoInteressadoDTO, 'IdMdLitControle');
+        $idMdLitDadoInteressado = $arrObjMdLitDadoInteressadoDTO[0]->get('IdMdLitDadoInteressado');
+
+        //excluindo o número interessado do processo
+        $mdLitNumeroInteressadoRN = new MdLitNumeroInteressadoRN();
+        $mdLitNumeroInteressadoDTO = new MdLitNumeroInteressadoDTO();
+        $mdLitNumeroInteressadoDTO->retNumIdMdLitNumeroInteressado();
+        $mdLitNumeroInteressadoDTO->setNumIdMdLitDadoInteressado($idMdLitDadoInteressado);
+        $mdLitNumeroInteressadoDTO = $mdLitNumeroInteressadoRN->listar($mdLitNumeroInteressadoDTO);
+        $mdLitNumeroInteressadoRN->excluir($mdLitNumeroInteressadoDTO);
 
         //excluindo o participante do processo
         $objParticipanteDTO = new ParticipanteDTO();

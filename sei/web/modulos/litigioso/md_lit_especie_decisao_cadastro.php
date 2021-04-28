@@ -372,7 +372,7 @@
             <label class="infraLabelCheckbox">
                 <input <?php echo $checkedIP; ?> type="checkbox" class="infraCheckbox resultDecisao" name="indPrazo"
                      id="indPrazo" value="S">
-                Indicação de Prazo
+                Indicação de Prazo em Dias
                 <span class="tooltipAjuda"
                     <?= PaginaSEI::montarTitleTooltip('Habilite a Indicação de Prazo para permitir o Usuário definir o prazo ao selecionar esta Espécie de Decisão no Cadastro de Decisão.') ?>>
                 </span>

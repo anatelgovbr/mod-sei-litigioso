@@ -12,6 +12,7 @@ require_once dirname(__FILE__). '/../../../SEI.php';
 class MdLitProcessoSituacaoRN extends InfraRN
 {
     protected $isEsclusaoSituacao = false;
+    public static $SITUACAO_TRANSITO_EM_JULGADO = 16;
 
   public function __construct()
   {
@@ -370,6 +371,7 @@ class MdLitProcessoSituacaoRN extends InfraRN
                     $mdLitDadoInteressadoDTO->ret('IdProcedimentoMdLitTipoControle');
                     $mdLitDadoInteressadoDTO->ret('IdContato');
                     $mdLitDadoInteressadoDTO->ret('IdMdLitControle');
+                    $mdLitDadoInteressadoDTO->ret('IdMdLitDadoInteressado');
                     $mdLitDadoInteressadoDTO->setNumIdMdLitControle($idControle);
                     $arrDadoInteressadoDTO = $dadosInteressadoRN->listar($mdLitDadoInteressadoDTO);
                     $dadosInteressadoRN->removerInteressadoLimparControleLitigioso($arrDadoInteressadoDTO);
@@ -1206,11 +1208,47 @@ class MdLitProcessoSituacaoRN extends InfraRN
         $idsExcluidos = array_diff($idsSalvosBd, $idsTabelaAtual);
 
       if (count($idsExcluidos) > 0) {
-        $this->_prepararExclusao($idsExcluidos);
+          $this->_preparaRetificarLancamentoTransitoJulgado($idsExcluidos);
+          $this->_prepararExclusao($idsExcluidos);
       }
     }
 
     return $idsExcluidos;
+  }
+
+  private function _preparaRetificarLancamentoTransitoJulgado($idsExcluidos){
+      $post = $_POST;
+      $objMdLitLancamentoRN = new MdLitLancamentoRN();
+      $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+
+      if (count($idsExcluidos) > 0) {
+
+          foreach($idsExcluidos as $idExcluido){
+              $objMdLitProceSitDTO = new MdLitProcessoSituacaoDTO();
+              $objMdLitProceSitDTO->setNumIdMdLitProcessoSituacao($idExcluido);
+              $objMdLitProceSitDTO->retNumIdMdLitSituacao();
+              $arrProcessoSit = $this->consultar($objMdLitProceSitDTO);
+              $idSituacao = $arrProcessoSit->getNumIdMdLitSituacao();
+
+              if( $idSituacao == self::$SITUACAO_TRANSITO_EM_JULGADO ){
+                  $post['hdnJustificativaLancamento'] = 'Multa retificada por cancelamento da situação de TRÂNSITO EM JULGADO';
+                  $post['hdnIdMdLitFuncionalidade'] = MdLitIntegracaoRN::$ARRECADACAO_RETIFICAR_LANCAMENTO;
+                  $post['txtDtIntimacaoConstituicao'] = null;
+                  $post['sbmCadastrarSituacao'] = 'Salvar';
+                  unset($post['chkHouveConstituicao']);
+                  unset($post['chkReducaoRenuncia']);
+                  $objMdLitLancamentoRN->prepararLancamento($post);
+
+                  $objMdLitLancamentoDTO->setNumIdMdLitLancamento($post['selCreditosProcesso']);
+                  $objMdLitLancamentoDTO->retTodos();
+                  $objMdLitLancamentoAlterarDTO = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
+
+                  $objMdLitLancamentoAlterarDTO->setDtaIntimacaoDefinitiva(null);
+                  $objMdLitLancamentoAlterarDTO->setDtaConstituicaoDefinitiva(null);
+                  $objMdLitLancamentoRN->alterar($objMdLitLancamentoAlterarDTO);
+              }
+          }
+      }
   }
 
   private function _prepararExclusao($idsExcluidos)
@@ -1836,5 +1874,38 @@ class MdLitProcessoSituacaoRN extends InfraRN
       $objMdLitProcessoSituacaoBD->alterar($objMdLitProcessoSituacaoDTO);
   }
 
+    public function validarConclusaoProcessoAnexado($objProcedimentoAPIAnexado)
+    {
+        $objMdLitProcessoSituacaoDTO = new MdLitProcessoSituacaoDTO();
+        $objMdLitProcessoSituacaoDTO->retStrSinConclusivaSit();
+        $objMdLitProcessoSituacaoDTO->retStrSiglaTipoControleLitigioso();
+        $objMdLitProcessoSituacaoDTO->retTodos(true);
+        $objMdLitProcessoSituacaoDTO->setDblIdProcedimento($objProcedimentoAPIAnexado->getIdProcedimento());
+        $objMdLitProcessoSituacaoDTO->setOrdDthInclusao(InfraDTO::$TIPO_ORDENACAO_ASC);
+        $arrObjMdLitProcessoSituacaoDTO = $this->listar($objMdLitProcessoSituacaoDTO);
+
+        $retorno = array();
+        $sigla = array();
+        $siglas = '';
+        if (count($arrObjMdLitProcessoSituacaoDTO) > 0) {
+            foreach ($arrObjMdLitProcessoSituacaoDTO as $item) {
+                if ($item->getStrSinConclusivaSit() == 'S') {
+                    return $retorno = array(
+                        'emAndamento' => false
+                    );
+                } else {
+                    if(!in_array($item->getStrSiglaTipoControleLitigioso(), $sigla)) {
+                        $sigla[] = $item->getStrSiglaTipoControleLitigioso();
+                        $siglas .= $item->getStrSiglaTipoControleLitigioso() . '\n';
+                    }
+                    $retorno = array(
+                        'emAndamento' => true,
+                        'siglas' => $siglas
+                    );
+                }
+            }
+        }
+        return $retorno;
+    }
 }
 ?>

@@ -901,7 +901,7 @@ class MdLitLancamentoRN extends InfraRN {
                     $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = self::$SISTEMA_ORIGEM;
                     break;
 
-                case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['RENÚNCIA_RECURSO']:
+                case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['RENUNCIA_RECURSO']:
                     $sinReducaoRenuncia = isset($post['chkReducaoRenuncia'])? 'S': 'N';
 
                     $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $sinReducaoRenuncia;
@@ -927,7 +927,11 @@ class MdLitLancamentoRN extends InfraRN {
                         $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = null;
                     }
                     break;
-
+                case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['DTA_INTIMACAO_DEFINITIVA']:
+                    $objMdLitLancamentoDTO->setDtaIntimacaoDefinitiva($post['txtDtIntimacaoConstituicao']);
+                    $dtIntimacaoDefinitiva = implode('-', array_reverse(  explode('/', $objMdLitLancamentoDTO->getDtaIntimacaoDefinitiva() ) ));
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $dtIntimacaoDefinitiva;
+                    break;
             }
 
         }

@@ -63,15 +63,14 @@ try {
     $objContatoDTO->setNumIdContato($_GET['id_contato']);
 
     $objContatoDTO = $objContatoRN->consultarRN0324($objContatoDTO);
-    $contatoCpfCnpj = $objContatoDTO->getDblCpf() ? $objContatoDTO->getDblCpf() : $objContatoDTO->getDblCnpj();
+    $contatoCpfCnpj = $objContatoDTO->getDblCpf() ? str_pad($objContatoDTO->getDblCpf(), 11, '0', STR_PAD_LEFT) : str_pad($objContatoDTO->getDblCnpj(), 14, '0', STR_PAD_LEFT);
 
-    $checkedRdoOutorgadaSim = $_POST['rdoOutorgada'] == 'S'? 'checked="checked"': '';
-    $checkedRdoOutorgadaNao = $_POST['rdoOutorgada'] == 'N'? 'checked="checked"': '';
+    $checkedRdoOutorgadaSim = $_POST['rdoOutorgada'] == 'S' ? 'checked="checked"': '';
+    $checkedRdoOutorgadaNao = $_POST['rdoOutorgada'] == 'N' ? 'checked="checked"': '';
 
 } catch (Exception $e) {
     PaginaSEI::getInstance()->processarExcecao($e);
 }
-//echo "<pre>";print_r($arrObjMdLitParametrizarInteressadoDTO);exit;
 PaginaSEI::getInstance()->montarDocType();
 PaginaSEI::getInstance()->abrirHtml();
 PaginaSEI::getInstance()->abrirHead();

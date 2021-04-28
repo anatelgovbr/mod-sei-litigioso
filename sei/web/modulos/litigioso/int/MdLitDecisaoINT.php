@@ -126,9 +126,15 @@ class MdLitDecisaoINT extends InfraINT {
           $localidade = $decisao['localidade'] == null ? $localidade : $decisao['localidade'] ;
           if($localidade == MdLitDecisaoRN::$STA_LOCALIDADE_UF){
               $selectUf = $decisao['id_uf'] ? implode("#",$decisao['id_uf']) : $selectUf;
+              if($selectUf == null){
+                  $decisao['sin_cadastro_parcial'] = 'S';
+              }
           }else{
               $selectUf = '';
           }
+
+
+
           $infracaoArr[$index][] = $localidade;
           $infracaoArr[$index][] = $selectUf;
           $infracaoArr[$index][] = $decisao['sin_cadastro_parcial'];

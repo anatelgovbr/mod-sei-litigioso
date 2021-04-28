@@ -153,7 +153,7 @@
         $.ajax({
             type: "POST",
             url: "<?= $strLinkAjaxlistarDadoComplementar ?>",
-//            dataType: "xml",
+            // dataType: "xml",
             data: objConsultarNumero,
             success: function (result) {
                 objTblDadosComplementaresConsulta.limpar();
@@ -235,6 +235,7 @@
                     }
 
                     if($(this).attr('outorgado') == 'S'){
+                        console.log(document.getElementById('outorgada'));
                         document.getElementById('optOutorgadaSim').checked = true;
                         document.getElementById('outorgada').style.display = "block";
                     }else if($(this).attr('outorgado') == 'N'){
@@ -314,7 +315,6 @@
 
         return true;
     }
-
 
     function outorgada(input){
         if(input.value == 'S'){

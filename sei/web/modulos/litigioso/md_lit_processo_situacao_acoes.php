@@ -236,6 +236,25 @@ switch($_GET['acao']) {
             $dataVencimento = InfraData::calcularData(40, InfraData::$UNIDADE_DIAS, InfraData::$SENTIDO_ADIANTE, $dataDecisaoAplicacaoMulta);
         }
 
+        //retorna parametros de entrada mapeados para funcionalidade de RetificarLançamento
+        $objMdLitMapearParamEntradaDTO    = new MdLitMapearParamEntradaDTO();
+        $objMdLitMapearParamEntradaRN = new MdLitMapearParamEntradaRN();
+        $objMdLitMapearParamEntradaDTO->retTodos();
+
+        $objMdLitMapearParamEntradaDTO->setNumIdMdLitIntegracao(MdLitMapearParamEntradaRN::$ID_PARAM_INTEGRACAO['RETIFICAR_LANCAMENTO']);
+        $objMdLitMapearParamEntradaDTO->setOrdStrCampo(InfraDTO::$TIPO_ORDENACAO_ASC);
+        $arrObjMdLitMapearParamEntradaDTO = $objMdLitMapearParamEntradaRN->listar($objMdLitMapearParamEntradaDTO);
+        $arrObjMdLitMapearParamEntrada = $arrObjMdLitMapearParamEntradaDTO;
+
+        //retorna todos os campos mapeados para entrda no webservice
+        $arrCampoMapeaParamEntrada = array();
+
+        if(count($arrObjMdLitMapearParamEntrada) > 0){
+            foreach( $arrObjMdLitMapearParamEntrada as $paramEntrada){
+                array_push($arrCampoMapeaParamEntrada, $paramEntrada->getStrCampo());
+            }
+        }
+
         //buscar a primeira intimação para alterar a situação
         $objMdLitProcessoSituacaoPrimeiraIntimacaoDTO = $objMdLitProcessoSituacaoRN->consultarPrimeiraIntimacao($idProcedimento);
         if($objMdLitProcessoSituacaoPrimeiraIntimacaoDTO)

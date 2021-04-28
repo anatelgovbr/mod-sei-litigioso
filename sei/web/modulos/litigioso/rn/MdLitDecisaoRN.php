@@ -187,12 +187,15 @@ class MdLitDecisaoRN extends InfraRN {
             if($objMdLitDecisaoDTO->getStrStaLocalidade() == MdLitDecisaoRN::$STA_LOCALIDADE_UF){
                 if(!empty($decisao[17])){
                     $arrUf = explode('#',$decisao[17]);
-                    foreach ($arrUf as $idUf){
-                        $objMdLitRelDecisaoUfDTO = new MdLitRelDecisaoUfDTO();
-                        $objMdLitRelDecisaoUfDTO->setNumIdUf($idUf);
-                        $objMdLitRelDecisaoUfDTO->setNumIdMdLitDecisao($objMdLitDecisaoDTO->getNumIdMdLitDecisao());
 
-                        $objMdLitRelDecisaoUfRN->cadastrar($objMdLitRelDecisaoUfDTO);
+                    foreach ($arrUf as $idUf) {
+                        if ($idUf != "null") {
+                            $objMdLitRelDecisaoUfDTO = new MdLitRelDecisaoUfDTO();
+                            $objMdLitRelDecisaoUfDTO->setNumIdUf($idUf);
+                            $objMdLitRelDecisaoUfDTO->setNumIdMdLitDecisao($objMdLitDecisaoDTO->getNumIdMdLitDecisao());
+
+                            $objMdLitRelDecisaoUfRN->cadastrar($objMdLitRelDecisaoUfDTO);
+                        }
                     }
                 }
             }
@@ -533,6 +536,8 @@ class MdLitDecisaoRN extends InfraRN {
               if(count($arrObjMdLitRelDecisaoUfDTO)){
                   $arrIdUf = InfraArray::converterArrInfraDTO($arrObjMdLitRelDecisaoUfDTO, 'IdUf');
                   $infracaoArr[$key][] = implode('#',$arrIdUf);
+              }else{
+                  $infracaoArr[$key][] = '';
               }
 
           }else{

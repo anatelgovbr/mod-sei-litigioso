@@ -364,9 +364,8 @@
             $arrObjParticipanteDTO = $objParticipanteRN->listarRN0189($objParticipanteDTO);
             if ($arrObjParticipanteDTO) {
                 $arrIdContatoParticipante = InfraArray::converterArrInfraDTO($arrObjParticipanteDTO, 'IdContato');
+                $arrIdContato = array_merge($arrIdContato, $arrIdContatoParticipante);
             }
-
-            $arrIdContato = array_merge($arrIdContato, $arrIdContatoParticipante);
 
             $arrObjContatoDTO = array();
             if ($arrIdContato) {

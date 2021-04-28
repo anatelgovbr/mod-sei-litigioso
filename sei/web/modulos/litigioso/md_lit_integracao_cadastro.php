@@ -764,9 +764,6 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             });
 
             var msgEntrada = '';
-            if(!infraInArray(41,valoresDadosEntrada)){
-                msgEntrada += "- Data da Constituição\n";
-            }
             if(!infraInArray(37,valoresDadosEntrada)){
                 msgEntrada += "- Data de Aplicação da Sanção\n";
             }

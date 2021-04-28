@@ -115,13 +115,13 @@ if($numRegistros > 0){
     $strTbCadastroDecisao .= '<tr>';
 
     $strTbCadastroDecisao .= '<th class="infraTh" width="15%">&nbsp;Infração&nbsp;</th>' . "\n";
-    $strTbCadastroDecisao .= '<th class="infraTh" width="8%;"style="min-width: 110px;">&nbsp;Localidade&nbsp;</th>' . "\n";
+    $strTbCadastroDecisao .= '<th class="infraTh" width="8%;"style="min-width: 80px;">&nbsp;Localidade&nbsp;</th>' . "\n";
     $strTbCadastroDecisao .= '<th class="infraTh" width="20%">&nbsp;Tipo de Decisão&nbsp;</th>' . "\n";
     $strTbCadastroDecisao .= '<th class="infraTh" width="20%">&nbsp;Espécie de Decisão&nbsp;</th>' . "\n";
     $strTbCadastroDecisao .= '<th class="infraTh multa" style="display: none;" width="10%">&nbsp;Multa&nbsp;</th>' . "\n";
     $strTbCadastroDecisao .= '<th class="infraTh ressarcimento" width="10%" style="display: none;">&nbsp;Valor de Ressarcimento&nbsp;</th>' . "\n";
     $strTbCadastroDecisao .= '<th class="infraTh obrigacoes" style="display:none;" width="15%">&nbsp;Obrigação&nbsp;</th>' . "\n";
-    $strTbCadastroDecisao .= '<th class="infraTh prazo" style="display: none" width="5%">&nbsp;Prazo&nbsp;</th>' . "\n";
+    $strTbCadastroDecisao .= '<th class="infraTh prazo" style="display: none" width="5%">&nbsp;Prazo em Dias&nbsp;</th>' . "\n";
     $strTbCadastroDecisao .= '</tr>' . "\n";
     $strComboTipoDecosao = MdLitTipoDecisaoINT::montarSelectTipoDecisaoPorTipoControle('null', '&nbsp;', '', $objMdLitControleDTO->getNumIdMdLitTipoControle());
 
@@ -141,7 +141,7 @@ if($numRegistros > 0){
         $strTbCadastroDecisao .= "
                         <input onclick='changeLocalidades(this, false);' type='radio' name='decisao[idDispositivoNormativo_{$idLinha}][localidade]'
                                id='rdDispositivoNormativo_localidade_{$idLinha}' value ='N' tabindex='".PaginaSEI::getInstance()->getProxTabDados()."' data-id-select-uf='divUf_{$idLinha}' >".
-                        "<label id='lblRdIdNacional_{$idLinha}' class='infraLabelRadio  lblRdNacional' for='rdDispositivoNormativo_localidade_{$idLinha}'>Nacional</label>";
+                        "<label id='lblRdIdNacional_{$idLinha}' class='infraLabelRadio  lblRdNacional' for='rdDispositivoNormativo_localidade_{$idLinha}'>Nacional</label><br>";
 
         $strTbCadastroDecisao .= "
                         <input onclick='changeLocalidades(this, true);' type='radio' name='decisao[idDispositivoNormativo_{$idLinha}][localidade]'
@@ -156,7 +156,7 @@ if($numRegistros > 0){
         $strTbCadastroDecisao .= $strComboTipoDecosao;
         $strTbCadastroDecisao .= "</select></td>";
         $strTbCadastroDecisao .= "<td align='center'><select class='especie-decisao' id='id_md_lit_especie_decisao_{$idLinha}' name='decisao[idDispositivoNormativo_{$idLinha}][id_md_lit_especie_decisao]' onchange='refreshEspecieAtivos(this); carregarEspecieDecisao(this)' style='width: 100%;display: none'></select></td>";
-        $strTbCadastroDecisao .= "<td align='center' class='multa' style='display: none;'><input id='multa_{$idLinha}' onkeypress='return infraMascaraDinheiro(this,event,2,12);' type='text' name='decisao[idDispositivoNormativo_{$idLinha}][multa]' style='width: 90%;display: none'></td>";
+        $strTbCadastroDecisao .= "<td align='center' class='multa' style='display: none;'><input id='multa_{$idLinha}' onkeypress='return infraMascaraDinheiro(this,event,2,12);' type='text' name='decisao[idDispositivoNormativo_{$idLinha}][multa]' style='width: 90%;display: none' decisao_valor_antigo=''></td>";
         $strTbCadastroDecisao .= "<td align='center' class='ressarcimento' style='display: none;'><input id='valor_ressarcimento_{$idLinha}' onkeypress='return infraMascaraDinheiro(this,event,2,12);' type='text' name='decisao[idDispositivoNormativo_{$idLinha}][valor_ressarcimento]' style='width: 90%; display: none'></td>";
         $strTbCadastroDecisao .= "<td align='center' class='obrigacoes' style='display: none;'><select id='id_md_lit_obrigacao_{$idLinha}' name='decisao[idDispositivoNormativo_{$idLinha}][id_md_lit_obrigacao]' style='width: 100%;display: none'></select></td>";
         $strTbCadastroDecisao .= "<td align='center' class='prazo' style='display: none;'>";
@@ -196,7 +196,7 @@ p.bloco-orientacao{
     line-height: 1.5em;
     font-size: 1.2em;
 }
-.lblRdNacional{width: 80px;display: inline-block;}
+.lblRdNacional{display: inline-block;}
 .margem-bottom10{margin-bottom: 10px !important;}
 <?
 PaginaSEI::getInstance()->fecharStyle();

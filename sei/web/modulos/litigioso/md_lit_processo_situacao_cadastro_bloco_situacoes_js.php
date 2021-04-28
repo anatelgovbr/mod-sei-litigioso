@@ -628,7 +628,13 @@
         if(isConclusiva && isVisibleFieldMulta){
             var valorDt = document.getElementById('txtDtTipoSituacao').value;
             document.getElementById('txtDtConstituicao').value = valorDt;
-            document.getElementById('txtDtIntimacaoConstituicao').value = valorDt;
+            if(document.getElementById('txtDtConstituicao').getAttribute('data-valor-antigo') != 'N' && document.getElementById('txtDtConstituicao').getAttribute('data-valor-antigo') != ''){
+                if( document.getElementById('txtDtConstituicao').value !=  document.getElementById('txtDtConstituicao').getAttribute('data-valor-antigo')) {
+                    document.getElementById('btnRetificarLancamento').style.display = '';
+                }else{
+                    document.getElementById('btnRetificarLancamento').style.display = 'none';
+                }
+            }
             document.getElementById('hdnDtSituacaoConclusiva').value = valorDt;
         }
 

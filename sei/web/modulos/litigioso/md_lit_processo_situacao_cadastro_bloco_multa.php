@@ -337,12 +337,13 @@
             <!--Data da Intimação da Constituição -->
             <div class="grid grid_4  nao-tem-constituicao">
                 <div class="grid grid_5">
-                    <label class="infraLabelObrigatorio" id="lblDtIntimacaoConstituicao" name="lblDtIntimacaoConstituicao" for="txtDtIntimacaoConstituicao">Data da Intimação da Constituição Definitiva:</label>
+                    <label class="infraLabelObrigatorio" id="lblDtIntimacaoConstituicao" name="lblDtIntimacaoConstituicao" for="txtDtIntimacaoConstituicao">Data da Intimação da Decisão Definitiva:</label>
                 </div>
 
                 <div class="grid grid_4">
-                    <input style="width: 52%" type="text" id="txtDtIntimacaoConstituicao" name="txtDtIntimacaoConstituicao" onchange="return validarFormatoData(this)"
-                           onkeypress="return infraMascara(this, event, '##/##/####');" value="<?=$dtaIntimacaoDefinitiva?>"/>
+                    <input style="width: 52%" type="text" id="txtDtIntimacaoConstituicao" name="txtDtIntimacaoConstituicao" onchange="verificarMudancaMulta();return validarFormatoData(this);"
+                           onkeypress="return infraMascara(this, event, '##/##/####');" value="<?=$dtaIntimacaoDefinitiva?>"
+                           campo-mapea-param-entrada="<?=in_array('dataIntimacaoDecisaoDefinitiva', $arrCampoMapeaParamEntrada)? 'S' : 'N' ?>"/>
                     <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/calendario.gif"
                          title="Selecionar Data da Intimação da Constituição Definitiva" alt="Selecionar Data da Intimação da Constituição Definitiva"
                          class="infraImg"
@@ -358,7 +359,7 @@
 
             <!-- Redução pela renúncia ao direito de recorrer -->
             <div class="grid grid_5-5  nao-tem-constituicao" style="width: 348px;">
-                <input type="checkbox" name="chkReducaoRenuncia" id="chkReducaoRenuncia" value="S" >
+                <input type="checkbox" name="chkReducaoRenuncia" id="chkReducaoRenuncia" value="S" onchange="verificarMudancaMulta()">
                 <label class="infraLabelOpcional" id="lblReducaoRenuncia" name="lblReducaoRenuncia" for="chkReducaoRenuncia">Desconto decorrente da renúncia ao direito de recorrer</label>
                 <a style="margin-left: 5px;" id="btAjudaHouveConstituicao" <?=PaginaSEI::montarTitleTooltip('Esta opção deve ser marcada somente se o Interessado apresentou formalmente e tenha sido aceito pedido de Renúncia ao Direito de Recorrer, obtendo dessa forma a redução no valor da Multa, conforme regulamentação.\n \n Após a Constituição Definitiva ser realizada, apenas o Gestor do Controle Litigioso poderá efetivar correções materiais.')?>
                    tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
@@ -401,6 +402,9 @@
         <input type="hidden" name="hdnSinSuspenso" id="hdnSinSuspenso" value="<?= $objMdLitLancamentoDTO? $objMdLitLancamentoDTO->getStrSinSuspenso():'' ?>" />
 
         <input type="hidden" name="hdnNumInteressado" value="<?= $numInteressado ?>">
+
+        <!-- Hidden para verificar o valor original das multas -->
+        <input type="hidden" name="hdnVlOriginalMultas" id="hdnVlOriginalMultas" value="" />
 
 </fieldset>
 </div>

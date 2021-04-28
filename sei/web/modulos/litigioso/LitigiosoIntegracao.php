@@ -10,7 +10,7 @@
 
         public function getVersao()
         {
-            return '1.8.0';
+            return '1.9.0';
         }
 
         public function getInstituicao()
@@ -329,12 +329,12 @@
                     require_once dirname(__FILE__).'/md_lit_relatorio_reincidencia_exp_excel.php';
                     return true;
 
-                
+
                 case 'md_lit_relatorio_antecedente':
                 case 'md_lit_modal_relatorio_antecedente':
                         require_once dirname(__FILE__).'/md_lit_relatorio_antecedente.php';
                         return true;
-    
+
                 case 'md_lit_relatorio_antecedente_exp_excel':
                         require_once dirname(__FILE__).'/md_lit_relatorio_antecedente_exp_excel.php';
                         return true;
@@ -981,4 +981,49 @@
             return parent::excluirContato($arrObjContatoAPI);
         }
 
+        public function excluirTipoProcesso($arrObjTipoProcedimentoDTO)
+        {
+            $objTipoProcedimentoDTO = $arrObjTipoProcedimentoDTO[0];
+
+            $objInfraException = new InfraException();
+            $mdLitTipoControleRN = new MdLitTipoControleRN();
+            $siglas = $mdLitTipoControleRN->validarExclusaoTipoProcesso($objTipoProcedimentoDTO->getIdTipoProcedimento());
+
+            if ($siglas) {
+                $msg = 'Não é possível excluir este Tipo de Processo, pois ele ainda está associado aos Tipos de Controle Litigioso abaixo:\n\n';
+                $msg .= $siglas;
+                $objInfraException->lancarValidacao($msg);
+            }
+        }
+
+        public function desativarTipoProcesso($arrObjTipoProcedimentoDTO)
+        {
+            $objTipoProcedimentoDTO = $arrObjTipoProcedimentoDTO[0];
+
+            $objInfraException = new InfraException();
+            $mdLitTipoControleRN = new MdLitTipoControleRN();
+            $siglas = $mdLitTipoControleRN->validarExclusaoTipoProcesso($objTipoProcedimentoDTO->getIdTipoProcedimento());
+
+            if ($siglas) {
+                $msg = 'Não é possível desativar este Tipo de Processo, pois ele ainda está associado aos Tipos de Controle Litigioso abaixo:\n\n';
+                $msg .= $siglas;
+                $objInfraException->lancarValidacao($msg);
+            }
+        }
+
+        public function anexarProcesso(ProcedimentoAPI $objProcedimentoAPIPrincipal, ProcedimentoAPI $objProcedimentoAPIAnexado)
+        {
+            $objInfraException = new InfraException();
+
+            $mdLitSituacaoRN = new MdLitProcessoSituacaoRN();
+            $conclusao = $mdLitSituacaoRN->validarConclusaoProcessoAnexado($objProcedimentoAPIAnexado);
+
+            if($conclusao['emAndamento'] === true){
+                $msg = 'Não é possível Anexar o Processo indicado, pois ele ainda está em andamento no fluxo dos Tipos de Controle Litigioso abaixo:\n\n';
+                $msg.=$conclusao['siglas'];
+                $objInfraException->lancarValidacao($msg);
+            }
+
+            return parent::anexarProcesso($objProcedimentoAPIPrincipal, $objProcedimentoAPIAnexado);
+        }
     }

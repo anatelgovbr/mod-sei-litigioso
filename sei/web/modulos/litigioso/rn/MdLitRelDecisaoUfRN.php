@@ -27,7 +27,7 @@ class MdLitRelDecisaoUfRN extends InfraRN {
 
   private function validarNumIdUf(MdLitRelDecisaoUfDTO $objMdLitRelDecisaoUfDTO, InfraException $objInfraException){
     if (InfraString::isBolVazia($objMdLitRelDecisaoUfDTO->getNumIdUf())){
-      $objInfraException->adicionarValidacao(' não informad.');
+      $objInfraException->adicionarValidacao(' Nenhuma UF selecionada para o cadastro relacionado a Decisão.');
     }
   }
 

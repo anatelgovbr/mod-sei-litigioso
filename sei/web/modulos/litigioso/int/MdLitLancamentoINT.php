@@ -74,6 +74,17 @@ class MdLitLancamentoINT extends InfraINT {
 
               if(preg_match('/^novo_/', $decisao[0])){
                   $isNovoLancamento = 'S';
+              }else{
+                  $objMdLitDecisaoDTO = new MdLitDecisaoDTO();
+                  $objMdLitDecisaoRN = new MdLitDecisaoRN();
+                  $objMdLitDecisaoDTO->setNumIdMdLitDecisao($decisao[0]);
+                  $objMdLitDecisaoDTO->retNumIdMdLitEspecieDecisao();
+                  $objMdLitDecisaoDTO = $objMdLitDecisaoRN->consultar($objMdLitDecisaoDTO);
+
+                  if(count($objMdLitDecisaoDTO)){
+                      if( $objMdLitDecisaoDTO->getNumIdMdLitEspecieDecisao() != $decisao[3] && $decisao[4] != '')
+                          $isNovoLancamento = 'S';
+                  }
               }
 
           }
@@ -109,7 +120,6 @@ class MdLitLancamentoINT extends InfraINT {
           $desconto = $objMdLitLancamentoDTO->getDblVlrDesconto() ? InfraUtil::prepararDbl($objMdLitLancamentoDTO->getDblVlrDesconto()) : 0;
 
           $ultimoPagamento = $objMdLitLancamentoDTO->getDtaUltimoPagamento();
-        
 
           $objMdLitCancelaLancRN = new MdLitCancelaLancamentoRN();
           $isCancelar = $objMdLitCancelaLancRN->existeCancelamentoLancamento($idmdLitLancamento) ? '1' : '0';
@@ -118,8 +128,8 @@ class MdLitLancamentoINT extends InfraINT {
           $dtDecisaoAplicacaoMulta          = $objMdLitLancamentoDTO->getDtaDecisao();
           $dtIntimacaoDecisaoAplicacaoMulta = $objMdLitLancamentoDTO->getDtaIntimacao();
           $dtVencimento                     = $objMdLitLancamentoDTO->getDtaVencimento();
-          $dtConstituicao                   = $objMdLitLancamentoDTO->getDtaIntimacaoDefinitiva();
-          $dtIntimacaoConstituicao          = $objMdLitLancamentoDTO->getDtaConstituicaoDefinitiva();
+          $dtConstituicao                   = $objMdLitLancamentoDTO->getDtaConstituicaoDefinitiva();
+          $dtIntimacaoConstituicao          = $objMdLitLancamentoDTO->getDtaIntimacaoDefinitiva();
           $sinConstituicaoDefinitiva        = $objMdLitLancamentoDTO->getStrSinConstituicaoDefinitiva();
           $sinRenunciaRecorrer              = $objMdLitLancamentoDTO->getStrSinRenunciaRecorrer();
           $corSituacao                      = $objMdLitLancamentoDTO->getStrCorSituacao();
