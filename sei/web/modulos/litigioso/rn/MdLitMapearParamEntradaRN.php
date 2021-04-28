@@ -34,20 +34,20 @@ class MdLitMapearParamEntradaRN extends InfraRN {
     );
 
     public static $ID_PARAM_CANCELAR_LANCAMENTO = array(
-      'NUMERO_INTERESSADO'        => 26,
-      'SEQUENCIAL'                => 27,
-      'ID_MOTIVO_CANCELAMENTO'    => 28,
-      'NUM_PROCESSO'              => 29,
-      'JUSTIFICATIVA_CANCELAMENTO'=> 30,
-      'USUARIO_INCLUSAO'          => 31,
-      'SISTEMA_ORIGEM'            => 32
-  );
-  
-  public static $ID_PARAM_CONSULTAR_LANCAMENTO = array(
-      'NUMERO_INTERESSADO' => 15,
-      'SEQUENCIAL' => 16,
-      'RENUNCIA_RECURSO' => 17
-  );
+        'NUMERO_INTERESSADO'        => 26,
+        'SEQUENCIAL'                => 27,
+        'ID_MOTIVO_CANCELAMENTO'    => 28,
+        'NUM_PROCESSO'              => 29,
+        'JUSTIFICATIVA_CANCELAMENTO'=> 30,
+        'USUARIO_INCLUSAO'          => 31,
+        'SISTEMA_ORIGEM'            => 32
+    );
+
+    public static $ID_PARAM_CONSULTAR_LANCAMENTO = array(
+        'NUMERO_INTERESSADO' => 15,
+        'SEQUENCIAL' => 16,
+        'RENUNCIA_RECURSO' => 17
+    );
 
     public static $ID_PARAM_RETIFICAR_LANCAMENTO = array(
         'NUMERO_INTERESSADO'        => 36,
@@ -60,8 +60,9 @@ class MdLitMapearParamEntradaRN extends InfraRN {
         'JUSTIFICATIVA_LANCAMENTO'  => 43,
         'USUARIO_INCLUSAO'          => 44,
         'SISTEMA_ORIGEM'            => 45,
-        'RENÚNCIA_RECURSO'          => 46,
-        'SEQUENCIAL'                => 47
+        'RENUNCIA_RECURSO'          => 46,
+        'SEQUENCIAL'                => 47,
+        'DTA_INTIMACAO_DEFINITIVA'  => 86
     );
 
     public static $ID_PARAM_SUSPENDER_LANCAMENTO = array(
@@ -93,7 +94,11 @@ class MdLitMapearParamEntradaRN extends InfraRN {
         'SISTEMA_ORIGEM' => 76
     );
 
-  public function __construct(){
+    public static $ID_PARAM_INTEGRACAO = array(
+        'RETIFICAR_LANCAMENTO' => 3
+    );
+
+    public function __construct(){
     parent::__construct();
   }
 

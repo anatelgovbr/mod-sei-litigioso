@@ -558,9 +558,14 @@ try {
             $alegacoes   = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinAlegacoes() === 'S' ? 'checked="checked"' : '';
             $readOnlyPrazo = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinDefesa() === 'S' ? '' : 'readonly';
 
+            $vItemPreenchidoDesativar = '0';
+            if($instauracao || $intimacao || $defesa || $alegacoes || $decisoria || $recursal || $conclusiva || $opcional || $obrigatoria){
+                $vItemPreenchidoDesativar = '1';
+            }
+
             $strResultado .= $strCssTr;
             $idSituacao = $arrObjSituacaoLitigiosoDTO[$i]->getNumIdSituacaoLitigioso();
-            $strResultado .= '<td style="display: none"><input type="hidden" value="' . ($i + 1) . '" name="ordem_' . $idSituacao . '"> </td>';
+            $strResultado .= '<td style="display: none"><input type="hidden" value="' . ($i + 1) . '" name="ordem_' . $idSituacao . '"><input type="hidden" value="' . ($vItemPreenchidoDesativar) . '" name="vItemPreenchidoDesativar_' . $idSituacao . '" id="vItemPreenchidoDesativar_' . $idSituacao . '"> </td>';
             $strResultado .= '<td style="word-break:break-all" class="fase">' . PaginaSEI::tratarHTML($arrObjSituacaoLitigiosoDTO[$i]->getStrNomeFase()) . '</td>';
             $strResultado .= '<td style="word-break:break-all" class="situacao">' . PaginaSEI::tratarHTML($arrObjSituacaoLitigiosoDTO[$i]->getStrNome()) . '</td>';
             $strResultado .= '<td align="center">' . $strImagem . '</td>';
@@ -592,9 +597,9 @@ try {
             }
 
             if ($bolAcaoDesativar && $arrObjSituacaoLitigiosoDTO[$i]->getStrSinAtivo() == 'S') {
-                $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($strId) . '" onclick="acaoDesativar(this,\'' . $strId . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/desativar.gif" title="Desativar Situação" alt="Desativar Situação" class="infraImg"  id="imgDesativar_' . $strId . '"/></a>&nbsp;';
+                $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($strId) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/desativar.gif" title="Desativar Situação" alt="Desativar Situação" class="infraImg"  id="imgDesativar_' . $strId . '" onclick="acaoDesativar(this,\'' . $strId . '\',1);"/></a>&nbsp;';
             } elseif($bolAcaoReativar) {
-                $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($strId) . '" onclick="acaoReativar(this,\'' . $strId . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/reativar.gif" title="Reativar Situação" alt="Reativar Situação" class="infraImg" /></a>&nbsp;';
+                $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($strId) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/reativar.gif" title="Reativar Situação" alt="Reativar Situação" class="infraImg" id="imgReativar_' . $strId . '" onclick="acaoReativar(this,\'' . $strId . '\',1);"/></a>&nbsp;';
             }
 
 
@@ -633,27 +638,31 @@ PaginaSEI::getInstance()->montarJavaScript();
 ?>
 <script>
     <? if ($bolAcaoDesativar) { ?>
-    function acaoDesativar(el, id) {
+    function acaoDesativar(el, id, icone) {
         var descricao = $('#tbSituacao tr[data-linha="'+id+'"] td.situacao').text();
+
         if (confirm("Confirma desativação da Situação \"" + descricao + "\"?")) {
-            verificarVinculo(id).success(function (r) {
-                var possuiVinculo = $(r).find('Vinculo').text();
-                if (possuiVinculo) {
-                    alert('A desativação da situação não é permitida, pois existem registros vinculados');
-                } else {
-                    desativarTr(el, id);
-                }
-            });
+
+            var vitempreenchidodesativar = $('#vItemPreenchidoDesativar_'+id).val();
+            if(vitempreenchidodesativar == '1'){
+                alert('A desativação da Situação não é permitida, pois sobre ela ainda existem parametrizações ativas.\n' +
+                      '\n' +
+                      'Antes, desmarque todas as parametrizações sobre esta Situação e Salve a tela.\n' +
+                      '\n' +
+                      'Somente depois que salvar a Situação sem nenhum parâmetro ativo será possível Desativar a Situação.');
+            } else {
+                desativarTr(el, id, icone);
+            }
+
         }
     }
 
-
     <? } ?>
 
-    function acaoReativar(el, id) {
+    function acaoReativar(el, id, icone) {
         var descricao = $('#tbSituacao tr[data-linha="'+id+'"] td.situacao').text();;
         if (confirm("Confirma reativação da Situação \"" + descricao + "\"?")) {
-            ativarTr(el, id);
+            ativarTr(el, id, icone);
         }
     }
 
@@ -811,7 +820,7 @@ PaginaSEI::getInstance()->fecharHtml();
             intimacaoDecisao = false, recurso = false,
             decisaoRecurso = false,
             conclusao = false, temIntimacaoDaConclusiva = false,
-            prazoDefesa = false, prazoAlegacoes = false;
+            prazoDefesa = false, prazoAlegacoes = false, prazoRecurso = false;
 
 
         var salvar = true;
@@ -884,6 +893,10 @@ PaginaSEI::getInstance()->fecharHtml();
                         if ($('input.recursal[data-linha="'+linha+'"]').prop('checked') == true) {
                             recurso = true;
                             decisaoRecurso = false;
+                            if($('input.prazo[data-linha="'+linha+'"]').val() == ''){
+                                prazoRecurso = true;
+                            }
+
                             return true;
                         }
                     }
@@ -969,6 +982,11 @@ PaginaSEI::getInstance()->fecharHtml();
             return;
         }
 
+        if(prazoRecurso){
+            alert('O prazo é obrigatório para a situção marcada como Recurso.');
+            salvar = false;
+            return;
+        }
         if(prazoDefesa){
             alert('O prazo é obrigatório para a situção marcada como Defesa.');
             salvar = false;
@@ -1024,11 +1042,18 @@ PaginaSEI::getInstance()->fecharHtml();
         $('#tbSituacao tr[data-linha]').each(function (key, elementoTr) {
             var linha = $(elementoTr).data('linha');
 
-            if($('input.defesa[data-linha="'+linha+'"]').prop('checked') == true || $('input.alegacoes[data-linha="'+linha+'"]').prop('checked') == true){
+            if($('input.defesa[data-linha="'+linha+'"]').prop('checked') == true 
+                 || $('input.alegacoes[data-linha="'+linha+'"]').prop('checked') == true
+                 || $('input.recursal[data-linha="'+linha+'"]').prop('checked') == true){
                 $('input.prazo[data-linha="'+linha+'"]').prop('readonly', false).show();
             }else{
                 $('input.prazo[data-linha="'+linha+'"]').prop('readonly', true).val('').hide();
 
+            }
+
+            if ($('#tbSituacao tr[data-linha="'+linha+'"]').hasClass('trVermelha')) {
+                limparLinha(linha);
+                habilitarDesabilitarLinha(linha, true);
             }
 
         });
@@ -1062,6 +1087,7 @@ PaginaSEI::getInstance()->fecharHtml();
             if($('input.intimacao[data-linha="'+linha+'"]').prop('checked') == true){
                 primeiraIntimacao = false;
             }
+
         });
 
     }
@@ -1132,15 +1158,23 @@ PaginaSEI::getInstance()->fecharHtml();
         // tr.remove();
     }
 
-    function desativarTr(element, id) {
+    function desativarTr(element, id, icone) {
         var img = $(element).children();
-        $(element).click(function () {
-            acaoReativar(element, id);
-        });
 
-        img.attr('src', '/infra_css/imagens/reativar.gif');
-        img.attr('title', 'Reativar Situação');
+        if(icone!=1) {
+            $(element).click(function () {
+                acaoReativar(element, id, icone);
+            });
+        }
+
+        $('#imgDesativar_'+id).attr('src', '/infra_css/imagens/reativar.gif');
+        $('#imgDesativar_'+id).attr('title', 'Reativar Situação');
+        $('#imgDesativar_'+id).attr('alt', 'Reativar Situação');
+        $('#imgDesativar_'+id).attr('onclick', "acaoReativar(this,'"+id+"',1);");
+        $('#imgDesativar_'+id).attr('id', 'imgReativar_'+id);
+
         $('#tbSituacao tr[data-linha="'+id+'"]').attr('class', 'trVermelha');
+
         limparLinha(id);
         habilitarDesabilitarLinha(id, true);
 
@@ -1153,15 +1187,23 @@ PaginaSEI::getInstance()->fecharHtml();
 
     }
 
-    function ativarTr(element, id) {
+    function ativarTr(element, id, icone) {
         var img = $(element).children();
-        $(element).click(function () {
-            acaoDesativar(element, id);
-        });
 
-        img.attr('src', '/infra_css/imagens/desativar.gif');
-        img.attr('title', 'Desativar Situação');
+        if(icone!=1) {
+            $(element).click(function () {
+                acaoDesativar(element, id, icone);
+            });
+        }
+
+        $('#imgReativar_'+id).attr('src', '/infra_css/imagens/desativar.gif');
+        $('#imgReativar_'+id).attr('title', 'Desativar Situação');
+        $('#imgReativar_'+id).attr('alt', 'Desativar Situação');
+        $('#imgReativar_'+id).attr('onclick', "acaoDesativar(this,'"+id+"',1);");
+        $('#imgReativar_'+id).attr('id', 'imgDesativar_'+id);
+
         $('#tbSituacao tr[data-linha="'+id+'"]').attr('class', 'infraTrClara');
+
         limparLinha(id);
         habilitarDesabilitarLinha(id, false);
 
@@ -1181,6 +1223,9 @@ PaginaSEI::getInstance()->fecharHtml();
 
     function habilitarDesabilitarLinha(linha, disabled) {
         $('input[data-linha="'+linha+'"]').prop('disabled', disabled);
+        if(disabled==false){
+            $('input[name="opcional_'+linha+'"]').prop('disabled', true);
+        }
     }
 
     function verificarVinculo(id) {
@@ -1206,7 +1251,7 @@ PaginaSEI::getInstance()->fecharHtml();
             $(element).prop('checked',true);
         }
         if($('input.recursal[data-linha="'+linha+'"]').prop('checked')){
-            alert("A situação recurso e obrigatório ser opcional!");
+            alert("A situação Recurso deve obrigatoriamente estar marcada como Opcional!");
             $(element).prop('checked',true);
         }
         selecionarObrigatoria(linha);

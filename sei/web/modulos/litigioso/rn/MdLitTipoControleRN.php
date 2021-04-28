@@ -1383,4 +1383,31 @@
 
         }
 
+        public function validarExclusaoTipoProcesso($idTipoProcedimento)
+        {
+            $objTipoControleLitigiosoDTO = new MdLitTipoControleDTO();
+
+            $objRelTipoControleLitigiosoTipoProcedimentoRN = new MdLitRelTipoControleTipoProcedimentoRN();
+            $objTipoControleLitigiosoTipoProcedimentoDTO = new MdLitRelTipoControleTipoProcedimentoDTO();
+            $objTipoControleLitigiosoTipoProcedimentoDTO->retTodos(true);
+            $objTipoControleLitigiosoTipoProcedimentoDTO->setNumIdTipoProcedimento($idTipoProcedimento);
+            $arrTipoProcedimentos = $objRelTipoControleLitigiosoTipoProcedimentoRN->listar($objTipoControleLitigiosoTipoProcedimentoDTO);
+
+            if ($arrTipoProcedimentos) {
+                $objTipoControleLitigiosoDTO->setNumIdTipoControleLitigioso($arrTipoProcedimentos[0]->getNumIdTipoControleLitigioso());
+                $objTipoControleLitigiosoDTO->retTodos();
+                $objTipoControleLitigiosoRN = new MdLitTipoControleRN();
+                $objTipoControleLitigiosoDTO = $objTipoControleLitigiosoRN->listar($objTipoControleLitigiosoDTO);
+
+                if ($objTipoControleLitigiosoDTO) {
+                    $siglas = '';
+                    foreach ($objTipoControleLitigiosoDTO as $item) {
+                        $siglas .= $item->getStrSigla() . "\n";
+                    }
+                    return $siglas;
+                }
+                return false;
+            }
+        }
+
     }

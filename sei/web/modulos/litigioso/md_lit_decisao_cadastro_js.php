@@ -1,36 +1,57 @@
 <?php if(0){?><script><?}?>
+    setTimeout(function(){
+        processando();
+    },0);
     var hdnTbDecisao = '';
     function inicializar(){
 
         <?if ($bolCadastro){ ?>
 
-            var isMudanca = "<?= $bolHouveMudanca ?>";
-            var valueNovo = '<?=$arrTabela?>';
-            var obj = window.opener.document.getElementById('hdnTbDecisao');
-            if(obj.value != ''){
-                if(!isMudanca){
-                    if(!confirm('Não ocorreu alteração das Decisões anteriores. A Situação Decisória atual mantém as Decisões anterior?')){
-                        window.location = window.location.href;
-                        return;
-                    }
-                }else{
+        var isMudanca = "<?= $bolHouveMudanca ?>";
+        var valueNovo = '<?=$arrTabela?>';
+        var obj = window.opener.document.getElementById('hdnTbDecisao');
+        var arrayRetorno = processarItemListas(valueNovo);
+        var situacaoParcial = false;
+
+        for(linhas = 0; linhas < arrayRetorno.length; linhas++){
+            if(arrayRetorno[linhas][18] == 'S'){
+                situacaoParcial = true;
+            }
+        }
+        if(situacaoParcial) {
+            alert('Foi identificado que ainda existem infrações sem Decisão cadastrada. Posteriormente, para prosseguir com o cadastro de novas Situações ou a Gestão de Multa, ainda será necessário finalizar o Cadastro das Decisões.');
+        }
+        obj.value = valueNovo;
+
+        if(obj.value != ''){
+            if(!isMudanca){
+                if(!confirm('Não ocorreu alteração das Decisões anteriores. A Situação Decisória atual mantém as Decisões anterior?')){
+                    window.location = window.location.href;
+                    return;
+                }
+            }else{
+                if(!verificarSituacaoDecisaoNovo()){
                     if(!confirm('Ocorreram alterações das Decisões anteriores. Confirma alteração?')){
                         window.location = window.location.href;
                         return;
                     }
                 }
-
             }
 
-            obj.value = valueNovo;
-            window.opener.objTabelaDinamicaDecisao.recarregar();
-            window.opener.document.getElementById('tbDecisao').parentNode.style.display = '';
-            if(typeof window.opener.carregarDependenciaMulta != 'undefined'){
-                window.opener.removerOptionVazio(window.opener.document.getElementById('selCreditosProcesso'));
-                window.opener.consultarExtratoMulta();
-            }
-            window.close();
-            return;
+        }
+
+        window.opener.objTabelaDinamicaDecisao.recarregar();
+        window.opener.document.getElementById('tbDecisao').parentNode.style.display = '';
+        if(typeof window.opener.carregarDependenciaMulta != 'undefined'){
+            window.opener.removerOptionVazio(window.opener.document.getElementById('selCreditosProcesso'));
+            window.opener.consultarExtratoMulta();
+        }
+
+        window.close();
+
+
+
+        return;
 
         <?}?>
 
@@ -51,6 +72,61 @@
             document.getElementById('sbmCadastrarDecisao').style.display = 'none';
             infraDesabilitarCamposDiv(document.getElementById('divInfraAreaGlobal'));
         }
+        infraAvisoCancelar();
+    }
+
+    function exibirBotaoCancelarAviso(){
+
+        var div = document.getElementById('divInfraAvisoFundo');
+
+        if (div!=null && div.style.visibility == 'visible'){
+
+            var botaoCancelar = document.getElementById('btnInfraAvisoCancelar');
+
+            if (botaoCancelar != null){
+                botaoCancelar.style.display = 'block';
+            }
+        }
+    }
+
+    function exibirAvisoEditor(){
+
+        var divFundo = document.getElementById('divInfraAvisoFundo');
+
+        if (divFundo==null){
+            divFundo = infraAviso(false, 'Processando...');
+        }else{
+            document.getElementById('btnInfraAvisoCancelar').style.display = 'none';
+            document.getElementById('imgInfraAviso').src='/infra_css/imagens/aguarde.gif';
+        }
+
+        if (INFRA_IE==0 || INFRA_IE>=7){
+            divFundo.style.position = 'fixed';
+        }
+
+        var divAviso = document.getElementById('divInfraAviso');
+
+        divAviso.style.top = Math.floor(infraClientHeight()/3) + 'px';
+        divAviso.style.left = Math.floor((infraClientWidth()-200)/2) + 'px';
+        divAviso.style.width = '200px';
+        divAviso.style.border = '1px solid black';
+
+        divFundo.style.width = screen.width*2 + 'px';
+        divFundo.style.height = screen.height*2 + 'px';
+        divFundo.style.visibility = 'visible';
+
+    }
+
+    function processando() {
+
+        exibirAvisoEditor();
+        timeoutExibirBotao = self.setTimeout('exibirBotaoCancelarAviso()',30000);
+
+        if (INFRA_IE>0) {
+            window.tempoInicio=(new Date()).getTime();
+        } else {
+            console.time('s');
+        }
 
     }
 
@@ -58,10 +134,10 @@
         var arrIdEspcecieDecisao = new Array();
         var currentElement = '';
         $('.especie-decisao').each(function(key, element){
-             currentElement = element;
-             if($(element).val() != null){
+            currentElement = element;
+            if($(element).val() != null){
                 arrIdEspcecieDecisao.push($(element).val());
-             }
+            }
         });
 
         var objValidado = validarEspecieDecisaoGestaoMultasDiferentes(arrIdEspcecieDecisao);
@@ -95,14 +171,13 @@
             },
             error: function (msgError) {
                 msgCommit = "Erro ao processar o validação do do SEI: " + msgError.responseText;
-                console.log(msgCommit);
             },
             complete: function (result) {
                 infraAvisoCancelar();
             }
         });
         return {'valid': valid, 'mensagem': "Não é possivel selecionar Espécies de Decisão com Indicação de Multa de tipos distintos (Gestão por Integração e Apenas Indicação de Valor) para o mesmo processo.\n" +
-            "\nEscolha novamente as Espécies de Decisão para Indicação de Multa em conformidade com as novas parametrizações da Administração do SEI ou entre em contato com o Gestor do Controle Litigioso para dúvidas a respeito."};
+                "\nEscolha novamente as Espécies de Decisão para Indicação de Multa em conformidade com as novas parametrizações da Administração do SEI ou entre em contato com o Gestor do Controle Litigioso para dúvidas a respeito."};
     }
 
 
@@ -127,7 +202,12 @@
         if(arrItens.length > 0){
             var idAnterior = 0;
             var isSituacaoDecisaoNovo = verificarSituacaoDecisaoNovo();
-            document.getElementById('hdnTbDecisaoAntigo').value = hdnTbDecisao.value;
+            if(window.opener.document.getElementById('hdnVlOriginalMultas').value == ''){
+                window.opener.document.getElementById('hdnVlOriginalMultas').value = hdnTbDecisao.value;
+            }
+
+            var itensVlOriginalMulta = processarItemListas(window.opener.document.getElementById('hdnVlOriginalMultas').value);
+
             for(var i = 0; i < arrItens.length; i++ ){
                 var tamanhoTR = document.getElementById('tableDadosComplementarInteressado').rows.length;
                 for (var j = 1;j < tamanhoTR; j++ ){
@@ -137,12 +217,15 @@
 
                             j = incluirLinha(table.rows[j].children[0].children[2]);
                             //combo tipo decisao
-                            var selectTipoDecisao = table.rows[j].children[0].children[0];
+                            var selectTipoDecisao = table.rows[j].children[0].children[0]
                             carregarTipoDecisao(selectTipoDecisao,arrItens[i][2]);
                             // combo especie decisao
                             carregarComboEspecieDecisao(selectTipoDecisao, arrItens[i][3]);
                             //input multa
                             table.rows[j].children[2].children[0].value = arrItens[i][4];
+                            if(table.rows[j].children[2].children[0].getAttribute('decisao_valor_antigo') == ''){
+                                table.rows[j].children[2].children[0].setAttribute('decisao_valor_antigo', itensVlOriginalMulta[i][4]);
+                            }
                             //valor ressarcimento
                             table.rows[j].children[3].children[0].value = arrItens[i][5];
                             //input prazo
@@ -163,7 +246,7 @@
                                 //input sigla_unidade
                                 table.rows[j].children[5].children[5].value = arrItens[i][15];
                                 //input sin_cadastro_parcial
-                                 //table.rows[j].children[5].children[6].value = arrItens[i][18];
+                                //table.rows[j].children[5].children[6].value = arrItens[i][18];
                             }
                         }else{
                             if(arrItens[i][16] == 'N'){
@@ -171,16 +254,12 @@
                                 table.rows[j].children[1].children[0].checked = true;
                                 changeLocalidades(table.rows[j].children[1].children[0], false);
                             }else if(arrItens[i][16] == 'U'){
-                                //checkbox localidade UF
-                                table.rows[j].children[1].children[2].checked = true;
-                                changeLocalidades(table.rows[j].children[1].children[2], true);
-
-                                //select de UF
-                                var selectUF = table.rows[j].children[1].children[4].children[0];
-                                var arrUf =  arrItens[i][17].split('#');
-
+                                //checkbox localidade U
+                                table.rows[j].children[1].children[3].checked = true;
+                                changeLocalidades(table.rows[j].children[1].children[3], true);
+                                var selectUF = table.rows[j].children[1].children[5].children[0];
+                                var arrUf = arrItens[j - 1][17].split('#');
                                 $(selectUF).multipleSelect("setSelects", arrUf);
-
                             }
                             //combo tipo decisao
                             var selectTipoDecisao = table.rows[j].children[2].children[0];
@@ -188,7 +267,12 @@
                             // combo especie decisao
                             carregarComboEspecieDecisao(selectTipoDecisao, arrItens[i][3]);
                             //input multa
-                            table.rows[j].children[4].children[0].value = arrItens[i][4];
+                            if(arrItens[i][4]) {
+                                table.rows[j].children[4].children[0].value = arrItens[i][4];
+                                if (table.rows[j].children[4].children[0].getAttribute('decisao_valor_antigo') == '') {
+                                    table.rows[j].children[4].children[0].setAttribute('decisao_valor_antigo', itensVlOriginalMulta[i][4]);
+                                }
+                            }
                             //input prazo
                             table.rows[j].children[7].children[0].value = arrItens[i][7] != 'null' ? arrItens[i][7] : '';
                             //valor ressarcimento
@@ -212,6 +296,7 @@
                                 // table.rows[j].children[7].children[6].value = arrItens[i][18];
                             }
                         }
+
                         idAnterior = arrItens[i][1];
                         break;
                     }
@@ -467,16 +552,16 @@
             '<input type="hidden" name="decisao['+nomeLinha+'][id]" value="'+valueId+'">'+
             '<input type="hidden" name="decisao['+nomeLinha+'][id_decisao]" value="" /> ';
         cell2.innerHTML = '<select class="especie-decisao" name="decisao['+nomeLinha+'][id_md_lit_especie_decisao]" onchange="refreshEspecieAtivos(this); carregarEspecieDecisao(this)" style="width: 100%;display: none"></select>';
-        cell3.innerHTML = '<input type="text" name="decisao['+nomeLinha+'][multa]" onkeypress="return infraMascaraDinheiro(this,event,2,12);" style="width: 90%;display: none">';
+        cell3.innerHTML = '<input type="text" name="decisao['+nomeLinha+'][multa]" name="decisao['+nomeLinha+'][multa]" onkeypress="return infraMascaraDinheiro(this,event,2,12);" style="width: 90%;display: none" decisao_valor_antigo="">';
         cell4.innerHTML = '<input type="text" name="decisao['+nomeLinha+'][valor_ressarcimento]" onkeypress="return infraMascaraDinheiro(this,event,2,12);" style="width: 90%;display: none">';
         cell5.innerHTML = '<select name="decisao['+nomeLinha+'][id_md_lit_obrigacao]" style="width: 100%;display: none"></select>';
         cell6.innerHTML = '<input type="text" name="decisao['+nomeLinha+'][prazo]" style="width: 90%;display: none" onkeypress="return infraMascaraNumero(this,event,16);">'+
-                            '<input type="hidden" name="decisao['+nomeLinha+'][id_usuario]">'+
-                            '<input type="hidden" name="decisao['+nomeLinha+'][id_unidade]">'+
-                            '<input type="hidden" name="decisao['+nomeLinha+'][data]">'+
-                            '<input type="hidden" name="decisao['+nomeLinha+'][nome_usuario]">'+
-                            '<input type="hidden" name="decisao['+nomeLinha+'][sigla_unidade]">'+
-                            '<input type="hidden" name="decisao['+nomeLinha+'][sin_cadastro_parcial]">';
+            '<input type="hidden" name="decisao['+nomeLinha+'][id_usuario]">'+
+            '<input type="hidden" name="decisao['+nomeLinha+'][id_unidade]">'+
+            '<input type="hidden" name="decisao['+nomeLinha+'][data]">'+
+            '<input type="hidden" name="decisao['+nomeLinha+'][nome_usuario]">'+
+            '<input type="hidden" name="decisao['+nomeLinha+'][sigla_unidade]">'+
+            '<input type="hidden" name="decisao['+nomeLinha+'][sin_cadastro_parcial]">';
 
         showHideCamposDinamicos();
 
@@ -559,7 +644,6 @@
         var numRows=document.getElementById("tableDadosComplementarInteressado").rows.length;
         var table = document.getElementById("tableDadosComplementarInteressado");
         var infracaoParcial=false;
-
         for (var i=1;i<numRows;i++){
 //             verificar se a linha da tabela foi mesclado e se é a primeira opção entra no 1°if.
             if(table.rows[i].cells.length == 8){
@@ -570,8 +654,8 @@
                 var ressarcimento   = table.rows[i].cells[5].childNodes[0];
                 var obrigacao       = table.rows[i].cells[6].childNodes[0];
                 var prazo           = table.rows[i].cells[7].childNodes[0];
-                var chkNacional     = table.rows[i].cells[1].childNodes[1];
-                var chkUF           = table.rows[i].cells[1].childNodes[4];
+                var chkNacional     = document.getElementById('rdDispositivoNormativo_localidade_'+(i-1))
+                var chkUF           = document.getElementById('rdDispositivoNormativo_uf_'+(i-1))
                 var selUF           = table.rows[i].cells[1].childNodes[6].childNodes[0];
                 var cadastroParcial = table.rows[i].cells[7].childNodes[6];
             }else if(table.rows[i].cells.length == 6){
@@ -583,6 +667,7 @@
                 var prazo           = table.rows[i].cells[5].childNodes[0];
                 var cadastroParcial = table.rows[i].cells[5].childNodes[6];
             }
+
             if(table.rows[i].cells.length == 8 && !chkNacional.checked && !chkUF.checked){
                 infracaoParcial = true;
             }else if(table.rows[i].cells.length == 8 && chkUF.checked && (selUF.value == '' || selUF.value == 'null')){
@@ -613,7 +698,6 @@
             }else{
                 infracaoParcial = true;
             }
-
             if(infracaoParcial){
                 cadastroParcial.value = 'S';
             }else{
@@ -623,16 +707,15 @@
 
         }
 
-
-        if(infracaoParcial){
-            msg = "Foi identificado que ainda existem infrações sem Decisão cadastrada. Posteriormente, para prosseguir com o cadastro de novas Situações ou a Gestão de Multa, ainda será necessário finalizar o Cadastro das Decisões.";
-            alert(msg);
-        }
         return true;
     }
 
 
     function OnSubmitForm(){
+        if(!validarAlteracaoDecisaoSuperior()){
+            return false;
+        }
+
         if(!validar())
             return false;
 
@@ -640,12 +723,93 @@
 
     function changeLocalidades(element, isUf){
         var elementSelectUF = document.getElementById(element.getAttribute('data-id-select-uf'));
-
         if(isUf){
-            elementSelectUF.style.display = '';
+            if(elementSelectUF != null){
+                elementSelectUF.style.display = '';
+            }
         }else{
-            elementSelectUF.style.display = 'none';
-            elementSelectUF.value = 'null';
+            if(elementSelectUF != null) {
+                elementSelectUF.style.display = 'none';
+                elementSelectUF.value = 'null';
+            }
         }
     }
-<? if(0){?></script><?}?>
+
+    // TODO refatorar para usar a versão do Infra JS
+    function processarItemListas(linhaString){
+        var linhas = linhaString.split("¥");
+        var arrayRetorno = [];
+        for (linha = 0; linha < linhas.length; linha++) {
+            var itens = linhas[linha].split("±");
+            var arrayParcial = [];
+            for (item = 0; item < itens.length; item++){
+                arrayParcial.push(itens[item]);
+
+            }
+            arrayRetorno.push(arrayParcial);
+        }
+        return arrayRetorno;
+    }
+
+    function validarAlteracaoDecisaoSuperior() {
+
+        var isAlteracao = isAlteracaoDecisaoMultaPrincipal();
+
+        if(isAlteracao){
+            msg = 'Não é permitido alterar o Cadastro de Decisões em instâncias superiores para, ao mesmo tempo, diminuir e aumentar Valores de Multa.\n\n';
+            msg += 'Primeiramente, deve-se diminuir os Valores de Multa pré existentes, identificado como lançamento "Principal", e acionar o "Retificar Lançamento".\n\n';
+            msg += 'Somente depois de Retificado o Lançamento Principal com a parcela da diminuição, poderá retornar no Cadastro de Decisões para majorar os Valores de Multa e, em seguida, realizar a Inclusão do Lançamento identificado como "Majorado" com suas datas próprias.\n';
+            alert(msg);
+            return false;
+        }
+
+        return true;
+    }
+
+    function retornaIdMultaPrincipal(){
+        var idMultaPrincipal = 0;
+        var numRows=document.getElementById("tableDadosComplementarInteressado").rows.length;
+        if(numRows > 2){
+            for(var i = 0; i < numRows-1; i++ ) {
+                if($('#multa_'+i).val() != ""){
+                    idMultaPrincipal = i;
+                    break;
+                }
+            }
+        }
+        return idMultaPrincipal;
+    }
+
+    function isAlteracaoDecisaoMultaPrincipal(){
+        var isAlteracao = false;
+        var i=0;
+        var countAlteracoesMaior = 0;
+        var countAlteracoesMenor = 0;
+
+        $('input[name$="[multa]"] ').each(function(){
+            if( parseFloat($(this).val()) != parseFloat($(this).attr('decisao_valor_antigo')) ){
+
+                if( (isNaN(parseFloat($(this).attr('decisao_valor_antigo'))) && $(this).val() != '') || (parseFloat($(this).val()) > parseFloat($(this).attr('decisao_valor_antigo'))) ){
+                    countAlteracoesMaior++;
+                }
+                if(
+                    ( $(this).val() == '' && parseFloat($(this).attr('decisao_valor_antigo')) > 0 ) || (parseFloat($(this).val()) < parseFloat($(this).attr('decisao_valor_antigo')))){
+                    countAlteracoesMenor++;
+                }
+            }
+            i++;
+        });
+
+        var totalAlteracoes = countAlteracoesMaior + countAlteracoesMenor;
+
+        if(totalAlteracoes > 1 &&
+            countAlteracoesMaior > 0 &&
+            countAlteracoesMenor > 0 )
+                isAlteracao = true;
+
+        return isAlteracao;
+    }
+
+
+
+    <? if(0){?></script><?}?>

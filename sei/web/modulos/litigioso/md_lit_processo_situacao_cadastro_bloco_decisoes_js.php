@@ -27,8 +27,8 @@
         }
 
         if(objTabelaDinamicaDecisao.verificarCadastroParcial()){
-            bloquearTelaParaAdicao(true, true);
-            alert('Foi identificado que ainda existem infrações sem Decisão cadastrada. Para prosseguir com o cadastro de novas Situações ou a Gestão de Multa, antes é necessário complementar o Cadastro das Decisões e salvar.');
+            //bloquearTelaParaAdicao(true, true);
+            alert('Foi identificado que ainda existem infrações sem Decisão cadastrada. Posteriormente, para prosseguir com o cadastro de novas Situações ou a Gestão de Multa, ainda será necessário finalizar o Cadastro das Decisões.');
         }
     }
     function abrirModalHistoricoDecisao(){

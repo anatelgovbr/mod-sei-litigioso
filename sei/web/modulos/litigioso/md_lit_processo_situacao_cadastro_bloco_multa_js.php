@@ -233,9 +233,11 @@
                     if($(result).find('sinRenunciaRecorrer').text() == 'S'){
                         document.getElementById('chkReducaoRenuncia').checked = true;
                         document.getElementById('chkReducaoRenuncia').disabled = true;
+                        document.getElementById('chkReducaoRenuncia').setAttribute('data-valor-antigo', 'S');
                     }else{
                         document.getElementById('chkReducaoRenuncia').checked = false;
                         document.getElementById('chkReducaoRenuncia').disabled = false;
+                        document.getElementById('chkReducaoRenuncia').setAttribute('data-valor-antigo', 'N');
                     }
                     calcularData();
 
@@ -312,6 +314,7 @@
                 }else if(document.getElementById('hdnIsGestor').value == 0 && document.getElementById('chkHouveConstituicao').checked){
                     infraDesabilitarCamposDivMulta(document.getElementById('divHouveConstituicao'));
                     document.getElementById('btnConstituirDefinitivamente').style.display = 'none';
+                    document.getElementById('chkReducaoRenuncia').disabled = false;
                 }else{
                     infraHabilitarCamposDivMulta(document.getElementById('divHouveConstituicao'));
                     document.getElementById('btnConstituirDefinitivamente').style.display = '';
@@ -319,14 +322,14 @@
                 }
 
                 //Se possuir decisão com cadastro parcial as regras acima de aparecer botão para o lançamento e ignorado
-                if(objTabelaDinamicaDecisao.verificarCadastroParcial()){
-                    document.getElementById('btnIncluirLancamento').style.display = 'none';
-                    mostrarEsconderElemento(document.getElementById('btnVincularLancamento'),'none');
-                    document.getElementById('btnCancelarRecurso').style.display = 'none';
-                    document.getElementById('btnDenegarRecurso').style.display = 'none';
-                    document.getElementById('btnSuspenderLancamento').style.display = 'none';
-                    document.getElementById('btnRetificarLancamento').style.display = 'none';
-                }
+                // if(objTabelaDinamicaDecisao.verificarCadastroParcial()){
+                //     document.getElementById('btnIncluirLancamento').style.display = 'none';
+                //     mostrarEsconderElemento(document.getElementById('btnVincularLancamento'),'none');
+                //     document.getElementById('btnCancelarRecurso').style.display = 'none';
+                //     document.getElementById('btnDenegarRecurso').style.display = 'none';
+                //     document.getElementById('btnSuspenderLancamento').style.display = 'none';
+                //     document.getElementById('btnRetificarLancamento').style.display = 'none';
+                // }
 
                 //por não haver promisses isso é necessario para replicar as datas da situação para multa
                 replicarDataParaFieldsetGestaoMulta();
@@ -344,10 +347,10 @@
     function abrirModalJustificativaLancamento(element){
         var url = element.getAttribute('data-url');
 
-        if(objTabelaDinamicaDecisao.verificarCadastroParcial()){
-            alert("Foi identificado que ainda existem infrações sem Decisão cadastrada. Posteriormente, para prosseguir com o cadastro de novas Situações ou a Gestão de Multa, ainda será necessário finalizar o Cadastro das Decisões.");
-            return;
-        }
+        // if(objTabelaDinamicaDecisao.verificarCadastroParcial()){
+        //     alert("Foi identificado que ainda existem infrações sem Decisão cadastrada. Posteriormente, para prosseguir com o cadastro de novas Situações ou a Gestão de Multa, ainda será necessário finalizar o Cadastro das Decisões.");
+        //     return;
+        // }
 
         if(document.getElementById('selNumeroInteressado').value == '' || document.getElementById('selNumeroInteressado').value == 'null' ){
             alert('Selecione o número de complemento do interessado!');
@@ -375,10 +378,10 @@
     function abrirModalVincularLancamento(element){
         var url = element.getAttribute('data-url');
 
-        if(objTabelaDinamicaDecisao.verificarCadastroParcial()){
-            alert("Foi identificado que ainda existem infrações sem Decisão cadastrada. Posteriormente, para prosseguir com o cadastro de novas Situações ou a Gestão de Multa, ainda será necessário finalizar o Cadastro das Decisões.");
-            return;
-        }
+        // if(objTabelaDinamicaDecisao.verificarCadastroParcial()){
+        //     alert("Foi identificado que ainda existem infrações sem Decisão cadastrada. Posteriormente, para prosseguir com o cadastro de novas Situações ou a Gestão de Multa, ainda será necessário finalizar o Cadastro das Decisões.");
+        //     return;
+        // }
 
         if(document.getElementById('selNumeroInteressado').value == '' || document.getElementById('selNumeroInteressado').value == 'null' ){
             alert('Selecione o número de complemento do interessado!');
@@ -408,15 +411,7 @@
         }
 
         if(infraTrim(txtIntConst.value == '')){
-            alert('informe a Data da Intimação da Constituição Definitiva!');
-            return false;
-        }
-
-        var dtConstDef     = retornarDate(txtConst.value)
-        var dtIntimConstDef = retornarDate(txtIntConst.value);
-
-        if (dtIntimConstDef > dtConstDef) {
-            alert('Data da Constituição Definitiva não pode ser menor que a Data da Intimação da Constituição Definitiva!');
+            alert('Informe a Data da Intimação da Decisão Definitiva!');
             return false;
         }
 
@@ -426,7 +421,6 @@
             250);
 
     }
-
 
     function retornarDate(hdnDtDefault){
         var arrDtEntrada = hdnDtDefault.split('/');
@@ -510,9 +504,9 @@
     }
 
     function verificarCondicionaisMulta(){
-        if(objTabelaDinamicaDecisao.verificarCadastroParcial()){
-            return true;
-        }
+        // if(objTabelaDinamicaDecisao.verificarCadastroParcial()){
+        //     return true;
+        // }
 
         //se o tipo da multa for por indicacao de valor não valida o lancamento da multa
         if(isTipoMultaIndicacaoValor() && existeLancamentoProcedimento() == false){
@@ -655,12 +649,31 @@
         if( document.getElementById('txtDtDecursoPrazo').value !=  document.getElementById('txtDtDecursoPrazo').getAttribute('data-valor-antigo')){
             mostrarBotaoRetificar = true;
         }
+        if( document.getElementById('txtDtIntimacaoConstituicao').value !=  document.getElementById('txtDtIntimacaoConstituicao').getAttribute('data-valor-antigo') &&
+            document.getElementById('txtDtIntimacaoConstituicao').getAttribute('campo-mapea-param-entrada') == 'S'){
+            mostrarBotaoRetificar = true;
+        }
         // if( document.getElementById('txtDtIntimacaoAplMulta').value !=  document.getElementById('txtDtIntimacaoAplMulta').getAttribute('data-valor-antigo')){
         //     mostrarBotaoRetificar = true;
         // }
         if(!document.getElementById('chkHouveConstituicao').checked && document.getElementById('chkHouveConstituicao').getAttribute('data-valor-antigo') == 'S'){
             document.getElementById('txtDtIntimacaoConstituicao').value = '';
             document.getElementById('chkReducaoRenuncia').checked = false;
+            mostrarBotaoRetificar = true;
+        }
+        if(
+            document.getElementById('chkReducaoRenuncia').checked &&
+            document.getElementById('chkHouveConstituicao').getAttribute('data-valor-antigo') == 'S' &&
+            document.getElementById('chkReducaoRenuncia').getAttribute('data-valor-antigo') == 'N'
+        ){
+            mostrarBotaoRetificar = true;
+        }
+        if(
+            !document.getElementById('chkReducaoRenuncia').checked  &&
+            document.getElementById('chkHouveConstituicao').getAttribute('data-valor-antigo') == 'S' &&
+            document.getElementById('chkReducaoRenuncia').getAttribute('data-valor-antigo') == 'S'
+
+        ){
             mostrarBotaoRetificar = true;
         }
 

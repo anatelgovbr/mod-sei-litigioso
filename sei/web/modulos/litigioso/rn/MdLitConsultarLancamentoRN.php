@@ -144,7 +144,7 @@ class MdLitConsultarLancamentoRN extends InfraRN
                 case MdLitMapearParamSaidaRN::$ID_PARAM_CONSULTAR_LANCAMENTO['VALOR_ATUALIZADO']:
                     $vlrAtualizado = isset($arrResultado['return'][$objMdLitMapearParamSaidaDTO->getStrCampo()]) ? $arrResultado['return'][$objMdLitMapearParamSaidaDTO->getStrCampo()] : null;
 
-                    if($vlrAtualizado && ( !$objMdLitLancamentoDTO->isSetDblVlrPago() || InfraUtil::prepararDbl($objMdLitLancamentoDTO->getDblVlrPago()) != $vlrAtualizado)){
+                    if($vlrAtualizado){
                         $objMdLitLancamentoDTO->setDblVlrSaldoDevedor($vlrAtualizado);
                     }
                     break;
