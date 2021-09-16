@@ -61,6 +61,7 @@ try {
     $objContatoDTO = new ContatoDTO();
     $objContatoDTO->retTodos();
     $objContatoDTO->setNumIdContato($_GET['id_contato']);
+    $objContatoDTO->setBolExclusaoLogica(false);
 
     $objContatoDTO = $objContatoRN->consultarRN0324($objContatoDTO);
     $contatoCpfCnpj = $objContatoDTO->getDblCpf() ? str_pad($objContatoDTO->getDblCpf(), 11, '0', STR_PAD_LEFT) : str_pad($objContatoDTO->getDblCnpj(), 14, '0', STR_PAD_LEFT);

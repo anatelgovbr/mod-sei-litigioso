@@ -13,6 +13,8 @@
         var arrayRetorno = processarItemListas(valueNovo);
         var situacaoParcial = false;
 
+
+
         for(linhas = 0; linhas < arrayRetorno.length; linhas++){
             if(arrayRetorno[linhas][18] == 'S'){
                 situacaoParcial = true;
@@ -55,6 +57,7 @@
 
         <?}?>
 
+        $('#hdnTbDecisaoAntigo').val(window.opener.document.getElementById('hdnTbDecisao').value);
         $("select.infraSelect.multipleSelect").multipleSelect({
             filter: false,
             minimumCountSelected: 1,
@@ -199,14 +202,13 @@
 
     function montaResultado(){
         var arrItens = window.opener.objTabelaDinamicaDecisao.obterItens();
+        console.log(arrItens);
         if(arrItens.length > 0){
             var idAnterior = 0;
             var isSituacaoDecisaoNovo = verificarSituacaoDecisaoNovo();
             if(window.opener.document.getElementById('hdnVlOriginalMultas').value == ''){
                 window.opener.document.getElementById('hdnVlOriginalMultas').value = hdnTbDecisao.value;
             }
-
-            var itensVlOriginalMulta = processarItemListas(window.opener.document.getElementById('hdnVlOriginalMultas').value);
 
             for(var i = 0; i < arrItens.length; i++ ){
                 var tamanhoTR = document.getElementById('tableDadosComplementarInteressado').rows.length;
@@ -223,9 +225,6 @@
                             carregarComboEspecieDecisao(selectTipoDecisao, arrItens[i][3]);
                             //input multa
                             table.rows[j].children[2].children[0].value = arrItens[i][4];
-                            if(table.rows[j].children[2].children[0].getAttribute('decisao_valor_antigo') == ''){
-                                table.rows[j].children[2].children[0].setAttribute('decisao_valor_antigo', itensVlOriginalMulta[i][4]);
-                            }
                             //valor ressarcimento
                             table.rows[j].children[3].children[0].value = arrItens[i][5];
                             //input prazo
@@ -269,9 +268,6 @@
                             //input multa
                             if(arrItens[i][4]) {
                                 table.rows[j].children[4].children[0].value = arrItens[i][4];
-                                if (table.rows[j].children[4].children[0].getAttribute('decisao_valor_antigo') == '') {
-                                    table.rows[j].children[4].children[0].setAttribute('decisao_valor_antigo', itensVlOriginalMulta[i][4]);
-                                }
                             }
                             //input prazo
                             table.rows[j].children[7].children[0].value = arrItens[i][7] != 'null' ? arrItens[i][7] : '';
@@ -307,27 +303,27 @@
     }
 
     function carregarComboEspecieDecisao(element, valorSelecionado){
-        var objSel, objMulta, objValorRessarcimento, objObrigacaoSelect, objPrazo;
+        var objSel, objMulta, objValor, objObrigacaoSelect, objPrazo;
         if(element.parentNode.parentNode.childNodes.length == 6){
             objSel              = element.parentNode.parentNode.childNodes[1].childNodes[0];
             objMulta            = element.parentNode.parentNode.childNodes[2].childNodes[0];
-            objValorRessarcimento  = element.parentNode.parentNode.childNodes[3].childNodes[0];
+            objValor  = element.parentNode.parentNode.childNodes[3].childNodes[0];
             objObrigacaoSelect  = element.parentNode.parentNode.childNodes[4].childNodes[0];
             objPrazo            = element.parentNode.parentNode.childNodes[5].childNodes[0];
         }else if(element.parentNode.parentNode.childNodes.length == 8){
             objSel              = element.parentNode.parentNode.childNodes[3].childNodes[0];
             objMulta            = element.parentNode.parentNode.childNodes[4].childNodes[0];
-            objValorRessarcimento = element.parentNode.parentNode.childNodes[5].childNodes[0];
+            objValor = element.parentNode.parentNode.childNodes[5].childNodes[0];
             objObrigacaoSelect  = element.parentNode.parentNode.childNodes[6].childNodes[0];
             objPrazo            = element.parentNode.parentNode.childNodes[7].childNodes[0];
         }
         infraSelectLimpar(objObrigacaoSelect);
         infraSelectLimpar(objSel);
         objMulta.value = '';
-        objValorRessarcimento.value = '';
+        objValor.value = '';
         objPrazo.value = '';
         objMulta.style.display = 'none';
-        objValorRessarcimento.style.display = 'none';
+        objValor.style.display = 'none';
         objPrazo.style.display = 'none';
         objObrigacaoSelect.style.display = 'none';
         objSel.style.display = 'none';
@@ -425,26 +421,26 @@
             return false;
         };
         var objMulta            = null;
-        var objValorRessarcimento = null;
+        var objValor = null;
         var objObrigacaoSelect  = null;
         var objPrazo            = null;
 
         if(element.parentNode.parentNode.childNodes.length == 6){
             objMulta            = element.parentNode.parentNode.childNodes[2].childNodes[0];
-            objValorRessarcimento = element.parentNode.parentNode.childNodes[3].childNodes[0];
+            objValor = element.parentNode.parentNode.childNodes[3].childNodes[0];
             objObrigacaoSelect  = element.parentNode.parentNode.childNodes[4].childNodes[0];
             objPrazo            = element.parentNode.parentNode.childNodes[5].childNodes[0];
         }else if(element.parentNode.parentNode.childNodes.length == 8){
             objMulta            = element.parentNode.parentNode.childNodes[4].childNodes[0];
-            objValorRessarcimento = element.parentNode.parentNode.childNodes[5].childNodes[0];
+            objValor = element.parentNode.parentNode.childNodes[5].childNodes[0];
             objObrigacaoSelect  = element.parentNode.parentNode.childNodes[6].childNodes[0];
             objPrazo            = element.parentNode.parentNode.childNodes[7].childNodes[0];
         }
 
         objMulta.style.display = 'none';
         objMulta.value = '';
-        objValorRessarcimento.style.display = 'none';
-        objValorRessarcimento.value = '';
+        objValor.style.display = 'none';
+        objValor.value = '';
         objPrazo.style.display = 'none';
         objPrazo.value = '';
         objObrigacaoSelect.style.display = 'none';
@@ -466,8 +462,8 @@
                         $('.multa').show();
                     }
 
-                    if($(result).find('SinIndicacaoRessarcimentoValor').text() == 'S'){
-                        objValorRessarcimento.style.display = '';
+                    if($(result).find('SinIndicacaoValor').text() == 'S'){
+                        objValor.style.display = '';
                         $('.ressarcimento').show();
                     }
 
@@ -654,8 +650,10 @@
                 var ressarcimento   = table.rows[i].cells[5].childNodes[0];
                 var obrigacao       = table.rows[i].cells[6].childNodes[0];
                 var prazo           = table.rows[i].cells[7].childNodes[0];
-                var chkNacional     = document.getElementById('rdDispositivoNormativo_localidade_'+(i-1))
-                var chkUF           = document.getElementById('rdDispositivoNormativo_uf_'+(i-1))
+                //var chkNacional     = document.getElementById('rdDispositivoNormativo_localidade_'+(i-1))
+                //var chkUF           = document.getElementById('rdDispositivoNormativo_uf_'+(i-1))
+                var chkNacional     = $(table.rows[i].cells[1]).find('input[type=radio][value="N"]')[0];
+                var chkUF           = $(table.rows[i].cells[1]).find('input[type=radio][value="U"]')[0];
                 var selUF           = table.rows[i].cells[1].childNodes[6].childNodes[0];
                 var cadastroParcial = table.rows[i].cells[7].childNodes[6];
             }else if(table.rows[i].cells.length == 6){
@@ -712,9 +710,6 @@
 
 
     function OnSubmitForm(){
-        if(!validarAlteracaoDecisaoSuperior()){
-            return false;
-        }
 
         if(!validar())
             return false;
@@ -750,66 +745,6 @@
         }
         return arrayRetorno;
     }
-
-    function validarAlteracaoDecisaoSuperior() {
-
-        var isAlteracao = isAlteracaoDecisaoMultaPrincipal();
-
-        if(isAlteracao){
-            msg = 'Não é permitido alterar o Cadastro de Decisões em instâncias superiores para, ao mesmo tempo, diminuir e aumentar Valores de Multa.\n\n';
-            msg += 'Primeiramente, deve-se diminuir os Valores de Multa pré existentes, identificado como lançamento "Principal", e acionar o "Retificar Lançamento".\n\n';
-            msg += 'Somente depois de Retificado o Lançamento Principal com a parcela da diminuição, poderá retornar no Cadastro de Decisões para majorar os Valores de Multa e, em seguida, realizar a Inclusão do Lançamento identificado como "Majorado" com suas datas próprias.\n';
-            alert(msg);
-            return false;
-        }
-
-        return true;
-    }
-
-    function retornaIdMultaPrincipal(){
-        var idMultaPrincipal = 0;
-        var numRows=document.getElementById("tableDadosComplementarInteressado").rows.length;
-        if(numRows > 2){
-            for(var i = 0; i < numRows-1; i++ ) {
-                if($('#multa_'+i).val() != ""){
-                    idMultaPrincipal = i;
-                    break;
-                }
-            }
-        }
-        return idMultaPrincipal;
-    }
-
-    function isAlteracaoDecisaoMultaPrincipal(){
-        var isAlteracao = false;
-        var i=0;
-        var countAlteracoesMaior = 0;
-        var countAlteracoesMenor = 0;
-
-        $('input[name$="[multa]"] ').each(function(){
-            if( parseFloat($(this).val()) != parseFloat($(this).attr('decisao_valor_antigo')) ){
-
-                if( (isNaN(parseFloat($(this).attr('decisao_valor_antigo'))) && $(this).val() != '') || (parseFloat($(this).val()) > parseFloat($(this).attr('decisao_valor_antigo'))) ){
-                    countAlteracoesMaior++;
-                }
-                if(
-                    ( $(this).val() == '' && parseFloat($(this).attr('decisao_valor_antigo')) > 0 ) || (parseFloat($(this).val()) < parseFloat($(this).attr('decisao_valor_antigo')))){
-                    countAlteracoesMenor++;
-                }
-            }
-            i++;
-        });
-
-        var totalAlteracoes = countAlteracoesMaior + countAlteracoesMenor;
-
-        if(totalAlteracoes > 1 &&
-            countAlteracoesMaior > 0 &&
-            countAlteracoesMenor > 0 )
-                isAlteracao = true;
-
-        return isAlteracao;
-    }
-
 
 
     <? if(0){?></script><?}?>

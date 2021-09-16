@@ -196,14 +196,18 @@
             <!--Data do Decurso do Prazo para Defesa -->
             <div class="grid grid_8">
                 <div class="grid grid_6">
-                    <label class="infraLabelObrigatorio" id="lblDtDecursoPrazo" name="lblDtDecursoPrazo" for="txtDtDecursoPrazo">Data do
-                        Decurso do Prazo para Defesa:</label>
+                    <label class="infraLabelObrigatorio" id="lblDtDecursoPrazo" name="lblDtDecursoPrazo" for="txtDtDecursoPrazo">Data do Decurso do Prazo para Defesa:</label>
                 </div>
 
                 <div class="grid grid_3">
-                    <input class="campoData" onchange="verificarMudancaMulta();" type="text" id="txtDtDecursoPrazo" name="txtDtDecursoPrazo" disabled="disabled"
+                    <input class="campoData" onchange="verificarMudancaMulta();" type="text" id="txtDtDecursoPrazo" name="txtDtDecursoPrazo"
                            onkeypress="return infraMascara(this, event, '##/##/####');" value="<?= $dataDecursoPrazoDefesa ?>" data-valor-antigo="<?= $dataDecursoPrazoDefesa ?>"/>
-                    <a style="margin-left: 5px;" id="btAjudaDtDecursoPrazo" <?=PaginaSEI::montarTitleTooltip('A Data do Decurso do Prazo para Defesa é calculada automaticamente a partir da Data da Intimação da Instauração, em quantidade de dias previamente definida na Parametrização de Situações, não podendo ser alterada.')?>
+                    <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/calendario.gif"
+                        title="Selecionar Data do Decurso do Prazo para Defesa" alt="Selecionar Data do Decurso do Prazo para Defesa"
+                        class="infraImg"
+                        onclick="infraCalendario('txtDtDecursoPrazo',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>
+
+                    <a style="margin-left: 5px;" id="btAjudaDtDecursoPrazo" <?=PaginaSEI::montarTitleTooltip('A Data do Decurso do Prazo para Defesa é calculada automaticamente a partir da Data da Intimação da Instauração, em quantidade de dias previamente definida na Parametrização de Situações.  \n \n O sistema faz uma sugestão automática que deve ser conferida e ajustada se for o caso.')?>
                        tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
                         <img id="imgAjudaDtDecursoPrazo" border="0" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/ajuda.gif" class="infraImg imgAjudaCtrlProcLit"/>
                     </a>
@@ -242,19 +246,40 @@
                 </div>
 
                 <div class="grid grid_3" id="divDtaIntimacaoAplMulta">
-                    <input onchange="armazenarDataIntimacaoMulta(this); verificarMudancaMulta();return validarFormatoData(this);" class="campoData" type="text" id="txtDtIntimacaoAplMulta" name="txtDtIntimacaoAplMulta"
+                    <input onchange="armazenarDataIntimacaoMulta(this); verificarMudancaMulta(); calcularDecursoPrazoRecurso(); return validarFormatoData(this);" class="campoData" type="text" id="txtDtIntimacaoAplMulta" name="txtDtIntimacaoAplMulta"
                            onkeypress="return infraMascara(this, event, '##/##/####');" value=""/>
                     <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/calendario.gif"
                          title="Selecionar Data da Intimação da Decisão de Aplicação da Multa" alt="Selecionar Data da Intimação da Decisão de Aplicação da Multa"
                          class="infraImg"
                          onclick="infraCalendario('txtDtIntimacaoAplMulta',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>
-                    <a style="margin-left: 5px;" id="btAjudaDtIntimacaoAplMulta" <?=PaginaSEI::montarTitleTooltip('Deve informar a data correspondente à Intimação da primeira Situação Decisória que aplicou Multa. Esta data não é de informação obrigatória no início, mas deve ser informada assim que confirmada a Intimação, para realização da Retificação pertinente junto ao sistema de arrecadação.\n \n O sistema faz uma sugestão automática que deve ser conferida e ajustada se for o caso.')?>
+                    <a style="margin-left: 5px;" id="btAjudaDtIntimacaoAplMulta" <?=PaginaSEI::montarTitleTooltip('Deve informar a data correspondente à Intimação da Situação Decisória que aplicou a Multa. Esta data não é de informação obrigatória no início, mas passa a ser obrigatória ao marcar a Situação de Intimação correspondente à Decisão, inclusive exigindo Retificação de Lançamento se este campo estiver integrado com o sistema de arrecadação. \n \n O sistema faz uma sugestão automática que deve ser conferida e ajustada se for o caso.')?>
                        tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
                         <img id="imgAjudaDtIntimacaoAplMulta" border="0" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/ajuda.gif" class="infraImg imgAjudaCtrlProcLit"/>
                     </a>
                 </div>
 
             </div>
+
+            <!--Data do Decurso do Prazo para Recurso -->
+            <div class="grid grid_8">
+                <div class="grid grid_6">
+                    <label class="infraLabelOpcional" id="lblDtDecursoPrazoRecurso" name="lblDtDecursoPrazoRecurso" for="txtDtDecursoPrazoRecurso">Data do Decurso do Prazo para Recurso:</label>
+                </div>
+
+                <div class="grid grid_3" id="divDtaDecursoPrazoRecurso">
+                    <input onchange="return validarFormatoData(this);" class="campoData" type="text" id="txtDtDecursoPrazoRecurso" name="txtDtDecursoPrazoRecurso"
+                           onkeypress="return infraMascara(this, event, '##/##/####');" value=""/>
+                    <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/calendario.gif"
+                         title="Selecionar Data do Decurso do Prazo para Recurso" alt="Selecionar Data do Decurso do Prazo para Recurso"
+                         class="infraImg"
+                         onclick="infraCalendario('txtDtDecursoPrazoRecurso',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>
+                    <a style="margin-left: 5px;" id="btAjudaDtDecursoPrazoRecurso" <?=PaginaSEI::montarTitleTooltip('Deve informar a data referente ao Decurso do Prazo para Recurso, a contar da Data da Intimação da Decisão de Aplicação da Multa correspondente. Esta data não é de informação obrigatória no início, mas passa a ser obrigatória ao marcar a Situação de Intimação correspondente à Decisão, inclusive exigindo Retificação de Lançamento se este campo estiver integrado com o sistema de arrecadação.\n \n O sistema faz uma sugestão automática que deve ser conferida e ajustada se for o caso.')?>
+                       tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
+                        <img id="imgAjudaDtDecursoPrazoRecurso" border="0" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/ajuda.gif" class="infraImg imgAjudaCtrlProcLit"/>
+                    </a>
+                </div>
+
+            </div>            
             <!--Data de Vencimento -->
             <div class="grid grid_8">
                 <div class="grid grid_6">
@@ -316,16 +341,19 @@
             </div>
 
             <!--Data da Constituição -->
-            <div class="grid grid_4 nao-tem-constituicao">
+            <div id="divtxtDtConstituicao" class="grid grid_4 nao-tem-constituicao">
                 <div class="grid grid_4">
                     <label class="infraLabelObrigatorio" id="lblDtConstituicao" name="lblDtConstituicao" for="txtDtConstituicao">Data da Constituição Definitiva:</label>
                 </div>
 
                 <div class="grid grid_3">
-                    <input  disabled="disabled" class="campoData" type="text" id="txtDtConstituicao" name="txtDtConstituicao"
+                    <input style="width: 52%" class="campoData" type="text" id="txtDtConstituicao" name="txtDtConstituicao"
                            onkeypress="return infraMascara(this, event, '##/##/####');" value="<?=$dtaConstituicaoDefinitiva?>"/>
-
-                    <a style="margin-left: 5px;" id="btAjudaDtConstDef" <?=PaginaSEI::montarTitleTooltip('Corresponde à Data do Trânsito em Julgado indicada na Situação Conclusiva, que é replicada automaticamente para este campo.')?>
+                    <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/calendario.gif"
+                         title="Selecionar Data da Constituição Definitiva" alt="Selecionar Data da Constituição Definitiva"
+                         class="infraImg"
+                         onclick="infraCalendario('txtDtConstituicao',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>
+                    <a style="margin-left: 5px;" id="btAjudaDtConstDef" <?=PaginaSEI::montarTitleTooltip('Deve informar a data correspondente à Constituição Definitiva, que refere-se ao dia seguinte à finalização do prazo de 30 dias concedido para pagamento após a intimação da decisão final ou da sua publicação oficial. \n \n O sistema faz uma sugestão automática que deve ser conferida e ajustada se for o caso.')?>
                        tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
                         <img id="btAjudaDtConstDef" border="0" src="<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/ajuda.gif" class="infraImg imgAjudaCtrlProcLit"/>
                     </a>

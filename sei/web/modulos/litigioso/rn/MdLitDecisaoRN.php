@@ -150,7 +150,7 @@ class MdLitDecisaoRN extends InfraRN {
             $objMdLitDecisaoDTO->setNumIdMdLitRelDisNorConCtr($decisao[1]);
             $objMdLitDecisaoDTO->setNumIdMdLitTipoDecisao($decisao[2]);
             $objMdLitDecisaoDTO->setNumIdMdLitEspecieDecisao($decisao[3]);
-            $objMdLitDecisaoDTO->setDblValorRessarcimento($decisao[5]);
+            $objMdLitDecisaoDTO->setDblValor($decisao[5]);
             $objMdLitDecisaoDTO->setNumIdMdLitObrigacao($decisao[6]);
             $objMdLitDecisaoDTO->setNumPrazo($decisao[7]);
             $objMdLitDecisaoDTO->setNumIdUsuario($decisao[8]);
@@ -496,6 +496,7 @@ class MdLitDecisaoRN extends InfraRN {
       $infracaoArr = array();
       $objMdLitDecisaoDTO = new MdLitDecisaoDTO();
       $objMdLitDecisaoDTO->retTodos(true);
+      $objMdLitDecisaoDTO->setOrd('IdMdLitRelDisNorConCtr', InfraDTO::$TIPO_ORDENACAO_DESC);
       $objMdLitDecisaoDTO->setDblIdProcedimentoMdLitProcessoSituacao($idProcedimento);
       if(count($arrObjMdLitProcessoSituacaoDTO))
           $objMdLitDecisaoDTO->setNumIdMdLitProcessoSituacao($arrObjMdLitProcessoSituacaoDTO[0]->getNumIdMdLitProcessoSituacao());
@@ -511,7 +512,7 @@ class MdLitDecisaoRN extends InfraRN {
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getNumIdMdLitTipoDecisao();
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getNumIdMdLitEspecieDecisao();
           $infracaoArr[$key][] = InfraUtil::formatarDin(InfraUtil::prepararDbl($valorMulta));
-          $infracaoArr[$key][] = InfraUtil::formatarDin(InfraUtil::prepararDbl($objMdLitDecisaoDTO->getDblValorRessarcimento()));
+          $infracaoArr[$key][] = InfraUtil::formatarDin(InfraUtil::prepararDbl($objMdLitDecisaoDTO->getDblValor()));
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getNumIdMdLitObrigacao();
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getNumPrazo();
           $infracaoArr[$key][] = $objMdLitDecisaoDTO->getNumIdUsuario();

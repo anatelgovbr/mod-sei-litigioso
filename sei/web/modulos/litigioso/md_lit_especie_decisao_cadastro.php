@@ -40,7 +40,7 @@
                 $objEspecieDecisaoLitigiosoDTO->setStrSinGestaoMulta($_POST['gestaoMulta'] != null ? 'S' : 'N');
                 $objEspecieDecisaoLitigiosoDTO->setStrSinIndicacaoPrazo($_POST['indPrazo'] != null ? 'S' : 'N');
                 $objEspecieDecisaoLitigiosoDTO->setStrSinIndicacaoObrigacoes($_POST['IndObr'] != null ? 'S' : 'N');
-                $objEspecieDecisaoLitigiosoDTO->setStrSinIndicacaoRessarcimentoValor($_POST['IndRessarcimento'] != null ? 'S' : 'N');
+                $objEspecieDecisaoLitigiosoDTO->setStrSinIndicacaoValor($_POST['IndRessarcimento'] != null ? 'S' : 'N');
 
                 if($_POST['gestaoMulta'] == 'S'){
                     $objEspecieDecisaoLitigiosoDTO->setStrStaTipoIndicacaoMulta($_POST['tipoMulta']);
@@ -155,7 +155,7 @@
                     $objEspecieDecisaoLitigiosoDTO->setStrSinGestaoMulta($_POST['gestaoMulta'] != null ? 'S' : 'N');
                     $objEspecieDecisaoLitigiosoDTO->setStrSinIndicacaoPrazo($_POST['indPrazo'] != null ? 'S' : 'N');
                     $objEspecieDecisaoLitigiosoDTO->setStrSinIndicacaoObrigacoes($_POST['IndObr'] != null ? 'S' : 'N');
-                    $objEspecieDecisaoLitigiosoDTO->setStrSinIndicacaoRessarcimentoValor($_POST['IndRessarcimento'] != null ? 'S' : 'N');
+                    $objEspecieDecisaoLitigiosoDTO->setStrSinIndicacaoValor($_POST['IndRessarcimento'] != null ? 'S' : 'N');
 
                     //se houver gestao de multa
                     if($_POST['gestaoMulta'] == 'S'){
@@ -392,13 +392,13 @@
             <br>
 
             <!-- Indicação de Ressarcimento -->
-            <?php  $checkedIRes = $objEspecieDecisaoLitigiosoDTO->getStrSinIndicacaoRessarcimentoValor() == 'S' ? 'checked=checked' : ''; ?>
+            <?php  $checkedIRes = $objEspecieDecisaoLitigiosoDTO->getStrSinIndicacaoValor() == 'S' ? 'checked=checked' : ''; ?>
             <label class="infraLabelCheckbox">
                 <input <?php echo $checkedIRes; ?> type="checkbox" class="infraCheckbox" name="IndRessarcimento"
                     id="IndRessarcimento" value="S">
-                Indicação de Ressarcimento de Valor
+                Indicação de Valor
                 <span class="tooltipAjuda"
-                    <?= PaginaSEI::montarTitleTooltip('Habilite a opção Indicação de Ressarcimento de Valor para permitir o Usuário definir o Valor de Ressarcimento ao selecionar esta Espécie de Decisão no Cadastro de Decisão.') ?>>
+                    <?= PaginaSEI::montarTitleTooltip('Habilite a opção Indicação de Valor para permitir o Usuário definir o Valor ao selecionar esta Espécie de Decisão no Cadastro de Decisão.') ?>>
                 </span>
             </label>
 

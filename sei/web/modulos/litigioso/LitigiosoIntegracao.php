@@ -10,7 +10,7 @@
 
         public function getVersao()
         {
-            return '1.9.0';
+            return '1.11.0';
         }
 
         public function getInstituicao()
@@ -582,6 +582,8 @@
                 case 'md_lit_recuperar_lancamentos_procedimento':
                     $xml = "<resultado>".InfraArray::converterArrayXml(InfraArray::converterArrInfraDTO(MdLitLancamentoINT::getLancamentos($_POST['idProcedimento'])))."</resultado>";
                     break;
+                case 'md_lit_calcular_data_decurso_prazo_recurso':
+                    $xml = MdLitDecisaoINT::calcularDataDecursoPrazoRecurso($_REQUEST['idProcedimento'], $_REQUEST['idTpControle'],  $_REQUEST['dtDecisaoAplMulta']);
             }
 
             return $xml;
@@ -970,8 +972,45 @@
                 $objMdLitDadoInteressadoRN = new MdLitDadoInteressadoRN();
                 $arrObjMdLitDadoInteressadoDTO = $objMdLitDadoInteressadoRN->listar($objMdLitDadoInteressadoDTO);
 
-                if(count($arrObjMdLitDadoInteressadoDTO)){
-                    $msg = 'Não é permitido excluir este Contato, pois ele é utilizado pelo Módulo Litigioso.';
+                if (count($arrObjMdLitDadoInteressadoDTO)) {
+
+                    foreach ($arrObjMdLitDadoInteressadoDTO as $objMdLitDadoInteressadoDTO) {
+                        $objMdLitControleDTO = new MdLitControleDTO();
+                        $objMdLitControleDTO->setNumIdControleLitigioso($objMdLitDadoInteressadoDTO->getNumIdMdLitControle());
+                        $objMdLitControleDTO->retDblIdProcedimento();
+                        $objMdLitControleRN = new MdLitControleRN();
+                        $arrObjMdLitControleDTO = $objMdLitControleRN->consultar($objMdLitControleDTO);
+                        $idProcedimento = $arrObjMdLitControleDTO->getDblIdProcedimento();
+
+                        $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+                        $objMdLitProcessoSituacaoDTO = $objMdLitProcessoSituacaoRN->getDadosPrimeiraSituacaoCadastrada($idProcedimento);
+                        $arrUnidadeCadastroLitigioso[] = $objMdLitProcessoSituacaoDTO->getNumIdUnidade();
+
+                        $objProtocoloDTO = new ProtocoloDTO();
+                        $objProtocoloDTO->retStrStaNivelAcessoGlobal();
+                        $objProtocoloDTO->retStrProtocoloFormatado();
+                        $objProtocoloDTO->retStrStaEstado();
+                        $objProtocoloDTO->retStrSiglaUnidadeGeradora();
+                        $objProtocoloDTO->setDblIdProtocolo($idProcedimento);
+
+                        $objProtocoloRN = new ProtocoloRN();
+                        $objProtocoloDTO = $objProtocoloRN->consultarRN0186($objProtocoloDTO);
+
+                        $arrNumProcesso[] = array($objProtocoloDTO->getStrProtocoloFormatado(), $objProtocoloDTO->getStrSiglaUnidadeGeradora());
+                        $arrNumProcesso[] = array($objProtocoloDTO->getStrProtocoloFormatado(), $objMdLitProcessoSituacaoDTO->getStrSiglaUnidade());
+                    }
+
+                    $msg = 'Não é permitido excluir este Contato, pois ele é utilizado pelo Módulo Litigioso nos seguintes processos:\n ';
+
+                    foreach ($arrNumProcesso as $key => $processo) {
+                        if ($key == 10)
+                            $msg .= '...';
+                        elseif ($key > 10)
+                            continue;
+                        else
+                            $msg .= $processo[0] . ' - Unidade: ' . $processo [1] . '\n ';
+                    }
+
                     $objInfraException = new InfraException();
                     $objInfraException->adicionarValidacao($msg);
                     $objInfraException->lancarValidacoes();
@@ -1025,5 +1064,109 @@
             }
 
             return parent::anexarProcesso($objProcedimentoAPIPrincipal, $objProcedimentoAPIAnexado);
+        }
+
+        public function alterarContato(ContatoAPI $objContatoAPI)
+        {
+
+            if (SessaoSEI::getInstance()->verificarPermissao('md_lit_dado_interessado_listar')) {
+
+                if (!empty(SessaoSEIExterna::getInstance()->getNumIdUsuarioExterno()) &&
+                    is_null($this->verificaModuloPeticionamentoInstalado('3.0.0'))) {
+                    return null;
+                }
+
+                $objMdLitDadoInteressadoDTO = new MdLitDadoInteressadoDTO();
+                $objMdLitDadoInteressadoDTO->retTodos(false);
+                $objMdLitDadoInteressadoDTO->setNumIdContato($objContatoAPI->getIdContato(), InfraDTO::$OPER_IGUAL);
+
+                $objMdLitDadoInteressadoRN = new MdLitDadoInteressadoRN();
+                $arrObjMdLitDadoInteressadoDTO = $objMdLitDadoInteressadoRN->listar($objMdLitDadoInteressadoDTO);
+
+                $countArrObjMdLitDadoInteressadoDTO = (is_array($arrObjMdLitDadoInteressadoDTO) ? count($arrObjMdLitDadoInteressadoDTO) : 0);
+
+                if ($countArrObjMdLitDadoInteressadoDTO > 0) {
+
+                    foreach ($arrObjMdLitDadoInteressadoDTO as $objMdLitDadoInteressadoDTO) {
+                        $objMdLitControleDTO = new MdLitControleDTO();
+                        $objMdLitControleDTO->setNumIdControleLitigioso($objMdLitDadoInteressadoDTO->getNumIdMdLitControle());
+                        $objMdLitControleDTO->retDblIdProcedimento();
+                        $objMdLitControleRN = new MdLitControleRN();
+                        $arrObjMdLitControleDTO = $objMdLitControleRN->consultar($objMdLitControleDTO);
+                        $idProcedimento = $arrObjMdLitControleDTO->getDblIdProcedimento();
+
+                        $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+                        $objMdLitProcessoSituacaoDTO = $objMdLitProcessoSituacaoRN->getDadosPrimeiraSituacaoCadastrada($idProcedimento);
+                        $arrUnidadeCadastroLitigioso[] = $objMdLitProcessoSituacaoDTO->getNumIdUnidade();
+
+                        $objProtocoloDTO = new ProtocoloDTO();
+                        $objProtocoloDTO->retStrStaNivelAcessoGlobal();
+                        $objProtocoloDTO->retStrProtocoloFormatado();
+                        $objProtocoloDTO->retStrStaEstado();
+                        $objProtocoloDTO->retStrSiglaUnidadeGeradora();
+                        $objProtocoloDTO->setDblIdProtocolo($idProcedimento);
+
+                        $objProtocoloRN = new ProtocoloRN();
+                        $objProtocoloDTO = $objProtocoloRN->consultarRN0186($objProtocoloDTO);
+
+                        $arrNumProcesso[] = array($objProtocoloDTO->getStrProtocoloFormatado(), $objMdLitProcessoSituacaoDTO->getStrSiglaUnidade());
+                    }
+
+                    if (!in_array(SessaoSEI::getInstance()->getNumIdUnidadeAtual(), $arrUnidadeCadastroLitigioso)) {
+                        $msg = 'Não é permitido alterar este Contato, pois ele é utilizado pelo Módulo Litigioso nos seguintes processos:\n';
+                        foreach ($arrNumProcesso as $key => $processo) {
+                            if ($key == 10)
+                                $msg .= '...';
+                            elseif ($key > 10)
+                                continue;
+                            else
+                                $msg .= $processo[0] . ' - Unidade: ' . $processo [1] . '\n';
+                        }
+                        $objInfraException = new InfraException();
+                        $objInfraException->adicionarValidacao($msg);
+                        $objInfraException->lancarValidacoes();
+                    }
+                }
+
+            }
+
+
+            return parent::alterarContato($objContatoAPI);
+        }
+
+        protected function verificaModuloPeticionamentoInstalado($versao = null)
+        {
+
+            $arrModulos = ConfiguracaoSEI::getInstance()->getValor('SEI', 'Modulos');
+            if (is_array($arrModulos) && array_key_exists('PeticionamentoIntegracao', $arrModulos)) {
+                $objInfraParametroDTO = new InfraParametroDTO();
+                $objInfraParametroDTO->setStrNome('VERSAO_MODULO_PETICIONAMENTO');
+                $objInfraParametroDTO->retStrValor();
+
+                $objInfraParametroBD = new InfraParametroBD(BancoSEI::getInstance());
+                $arrObjInfraParametroDTO = $objInfraParametroBD->consultar($objInfraParametroDTO);
+
+                //versão do parametro é igual ou maior que a enviada
+                if (!is_null($versao)) {
+                    if (count($arrObjInfraParametroDTO) > 0) {
+                        $arr_versao_parametro = explode('.', $arrObjInfraParametroDTO->getStrValor());
+                        $arr_versao = explode('.', $versao);
+                        if (count(array_diff($arr_versao_parametro, $arr_versao)) == 0) {
+                            return null;
+                        } else {
+                            for ($i = 0; $i < count($arr_versao_parametro); $i++) {
+                                if (isset($arr_versao[$i])) {
+                                    if (intval($arr_versao_parametro[$i]) < intval($arr_versao[$i])) {
+                                        return true;
+                                    } else if (intval($arr_versao_parametro[$i]) > intval($arr_versao[$i])) {
+                                        return null;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
         }
     }

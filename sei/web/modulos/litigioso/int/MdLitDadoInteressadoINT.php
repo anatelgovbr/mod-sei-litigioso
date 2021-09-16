@@ -531,71 +531,77 @@ class MdLitDadoInteressadoINT extends InfraINT {
         $objMdlitNumeroInteressadoRN = new MdLitNumeroInteressadoRN();
         $arrObjMdLitNumeroInteressadoDTO = $objMdlitNumeroInteressadoRN->listar($objMdLitNumeroInteressadoDTO);
 
-        foreach ($arrObjMdLitNumeroInteressadoDTO as $key=>$objMdLitNumeroInteressadoDTO) {
+        $countArrObjMdLitNumeroInteressadoDTO = is_array($arrObjMdLitNumeroInteressadoDTO) ? count($arrObjMdLitNumeroInteressadoDTO) : 0;
 
-            $arrResultado[$key]['numero']       = $objMdLitNumeroInteressadoDTO->getStrNumero();
-            $arrResultado[$key]['id_md_lit_numero_interessado']    = $objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado();
-            $arrResultado[$key]['id_contato']    = $idContato;
-            $arrResultado[$key]['outorgado']    = $objMdLitDadoInteressadoDTO->getStrSinOutorgado();
-            //servico
-            $objMdLitRelNumInterServicoDTO = new MdLitRelNumInterServicoDTO();
-            $objMdLitRelNumInterServicoDTO->retNumIdMdLitServico();
-            $objMdLitRelNumInterServicoDTO->retStrDescricaoMdLitServico();
-            $objMdLitRelNumInterServicoDTO->setNumIdMdLitNumeroInteressado($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado());
+        if($countArrObjMdLitNumeroInteressadoDTO > 0){
 
-            $objMdLitRelNumInterServicoRN = new MdLitRelNumInterServicoRN();
-            $arrObjMdLitRelNumInterServicoDTO = $objMdLitRelNumInterServicoRN->listar($objMdLitRelNumInterServicoDTO);
+            foreach ($arrObjMdLitNumeroInteressadoDTO as $key=>$objMdLitNumeroInteressadoDTO) {
 
-            if($arrObjMdLitRelNumInterServicoDTO){
-                foreach ($arrObjMdLitRelNumInterServicoDTO as $objMdLitRelNumInterServicoDTO) {
-                    $arrResultado[$key]['nome_servico'] .= isset($arrResultado[$key]['nome_servico']) ? ',<br> '.$objMdLitRelNumInterServicoDTO->getStrDescricaoMdLitServico() : $objMdLitRelNumInterServicoDTO->getStrDescricaoMdLitServico();
-                    $arrResultado[$key]['id_servico'] .= isset($arrResultado[$key]['id_servico']) ? ',€ '.$objMdLitRelNumInterServicoDTO->getNumIdMdLitServico() : $objMdLitRelNumInterServicoDTO->getNumIdMdLitServico();
+                $arrResultado[$key]['numero']       = $objMdLitNumeroInteressadoDTO->getStrNumero();
+                $arrResultado[$key]['id_md_lit_numero_interessado']    = $objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado();
+                $arrResultado[$key]['id_contato']    = $idContato;
+                $arrResultado[$key]['outorgado']    = $objMdLitDadoInteressadoDTO->getStrSinOutorgado();
+                //servico
+                $objMdLitRelNumInterServicoDTO = new MdLitRelNumInterServicoDTO();
+                $objMdLitRelNumInterServicoDTO->retNumIdMdLitServico();
+                $objMdLitRelNumInterServicoDTO->retStrDescricaoMdLitServico();
+                $objMdLitRelNumInterServicoDTO->setNumIdMdLitNumeroInteressado($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado());
+
+                $objMdLitRelNumInterServicoRN = new MdLitRelNumInterServicoRN();
+                $arrObjMdLitRelNumInterServicoDTO = $objMdLitRelNumInterServicoRN->listar($objMdLitRelNumInterServicoDTO);
+
+                if($arrObjMdLitRelNumInterServicoDTO){
+                    foreach ($arrObjMdLitRelNumInterServicoDTO as $objMdLitRelNumInterServicoDTO) {
+                        $arrResultado[$key]['nome_servico'] .= isset($arrResultado[$key]['nome_servico']) ? ',<br> '.$objMdLitRelNumInterServicoDTO->getStrDescricaoMdLitServico() : $objMdLitRelNumInterServicoDTO->getStrDescricaoMdLitServico();
+                        $arrResultado[$key]['id_servico'] .= isset($arrResultado[$key]['id_servico']) ? ', '.$objMdLitRelNumInterServicoDTO->getNumIdMdLitServico() : $objMdLitRelNumInterServicoDTO->getNumIdMdLitServico();
+                    }
                 }
-            }
 
-            //modalidade
-            $objMdLitRelNumInterModaliDTO = new MdLitRelNumInterModaliDTO();
-            $objMdLitRelNumInterModaliDTO->retStrNomeMdLitModalidade();
-            $objMdLitRelNumInterModaliDTO->retNumIdMdLitModalidade();
-            $objMdLitRelNumInterModaliDTO->setNumIdMdLitNumeroInteressado($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado());
+                //modalidade
+                $objMdLitRelNumInterModaliDTO = new MdLitRelNumInterModaliDTO();
+                $objMdLitRelNumInterModaliDTO->retStrNomeMdLitModalidade();
+                $objMdLitRelNumInterModaliDTO->retNumIdMdLitModalidade();
+                $objMdLitRelNumInterModaliDTO->setNumIdMdLitNumeroInteressado($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado());
 
-            $objMdLitRelNumInterModaliRN = new MdLitRelNumInterModaliRN();
-            $arrObjMdLitRelNumInterModaliDTO = $objMdLitRelNumInterModaliRN->listar($objMdLitRelNumInterModaliDTO);
+                $objMdLitRelNumInterModaliRN = new MdLitRelNumInterModaliRN();
+                $arrObjMdLitRelNumInterModaliDTO = $objMdLitRelNumInterModaliRN->listar($objMdLitRelNumInterModaliDTO);
 
-            if($arrObjMdLitRelNumInterModaliDTO){
-                foreach ($arrObjMdLitRelNumInterModaliDTO as $objMdLitRelNumInterModaliDTO) {
-                    $arrResultado[$key]['nome_modalidade'] .= isset($arrResultado[$key]['nome_modalidade']) ? ',<br> '.$objMdLitRelNumInterModaliDTO->getStrNomeMdLitModalidade() : $objMdLitRelNumInterModaliDTO->getStrNomeMdLitModalidade();
-                    $arrResultado[$key]['id_modalidade'] .= isset($arrResultado[$key]['id_modalidade']) ? ',€ '.$objMdLitRelNumInterModaliDTO->getNumIdMdLitModalidade() : $objMdLitRelNumInterModaliDTO->getNumIdMdLitModalidade();
+                if($arrObjMdLitRelNumInterModaliDTO){
+                    foreach ($arrObjMdLitRelNumInterModaliDTO as $objMdLitRelNumInterModaliDTO) {
+                        $arrResultado[$key]['nome_modalidade'] .= isset($arrResultado[$key]['nome_modalidade']) ? ',<br> '.$objMdLitRelNumInterModaliDTO->getStrNomeMdLitModalidade() : $objMdLitRelNumInterModaliDTO->getStrNomeMdLitModalidade();
+                        $arrResultado[$key]['id_modalidade'] .= isset($arrResultado[$key]['id_modalidade']) ? ', '.$objMdLitRelNumInterModaliDTO->getNumIdMdLitModalidade() : $objMdLitRelNumInterModaliDTO->getNumIdMdLitModalidade();
+                    }
                 }
-            }
 
-            //abrangencia
-            $objMdLitRelNumInterAbrangDTO = new MdLitRelNumInterTpOutorDTO();
-            $objMdLitRelNumInterAbrangDTO->retStrNomeTipoOutorga();
-            $objMdLitRelNumInterAbrangDTO->retNumIdMdLitAdmTipoOutor();
-            $objMdLitRelNumInterAbrangDTO->setNumIdMdLitNumeroInteressado($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado());
+                //abrangencia
+                $objMdLitRelNumInterAbrangDTO = new MdLitRelNumInterTpOutorDTO();
+                $objMdLitRelNumInterAbrangDTO->retStrNomeTipoOutorga();
+                $objMdLitRelNumInterAbrangDTO->retNumIdMdLitAdmTipoOutor();
+                $objMdLitRelNumInterAbrangDTO->setNumIdMdLitNumeroInteressado($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado());
 
-            $objMdLitRelNumInterTpOutorRN = new MdLitRelNumInterTpOutorRN();
-            $arrObjMdLitRelNumInterAbrangenciaDTO = $objMdLitRelNumInterTpOutorRN->listar($objMdLitRelNumInterAbrangDTO);
+                $objMdLitRelNumInterTpOutorRN = new MdLitRelNumInterTpOutorRN();
+                $arrObjMdLitRelNumInterAbrangenciaDTO = $objMdLitRelNumInterTpOutorRN->listar($objMdLitRelNumInterAbrangDTO);
 
-            if($arrObjMdLitRelNumInterAbrangenciaDTO){
-                foreach ($arrObjMdLitRelNumInterAbrangenciaDTO as $objMdLitRelNumInterAbrangDTO) {
-                    $arrResultado[$key]['nome_tipo_outorga'] .= isset($arrResultado[$key]['nome_tipo_outorga']) ? ',<br> '.$objMdLitRelNumInterAbrangDTO->getStrNomeTipoOutorga() : $objMdLitRelNumInterAbrangDTO->getStrNomeTipoOutorga();
-                    $arrResultado[$key]['id_tipo_outorga'] .= isset($arrResultado[$key]['id_tipo_outorga']) ? ',€ '.$objMdLitRelNumInterAbrangDTO->getNumIdMdLitAdmTipoOutor() : $objMdLitRelNumInterAbrangDTO->getNumIdMdLitAdmTipoOutor();
+                if($arrObjMdLitRelNumInterAbrangenciaDTO){
+                    foreach ($arrObjMdLitRelNumInterAbrangenciaDTO as $objMdLitRelNumInterAbrangDTO) {
+                        $arrResultado[$key]['nome_tipo_outorga'] .= isset($arrResultado[$key]['nome_tipo_outorga']) ? ',<br> '.$objMdLitRelNumInterAbrangDTO->getStrNomeTipoOutorga() : $objMdLitRelNumInterAbrangDTO->getStrNomeTipoOutorga();
+                        $arrResultado[$key]['id_tipo_outorga'] .= isset($arrResultado[$key]['id_tipo_outorga']) ? ', '.$objMdLitRelNumInterAbrangDTO->getNumIdMdLitAdmTipoOutor() : $objMdLitRelNumInterAbrangDTO->getNumIdMdLitAdmTipoOutor();
+                    }
                 }
+
+
+                //buscar Lancamento
+                $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+                $objMdLitLancamentoDTO->retTodos(false);
+                $objMdLitLancamentoDTO->setNumIdMdLitNumeroInteressado($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado());
+
+                $objMdLitLancamentoRN = new MdLitLancamentoRN();
+                $arrResultado[$key]['contar_lancamento'] = $objMdLitLancamentoRN->contar($objMdLitLancamentoDTO);
             }
-
-
-            //buscar Lancamento
-            $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
-            $objMdLitLancamentoDTO->retTodos(false);
-            $objMdLitLancamentoDTO->setNumIdMdLitNumeroInteressado($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado());
-
-            $objMdLitLancamentoRN = new MdLitLancamentoRN();
-            $arrResultado[$key]['contar_lancamento'] = $objMdLitLancamentoRN->contar($objMdLitLancamentoDTO);
         }
         return self::gerarXMLItensArr($arrResultado);
     }
+
 
 }
 ?>

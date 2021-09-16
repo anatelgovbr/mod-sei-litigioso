@@ -4,11 +4,11 @@ require_once dirname(__FILE__) . '/../web/SEI.php';
 class MdLitAtualizadorSeiRN extends InfraRN
 {
 
-    private $numSeg = 0;
-    private $versaoAtualDesteModulo = '1.9.0';
     private $nomeDesteModulo = 'MÓDULO DE CONTROLE LITIGIOSO';
     private $nomeParametroModulo = 'VERSAO_MODULO_LITIGIOSO';
-    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4', '1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0');
+    private $versaoAtualDesteModulo = '1.10.0';
+    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4', '1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0');
+    private $numSeg = 0;
 
     public function __construct()
     {
@@ -129,12 +129,12 @@ class MdLitAtualizadorSeiRN extends InfraRN
                     $this->instalarv180();
                 case '1.8.0':
                     $this->instalarv190();
+                case '1.9.0':
+                    $this->instalarv1100();
                     break;
-
                 default:
                     $this->finalizar('A VERSÃO MAIS ATUAL DO ' . $this->nomeDesteModulo . ' (v' . $this->versaoAtualDesteModulo . ') JÁ ESTÁ INSTALADA.');
                     break;
-
             }
 
             $this->finalizar('FIM');
@@ -2084,6 +2084,7 @@ class MdLitAtualizadorSeiRN extends InfraRN
         $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.8.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SEI');
 
     }
+
 //Contem atualizações da versao 1.9.0
     protected function instalarv190()
     {
@@ -2100,7 +2101,7 @@ class MdLitAtualizadorSeiRN extends InfraRN
             $objMdLitCampoIntegracaoDTO->retStrNomeCampo();
             $objMdLitCampoIntegracaoDTO->retNumIdMdLitCampoIntegracao();
             $objMdLitCampoIntegracaoDTO = $objMdLitCampoIntegracaoRN->consultar($objMdLitCampoIntegracaoDTO);
-            if(count($objMdLitCampoIntegracaoDTO)){
+            if (count($objMdLitCampoIntegracaoDTO)) {
                 $this->logar('ATUALIZANDO O CAMPO "Data da Constituição" PARA "Data da Constituição Definitiva" NA TABELA "md_lit_campo_integracao"');
                 $objMdLitCampoIntegracaoDTO->setNumIdMdLitCampoIntegracao($objMdLitCampoIntegracaoDTO->getNumIdMdLitCampoIntegracao());
                 $objMdLitCampoIntegracaoDTO->setStrNomeCampo($arrDadosAlteracao['nomeCampo']);
@@ -2134,6 +2135,115 @@ class MdLitAtualizadorSeiRN extends InfraRN
             throw new Exception($e->getMessage());
         }
 
+    }
+
+    //Contem atualizações da versao 1.10.0
+    protected function instalarv1100()
+    {
+        $instanciaBanco = BancoSEI::getInstance();
+        try {
+            $instanciaBanco->abrirTransacao();
+            $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.10.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
+
+            $objInfraMetaBD = new InfraMetaBD($instanciaBanco);
+            $this->logar('ADICIONANDO A COLUNA dta_decurso_prazo_recurso NA TABELA md_lit_lancamento');
+            $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'dta_decurso_prazo_recurso', $objInfraMetaBD->tipoDataHora(), 'NULL');
+
+            $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+            $objMdLitLancamentoDTO->retTodos();
+            $objMdLitLancamentoRN = new MdLitLancamentoRN();
+            $arrObjMdLitLancamentoDTO = $objMdLitLancamentoRN->listar($objMdLitLancamentoDTO);
+            if (count($objMdLitLancamentoDTO)) {
+                $this->logar('ATUALIZANDO A DATA DE DECURSO DO PRAZO PARA RECURSO PARA OS DADOS LEGADOS');
+                foreach ($arrObjMdLitLancamentoDTO as $objMdLitLancamento) {
+                    if (!is_null($objMdLitLancamento->getDtaIntimacao())) {
+
+                        $idProcedimento = $objMdLitLancamento->getDblIdProcedimento();
+                        $objMdLitProcessoSituacaoDTO = new MdLitProcessoSituacaoDTO();
+                        $objMdLitProcessoSituacaoDTO->retNumPrazoSituacao();
+                        $objMdLitProcessoSituacaoDTO->setDblIdProcedimento($idProcedimento);
+                        $objMdLitProcessoSituacaoDTO->setStrSinRecursalSit('S');
+                        $objMdLitProcessoSituacaoDTO->setOrdNumIdMdLitProcessoSituacao(InfraDTO::$TIPO_ORDENACAO_DESC);
+
+                        $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+                        $objMdLitProcessoSituacaoDTO = current($objMdLitProcessoSituacaoRN->listar($objMdLitProcessoSituacaoDTO));
+
+                        if ($objMdLitProcessoSituacaoDTO) {
+                            if ($objMdLitProcessoSituacaoDTO->getNumPrazoSituacao()) {
+                                $dtDtDecursoPrazoRecurso = MdLitDecisaoINT::calcularDataPrazo($objMdLitProcessoSituacaoDTO->getNumPrazoSituacao(), $objMdLitLancamento->getDtaIntimacao());
+                                $objMdLitLancamento->setDtaDecursoPrazoRecurso($dtDtDecursoPrazoRecurso);
+                                $objMdLitLancamentoRN->alterar($objMdLitLancamento);
+                            }
+                        }
+                    }
+                }
+                $this->logar('ATUALIZAÇÃO FINALIZADA');
+            }
+
+            $this->logar('ADICIONANDO A COLUNA cpf NA TABELA md_lit_dado_interessado');
+            $objInfraMetaBD->adicionarColuna('md_lit_dado_interessado', 'cpf', $objInfraMetaBD->tipoNumeroGrande(), 'NULL');
+            $this->logar('ADICIONANDO A COLUNA cnpj NA TABELA md_lit_dado_interessado');
+            $objInfraMetaBD->adicionarColuna('md_lit_dado_interessado', 'cnpj', $objInfraMetaBD->tipoNumeroGrande(), 'NULL');
+
+            $objMdLitDadoInteressadoDTO = new MdLitDadoInteressadoDTO();
+            $objMdLitDadoInteressadoDTO->retTodos();
+            $objMdLitDadoInteressadoRN = new MdLitDadoInteressadoRN();
+            $arrObjMdLitDadoInteressadoDTO = $objMdLitDadoInteressadoRN->listar($objMdLitDadoInteressadoDTO);
+            if (count($objMdLitDadoInteressadoDTO)) {
+                $_SESSION['ignorarValidacaoOutorgado'] = true;
+                $i = 0;
+                $this->logar('ATUALIZANDO DADOS DE CPF/CNPJ PARA OS DADOS LEGADOS');
+                foreach ($arrObjMdLitDadoInteressadoDTO as $objMdLitDadoInteressado) {
+                    $this->logar('objMdLitDadoInteressado: ' . $objMdLitDadoInteressado->getNumIdContato());
+
+                    $contatoDTO = new ContatoDTO();
+                    $contatoDTO->retDblCnpj();
+                    $contatoDTO->retDblCpf();
+                    $contatoDTO->retStrStaNatureza();
+                    $contatoDTO->setBolExclusaoLogica(false);
+                    $contatoDTO->setNumIdContato($objMdLitDadoInteressado->getNumIdContato());
+                    $contatoRN = new ContatoRN();
+                    $contatoDTO = $contatoRN->consultarRN0324($contatoDTO);
+                    if (count($contatoDTO)) {
+                        try {
+                            if ($contatoDTO->getStrStaNatureza() == "J") {
+                                $objMdLitDadoInteressado->setDblCnpj($contatoDTO->getDblCnpj());
+                            } else {
+                                $objMdLitDadoInteressado->setDblCpf($contatoDTO->getDblCpf());
+                            }
+                            $objMdLitDadoInteressadoRN->alterar($objMdLitDadoInteressado);
+                        } catch (Exception $e) {
+                            $this->logar('ERRO: ' . $e);
+                        }
+                    }
+                }
+                unset($_SESSION['ignorarValidacaoOutorgado']);
+                $this->logar('ATUALIZAÇÃO FINALIZADA');
+            }
+
+            $this->logar('RENOMEANDO coluna na tabela md_lit_especie_decisao de sin_ressarcimento_valor para sin_valor');
+            $objInfraMetaBD->adicionarColuna('md_lit_especie_decisao', 'sin_valor', $objInfraMetaBD->tipoTextoFixo(1), 'NULL');
+            BancoSEI::getInstance()->executarSql('UPDATE md_lit_especie_decisao set sin_valor=sin_ressarcimento_valor');
+            $objInfraMetaBD->excluirColuna('md_lit_especie_decisao', 'sin_ressarcimento_valor');
+
+            $this->logar('RENOMEANDO coluna na tabela md_lit_decisao de valor_ressarcimento para valor');
+            $objInfraMetaBD->adicionarColuna('md_lit_decisao', 'valor', $objInfraMetaBD->tipoNumeroDecimal(19,2), 'NULL');
+            BancoSEI::getInstance()->executarSql('UPDATE md_lit_decisao set valor=valor_ressarcimento');
+            $objInfraMetaBD->excluirColuna('md_lit_decisao', 'valor_ressarcimento');
+
+            $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+            BancoSEI::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.10.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+
+            $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.10.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SEI');
+
+            $instanciaBanco->confirmarTransacao();
+
+        } catch (Exception $e) {
+            //rollback DML
+            $this->logar('ROLLBACK DA OPERAÇÃO');
+            $instanciaBanco->cancelarTransacao();
+            throw new Exception($e->getMessage());
+        }
     }
 
     private function fixIndices(InfraMetaBD $objInfraMetaBD, $arrTabelas)

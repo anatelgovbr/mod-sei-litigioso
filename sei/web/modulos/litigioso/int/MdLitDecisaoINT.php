@@ -253,5 +253,160 @@ class MdLitDecisaoINT extends InfraINT {
 
         return $arrRetorno;
     }
+
+
+    static public function somarDiaUtil($numQtde, $strData)
+    {
+
+        $strDataFinal = InfraData::calcularData(($numQtde + 365), InfraData::$UNIDADE_DIAS, InfraData::$SENTIDO_ADIANTE, $strData);
+
+        self::_removerTimeDate($strData);
+        $arrFeriados  = self::_recuperarFeriados($strData, $strDataFinal);
+
+        $count = 0;
+        while ($count < $numQtde) {
+            $strData = InfraData::calcularData(1, InfraData::$UNIDADE_DIAS, InfraData::$SENTIDO_ADIANTE, $strData);
+            if (InfraData::obterDescricaoDiaSemana($strData) != 'sábado' &&
+                InfraData::obterDescricaoDiaSemana($strData) != 'domingo' &&
+                !in_array($strData, $arrFeriados)
+            ) {
+                $count++;
+            }
+        }
+
+        return $strData;
+    }
+
+    static private function _removerTimeDate(&$strData){
+        $countDate  = strlen($strData);
+        $isDateTime = $countDate > 10 ? true : false;
+        if($isDateTime){
+            $arrData = explode(" ",$strData);
+            $strData = $arrData[0];
+        }
+    }
+
+    static private function _recuperarFeriados($strDataInicial, $strDataFinal)
+    {
+        $numIdOrgao = SessaoSEI::getInstance()->getNumIdOrgaoUnidadeAtual();
+        $numIdOrgao = is_null($numIdOrgao) ? SessaoSEIExterna::getInstance()->getNumIdOrgaoUnidadeAtual() : $numIdOrgao;
+
+        if (is_null($numIdOrgao)){
+            $objOrgaoDTO = new OrgaoDTO();
+            $objOrgaoDTO->retNumIdOrgao();
+            $objOrgaoDTO->setBolExclusaoLogica(false);
+            $objOrgaoDTO->adicionarCriterio(array('SinAtivo','Sigla'),array(InfraDTO::$OPER_IGUAL,InfraDTO::$OPER_IGUAL),array('S',ConfiguracaoSEI::getInstance()->getValor('SessaoSEI','SiglaOrgaoSistema')),InfraDTO::$OPER_LOGICO_AND);
+
+            $objOrgaoRN = new OrgaoRN();
+            $arrObjOrgaoDTO = $objOrgaoRN->listarRN1353($objOrgaoDTO);
+            $numIdOrgao = !is_null($arrObjOrgaoDTO) && count($arrObjOrgaoDTO) > 0 ? current($arrObjOrgaoDTO)->getNumIdOrgao() : null;
+           }
+
+        $arrFeriados  = array();
+
+        $objFeriadoRN = new FeriadoRN();
+        $objFeriadoDTO = new FeriadoDTO();
+        $objFeriadoDTO->retDtaFeriado();
+        $objFeriadoDTO->retStrDescricao();
+
+        if($numIdOrgao != ''){
+            $objFeriadoDTO->adicionarCriterio(array('IdOrgao','IdOrgao'),
+            array(InfraDTO::$OPER_IGUAL,InfraDTO::$OPER_IGUAL),
+            array(null,$numIdOrgao),
+            array(InfraDTO::$OPER_LOGICO_OR));
+        }else{
+            $objFeriadoDTO->setNumIdOrgao(null);
+        }
+
+        $objFeriadoDTO->adicionarCriterio(array('Feriado', 'Feriado'),
+            array(InfraDTO::$OPER_MAIOR_IGUAL, InfraDTO::$OPER_MENOR_IGUAL),
+            array($strDataInicial, $strDataFinal),
+            array(InfraDTO::$OPER_LOGICO_AND));
+
+        $objFeriadoDTO->setOrdDtaFeriado(InfraDTO::$TIPO_ORDENACAO_ASC);
+
+        $count = $objFeriadoRN->contar($objFeriadoDTO);
+        $arrObjFeriadoDTO = $objFeriadoRN->listar($objFeriadoDTO);
+
+        if($count > 0)
+        {
+         $arrFeriados = InfraArray::converterArrInfraDTO($arrObjFeriadoDTO, 'Feriado');
+        }
+
+        return $arrFeriados;
+    }
+            
+    static public function calcularDataPrazo($prazoDias, $dataInicial = null)
+    {
+        // DATA INÍCIO
+        if (is_null($dataInicial)) {
+            $dataInicial = InfraData::getStrDataAtual();
+        }
+
+        if ($prazoDias>1){
+            $dataInicial = self::somarDiaUtil(1, $dataInicial);
+            if ($prazoDias>2){
+                $data = DateTime::createFromFormat('d/m/Y', $dataInicial);
+                $dtsSomar = 'P'.($prazoDias-2).'D';
+                $data->add(new DateInterval($dtsSomar));
+                $dataInicial =  $data->format('d/m/Y');
+            }
+        }
+
+        return self::somarDiaUtil(1, $dataInicial);
+    }
+
+    public static function calcularDataDecursoPrazoRecurso($idProcedimento, $idTipoControle, $strDtBase){
+        $data = '';
+        $objMdLitProcessoSituacaoDTO = new MdLitProcessoSituacaoDTO();
+        $objMdLitProcessoSituacaoDTO->retTodos();
+        $objMdLitProcessoSituacaoDTO->setDblIdProcedimento($idProcedimento);
+        $objMdLitProcessoSituacaoDTO->setNumIdMdLitTipoControle($idTipoControle);
+        $objMdLitProcessoSituacaoDTO->setOrdNumIdMdLitSituacao(InfraDTO::$TIPO_ORDENACAO_DESC);
+
+        $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+        $objMdLitProcessoSituacaoDTO = current($objMdLitProcessoSituacaoRN->listar($objMdLitProcessoSituacaoDTO));
+
+        $idNumIdSituacaoLitigiosoDesisorio = $objMdLitProcessoSituacaoDTO->getNumIdMdLitSituacao();
+
+        $objSituacaoLitigiosoDTO = new MdLitSituacaoDTO();
+        $objSituacaoLitigiosoDTO->retNumIdSituacaoLitigioso();
+        $objSituacaoLitigiosoDTO->retStrSinDecisoria();
+        $objSituacaoLitigiosoDTO->retNumOrdem();
+        $objSituacaoLitigiosoDTO->retStrSinRecursal();
+        $objSituacaoLitigiosoDTO->retStrNomeFase();
+        $objSituacaoLitigiosoDTO->retStrNome();
+        $objSituacaoLitigiosoDTO->retNumPrazo();
+        
+        $objSituacaoLitigiosoDTO->setNumIdTipoControleLitigioso($idTipoControle);
+        $objSituacaoLitigiosoDTO->setStrSinAtivo('S');
+    
+        $objSituacaoLitigiosoRN = new MdLitSituacaoRN();
+
+        $objSituacaoLitigiosoDTO->setNumIdSituacaoLitigioso($idNumIdSituacaoLitigiosoDesisorio);
+        //$objSituacaoLitigiosoDTO->setStrSinDecisoria('S');
+        $objSituacaoDecisoria = $objSituacaoLitigiosoRN->consultar($objSituacaoLitigiosoDTO);
+        if($objSituacaoDecisoria) {
+
+            $objSituacaoLitigiosoDTO->unSetNumIdSituacaoLitigioso();
+            $objSituacaoLitigiosoDTO->unSetStrSinDecisoria();
+            $objSituacaoLitigiosoDTO->setNumOrdem($objSituacaoDecisoria->getNumOrdem(), InfraDTO::$OPER_MAIOR_IGUAL);
+            $objSituacaoLitigiosoDTO->setOrdNumOrdem(InfraDTO::$TIPO_ORDENACAO_ASC);
+            
+            $arrObjSituacaoLitigiosoDTO = $objSituacaoLitigiosoRN->listarComTipoDeControle($objSituacaoLitigiosoDTO, $idTipoControle);
+            $objRecursoDTO = null;
+            foreach($arrObjSituacaoLitigiosoDTO as $dto){ 
+                if($dto->getStrSinRecursal() == 'S'){
+                    $objRecursoDTO = $dto;
+                    break;
+                }
+            }
+
+            if($objRecursoDTO && $objRecursoDTO->getNumPrazo()){
+               $data = self::calcularDataPrazo($objRecursoDTO->getNumPrazo(), $strDtBase);
+            }
+        }
+        return "<resultado>{$data}</resultado>";
+    }
 }
 ?>

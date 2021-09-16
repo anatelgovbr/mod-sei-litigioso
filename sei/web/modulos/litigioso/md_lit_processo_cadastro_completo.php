@@ -175,12 +175,12 @@
                         <th class="infraTh" style="display: none;">Endereço</th>
                         <th class="infraTh" style="display: none;">Bairro</th>
                         <th class="infraTh" style="display: none;">Cidade</th>
-                        <th class="infraTh" style="display: none;">CEP</th>
                         <th class="infraTh" width="25%">Tipo de Contato</th>
                         <th class="infraTh" width="45%">Interessado</th>
                         <th class="infraTh" width="20%">CNPJ/CPF</th>
                         <th class="infraTh" style="display: none;">Sin param modal</th>
                         <th class="infraTh" style="display: none;">Contar Lancamento</th>
+                        <th class="infraTh" style="display: none;">CEP</th>
                         <th class="infraTh" width="10%">Ações</th>
                     </tr>
                     <tbody>

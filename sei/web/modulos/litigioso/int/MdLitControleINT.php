@@ -97,8 +97,8 @@ class MdLitControleINT extends InfraINT
 
                 // TIPO DE CONTROLE LITIGIOSO - GERAR SOBRESTADOS
                 // TELA : Alterar Tipo de Controle Litigioso
-                // OPÇÃO: Pode sobrestar a tramitação de outros processos
-                // [RN16] ... validar números de processos apenas se forem dos tipos indicados sendo passiveis de sobrestamento.
+                // OPO: Pode sobrestar a tramitao de outros processos
+                // [RN16] ... validar nmeros de processos apenas se forem dos tipos indicados sendo passiveis de sobrestamento.
 
                 //tipos de processos sobrestados relacionados
                 $objTipoControleLitigiosoTipoProcedimentoSobrestadoDTO = new MdLitRelTipoControleTipoProcedimentoSobrestadoDTO();
@@ -109,7 +109,7 @@ class MdLitControleINT extends InfraINT
                 $objRelTipoControleLitigiosoTipoProcedimentoSobrestadoRN = new MdLitRelTipoControleTipoProcedimentoSobrestadoRN();
                 $arrTipoProcedimentosSobrestados                         = $objRelTipoControleLitigiosoTipoProcedimentoSobrestadoRN->listar($objTipoControleLitigiosoTipoProcedimentoSobrestadoDTO);
 
-                // 0 - Não é "tipos indicados sendo passiveis de sobrestamento"
+                // 0 - No  "tipos indicados sendo passiveis de sobrestamento"
                 if (count($arrTipoProcedimentosSobrestados) > 0) {
                     //PROCESSO
                     $arrAtributos = $objProcedimentoDTO->getArrAtributos();
@@ -162,7 +162,7 @@ class MdLitControleINT extends InfraINT
         // NUMERO SEI - EXISTE
         if (count($objDocumentoDTO) > 0) {
 
-            // SITUAÇÃO - SOMENTE UMA INSTAURAÇÃO
+            // SITUAO - SOMENTE UMA INSTAURAO
             $objSituacaoLitigiosoDTO = new MdLitSituacaoDTO();
             $objSituacaoLitigiosoDTO->setNumIdTipoControleLitigioso($idTipoControleLitigioso);
             $objSituacaoLitigiosoDTO->setStrSinInstauracao('S');
@@ -170,7 +170,7 @@ class MdLitControleINT extends InfraINT
             $objSituacaoLitigiosoRN  = new MdLitSituacaoRN();
             $objSituacaoLitigiosoDTO = $objSituacaoLitigiosoRN->consultar($objSituacaoLitigiosoDTO);
 
-            // SITUAÇÃO - SOMENTE UMA INSTAURAÇÃO - EXISTE
+            // SITUAO - SOMENTE UMA INSTAURAO - EXISTE
             if (count($objSituacaoLitigiosoDTO) > 0) {
                 $xml .= "<StrSinInstauracao>S</StrSinInstauracao>\n";
                 //$xml .= "<SinDataIntimacao>" . $objSituacaoLitigiosoDTO->getStrSinDataIntimacao() . "</SinDataIntimacao>\n";
@@ -183,9 +183,9 @@ class MdLitControleINT extends InfraINT
                 $objRelSituacaoLitigiosoSerieRN  = new MdLitRelSituacaoSerieRN();
                 $objRelSituacaoLitigiosoSerieDTO = $objRelSituacaoLitigiosoSerieRN->consultar($objSituacaoLitigiosoSerieDTO);
 
-                // RELAÇÃO SITUAÇÃO X TIPO DOCUMENTO - EXISTE
+                // RELAO SITUAO X TIPO DOCUMENTO - EXISTE
                 if (count($objRelSituacaoLitigiosoSerieDTO) > 0) {
-                    // só retorna campos situação se estiver presente no tipo documento
+                    // s retorna campos situao se estiver presente no tipo documento
                     $xml .= "<IdSerie>" . $objRelSituacaoLitigiosoSerieDTO->getNumIdSerie() . "</IdSerie>\n";
                 }
             }
@@ -230,7 +230,7 @@ class MdLitControleINT extends InfraINT
 
             $xml = "<documento>";
             $xml .= '<mensagemtipo>sucesso</mensagemtipo>';
-            $xml .= '<mensagem>Remoção de sobrestamento realizada com sucesso.</mensagem>';
+            $xml .= '<mensagem>Remoo de sobrestamento realizada com sucesso.</mensagem>';
             $xml .= '</documento>';
         }
 
@@ -274,14 +274,16 @@ class MdLitControleINT extends InfraINT
                 $bairro     = $objContatoDTO->isSetStrBairro() ? $objContatoDTO->getStrBairro() : '';
                 $idCidade   = $objContatoDTO->isSetNumIdCidade() ? $objContatoDTO->getNumIdCidade() : '';
                 $idUf       = $objContatoDTO->isSetNumIdUf() ? $objContatoDTO->getNumIdUf() : '';
+                $cep       = $objContatoDTO->isSetStrCep() ? $objContatoDTO->getStrCep() : '';
                 $contarLancamento = 0;
 
-                if($objContatoDTO->isSetNumIdTipoContatoAssociado() && $objContatoDTO->getNumIdTipoContatoAssociado() != ''){
+                if($objContatoDTO->isSetNumIdTipoContatoAssociado() && $objContatoDTO->getNumIdTipoContatoAssociado() != '' && $objContatoDTO->getStrSinEnderecoAssociado() == 'S'){
 
                     $endereco   = $objContatoDTO->isSetStrEnderecoContatoAssociado() ? $objContatoDTO->getStrEnderecoContatoAssociado() : '';
                     $bairro     = $objContatoDTO->isSetStrBairroContatoAssociado() ? $objContatoDTO->getStrBairroContatoAssociado() : '';
                     $idCidade   = $objContatoDTO->isSetNumIdCidadeContatoAssociado() ? $objContatoDTO->getNumIdCidadeContatoAssociado() : '';
                     $idUf       = $objContatoDTO->isSetNumIdUfContatoAssociado() ? $objContatoDTO->getNumIdUfContatoAssociado() : '';
+                    $cep      = $objContatoDTO->isSetStrCepContatoAssociado() ? $objContatoDTO->getStrCepContatoAssociado() : '';
                 }
 
                 if($idMdLitControle){
@@ -293,6 +295,8 @@ class MdLitControleINT extends InfraINT
                     $objMdLitNumeroInteressadoRN = new MdLitNumeroInteressadoRN();
                     $contarLancamento = $objMdLitNumeroInteressadoRN->contarLancamento($objMdLitNumeroInteressadoDTO);
                 }
+
+                $contatoPossuiDadoComplementar = in_array($objContatoDTO->getNumIdContato(), $arrIdContatoDadoInteressado) ? 1 : 0;
 
                 $xml .= "<Contato>\n";
 
@@ -347,6 +351,14 @@ class MdLitControleINT extends InfraINT
                 $xml .= '<ContarLancamento>';
                 $xml .= $contarLancamento;
                 $xml .= "</ContarLancamento>\n";
+
+                $xml .= '<ContatoPossuiDadoComplementar>';
+                $xml .= $contatoPossuiDadoComplementar;
+                $xml .= "</ContatoPossuiDadoComplementar>\n";
+
+                $xml .= '<cep>';
+                $xml .= $cep;
+                $xml .= "</cep>\n";
 
                 $xml .= "</Contato>\n";
 
