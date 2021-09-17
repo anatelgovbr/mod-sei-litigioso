@@ -69,7 +69,7 @@ try {
                     $objMdLitDecisaoDTO->retStrNomeMdLitObrigacao();
                     $objMdLitDecisaoDTO->retNumPrazo();
                     $objMdLitDecisaoDTO->retDblValorMultaSemIntegracao();
-                    $objMdLitDecisaoDTO->retDblValorRessarcimento();
+                    $objMdLitDecisaoDTO->retDblValor();
                     $objMdLitDecisaoDTO->setNumIdMdLitRelDisNorConCtr($objRelDispositivoNormativoCondutaControleLitigiosoDTO->getNumIdDispositivoNormativoNormaCondutaControle());
 
                     $objMdLitDecisaoRN = new MdLitDecisaoRN();
@@ -141,8 +141,8 @@ if($numRegistros > 0){
             $strTbCadastroDecisao .= PaginaSEI::tratarHTML($objMdLitDecisao->getDblMulta() ?: $objMdLitDecisao->getDblValorMultaSemIntegracao());
             $strTbCadastroDecisao .= "</td>";
             $strTbCadastroDecisao .= "<td align='right'>";
-            $strTbCadastroDecisao .= $objMdLitDecisao->getDblValorRessarcimento()? 'R$ ': '';
-            $strTbCadastroDecisao .= PaginaSEI::tratarHTML($objMdLitDecisao->getDblValorRessarcimento());
+            $strTbCadastroDecisao .= $objMdLitDecisao->getDblValor()? 'R$ ': '';
+            $strTbCadastroDecisao .= PaginaSEI::tratarHTML($objMdLitDecisao->getDblValor());
             $strTbCadastroDecisao .= "</td>";
             $strTbCadastroDecisao .= "<td>";
             $strTbCadastroDecisao .= PaginaSEI::tratarHTML($objMdLitDecisao->getStrNomeMdLitObrigacao());

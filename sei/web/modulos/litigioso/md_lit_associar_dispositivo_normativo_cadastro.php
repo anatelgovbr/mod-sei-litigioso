@@ -40,7 +40,7 @@
                         $objAssocDispositivoNormativoLitigiosoRN = new MdLitAssociarDispositivoNormativoRN();
                         $arrDispositivoNormativos                = PaginaSEI::getInstance()->getArrValuesSelect($_POST['hdnDispositivosNormativos']);
 
-
+                        $idTipoControle = $_POST['hdnIdTipoControle'];
                         $objAssocDispositivoNormativoLitigiosoRN->validarExclusao($arrDispositivoNormativos, $_POST['hdnIdTipoControle']);
                         //SET DISPOSITIVOS
                         $arrObjAssocDispositivoNormativoDTO = array();

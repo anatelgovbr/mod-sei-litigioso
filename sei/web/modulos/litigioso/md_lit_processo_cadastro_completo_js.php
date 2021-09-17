@@ -41,6 +41,7 @@
         window.parent.document.getElementById(id).height = newheight + "px";
         window.parent.document.getElementById(id).scrolling = "no";
     }
+
     function autoResizeSair(id) {
         window.parent.document.getElementById(id).style.height = alturaOriginalStyle + "px";
         window.parent.document.getElementById(id).height = alturaOriginal + "px";
@@ -49,7 +50,7 @@
 
     //function para impedir o enter de submit o formulário
     function enterValidarDocumento(e) {
-        if(e && e.keyCode == 13) {
+        if (e && e.keyCode == 13) {
             document.getElementById('sbmValidarNumeroSei').onclick();
             return false;
         }
@@ -57,28 +58,28 @@
 
 
     function enterAdicionarInfracao(e) {
-        if(e && e.keyCode == 13) {
+        if (e && e.keyCode == 13) {
             adicionarDI();
             return false;
         }
     }
 
     function enterValidarDocumentoSobrestado(e) {
-        if(e && e.keyCode == 13) {
+        if (e && e.keyCode == 13) {
             preencheNumeroSeiPS(document.getElementById('txtNumeroSeiPS'));
             return false;
         }
     }
 
     function enterValidarProcessoSobrestado(e) {
-        if(e && e.keyCode == 13) {
+        if (e && e.keyCode == 13) {
             preencheNumeroProcessoPS(document.getElementById('txtNumeroProcessoPS'));
             return false;
         }
     }
 
     function enterAdicionarSobrestado(e) {
-        if(e && e.keyCode == 13) {
+        if (e && e.keyCode == 13) {
             adicionarPS();
             return false;
         }
@@ -177,22 +178,23 @@
                 iLen = elements.length;
             }
             mostrarTabelaPS(true);
-        }else{
+        } else {
             document.getElementById('txtNumeroSei').focus();
         }
 
         //registro existente Processos a serem Sobrestados
-        if(document.getElementById('txtNumeroSeiPS').value != ''){
+        if (document.getElementById('txtNumeroSeiPS').value != '') {
             document.getElementById('sbmValidarNumeroSeiPS').onclick();
         }
         //infraEfeitoTabelas();
 
         //redimensiona o iframe
         //autoResize('ifrVisualizacao');
-        if ('<?=$_GET['acao']?>'=='md_lit_processo_cadastro_consultar'){
+        if ('<?=$_GET['acao']?>' == 'md_lit_processo_cadastro_consultar') {
             infraDesabilitarCamposDiv(document.getElementById('frmCadastroProcesso'))
         }
     }
+
     function sair() {
         //autoResizeSair('ifrVisualizacao');
     }
@@ -204,9 +206,10 @@
         else {
             if (tecla == 8 || tecla == 0)
                 return true;
-            else  return false;
+            else return false;
         }
     }
+
     function showHide(show, classe) {
         classe = '.' + classe;
         objs = document.querySelectorAll(classe);
@@ -235,14 +238,15 @@
             if (document.getElementById('selIDNCondutas').options.length == 0 ||
                 (document.getElementById('selIDNCondutas').options.length == 1 && document.getElementById("selIDNCondutas").options[document.getElementById("selIDNCondutas").selectedIndex].text == '')) {
                 document.getElementById('selIDNCondutas').style.display = 'none';
-                document.getElementById('lblIDNCondutas').style.display='none';
+                document.getElementById('lblIDNCondutas').style.display = 'none';
             } else {
                 document.getElementById('selIDNCondutas').style.display = '';
-                document.getElementById('lblIDNCondutas').style.display='';
+                document.getElementById('lblIDNCondutas').style.display = '';
             }
 
         }
     }
+
     function carregarComponenteDispositivoNormativoDN() {
         //New
         objLupaIDNDispositivoNormativo = new infraLupaText('txtIDNDispNormat', 'hdnIdIDNDispNormat', '<?=$strLinkDispNormatDNSelecao?>');
@@ -268,6 +272,7 @@
         }
         objAutoCompletarIDNDispositivoNormativo.selecionar('<?=$strIdDispositivoNormativo?>', '<?=PaginaSEI::getInstance()->formatarParametrosJavascript($strNome);?>');
     }
+
     function carregarComponenteDispositivoNormativoCD() {
         objLupaICDispositivoNormativo = new infraLupaText('txtICDispNormat', 'hdnIdICDispNormat', '<?=$strLinkDispNormatCDSelecao?>');
 
@@ -300,6 +305,7 @@
             return infraMascaraTexto(obj, event, tamanho);
         }
     }
+
     function validarCampoProcessoSei(obj, event) {
         if (!somenteNumeros(event)) {
             return somenteNumeros(event)
@@ -308,8 +314,9 @@
             return infraMascara(obj, event, '#####.######/####-##');
         }
     }
+
     function OnSubmitForm(formulario) {
-        if(validarCadastro(formulario)){
+        if (validarCadastro(formulario)) {
             //exibe o aviso pois o serviço pode deixar a requisição lenta
             addArrayInflacaoExcluidaNoHidden();
 
@@ -319,8 +326,9 @@
         return false;
     }
 
-    function addArrayInflacaoExcluidaNoHidden(){
-        if(arrIdsExcluidosInflacao.length > 0){
+    function addArrayInflacaoExcluidaNoHidden() {
+        console.log(arrIdsExcluidosInflacao.length)
+        if (arrIdsExcluidosInflacao.length > 0) {
             var arrJson = JSON.stringify(arrIdsExcluidosInflacao);
             document.getElementById('hdnIdsInfracoesExcluidas').value = arrJson;
         }
@@ -360,11 +368,11 @@
 
 //        if (<?//=$bolTipoProcedimentosSobrestadosGeracao?>//==0)
 //        {
-            if (infraTrim(document.getElementById('hdnListaDIIndicados').value) == '') {
-                alert('Informe ao menos um Dispositivo Normativo');
-                document.getElementById('rdIndicDisposNormativo').focus();
-                return false;
-            }
+        if (infraTrim(document.getElementById('hdnListaDIIndicados').value) == '') {
+            alert('Informe ao menos um Dispositivo Normativo');
+            document.getElementById('rdIndicDisposNormativo').focus();
+            return false;
+        }
 //        }
 //        if(<?//=$bolTipoProcedimentosSobrestadosGeracao?>// == 1){
 //            if (infraTrim(document.getElementById('hdnListaPSIndicados').value) == '') {
@@ -373,19 +381,21 @@
 //                return false;
 //            }
 //        }
-        var optionsMotivos = document.getElementById('selMotivos').options;
-        if(optionsMotivos != null && optionsMotivos.length == 0 && document.getElementById('lblMotivos').className.match(/infraLabelOpcional/)  == null ){
-            alert('Informe ao menos um Motivo para Instauração.');
-            document.getElementById('selMotivos').focus();
-            return false;
+        if(document.getElementById('selMotivos') != null) {
+            var optionsMotivos = document.getElementById('selMotivos').options;
+            if (optionsMotivos != null && optionsMotivos.length == 0 && document.getElementById('lblMotivos').className.match(/infraLabelOpcional/) == null) {
+                alert('Informe ao menos um Motivo para Instauração.');
+                document.getElementById('selMotivos').focus();
+                return false;
+            }
         }
-
         return true;
     }
+
     var arrValidaSEI = new Array();
     var arrValidaSituacaoSEI = new Array();
 
-    function validaSEI(numeroSEI, tipo='d') {
+    function validaSEI(numeroSEI, tipo = 'd') {
 
         if (tipo == 'd') {
             arrValidaSEI["IdDocumento"] = '';
@@ -486,7 +496,7 @@
 
     }
 
-    function preencheNumeroSei(campo, mensagemMostar=true) {
+    function preencheNumeroSei(campo, mensagemMostar = true) {
         var SEIvalido = false;
         var mensagem = '';
         var arrDtAssinatura;
@@ -530,11 +540,11 @@
                 if (SEIvalido == true) {
 
                     document.getElementById('sbmAdicionarNumeroSei').className = document.getElementById('sbmAdicionarNumeroSei').className.replace('NumeroSEINaoValidado', '');
-                    document.getElementById('sbmAdicionarNumeroSei').style.display='';
+                    document.getElementById('sbmAdicionarNumeroSei').style.display = '';
 
-                    if (hdnIdMdLitControle!=''){
+                    if (hdnIdMdLitControle != '') {
                         mostrarTabelaDI(true);
-                    }else{
+                    } else {
                         document.getElementById('divTabelaDocInstaurador').className = document.getElementById('divTabelaDocInstaurador').className.replace('NumeroSEIValidado', 'NumeroSEINaoValidado');
                         document.getElementById('divTabelaDocInstaurador2').className = document.getElementById('divTabelaDocInstaurador2').className.replace('NumeroSEIValidado', 'NumeroSEINaoValidado');
                         mostrarTabelaDI(false);
@@ -543,10 +553,10 @@
                     document.getElementById('hdnIdDocumento').value = arrValidaSEI["IdDocumento"];
                     document.getElementById('hdnNumeroSei').value = arrValidaSEI["NumeroSei"];
                     document.getElementById('hdnNumero').value = arrValidaSEI["Numero"];
-                    document.getElementById('hdnUnidade').value = '<a alt="'+arrValidaSEI['DescricaoUnidadeGeradoraProtocolo']+'" title="'+arrValidaSEI['DescricaoUnidadeGeradoraProtocolo']+'" class="ancoraSigla" > '+arrValidaSEI["SiglaUnidadeGeradoraProtocolo"]+'</a>';
+                    document.getElementById('hdnUnidade').value = '<a alt="' + arrValidaSEI['DescricaoUnidadeGeradoraProtocolo'] + '" title="' + arrValidaSEI['DescricaoUnidadeGeradoraProtocolo'] + '" class="ancoraSigla" > ' + arrValidaSEI["SiglaUnidadeGeradoraProtocolo"] + '</a>';
                     document.getElementById('hdnData').value = arrValidaSEI["GeracaoProtocolo"];
                     document.getElementById('txtTipo').value = arrValidaSEI["NomeSerie"];
-                    document.getElementById('hdnDataAssinatura').value = arrDtAssinatura && arrDtAssinatura.length > 0? arrDtAssinatura[0] : '';
+                    document.getElementById('hdnDataAssinatura').value = arrDtAssinatura && arrDtAssinatura.length > 0 ? arrDtAssinatura[0] : '';
 
                     buscarInteressado();
                     return true;
@@ -554,7 +564,7 @@
                 } else {
                     limparDocInstaurador();
                 }
-            }else{
+            } else {
                 mensagem = 'Este documento não está vinculado ao Tipo de Controle deste processo na situação Instauração.';
             }
 
@@ -578,7 +588,7 @@
             elements = document.getElementsByClassName('NumeroSEIValidado');
             iLen = elements.length;
         }
-        if (objTabelaDocInstaurador.tbl.rows.length==2){
+        if (objTabelaDocInstaurador.tbl.rows.length == 2) {
             objTabelaDocInstaurador.removerLinha(1);
         }
         document.getElementById('divTabelaDocInstaurador').className = document.getElementById('divTabelaDocInstaurador').className.replace('NumeroSEIValidado', 'NumeroSEINaoValidado');
@@ -591,6 +601,7 @@
 //        document.getElementById('lblDtIntimacao').className = document.getElementById('lblDtIntimacao').className.replace('infraLabelObrigatorio', 'infraLabelOpcional');
 
     }
+
     function preencheNumeroSeiPS(campo) {
         var SEIvalido = false;
         var mensagem = '';
@@ -659,6 +670,7 @@
         return SEIvalido;
 
     }
+
     function preencheNumeroProcessoPS(campo) {
         validaSEI(campo.value, 'p');
 
@@ -702,7 +714,7 @@
     };
 
     objTabelaPS.remover = function (arr) {
-        if (objTabelaPS.tbl.rows.length==2){
+        if (objTabelaPS.tbl.rows.length == 2) {
             mostrarTabelaPS(false);
         }
         return true;
@@ -721,7 +733,7 @@
         return null;
     };
 
-    
+
     function adicionarPS() {
         //var id = document.getElementById('txtNumeroProcessoPS').value+document.getElementById('txtNumeroSeiPS').value;
         var id = document.getElementById('txtNumeroProcessoPS').value;
@@ -805,15 +817,15 @@
 
     function mostrarTabelaPS(opcao) {
         var qtdPSIndicados = objTabelaPS.tbl.rows.length;
-        if (opcao){
-            if (qtdPSIndicados>1){
-                document.getElementById('tbProcessosSobrestados').style.display='';
+        if (opcao) {
+            if (qtdPSIndicados > 1) {
+                document.getElementById('tbProcessosSobrestados').style.display = '';
             }
-        }else{
-            document.getElementById('tbProcessosSobrestados').style.display='none';
+        } else {
+            document.getElementById('tbProcessosSobrestados').style.display = 'none';
         }
     }
-    
+
     // PS - funcionalidades - FIM
 
 
@@ -826,38 +838,38 @@
     objTabelaDI.alterar = function (arr) {
         document.getElementById('hdnIdDispositivoNormativoNormaCondutaControle').value = arr[0];
 
-        if(arr[5] != '' && arr[5] != 'null'){
+        if (arr[5] != '' && arr[5] != 'null') {
             document.getElementById('rdIndicConduta').checked = true;
             changeInfracoes();
-            document.getElementById('txtICDispNormat').value = arr[2].replace(/<.*?>/g, '')+' - '+arr[4].replace(/<\/?span[^>]*>/g, '');
+            document.getElementById('txtICDispNormat').value = arr[2].replace(/<.*?>/g, '') + ' - ' + arr[4].replace(/<\/?span[^>]*>/g, '');
             document.getElementById('hdnIdICDispNormat').value = arr[3];
             document.getElementById('selICCondutas').value = arr[5];
             document.getElementById('divDispositivoPorConduta').style.display = '';
             document.getElementById('txtDtaInfracaoPorConduta').value = arr[7];
 
-            if(arr[11] == 'P'){
+            if (arr[11] == 'P') {
                 document.getElementById('rdDataInfracaoPeriodoPorConduta').checked = true;
                 changeDataInfracoes();
                 document.getElementById('txtDtaInfracaoInicialPorConduta').value = arr[9];
                 document.getElementById('txtDtaInfracaoFinalPorConduta').value = arr[10];
-            }else if(arr[11] == 'E'){
+            } else if (arr[11] == 'E') {
                 document.getElementById('rdDataInfracaoEspecificaPorConduta').checked = true;
                 changeDataInfracoes();
                 document.getElementById('txtDtaInfracaoPorConduta').value = arr[8];
             }
-        }else{
+        } else {
             document.getElementById('rdIndicDisposNormativo').checked = true;
             changeInfracoes();
-            document.getElementById('txtIDNDispNormat').value = arr[2].replace(/<.*?>/g, '')+' - '+arr[4].replace(/<\/?span[^>]*>/g, '');
+            document.getElementById('txtIDNDispNormat').value = arr[2].replace(/<.*?>/g, '') + ' - ' + arr[4].replace(/<\/?span[^>]*>/g, '');
             document.getElementById('hdnIdIDNDispNormat').value = arr[3];
             document.getElementById('txtDtaInfracaoPorDispositivo').value = arr[7];
 
-            if(arr[11] == 'P'){
+            if (arr[11] == 'P') {
                 document.getElementById('rdDataInfracaoPeriodoPorDispositivo').checked = true;
                 changeDataInfracoes();
                 document.getElementById('txtDtaInfracaoInicialPorDispositivo').value = arr[9];
                 document.getElementById('txtDtaInfracaoFinalPorDispositivo').value = arr[10];
-            }else if(arr[11] == 'E'){
+            } else if (arr[11] == 'E') {
                 document.getElementById('rdDataInfracaoEspecificaPorDispositivo').checked = true;
                 changeDataInfracoes();
                 document.getElementById('txtDtaInfracaoPorDispositivo').value = arr[8];
@@ -865,20 +877,20 @@
         }
     };
 
-    objTabelaDI.lerCelula = function(celula) {
+    objTabelaDI.lerCelula = function (celula) {
         var ret = null;
         var div = celula.getElementsByTagName('div');
         if (div.length == 0) {
             ret = celula.innerText;
-        }else{
+        } else {
             ret = div[0].innerText;
         }
         return ret.infraReplaceAll('<br>', '<br />');
     };
-    
+
     objTabelaDI.remover = function (arr) {
         var retorno = true;
-        if(arr[0].toString().indexOf("novo_") == -1){
+        if (arr[0].toString().indexOf("novo_") == -1) {
             $.ajax({
                 type: "POST",
                 url: "<?= $strLinkAjaxExisteInfracao ?>",
@@ -901,12 +913,12 @@
                 }
             });
         }
-        if(!retorno ){
+        if (!retorno) {
             alert('A exclusão da infração não é permitida, pois existem registros vinculados!');
             return retorno;
         }
 
-        if (objTabelaDI.tbl.rows.length==2){
+        if (objTabelaDI.tbl.rows.length == 2) {
             mostrarTabelaDI(false);
         }
 
@@ -915,9 +927,9 @@
         return true;
     }
 
-    function addIdExcluidoHidden(id){
+    function addIdExcluidoHidden(id) {
 
-        if(id.indexOf('novo') == -1) {
+        if (id.indexOf('novo') == -1) {
             arrIdsExcluidosInflacao.push(id);
         }
     }
@@ -944,9 +956,9 @@
         var dispositivoid = '';
         var conduta = '';
         var condutaid = '';
-        var numRow = objTabelaDI.tbl.rows.length+1;
-        var idDispositivoNormativoNormaCondutaControle = document.getElementById('hdnIdDispositivoNormativoNormaCondutaControle').value == '' ? 'novo_'+numRow :document.getElementById('hdnIdDispositivoNormativoNormaCondutaControle').value;
-        var dtaInfracao, dtaInfracaoEspecifica,dtaInfracaoInicial, dtaInfracaoFinal, staInfracaoData = null;
+        var numRow = objTabelaDI.tbl.rows.length + 1;
+        var idDispositivoNormativoNormaCondutaControle = document.getElementById('hdnIdDispositivoNormativoNormaCondutaControle').value == '' ? 'novo_' + numRow : document.getElementById('hdnIdDispositivoNormativoNormaCondutaControle').value;
+        var dtaInfracao, dtaInfracaoEspecifica, dtaInfracaoInicial, dtaInfracaoFinal, staInfracaoData = null;
 
         // Dispositivo Normativo
         if (document.getElementById('rdIndicDisposNormativo').checked) {
@@ -958,85 +970,84 @@
             }
             dispositivoid = document.getElementById("hdnIdIDNDispNormat").value;
 
-            if(document.getElementById("selIDNCondutas").options.length > 1 && document.getElementById("selIDNCondutas").value == ''){
+            if (document.getElementById("selIDNCondutas").options.length > 1 && document.getElementById("selIDNCondutas").value == '') {
                 alert('A conduta é obrigatório!');
                 return false;
             }
 
 
-
             //data da infração
-            if(document.getElementById('rdDataInfracaoEspecificaPorDispositivo').checked){
+            if (document.getElementById('rdDataInfracaoEspecificaPorDispositivo').checked) {
                 staInfracaoData = '<?php echo MdLitRelDispositivoNormativoCondutaControleRN::$TA_ESPECIFICA?>';
                 dtaInfracao = document.getElementById('txtDtaInfracaoPorDispositivo').value;
                 dtaInfracaoEspecifica = document.getElementById('txtDtaInfracaoPorDispositivo').value;
 
-                if(dtaInfracaoEspecifica == ''){
+                if (dtaInfracaoEspecifica == '') {
                     alert('A data da infração é obrigatório!');
                     return false;
                 }
-                if(!infraValidarData(document.getElementById('txtDtaInfracaoPorDispositivo'), false)){
+                if (!infraValidarData(document.getElementById('txtDtaInfracaoPorDispositivo'), false)) {
                     alert('A data da infração é inválida!');
                     document.getElementById('txtDtaInfracaoPorDispositivo').value = '';
                     document.getElementById('txtDtaInfracaoPorDispositivo').focus();
                     return false;
                 }
-                if(infraCompararDatas(dtaInfracaoEspecifica, infraDataAtual())<0){
+                if (infraCompararDatas(dtaInfracaoEspecifica, infraDataAtual()) < 0) {
                     alert('A data da infração especifica é maior que a data atual!');
                     document.getElementById('txtDtaInfracaoPorDispositivo').focus();
                     return false;
                 }
-            }else if(document.getElementById('rdDataInfracaoPeriodoPorDispositivo').checked){
+            } else if (document.getElementById('rdDataInfracaoPeriodoPorDispositivo').checked) {
                 staInfracaoData = '<?php echo MdLitRelDispositivoNormativoCondutaControleRN::$TA_PERIODO?>';
                 dtaInfracaoInicial = document.getElementById('txtDtaInfracaoInicialPorDispositivo').value;
                 dtaInfracaoFinal = document.getElementById('txtDtaInfracaoFinalPorDispositivo').value;
 
-                if( dtaInfracaoInicial == '' || dtaInfracaoFinal == ''){
+                if (dtaInfracaoInicial == '' || dtaInfracaoFinal == '') {
                     alert('A data do periodo inicial e final é obrigatório!');
                     return false;
                 }
 
-                if (infraCompararDatas(dtaInfracaoInicial, dtaInfracaoFinal)<0) {
+                if (infraCompararDatas(dtaInfracaoInicial, dtaInfracaoFinal) < 0) {
                     alert('Período de datas inválido.');
                     document.getElementById('txtDtaInfracaoInicialPorDispositivo').focus();
                     return false;
                 }
 
-                if(!infraValidarData(document.getElementById('txtDtaInfracaoInicialPorDispositivo'), false)){
+                if (!infraValidarData(document.getElementById('txtDtaInfracaoInicialPorDispositivo'), false)) {
                     alert('A data do periodo inicial é Inválida!');
                     document.getElementById('txtDtaInfracaoInicialPorDispositivo').value = '';
                     document.getElementById('txtDtaInfracaoInicialPorDispositivo').focus();
                     return false;
                 }
 
-                if(!infraValidarData(document.getElementById('txtDtaInfracaoFinalPorDispositivo'), false)){
+                if (!infraValidarData(document.getElementById('txtDtaInfracaoFinalPorDispositivo'), false)) {
                     alert('A data do periodo final é Inválida!');
                     document.getElementById('txtDtaInfracaoFinalPorDispositivo').value = '';
                     document.getElementById('txtDtaInfracaoFinalPorDispositivo').focus();
                     return false;
                 }
 
-                if(infraCompararDatas(dtaInfracaoInicial, infraDataAtual())<0){
+                if (infraCompararDatas(dtaInfracaoInicial, infraDataAtual()) < 0) {
                     alert('A data do periodo inicial é maior que a data atual!');
                     document.getElementById('txtDtaInfracaoInicialPorDispositivo').focus();
                     return false;
                 }
 
-                if(infraCompararDatas(dtaInfracaoFinal, infraDataAtual())<0){
+                if (infraCompararDatas(dtaInfracaoFinal, infraDataAtual()) < 0) {
                     alert('A data do periodo final é maior que a data atual!');
                     document.getElementById('txtDtaInfracaoFinalPorDispositivo').focus();
                     return false;
                 }
-                dtaInfracao = dtaInfracaoInicial +' a '+ dtaInfracaoFinal;
-            }else{
+                dtaInfracao = dtaInfracaoInicial + ' a ' + dtaInfracaoFinal;
+            } else {
                 alert('Selecione o tipo da data de infração');
                 return false;
             }
 
 
-            conduta = document.getElementById("selIDNCondutas").value !=''? document.getElementById("selIDNCondutas").options[document.getElementById("selIDNCondutas").selectedIndex].text:'';
+            conduta = document.getElementById("selIDNCondutas").value != '' ? document.getElementById("selIDNCondutas").options[document.getElementById("selIDNCondutas").selectedIndex].text : '';
             condutaid = document.getElementById("selIDNCondutas").value;
-        // Conduta
+            // Conduta
         } else if (document.getElementById('rdIndicConduta').checked) {
             arrDI = document.getElementById('txtICDispNormat').value.split(' - ');
             if (arrDI.length == 2) {
@@ -1048,77 +1059,77 @@
             conduta = document.getElementById("selICCondutas").options[document.getElementById("selICCondutas").selectedIndex].text;
             condutaid = document.getElementById("selICCondutas").value;
 
-            if(condutaid == ''){
+            if (condutaid == '') {
                 alert('A conduta é obrigatório!');
                 return false;
             }
 
             //data da infração
-            if(document.getElementById('rdDataInfracaoEspecificaPorConduta').checked){
+            if (document.getElementById('rdDataInfracaoEspecificaPorConduta').checked) {
                 staInfracaoData = '<?php echo MdLitRelDispositivoNormativoCondutaControleRN::$TA_ESPECIFICA?>';
                 dtaInfracao = document.getElementById('txtDtaInfracaoPorConduta').value;
                 dtaInfracaoEspecifica = document.getElementById('txtDtaInfracaoPorConduta').value;
 
-                if(dtaInfracaoEspecifica == ''){
+                if (dtaInfracaoEspecifica == '') {
                     alert('A data da infração é obrigatório!');
                     return false;
                 }
-                if(!infraValidarData(document.getElementById('txtDtaInfracaoPorConduta'), false)){
+                if (!infraValidarData(document.getElementById('txtDtaInfracaoPorConduta'), false)) {
                     alert('A data da infração é inválida!');
                     document.getElementById('txtDtaInfracaoPorConduta').value = '';
                     document.getElementById('txtDtaInfracaoPorConduta').focus();
                     return false;
                 }
-                if(infraCompararDatas(dtaInfracaoEspecifica, infraDataAtual())<0){
+                if (infraCompararDatas(dtaInfracaoEspecifica, infraDataAtual()) < 0) {
                     alert('A data da infração especifica é maior que a data atual!');
                     document.getElementById('txtDtaInfracaoPorConduta').focus();
                     return false;
                 }
 
-            }else if(document.getElementById('rdDataInfracaoPeriodoPorConduta').checked){
+            } else if (document.getElementById('rdDataInfracaoPeriodoPorConduta').checked) {
                 staInfracaoData = '<?php echo MdLitRelDispositivoNormativoCondutaControleRN::$TA_PERIODO?>';
                 dtaInfracaoInicial = document.getElementById('txtDtaInfracaoInicialPorConduta').value;
                 dtaInfracaoFinal = document.getElementById('txtDtaInfracaoFinalPorConduta').value;
 
-                if( dtaInfracaoInicial == '' || dtaInfracaoFinal == ''){
+                if (dtaInfracaoInicial == '' || dtaInfracaoFinal == '') {
                     alert('A data do periodo inicial e final é obrigatório!');
                     return false;
                 }
 
-                if (infraCompararDatas(dtaInfracaoInicial, dtaInfracaoFinal)<0) {
+                if (infraCompararDatas(dtaInfracaoInicial, dtaInfracaoFinal) < 0) {
                     alert('Período de datas inválido.');
                     document.getElementById('txtDtaInfracaoFinalPorConduta').focus();
                     return false;
                 }
 
-                if(!infraValidarData(document.getElementById('txtDtaInfracaoFinalPorConduta'), false)){
+                if (!infraValidarData(document.getElementById('txtDtaInfracaoFinalPorConduta'), false)) {
                     alert('A data do periodo final é Inválida!');
                     document.getElementById('txtDtaInfracaoFinalPorConduta').value = '';
                     document.getElementById('txtDtaInfracaoFinalPorConduta').focus();
                     return false;
                 }
 
-                if(!infraValidarData(document.getElementById('txtDtaInfracaoInicialPorConduta'), false)){
+                if (!infraValidarData(document.getElementById('txtDtaInfracaoInicialPorConduta'), false)) {
                     alert('A data do periodo inicial é Inválida!');
                     document.getElementById('txtDtaInfracaoInicialPorConduta').value = '';
                     document.getElementById('txtDtaInfracaoInicialPorConduta').focus();
                     return false;
                 }
 
-                if(infraCompararDatas(dtaInfracaoInicial, infraDataAtual())<0){
+                if (infraCompararDatas(dtaInfracaoInicial, infraDataAtual()) < 0) {
                     alert('A data do periodo inicial é maior que a data atual!');
                     document.getElementById('txtDtaInfracaoInicialPorConduta').focus();
                     return false;
                 }
 
-                if(infraCompararDatas(dtaInfracaoFinal, infraDataAtual())<0){
+                if (infraCompararDatas(dtaInfracaoFinal, infraDataAtual()) < 0) {
                     alert('A data do periodo final é maior que a data atual!');
                     document.getElementById('txtDtaInfracaoFinalPorConduta').focus();
                     return false;
                 }
 
-                dtaInfracao = dtaInfracaoInicial +' a '+ dtaInfracaoFinal;
-            }else{
+                dtaInfracao = dtaInfracaoInicial + ' a ' + dtaInfracaoFinal;
+            } else {
                 alert('Selecione o tipo da data de infração');
                 return false;
             }
@@ -1131,18 +1142,18 @@
             return false;
         }
 
-        if(dtaInfracao == ''){
+        if (dtaInfracao == '') {
             alert('A data da infração é obrigatório!');
             return false;
         }
 
         //verificar se a infração já existe na tabela
         var arrItens = objTabelaDI.obterItens();
-        if(arrItens.length > 0){
-            for(var i = 0; i < arrItens.length; i++){
-                if(arrItens[i][3] == dispositivoid
+        if (arrItens.length > 0) {
+            for (var i = 0; i < arrItens.length; i++) {
+                if (arrItens[i][3] == dispositivoid
                     && (arrItens[i][5] == condutaid || (arrItens[i][5] == 'null' && condutaid == ''))
-                    && document.getElementById('hdnIdDispositivoNormativoNormaCondutaControle').value != arrItens[i][0]){
+                    && document.getElementById('hdnIdDispositivoNormativoNormaCondutaControle').value != arrItens[i][0]) {
                     alert('Essa infração já foi adicionado!');
                     return false;
                 }
@@ -1150,7 +1161,7 @@
             }
         }
 
-        var obj = consultarDispositivoNormativo(dispositivoid, norma,dispositivo);
+        var obj = consultarDispositivoNormativo(dispositivoid, norma, dispositivo);
         var arrDadosDIValido = [];
 
         arrDadosDIValido[0] = idDispositivoNormativoNormaCondutaControle;
@@ -1179,7 +1190,7 @@
         document.getElementById('divDispositivoPorConduta').style.display = 'none';
     }
 
-    function  consultarDispositivoNormativo(dispositivoid, norma,dispositivo) {
+    function consultarDispositivoNormativo(dispositivoid, norma, dispositivo) {
 
         $.ajax({
             type: "POST",
@@ -1188,17 +1199,17 @@
             dataType: "xml",
             async: false,
             data: {
-                id_md_lit_disp_normat : dispositivoid
+                id_md_lit_disp_normat: dispositivoid
             },
             success: function (result) {
                 var url = $(result).find('[nome="Url"]').text();
                 var descricao = $(result).find('[nome="Descricao"]').text();
 
-                if(url != ''){
-                    norma = '<a href="'+url+'" style="font-size: inherit !important;" target="_blank" title="Acesse a Norma">'+norma+'</a>';
+                if (url != '') {
+                    norma = '<a href="' + url + '" style="font-size: inherit !important;" target="_blank" title="Acesse a Norma">' + norma + '</a>';
                 }
-                if(descricao != ''){
-                    dispositivo = '<span style="font-size: inherit !important;" title="'+descricao+'">'+dispositivo+'</span>';
+                if (descricao != '') {
+                    dispositivo = '<span style="font-size: inherit !important;" title="' + descricao + '">' + dispositivo + '</span>';
                 }
             },
             error: function (msgError) {
@@ -1206,7 +1217,7 @@
                 alert(msgCommit);
             }
         });
-        var obj = {norma: norma, dispositivo:dispositivo};
+        var obj = {norma: norma, dispositivo: dispositivo};
         return obj;
 
     }
@@ -1261,12 +1272,12 @@
     function mostrarTabelaDI(opcao) {
 
         var qtdDIIndicados = objTabelaDI.tbl.rows.length;
-        if (opcao){
-            if (qtdDIIndicados>1){
-                document.getElementById('tbDispositivosInfrigidos').style.display='';
+        if (opcao) {
+            if (qtdDIIndicados > 1) {
+                document.getElementById('tbDispositivosInfrigidos').style.display = '';
             }
-        }else{
-            document.getElementById('tbDispositivosInfrigidos').style.display='none';
+        } else {
+            document.getElementById('tbDispositivosInfrigidos').style.display = 'none';
         }
     }
 
@@ -1298,6 +1309,7 @@
             showHide(true, 'classCondutas');
         }
     }
+
     // Infração - funcionalidades - FIM
 
 
@@ -1322,16 +1334,16 @@
         document.getElementById('txtNumeroSei').disabled = false;
         document.getElementById('sbmValidarNumeroSei').disabled = false;
         document.getElementById('sbmAdicionarNumeroSei').disabled = false;
-        document.getElementById('sbmAdicionarNumeroSei').style.display='';
+        document.getElementById('sbmAdicionarNumeroSei').style.display = '';
     };
 
     objTabelaDocInstaurador.remover = function () {
         document.getElementById('txtDtInstauracao').value = '';
 
         //Desabilitando
-        document.getElementById('txtNumeroSei').disabled=false;
-        document.getElementById('sbmValidarNumeroSei').disabled=false;
-        document.getElementById('sbmAdicionarNumeroSei').style.display='none';
+        document.getElementById('txtNumeroSei').disabled = false;
+        document.getElementById('sbmValidarNumeroSei').disabled = false;
+        document.getElementById('sbmAdicionarNumeroSei').style.display = 'none';
 
         return true;
     };
@@ -1372,7 +1384,7 @@
         objTabelaDocInstaurador.hdn.value = objTabelaDocInstaurador.hdn.value.replace(/<\/?[^>]+(>|$)/g, "");
         document.getElementById('hdnListaDocInstauradores').value = objTabelaDocInstaurador.hdn.value.replace(/<\/?[^>]+(>|$)/g, "");
 
-        if(document.getElementById('tbDocInstaurador').rows.length > 1) {
+        if (document.getElementById('tbDocInstaurador').rows.length > 1) {
             var htmlUnidade = document.getElementById('tbDocInstaurador').rows[1].cells[6].innerHTML.replace(/<\/?[^>]+(>|$)/g, "");
             document.getElementById('tbDocInstaurador').rows[1].cells[6].innerHTML = '<div style="text-align:center">' + htmlUnidade + '</div>';
         }
@@ -1391,7 +1403,7 @@
 
         //Datas
         var dtaAssinatura = document.getElementById('hdnDataAssinatura').value;
-        document.getElementById('txtDtInstauracao').value = dtaAssinatura != ''? dtaAssinatura: Data;
+        document.getElementById('txtDtInstauracao').value = dtaAssinatura != '' ? dtaAssinatura : Data;
 
         //Limpando
         limparDocInstaurador();
@@ -1401,9 +1413,9 @@
         document.getElementById('divTabelaDocInstaurador2').className = document.getElementById('divTabelaDocInstaurador2').className.replace('NumeroSEINaoValidado', 'NumeroSEIValidado');
 
         //Desabilitando
-        document.getElementById('txtNumeroSei').disabled=true;
-        document.getElementById('sbmValidarNumeroSei').disabled=true;
-        document.getElementById('sbmAdicionarNumeroSei').style.display='none';
+        document.getElementById('txtNumeroSei').disabled = true;
+        document.getElementById('sbmValidarNumeroSei').disabled = true;
+        document.getElementById('sbmAdicionarNumeroSei').style.display = 'none';
 
         //aparecer todos os fieldset do Litigioso
         var elements = document.getElementsByClassName('NumeroSEINaoValidado');
@@ -1414,8 +1426,8 @@
             iLen = elements.length;
         }
 
-        if(document.getElementById('tbDocInstaurador').rows.length > 1){
-            document.getElementById('tbDocInstaurador').rows[1].cells[6].innerHTML = '<div style="text-align:center">'+Unidade+'</div>';
+        if (document.getElementById('tbDocInstaurador').rows.length > 1) {
+            document.getElementById('tbDocInstaurador').rows[1].cells[6].innerHTML = '<div style="text-align:center">' + Unidade + '</div>';
         }
 
     }
@@ -1444,7 +1456,7 @@
 
     }
 
-    function limparDocInstaurador(NumeroSEILimpar=true) {
+    function limparDocInstaurador(NumeroSEILimpar = true) {
         document.getElementById('hdnIdDocumento').value = '';
         if (NumeroSEILimpar) {
             document.getElementById('txtNumeroSei').value = '';
@@ -1463,6 +1475,7 @@
             document.getElementById('sbmAdicionarNumeroSei').style.display = 'none';
         }
     }
+
     //Doc Instaurador - funcionalidades - FIM
 
 
@@ -1483,7 +1496,7 @@
                         msgCommit = $(result).find('erros').find('erro').attr('descricao');
                     } else if ($(result).find('documento').find('mensagem').text() != undefined) {
                         msgCommit = $(result).find('documento').find('mensagem').text();
-                        if ($(result).find('documento').find('mensagemtipo').text()=='sucesso'){
+                        if ($(result).find('documento').find('mensagemtipo').text() == 'sucesso') {
                             objTabelaPS.removerLinha(objTabelaPS.procuraLinha(id));
                         }
                     }
@@ -1505,7 +1518,7 @@
         window.setInterval(verificarModalInteressado, 1000);
 
         objTabelaInteressado.remover = function (arr) {
-            if(objTabelaInteressado.obterItens().length == 1){
+            if (objTabelaInteressado.obterItens().length == 1) {
                 alert("É necessário ao menos um Interessado");
                 return false;
             }
@@ -1526,12 +1539,13 @@
             contato.endereco,
             contato.bairro,
             contato.idCidade,
-            contato.idUf,
             contato.nomeTipoContato,
             contato.nomeContato,
             contato.cpfCnpj,
             contato.paramModal,
-            contato.contarLancamento
+            contato.contarLancamento,
+            contato.cep,
+            contato.idUf
         ]);
 
 
@@ -1542,19 +1556,19 @@
 
         if (dadoCompleto) {
             acaoDadosComplementares = "<img onclick=\"abrirModalDadosInteressado('" + contato.urlDadosComplementares + "')\" " +
-                "style='width: 16px; height: 16px;' title='Dados Complementares do Interessado' src='imagens/juntar_documento.gif' class='infraImg'/>&nbsp;";
+                "style='width: 16px; height: 16px;' title='Dados Complementares do Interessado' src='imagens/juntar_documento.gif' class='infraImg'/>&nbsp;<input type='hidden' id='hdnContatoPossuiDadoComplementa_" + contato.idContato + "' value='" + contato.contatoPossuiDadoComplementar + "'>";
         }
 
         var acaoAlterar = "<img onclick=\"alterarInteressado('" + contato.idContato + "','" + contato.urlAlterar + "')\" " +
             "style='width: 16px; height: 16px;' title='Alterar Interessado' src='imagens/alterar.gif' class='infraImg'/>&nbsp;";
 
         var mostrarExcluir = true;
-        if(contato.contarLancamento > 0){
+        if (contato.contarLancamento > 0) {
             mostrarExcluir = false;
         }
         objTabelaInteressado.adicionarAcoes(contato.idContato, acaoAlterar + acaoDadosComplementares, false, mostrarExcluir);
 
-        if ('<?=$_GET['acao']?>'=='md_lit_processo_cadastro_consultar'){
+        if ('<?=$_GET['acao']?>' == 'md_lit_processo_cadastro_consultar') {
             infraDesabilitarCamposDiv(document.getElementById('frmCadastroProcesso'));
         }
     }
@@ -1610,7 +1624,7 @@
                 idMdLitTipoControle: hdnIdMdLitTipoControle.value,
             },
             success: function (r) {
-                if ($('Contato', r).text() == '' &&  $('SinParamModal', r).text() == 'S') {
+                if ($('Contato', r).text() == '' && $('SinParamModal', r).text() == 'S') {
                     alert('É necessária a indicação de ao menos um Interessado de tipo diferente de: Órgãos, Sistemas e Temporário');
                     parent.document.getElementById('ifrVisualizacao').src = "<?= $strLinkAlteraProcesso?>";
                 }
@@ -1641,9 +1655,11 @@
             contato.endereco = $('Endereco', this).text();
             contato.bairro = $('Bairro', this).text();
             contato.idCidade = $('IdCidade', this).text();
-            contato.idUf = $('IdUf', this).text();
             contato.paramModal = $('SinParamModal', r).text();
             contato.contarLancamento = $('ContarLancamento', this).text();
+            contato.contatoPossuiDadoComplementar = $('ContatoPossuiDadoComplementar', this).text();
+            contato.cep = $('cep', this).text();
+            contato.idUf = $('IdUf', this).text();
             adicionarInteressado(contato);
         });
     }
@@ -1693,6 +1709,7 @@
 
     function validarInteressado() {
         var tbInteressado = document.getElementById('tbInteressado');
+
         var trs = tbInteressado.rows;
         var valido = true;
         var msg = '';
@@ -1716,17 +1733,17 @@
                 valido = false;
             }
 
-            if (tds[4].innerText.trim() == '') { //Bairro
+            if (tds[5].innerText.trim() == '') { //Cidade
                 dados.push('Cidade');
                 valido = false;
             }
 
-            if (tds[4].innerText.trim() == '') { //Cep
+            if (tds[11].innerText.trim() == '') { //Cep
                 dados.push('Cep');
                 valido = false;
             }
 
-            if (tds[9].innerText.trim() == '') { //CPF/CNPJ
+            if (tds[8].innerText.trim() == '') { //CPF/CNPJ
                 if (tds[2].innerText.trim() == 'J') {
                     dados.push('CNPJ');
                 } else if (tds[2].innerText.trim() == 'F') {
@@ -1736,25 +1753,26 @@
                 }
                 valido = false;
             }
-            //caso a modal de Dados Complementares tenha sido configurada para apresentar, então informar os dados dela é obrigatório.
-            if(tds[10].innerText.trim() == 'S' && document.getElementById('hdnIdMdLitControle').value == ''){
-                var hdnTbDadoInteressado = document.getElementById('hdnTbDadoInteressado_'+tds[0].innerText.trim());
-                if(hdnTbDadoInteressado == null || hdnTbDadoInteressado.value == ''){
-                    msgDadoComplementar += '\n -'+ tds[8].innerText.trim();
-                }
-            }
 
-            if(dados.length > 0){
+            if (dados.length > 0) {
                 msg += 'Por favor preencha os dados do Interessado ' + tds[8].innerText.trim() + '\n';
                 msg += ' - ' + dados.join('\n - ') + '\n\n';
+            } else {
+                var hdnContatoPossuiDadoComplementar = document.getElementById('hdnContatoPossuiDadoComplementa_' + tds[0].innerText.trim()).value;
+                //caso a modal de Dados Complementares tenha sido configurada para apresentar, então informar os dados dela é obrigatório.
+                if (tds[9].innerText.trim() == 'S' && hdnContatoPossuiDadoComplementar == 0) {
+                    var hdnTbDadoInteressado = document.getElementById('hdnTbDadoInteressado_' + tds[0].innerText.trim());
+                    if (hdnTbDadoInteressado == null || hdnTbDadoInteressado.value == '') {
+                        msgDadoComplementar += '\n -' + tds[7].innerText.trim();
+                    }
+                }
             }
         }
 
         if (!valido) {
             alert(msg);
-        }
-        if(msgDadoComplementar != ''){
-            msg = 'Por favor preencha os dados dados complementares do interessado: \n'+msgDadoComplementar;
+        } else if (msgDadoComplementar != '') {
+            msg = 'Por favor preencha os dados dados complementares do interessado: \n' + msgDadoComplementar;
             valido = false;
             alert(msg);
         }
@@ -1763,16 +1781,17 @@
 
     }
 
-    function mostrarDispositivoPorConduta(){
+    function mostrarDispositivoPorConduta() {
         objLupaICDispositivoNormativo.remover();
         element = document.getElementById('selICCondutas');
-        if(element.value == '' ||element.value == 'null' ){
+        if (element.value == '' || element.value == 'null') {
             document.getElementById('divDispositivoPorConduta').style.display = 'none';
-        }else{
+        } else {
             document.getElementById('divDispositivoPorConduta').style.display = '';
         }
     }
-    function changeDataInfracoes(){
+
+    function changeDataInfracoes() {
         document.getElementById('txtDtaInfracaoInicialPorConduta').value = '';
         document.getElementById('txtDtaInfracaoFinalPorConduta').value = '';
         document.getElementById('txtDtaInfracaoPorConduta').value = '';
@@ -1785,44 +1804,44 @@
         document.getElementById('conteudoDataInfracaoPeriodoPorConduta').style.display = 'none';
         document.getElementById('conteudoDataInfracaoEspecificaPorConduta').style.display = 'none';
 
-        if(document.getElementById('rdDataInfracaoEspecificaPorDispositivo').checked){
+        if (document.getElementById('rdDataInfracaoEspecificaPorDispositivo').checked) {
             document.getElementById('conteudoDataInfracaoEspecificaPorDispositivo').style.display = '';
-        }else if(document.getElementById('rdDataInfracaoPeriodoPorDispositivo').checked){
+        } else if (document.getElementById('rdDataInfracaoPeriodoPorDispositivo').checked) {
             document.getElementById('conteudoDataInfracaoPeriodoPorDispositivo').style.display = '';
-        }else if(document.getElementById('rdDataInfracaoEspecificaPorConduta').checked){
+        } else if (document.getElementById('rdDataInfracaoEspecificaPorConduta').checked) {
             document.getElementById('conteudoDataInfracaoEspecificaPorConduta').style.display = '';
-        }else if(document.getElementById('rdDataInfracaoPeriodoPorConduta').checked){
+        } else if (document.getElementById('rdDataInfracaoPeriodoPorConduta').checked) {
             document.getElementById('conteudoDataInfracaoPeriodoPorConduta').style.display = '';
         }
     }
 
-    if(document.getElementById('hdnIdMotivos') != null){
-        objAutoCompletarMotivos = new infraAjaxAutoCompletar('hdnIdMotivos','txtMotivos','<?=$strLinkAjaxMotivos?>');
+    if (document.getElementById('hdnIdMotivos') != null) {
+        objAutoCompletarMotivos = new infraAjaxAutoCompletar('hdnIdMotivos', 'txtMotivos', '<?=$strLinkAjaxMotivos?>');
         objAutoCompletarMotivos.limparCampo = true;
         objAutoCompletarMotivos.tamanhoMinimo = 3;
-        objAutoCompletarMotivos.prepararExecucao = function(){
-            return 'palavras_pesquisa='+document.getElementById('txtMotivos').value+'&idTipoControle=<?=$idMdRelTipoCntroleTipoProcedimento?>';
+        objAutoCompletarMotivos.prepararExecucao = function () {
+            return 'palavras_pesquisa=' + document.getElementById('txtMotivos').value + '&idTipoControle=<?=$idMdRelTipoCntroleTipoProcedimento?>';
         };
 
-        objAutoCompletarMotivos.processarResultado = function(id,descricao,complemento){
+        objAutoCompletarMotivos.processarResultado = function (id, descricao, complemento) {
 
-            if (id!=''){
+            if (id != '') {
                 var options = document.getElementById('selMotivos').options;
 
-                for(var i=0;i < options.length;i++){
-                    if (options[i].value == id){
+                for (var i = 0; i < options.length; i++) {
+                    if (options[i].value == id) {
                         alert('Motivo já consta na lista.');
                         break;
                     }
                 }
 
-                if (i==options.length){
+                if (i == options.length) {
 
-                    for(i=0;i < options.length;i++){
+                    for (i = 0; i < options.length; i++) {
                         options[i].selected = false;
                     }
 
-                    opt = infraSelectAdicionarOption(document.getElementById('selMotivos'), descricao ,id);
+                    opt = infraSelectAdicionarOption(document.getElementById('selMotivos'), descricao, id);
                     objLupaMotivos.atualizar();
 
                     opt.selected = true;
@@ -1834,7 +1853,7 @@
             }
         };
 
-        objLupaMotivos = new infraLupaSelect('selMotivos','hdnMotivos','<?=$strLinkMotivosSelecao?>');
+        objLupaMotivos = new infraLupaSelect('selMotivos', 'hdnMotivos', '<?=$strLinkMotivosSelecao?>');
     }
 
 </script>

@@ -119,13 +119,14 @@ if($numRegistros > 0){
     $strTbCadastroDecisao .= '<th class="infraTh" width="20%">&nbsp;Tipo de Decisão&nbsp;</th>' . "\n";
     $strTbCadastroDecisao .= '<th class="infraTh" width="20%">&nbsp;Espécie de Decisão&nbsp;</th>' . "\n";
     $strTbCadastroDecisao .= '<th class="infraTh multa" style="display: none;" width="10%">&nbsp;Multa&nbsp;</th>' . "\n";
-    $strTbCadastroDecisao .= '<th class="infraTh ressarcimento" width="10%" style="display: none;">&nbsp;Valor de Ressarcimento&nbsp;</th>' . "\n";
+    $strTbCadastroDecisao .= '<th class="infraTh ressarcimento" width="10%" style="display: none;">&nbsp;Valor&nbsp;</th>' . "\n";
     $strTbCadastroDecisao .= '<th class="infraTh obrigacoes" style="display:none;" width="15%">&nbsp;Obrigação&nbsp;</th>' . "\n";
     $strTbCadastroDecisao .= '<th class="infraTh prazo" style="display: none" width="5%">&nbsp;Prazo em Dias&nbsp;</th>' . "\n";
     $strTbCadastroDecisao .= '</tr>' . "\n";
     $strComboTipoDecosao = MdLitTipoDecisaoINT::montarSelectTipoDecisaoPorTipoControle('null', '&nbsp;', '', $objMdLitControleDTO->getNumIdMdLitTipoControle());
 
-    foreach ($arrObjRelDispositivoNormativoCondutaControleLitigiosoDTO as $idLinha =>$objRelDispositivoNormativoCondutaControleLitigiosoDTO){
+
+    foreach ($arrObjRelDispositivoNormativoCondutaControleLitigiosoDTO as $idLinha => $objRelDispositivoNormativoCondutaControleLitigiosoDTO){
 
         $idDispositivoNormativoNormaCondutaControle = $objRelDispositivoNormativoCondutaControleLitigiosoDTO->getNumIdDispositivoNormativoNormaCondutaControle();
         $strCssTr = '<tr id="CadastroDecisaoTable_' . $idLinha . '" class="infraTrClara">';
@@ -213,7 +214,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 <form id="frmCadastroDecisao" method="post" onsubmit="return OnSubmitForm();" action="<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'] . '&id_md_lit_controle='.$_GET['id_md_lit_controle'].'&id_procedimento='.$_GET['id_procedimento'] ) ?>">
     <?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);?>
     <?php PaginaSEI::getInstance()->abrirAreaDados(null); ?>
-    <input type="hidden" id="hdnTbDecisaoAntigo" name="hdnTbDecisaoAntigo" value="">
+    <input type="hidden" id="hdnTbDecisaoAntigo" name="hdnTbDecisaoAntigo" value="<?= $strTbDecisaoAntigo; ?>">
 
     <div class="grid grid_11">
         <p class="bloco-orientacao margem-bottom10">Orientações: Alterações sobre Decisões anteriores devem estar relacionadas a nova Situação Decisória.</p>

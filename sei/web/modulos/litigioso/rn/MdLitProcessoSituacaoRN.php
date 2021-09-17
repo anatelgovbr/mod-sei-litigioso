@@ -1595,6 +1595,28 @@ class MdLitProcessoSituacaoRN extends InfraRN
     return $this->contar($objMdLitProcessoSituacaoDTO) > 0;
   }
 
+  public function verificaIsSituacaoIntimacao( $idProcedimento, $idTipoControle ){
+
+    $isSituacaoIntimacao = false;
+    $objMdLitProcessoSituacaoDTO = new MdLitProcessoSituacaoDTO();
+    $objMdLitProcessoSituacaoDTO->setNumIdMdLitTipoControle($idTipoControle);
+    $objMdLitProcessoSituacaoDTO->retNumIdMdLitProcessoSituacao();
+    $objMdLitProcessoSituacaoDTO->retStrSinIntimacaoSit();
+    $objMdLitProcessoSituacaoDTO->setDblIdProcedimento($idProcedimento);
+
+    $objMdLitProcessoSituacaoDTO->setOrdNumIdMdLitProcessoSituacao(InfraDTO::$TIPO_ORDENACAO_DESC);
+    $objMdLitProcessoSituacaoDTO->setNumMaxRegistrosRetorno(1);
+    $objMdLitProcessoSituacaoDTO = $this->consultar($objMdLitProcessoSituacaoDTO);
+
+    if($objMdLitProcessoSituacaoDTO){
+        $isSituacaoIntimacao = $objMdLitProcessoSituacaoDTO->getStrSinIntimacaoSit() == 'S' ? true : false;
+    }
+
+    return $isSituacaoIntimacao;
+  }
+
+
+
   private function _addDiferenteSinLivre(&$objMdLitSitProcessoDTO){
     $campos   = array('SinInstauracaoSit', 'SinIntimacaoSit', 'SinDecisoriaSit', 'SinDefesaSit', 'SinRecursalSit', 'SinConclusivaSit', 'SinObrigatoria', 'SinAlegacoes');
     $oper     = array(InfraDTO::$OPER_IGUAL,InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL);
@@ -1906,6 +1928,22 @@ class MdLitProcessoSituacaoRN extends InfraRN
             }
         }
         return $retorno;
+    }
+
+    public function getDadosPrimeiraSituacaoCadastrada($idProcedimento){
+        $objMdLitSitProcessoDTO = new MdLitProcessoSituacaoDTO();
+        $objMdLitSitProcessoDTO->retNumIdMdLitSituacao();
+        $objMdLitSitProcessoDTO->retNumIdUnidade();
+        $objMdLitSitProcessoDTO->retNumOrdemParametrizarSit();
+        $objMdLitSitProcessoDTO->retStrNomeSituacao();
+        $objMdLitSitProcessoDTO->retDblIdProcedimento();
+        $objMdLitSitProcessoDTO->retDtaData();
+        $objMdLitSitProcessoDTO->retStrSiglaUnidade();
+        $objMdLitSitProcessoDTO->setDblIdProcedimento($idProcedimento);
+        $objMdLitSitProcessoDTO->setOrdDthInclusao(InfraDTO::$TIPO_ORDENACAO_ASC);
+        $objMdLitSitProcessoDTO->setNumMaxRegistrosRetorno('1');
+
+        return $this->consultar($objMdLitSitProcessoDTO);
     }
 }
 ?>

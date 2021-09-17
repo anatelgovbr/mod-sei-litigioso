@@ -23,6 +23,7 @@ try {
     $idProcedimento  = array_key_exists('id_procedimento', $_GET)? $_GET['id_procedimento'] : $_POST['hdnIdProcedimento'];
     $idTpControle    = array_key_exists('id_tipo_controle', $_GET) ? $_GET['id_tipo_controle'] : $_POST['hdnIdTipoControle'];
 
+    $strLinkAjaxCalcularDataDecurso = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_calcular_data_decurso_prazo_recurso&acao_origem=' . $_GET['acao']);
     //Var para controlar se o acesso foi feito pelo processo ou pelos documentos -- No processo não permite edição.
     // 0 - false / 1 - true
     $openProcesso    = is_null($idDocumento) ? '1' : '0';

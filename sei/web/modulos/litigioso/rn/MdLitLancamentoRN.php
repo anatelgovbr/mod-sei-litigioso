@@ -437,7 +437,7 @@ class MdLitLancamentoRN extends InfraRN {
      * @return MdLitLancamentoDTO retorna o objeto se for o lançamento de um novo crédito ao contrario não há retorno
      */
     public function prepararLancamento($post){
-
+      
         if(!empty($post['hdnTbVincularLancamento'])){
             //vincular Lancamento do lado do SEI tem que salvar na tabela md_lit_lancamento
             $arrTbVincularLancamento = current(PaginaSEI::getInstance()->getArrItensTabelaDinamica($post['hdnTbVincularLancamento']));
@@ -445,10 +445,13 @@ class MdLitLancamentoRN extends InfraRN {
             $arrTbVincularLancamento['selNumeroInteressado'] = $post['selNumeroInteressado'];
             $arrTbVincularLancamento['hdnIdProcedimento'] = $post['hdnIdProcedimento'];
             $arrTbVincularLancamento['txtDtIntimacaoAplMulta'] = $post['txtDtIntimacaoAplMulta'];
+            $arrTbVincularLancamento['txtDtDecursoPrazoRecurso'] = $post['txtDtDecursoPrazoRecurso'];
+            $arrTbVincularLancamento['txtDtDecursoPrazo'] = $post['txtDtDecursoPrazo'];
             $arrTbVincularLancamento['hdnDtDecursoPrazo'] = $post['hdnDtDecursoPrazo'];
             $objMdLitLancamentoDTO = $this->vincularLancamento($arrTbVincularLancamento);
             return $objMdLitLancamentoDTO;
         }
+        
         switch ($post['hdnIdMdLitFuncionalidade']) {
             case MdLitIntegracaoRN::$ARRECADACAO_LANCAMENTO_CREDITO:
                 $objMdLitLancamento = $this->_realizarLancamentoCredito($post);
@@ -481,8 +484,9 @@ class MdLitLancamentoRN extends InfraRN {
                 break;
         }
 
-        if($post['hdnIdMdLitFuncionalidade'] == '' && isset($post['txtDtIntimacaoAplMulta']) && !empty($post['txtDtIntimacaoAplMulta'])){
-            $this->alterarData($post['selCreditosProcesso'], $post['txtDtIntimacaoAplMulta']);
+        if($post['hdnIdMdLitFuncionalidade'] == ''){
+          
+            $this->alterarData($post['selCreditosProcesso'], $post['txtDtIntimacaoAplMulta'], $post['txtDtDecursoPrazoRecurso']);
 
             //se houver alteração da Data da Intimação da Decisão de Aplicação da Multa e NÃO seja a situacao de intimação posterior a decisao
             if(!$post['hdnIntimacaoPosDecisao'] && isset($post['hdnDtaIntimacaoDecisaoMulta'])){
@@ -530,7 +534,7 @@ class MdLitLancamentoRN extends InfraRN {
                 if(isset($post['hdnDtaIntimacaoDecisaoMulta'][$lancamento->get('IdMdLitLancamento')])){
                     $this->alterarData($lancamento->get('IdMdLitLancamento'), $post['hdnDtaIntimacaoDecisaoMulta'][$lancamento->get('IdMdLitLancamento')]);
                 } else {
-                    //se a data nao foi informada para algum lancamento isere a data da intimação logo apos a decisao
+                    //se a data nao foi informada para algum lancamento isere a data da intimação logo apos a decisao 
                     $this->alterarData($lancamento->get('IdMdLitLancamento'), $post['hdnIntimacaoPosDecisao']);
                 }
             }
@@ -538,7 +542,8 @@ class MdLitLancamentoRN extends InfraRN {
     }
 
 
-    private function alterarData($idMdLitLancamento, $dtIntimacaoAplMulta){
+    private function alterarData($idMdLitLancamento, $dtIntimacaoAplMulta, $dtDtDecursoPrazoRecurso = null){
+        $bolSalvarLancamento = false;
         $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
         $objMdLitLancamentoDTO->retTodos(false);
 
@@ -547,9 +552,21 @@ class MdLitLancamentoRN extends InfraRN {
         $objMdLitLancamentoRN = new MdLitLancamentoRN();
         $objMdLitLancamentoDTO = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
 
-        if($objMdLitLancamentoDTO && $objMdLitLancamentoDTO->getDtaIntimacao() != $dtIntimacaoAplMulta){
+        if($objMdLitLancamentoDTO) {
+        
+          if($objMdLitLancamentoDTO->getDtaIntimacao() != $dtIntimacaoAplMulta){
             $objMdLitLancamentoDTO->setDtaIntimacao($dtIntimacaoAplMulta);
+            $bolSalvarLancamento = true;
+          }
+
+          if($objMdLitLancamentoDTO->getDtaDecursoPrazoRecurso() != $dtDtDecursoPrazoRecurso){
+            $objMdLitLancamentoDTO->setDtaDecursoPrazoRecurso($dtDtDecursoPrazoRecurso);
+            $bolSalvarLancamento = true;
+          }
+
+          if($bolSalvarLancamento){
             $this->alterar($objMdLitLancamentoDTO);
+          }
         }
 
     }
@@ -637,8 +654,10 @@ class MdLitLancamentoRN extends InfraRN {
         $objMdLitLancamentoDTO->setDthInclusao(InfraData::getStrDataHoraAtual());
         $objMdLitLancamentoDTO->setStrTipoLancamento(count($arrObjMdLitLancamentoDTO) > 0? self::$TIPO_LANCAMENTO_MAJORADO:self::$TIPO_LANCAMENTO_PRINCIPAL);
         $objMdLitLancamentoDTO->setDtaIntimacao($arrTbVincularLancamento['txtDtIntimacaoAplMulta']);
+        $objMdLitLancamentoDTO->setDtaDecursoPrazoRecurso($arrTbVincularLancamento['txtDtDecursoPrazoRecurso']);
+        $objMdLitLancamentoDTO->setDtaPrazoDefesa($arrTbVincularLancamento['txtDtDecursoPrazo']);
         $objMdLitLancamentoDTO->setStrSinRenunciaRecorrer('N');
-        $objMdLitLancamentoDTO->setDtaPrazoDefesa($arrTbVincularLancamento['hdnDtDecursoPrazo']);
+        //$objMdLitLancamentoDTO->setDtaPrazoDefesa($arrTbVincularLancamento['hdnDtDecursoPrazo']);
         $objMdLitLancamentoDTO->setStrSinSuspenso('N');
 
 
@@ -670,6 +689,7 @@ class MdLitLancamentoRN extends InfraRN {
 
         if($arrResultado) {
             $this->montarParametroSaidaRetificarCredito($objMdLitLancamentoDTO, $arrResultado, $post['hdnIdMdLitFuncionalidade']);
+            $objMdLitLancamentoDTO->setDtaDecursoPrazoRecurso($post['txtDtDecursoPrazoRecurso']);
             $objMdLitLancamentoRN->alterar($objMdLitLancamentoDTO);
 
 
@@ -707,10 +727,11 @@ class MdLitLancamentoRN extends InfraRN {
         $objMdLitLancamentoNovo->setStrTipoLancamento(count($arrObjMdLitLancamentoDTO) > 0? self::$TIPO_LANCAMENTO_MAJORADO:self::$TIPO_LANCAMENTO_PRINCIPAL);
         $objMdLitLancamentoNovo->setDtaDecisao($post['txtDecisaoAplicacaoMulta'] ? $post['txtDecisaoAplicacaoMulta'] : InfraData::getStrDataAtual());
         $objMdLitLancamentoNovo->setDtaIntimacao($post['txtDtIntimacaoAplMulta']);
+        $objMdLitLancamentoNovo->setDtaDecursoPrazoRecurso($post['txtDtDecursoPrazoRecurso']);
         $objMdLitLancamentoNovo->setDtaPrazoDefesa($post['txtDtDecursoPrazo']);
         $objMdLitLancamentoNovo->setStrSinRenunciaRecorrer('N');
         $objMdLitLancamentoNovo->setStrSinConstituicaoDefinitiva('N');
-        $objMdLitLancamentoNovo->setDtaPrazoDefesa($post['hdnDtDecursoPrazo']);
+        //$objMdLitLancamentoNovo->setDtaPrazoDefesa($post['hdnDtDecursoPrazo']);
         $objMdLitLancamentoNovo->setDblVlrSaldoDevedor($objMdLitLancamentoNovo->getDblVlrLancamento());
         $objMdLitLancamentoNovo->setStrSinSuspenso('N');
         $objMdLitLancamentoNovo->setDblVlrPago(0);
@@ -936,10 +957,20 @@ class MdLitLancamentoRN extends InfraRN {
 
         }
 
+        //a Data do Decurso do Prazo para Defesa nao será enviado para o web-service de arrecadação é o preenchimento não e obrigatório
+        $dtDecursoPrazo = trim($post['txtDtDecursoPrazo']);
+        if($dtDecursoPrazo)
+            $objMdLitLancamentoDTO->setDtaPrazoDefesa($dtDecursoPrazo);
+
         //a Data da Intimação da Decisão de Aplicação da Multa nao será enviado para o web-service de arrecadação é o preenchimento não e obrigatório
         $dtIntimacaoAplMulta = trim($post['txtDtIntimacaoAplMulta']);
         if($dtIntimacaoAplMulta)
             $objMdLitLancamentoDTO->setDtaIntimacao($dtIntimacaoAplMulta);
+
+        //a Data da Decurso do prazo de recurso nao será enviado para o web-service de arrecadação é o preenchimento não e obrigatório
+        $dtDecursoPrazoRecurso = trim($post['txtDtDecursoPrazoRecurso']);
+        if($dtDecursoPrazoRecurso)
+            $objMdLitLancamentoDTO->setDtaDecursoPrazoRecurso($dtDecursoPrazoRecurso);
 
         return $montarParametroEntrada;
     }

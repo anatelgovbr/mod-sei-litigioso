@@ -63,6 +63,8 @@ class MdLitLancamentoINT extends InfraINT {
       $corSituacao                  = 'black';
       //Url Modal Histórico de Lançamento
       $strLinkModalHistLanc              = InfraString::formatarXML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_historic_lancamento_listar&id_procedimento='.$idProcedimento.'&id_lancamento='.$idmdLitLancamento));
+      $valorTotaMulta = 0;
+      $sinExibeCancelamento = 'N';
 
 
       $objMdLitLancamentoRN = new MdLitLancamentoRN();
@@ -79,13 +81,17 @@ class MdLitLancamentoINT extends InfraINT {
                   $objMdLitDecisaoRN = new MdLitDecisaoRN();
                   $objMdLitDecisaoDTO->setNumIdMdLitDecisao($decisao[0]);
                   $objMdLitDecisaoDTO->retNumIdMdLitEspecieDecisao();
+                  $objMdLitDecisaoDTO->retDblMulta();
                   $objMdLitDecisaoDTO = $objMdLitDecisaoRN->consultar($objMdLitDecisaoDTO);
 
                   if(count($objMdLitDecisaoDTO)){
                       if( $objMdLitDecisaoDTO->getNumIdMdLitEspecieDecisao() != $decisao[3] && $decisao[4] != '')
                           $isNovoLancamento = 'S';
                   }
+
               }
+
+              $valorTotalMulta += $valorMulta;
 
           }
           $multaAplicada = $creditoNaoLancado;
@@ -127,6 +133,7 @@ class MdLitLancamentoINT extends InfraINT {
           //datas
           $dtDecisaoAplicacaoMulta          = $objMdLitLancamentoDTO->getDtaDecisao();
           $dtIntimacaoDecisaoAplicacaoMulta = $objMdLitLancamentoDTO->getDtaIntimacao();
+          $dtDecursoPrazoRecurso = $objMdLitLancamentoDTO->getDtaDecursoPrazoRecurso();
           $dtVencimento                     = $objMdLitLancamentoDTO->getDtaVencimento();
           $dtConstituicao                   = $objMdLitLancamentoDTO->getDtaConstituicaoDefinitiva();
           $dtIntimacaoConstituicao          = $objMdLitLancamentoDTO->getDtaIntimacaoDefinitiva();
@@ -168,6 +175,12 @@ class MdLitLancamentoINT extends InfraINT {
 
       }
 
+      $sinExisteMajoracao = ($creditoNaoLancado > 0) ? 'S' : 'N';
+
+      if($creditoNaoLancado < 0 && ($creditoLancado + $creditoNaoLancado) <= 0 ){
+          $sinExibeCancelamento = 'S';
+      }
+
       $xml .= "<dados>\n";
       $xml .= "<isCancelar>".$isCancelar ."</isCancelar>\n";
       $xml .= "<multaAplicada>".InfraUtil::formatarDin($multaAplicada)."</multaAplicada>\n";
@@ -181,6 +194,7 @@ class MdLitLancamentoINT extends InfraINT {
       //datas
       $xml .= "<dtDecisaoAplicacaoMulta>".$dtDecisaoAplicacaoMulta."</dtDecisaoAplicacaoMulta>\n";
       $xml .= "<dtIntimacaoDecisaoAplicacaoMulta>".$dtIntimacaoDecisaoAplicacaoMulta."</dtIntimacaoDecisaoAplicacaoMulta>\n";
+      $xml .= "<dtDecursoPrazoRecurso>".$dtDecursoPrazoRecurso."</dtDecursoPrazoRecurso>\n";
       $xml .= "<dtVencimento>".$dtVencimento."</dtVencimento>\n";
       $xml .= "<dtConstituicao>".$dtConstituicao."</dtConstituicao>\n";
       $xml .= "<dtIntimacaoConstituicao>".$dtIntimacaoConstituicao."</dtIntimacaoConstituicao>\n";
@@ -190,6 +204,10 @@ class MdLitLancamentoINT extends InfraINT {
       $xml .= "<urlHistoricoLancamento>$strLinkModalHistLanc</urlHistoricoLancamento>\n";
       $xml .= "<sinExisteMajorado>$sinExisteMajoracao</sinExisteMajorado>\n";
       $xml .= "<corSituacao>$corSituacao</corSituacao>\n";
+      $xml .= "<totalCreditoLancado>".InfraUtil::formatarDin($totalCreditoLancado)."</totalCreditoLancado>\n";
+      $xml .= "<valorTotalMulta>".InfraUtil::formatarDin($valorTotalMulta)."</valorTotalMulta>\n";
+      $xml .= "<sinExibeCancelamento>$sinExibeCancelamento</sinExibeCancelamento>\n";
+      $xml .= "<sinExisteMajoracao>$sinExisteMajoracao</sinExisteMajoracao>\n";
       $xml .= "</dados>";
 
       return $xml;

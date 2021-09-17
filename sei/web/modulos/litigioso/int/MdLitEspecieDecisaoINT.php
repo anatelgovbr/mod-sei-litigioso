@@ -83,7 +83,7 @@
             $xml .= '<SinIndicacaoPrazo>'.$objMdLitEspecieDecisaoDTO->getStrSinIndicacaoPrazo()."</SinIndicacaoPrazo>\n";
             $xml .= '<SinIndicacaoObrigacoes>'.$objMdLitEspecieDecisaoDTO->getStrSinIndicacaoObrigacoes()."</SinIndicacaoObrigacoes>\n";
             $xml .= '<SinAtivo>'.$objMdLitEspecieDecisaoDTO->getStrSinIndicacaoObrigacoes()."</SinAtivo>\n";
-            $xml .= '<SinIndicacaoRessarcimentoValor>'.$objMdLitEspecieDecisaoDTO->getStrSinIndicacaoRessarcimentoValor()."</SinIndicacaoRessarcimentoValor>\n";
+            $xml .= '<SinIndicacaoValor>'.$objMdLitEspecieDecisaoDTO->getStrSinIndicacaoValor()."</SinIndicacaoValor>\n";
 
             if($objMdLitEspecieDecisaoDTO->getStrSinIndicacaoObrigacoes() == 'S'){
                 $objMdLitRelEspecieDecisaoObrigacaoDTO = new MdLitRelEspecieDecisaoObrigacaoDTO();

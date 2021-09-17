@@ -600,11 +600,11 @@
            document.getElementById('tbSituacao').rows[row].cells[15].innerHTML = '<div style="text-align:center;">' + nomeUsuario + '</div>';
            document.getElementById('tbSituacao').rows[row].cells[16].innerHTML = '<div style="text-align:center;">' + document.getElementById('hdnNomeUnidade').value + '</div>';
 
-            if(!isTpSitDecisoria && document.getElementById('hdnErroSituacao').value == 0){
-                if(document.getElementById('fieldsetMulta') != null){
+            if(document.getElementById('fieldsetMulta') != null){
+                if(!isTpSitDecisoria && document.getElementById('hdnErroSituacao').value == 0){
                     document.getElementById('btnCancelarLancamento').style.display = 'none';
-                    consultarExtratoMulta();
                 }
+                consultarExtratoMulta();
             }
 
             //Botão apresentado apenas se a última situação cadastrada for do tipo Recursal(suspender recurso no fieldset multa).

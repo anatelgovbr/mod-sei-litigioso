@@ -29,6 +29,8 @@ class MdLitLancamentoDTO extends InfraDTO {
 
     $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_DTA, 'Intimacao', 'dta_intimacao');
 
+    $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_DTA, 'DecursoPrazoRecurso', 'dta_decurso_prazo_recurso');
+
     $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_DTA, 'Vencimento', 'dta_vencimento');
 
     $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_DTA, 'PrazoDefesa', 'dta_prazo_defesa');

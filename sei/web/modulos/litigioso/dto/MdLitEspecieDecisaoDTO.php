@@ -50,8 +50,8 @@
                                            'sta_tipo_indicacao_multa');
 
             $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
-                                           'SinIndicacaoRessarcimentoValor',
-                                           'sin_ressarcimento_valor');
+                                           'SinIndicacaoValor',
+                                           'sin_valor');
 
 
             $this->configurarPK('IdEspecieLitigioso', InfraDTO::$TIPO_PK_NATIVA);

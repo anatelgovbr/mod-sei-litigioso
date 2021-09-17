@@ -137,6 +137,7 @@
         PaginaSEI::getInstance()->prepararPaginacao($objTipoDecisaoLitigiosoDTO, 200);
 
         $objTipoDecisaoLitigiosoRN     = new MdLitTipoDecisaoRN();
+        $objTipoDecisaoLitigiosoDTO->setBolExclusaoLogica(false);
         $arrObjTipoDecisaoLitigiosoDTO = $objTipoDecisaoLitigiosoRN->listar($objTipoDecisaoLitigiosoDTO);
 
         PaginaSEI::getInstance()->processarPaginacao($objTipoDecisaoLitigiosoDTO);

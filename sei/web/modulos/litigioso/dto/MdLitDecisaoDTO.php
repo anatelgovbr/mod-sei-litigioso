@@ -54,7 +54,7 @@ class MdLitDecisaoDTO extends InfraDTO {
 
       $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinUltimaDecisao', 'sin_ultima_decisao');
 
-      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_DBL, 'ValorRessarcimento', 'valor_ressarcimento');
+      $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_DBL, 'Valor', 'valor');
 
       $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_DBL, 'ValorMultaSemIntegracao', 'valor_multa_sem_integracao');
 

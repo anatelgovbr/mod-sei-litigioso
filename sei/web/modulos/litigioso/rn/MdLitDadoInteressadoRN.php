@@ -102,8 +102,10 @@ class MdLitDadoInteressadoRN extends InfraRN {
       if ($objMdLitDadoInteressadoDTO->isSetNumIdContato()){
         $this->validarNumIdContato($objMdLitDadoInteressadoDTO, $objInfraException);
       }
-      if ($objMdLitDadoInteressadoDTO->isSetStrSinOutorgado()){
-        $this->validarStrSinOutorgado($objMdLitDadoInteressadoDTO, $objInfraException);
+      if(!isset($_SESSION['ignorarValidacaoOutorgado'])) {
+          if ($objMdLitDadoInteressadoDTO->isSetStrSinOutorgado()) {
+              $this->validarStrSinOutorgado($objMdLitDadoInteressadoDTO, $objInfraException);
+          }
       }
 
       $objInfraException->lancarValidacoes();
@@ -118,42 +120,81 @@ class MdLitDadoInteressadoRN extends InfraRN {
     }
   }
 
-  protected function excluirControlado($arrObjMdLitDadoInteressadoDTO){
-    try {
+    protected function excluirControlado($arrObjMdLitDadoInteressadoDTO){
+        try {
 
-      //Valida Permissao
-      SessaoSEI::getInstance()->validarAuditarPermissao('md_lit_dado_interessado_excluir', __METHOD__, $arrObjMdLitDadoInteressadoDTO);
+            //Valida Permissao
+            SessaoSEI::getInstance()->validarAuditarPermissao('md_lit_dado_interessado_excluir', __METHOD__, $arrObjMdLitDadoInteressadoDTO);
 
-      //Regras de Negocio
+            //Regras de Negocio
 //      $objInfraException = new InfraException();
 //      $objInfraException->lancarValidacoes();
 
-      $objMdLitDadoInteressadoBD = new MdLitDadoInteressadoBD($this->getObjInfraIBanco());
-      $objMdLitNumeroInteressadoRN = new MdLitNumeroInteressadoRN();
-      for($i=0;$i<count($arrObjMdLitDadoInteressadoDTO);$i++){
-          $objMdLitNumeroInteressadoDTO = new MdLitNumeroInteressadoDTO();
-          $objMdLitNumeroInteressadoDTO->retTodos(false);
-          $objMdLitNumeroInteressadoDTO->setNumIdMdLitDadoInteressado($arrObjMdLitDadoInteressadoDTO[$i]->getNumIdMdLitDadoInteressado());
+            $objMdLitDadoInteressadoBD = new MdLitDadoInteressadoBD($this->getObjInfraIBanco());
+            $objMdLitNumeroInteressadoRN = new MdLitNumeroInteressadoRN();
+            for($i=0;$i<count($arrObjMdLitDadoInteressadoDTO);$i++){
+                $objMdLitNumeroInteressadoDTO = new MdLitNumeroInteressadoDTO();
+                $objMdLitNumeroInteressadoDTO->retTodos(false);
+                $objMdLitNumeroInteressadoDTO->setNumIdMdLitDadoInteressado($arrObjMdLitDadoInteressadoDTO[$i]->getNumIdMdLitDadoInteressado());
 
-          $arrObjMdLitNumeroInteressadoDTO = $objMdLitNumeroInteressadoRN->listar($objMdLitNumeroInteressadoDTO);
+                $arrObjMdLitNumeroInteressadoDTO = $objMdLitNumeroInteressadoRN->listar($objMdLitNumeroInteressadoDTO);
 
-          if(count($arrObjMdLitNumeroInteressadoDTO)){
-              foreach($arrObjMdLitNumeroInteressadoDTO as $itemObjMdLitNumeroInteressadoDTO){
-                  $objMdLitDadoInteressadoBD->excluir($itemObjMdLitNumeroInteressadoDTO);
-              }
-          }else {
-              $objMdLitDadoInteressadoBD->excluir($arrObjMdLitDadoInteressadoDTO[$i]);
-          }
-      }
+                if(count($arrObjMdLitNumeroInteressadoDTO)){
+                    foreach($arrObjMdLitNumeroInteressadoDTO as $itemObjMdLitNumeroInteressadoDTO){
 
-      //Auditoria
+                        //Excluir servios relacionados ao numero interessado
+                        $objMdLitRelNumInterServicoDTO = new MdLitRelNumInterServicoDTO();
+                        $objMdLitRelNumInterServicoDTO->retTodos();
+                        $objMdLitRelNumInterServicoDTO->setNumIdMdLitNumeroInteressado($itemObjMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado());
+                        $objMdLitRelNumInterServicoRN = new MdLitRelNumInterServicoRN();
+                        $arrObjMdLitRelNumInterServicoRN = $objMdLitRelNumInterServicoRN->listar($objMdLitRelNumInterServicoDTO);
+                        $countArrObjMdLitRelNumInterServicoRN = is_array($arrObjMdLitRelNumInterServicoRN) ? count($arrObjMdLitRelNumInterServicoRN) : 0;
+                        if($countArrObjMdLitRelNumInterServicoRN > 0){
+                            $objMdLitRelNumInterServicoRN->excluir($arrObjMdLitRelNumInterServicoRN);
+                        }
 
-    }catch(Exception $e){
-      throw new InfraException('Erro excluindo dado complementar do interessado.',$e);
+                        //Excluir modalidades relacionadas ao numero interessado
+                        $objMdLitRelNumInterModaliDTO = new MdLitRelNumInterModaliDTO();
+                        $objMdLitRelNumInterModaliDTO->retTodos();
+                        $objMdLitRelNumInterModaliDTO->setNumIdMdLitNumeroInteressado($itemObjMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado());
+                        $objMdLitRelNumInterModaliRN = new MdLitRelNumInterModaliRN();
+                        $arrObjMdLitRelNumInterModaliRN = $objMdLitRelNumInterModaliRN->listar($objMdLitRelNumInterModaliDTO);
+                        $countArrObjMdLitRelNumInterModaliRN = is_array($arrObjMdLitRelNumInterModaliRN) ? count($arrObjMdLitRelNumInterModaliRN) : 0;
+                        if($countArrObjMdLitRelNumInterModaliRN > 0){
+                            $objMdLitRelNumInterModaliRN->excluir($arrObjMdLitRelNumInterModaliRN);
+                        }
+
+                        //Excluir tipo de outorga relacionadas ao numero interessado
+                        $objMdLitRelNumInterTpOutorDTO = new MdLitRelNumInterTpOutorDTO();
+                        $objMdLitRelNumInterTpOutorDTO->retTodos();
+                        $objMdLitRelNumInterTpOutorDTO->setNumIdMdLitNumeroInteressado($itemObjMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado());
+                        $objMdLitRelNumInterTpOutorRN = new MdLitRelNumInterTpOutorRN();
+                        $arrObjMdLitRelNumInterTpOutorRN = $objMdLitRelNumInterTpOutorRN->listar($objMdLitRelNumInterTpOutorDTO);
+                        $countArrObjMdLitRelNumInterTpOutorRN = is_array($arrObjMdLitRelNumInterTpOutorRN) ? count($arrObjMdLitRelNumInterTpOutorRN) : 0;
+                        if($countArrObjMdLitRelNumInterTpOutorRN > 0){
+                            $objMdLitRelNumInterTpOutorRN->excluir($arrObjMdLitRelNumInterTpOutorRN);
+                        }
+
+                        //Excluir Numero Interessado
+                        $objMdLitDadoInteressadoBD->excluir($itemObjMdLitNumeroInteressadoDTO);
+
+                        //Excluir Dado Interessado
+                        $objMdLitDadoInteressadoBD->excluir($arrObjMdLitDadoInteressadoDTO[$i]);
+                    }
+                }else {
+                    $objMdLitDadoInteressadoBD->excluir($arrObjMdLitDadoInteressadoDTO[$i]);
+                }
+            }
+
+            //Auditoria
+
+        }catch(Exception $e){
+            throw new InfraException('Erro excluindo dado complementar do interessado.',$e);
+        }
     }
-  }
 
-  private function excluirRel($idMdLitDadoInteressado, $objDTO, $objRN){
+
+    private function excluirRel($idMdLitDadoInteressado, $objDTO, $objRN){
       $objDTO->retTodos(false);
       $objDTO->setNumIdMdLitDadoInteressado($idMdLitDadoInteressado);
 
@@ -247,11 +288,7 @@ class MdLitDadoInteressadoRN extends InfraRN {
                 if(!$objMdLitDadoInteressadoDTOConsulta){
                     $objMdLitDadoInteressadoBD->cadastrar($objMdLitDadoInteressadoDTO);
                 }
-
-
             }
-
-            $arrObjmdLitDadoInteressadoDTO;
         } catch (Exception $e) {
             throw new InfraException('Erro cadastrar dados complementares dos interessados.', $e);
         }
@@ -264,7 +301,8 @@ class MdLitDadoInteressadoRN extends InfraRN {
         $arrIdProcedimento = InfraArray::converterArrInfraDTO($arrObjMdLitDadoInteressadoDTO, 'IdProcedimentoMdLitTipoControle');
         $arrIdContato = InfraArray::converterArrInfraDTO($arrObjMdLitDadoInteressadoDTO, 'IdContato');
         $arrIdMdLitControle = InfraArray::converterArrInfraDTO($arrObjMdLitDadoInteressadoDTO, 'IdMdLitControle');
-        $idMdLitDadoInteressado = $arrObjMdLitDadoInteressadoDTO[0]->get('IdMdLitDadoInteressado');
+        $arrIdMdLitDadoInteressado = InfraArray::converterArrInfraDTO($arrObjMdLitDadoInteressadoDTO, 'IdMdLitDadoInteressado');
+//        $idMdLitDadoInteressado = $arrObjMdLitDadoInteressadoDTO[0]->get('IdMdLitDadoInteressado');
 
         //excluindo o número interessado do processo
         $mdLitNumeroInteressadoRN = new MdLitNumeroInteressadoRN();
@@ -274,38 +312,36 @@ class MdLitDadoInteressadoRN extends InfraRN {
         $mdLitNumeroInteressadoDTO = $mdLitNumeroInteressadoRN->listar($mdLitNumeroInteressadoDTO);
         $mdLitNumeroInteressadoRN->excluir($mdLitNumeroInteressadoDTO);
 
-        //excluindo o participante do processo
-        $objParticipanteDTO = new ParticipanteDTO();
-        $objParticipanteDTO->retNumIdParticipante();
-        $objParticipanteDTO->retNumIdContato();
-        $objParticipanteDTO->setDblIdProtocolo($arrIdProcedimento,InfraDTO::$OPER_IN);
-        $objParticipanteDTO->setNumIdContato($arrIdContato, InfraDTO::$OPER_NOT_IN);
-        $objParticipanteDTO->setStrStaParticipacao(array(ParticipanteRN::$TP_INTERESSADO), InfraDTO::$OPER_IN);
-
-        $objParticipanteRN     = new ParticipanteRN();
-        $arrObjParticipanteDTO = $objParticipanteRN->listarRN0189($objParticipanteDTO);
-
-        $arrIdContato = InfraArray::converterArrInfraDTO($arrObjParticipanteDTO, 'IdContato');
-
-        $objMdLitControleRN = new MdLitControleRN();
-        $arrInteressado = $objMdLitControleRN->listarInteressadoProcesso(array('arrIdContato' => $arrIdContato, 'arrIdProcedimento'=>$arrIdProcedimento[0]));
-
-        if(count($arrInteressado) && count($arrObjParticipanteDTO) ){
-            $arrInteressado = InfraArray::converterArrInfraDTO($arrInteressado, 'IdContato');
-            $ret = array();
-            foreach($arrObjParticipanteDTO as $objParticipanteDTO){
-                if(in_array($objParticipanteDTO->get('IdContato'), $arrInteressado)) {
-                    $ret[] = $objParticipanteDTO;
-                }
-            }
-            $objParticipanteRN->excluirRN0223($ret);
-        }
+//        //excluindo o participante do processo
+//        $objParticipanteDTO = new ParticipanteDTO();
+//        $objParticipanteDTO->retNumIdParticipante();
+//        $objParticipanteDTO->retNumIdContato();
+//        $objParticipanteDTO->setDblIdProtocolo($arrIdProcedimento,InfraDTO::$OPER_IN);
+//        $objParticipanteDTO->setNumIdContato($arrIdContato, InfraDTO::$OPER_NOT_IN);
+//        $objParticipanteDTO->setStrStaParticipacao(array(ParticipanteRN::$TP_INTERESSADO), InfraDTO::$OPER_IN);
+//
+//        $objParticipanteRN     = new ParticipanteRN();
+//        $arrObjParticipanteDTO = $objParticipanteRN->listarRN0189($objParticipanteDTO);
+//
+//        $arrIdContato = InfraArray::converterArrInfraDTO($arrObjParticipanteDTO, 'IdContato');
+//
+//        $objMdLitControleRN = new MdLitControleRN();
+//        $arrInteressado = $objMdLitControleRN->listarInteressadoProcesso(array('arrIdContato' => $arrIdContato, 'arrIdProcedimento'=>$arrIdProcedimento[0]));
+//
+//        if(count($arrInteressado) && count($arrObjParticipanteDTO) ){
+//            $arrInteressado = InfraArray::converterArrInfraDTO($arrInteressado, 'IdContato');
+//            $ret = array();
+//            foreach($arrObjParticipanteDTO as $objParticipanteDTO){
+//                if(in_array($objParticipanteDTO->get('IdContato'), $arrInteressado)) {
+//                    $ret[] = $objParticipanteDTO;
+//                }
+//            }
+//            $objParticipanteRN->excluirRN0223($ret);
+//        }
         $arrIdContato = InfraArray::converterArrInfraDTO($arrObjMdLitDadoInteressadoDTO, 'IdContato');
         $objMdLitDadoInteressadoDTO = new MdLitDadoInteressadoDTO();
         $objMdLitDadoInteressadoDTO->retTodos(false);
-        if(!$boolRemoverTodosInteressados){
-            $objMdLitDadoInteressadoDTO->setNumIdContato($arrIdContato, InfraDTO::$OPER_NOT_IN);
-        }
+        $objMdLitDadoInteressadoDTO->setNumIdMdLitDadoInteressado($arrIdMdLitDadoInteressado, InfraDTO::$OPER_IN);
         $objMdLitDadoInteressadoDTO->setNumIdMdLitControle($arrIdMdLitControle,InfraDTO::$OPER_IN);
 
         $arrObjMdLitDadoInteressadoDTOConsulta = $this->listar($objMdLitDadoInteressadoDTO);

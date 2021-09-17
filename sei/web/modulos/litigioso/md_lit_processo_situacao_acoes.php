@@ -183,6 +183,7 @@ switch($_GET['acao']) {
         $isAlterarSituacao = SessaoSEI::getInstance()->verificarPermissao('md_lit_processo_situacao_alterar');
 
         $isIntInstauracao = $objMdLitProcessoSituacaoRN->getIsInstauracaoIntimacaoPorTipoControle(array($idTpControle, $idProcedimento));
+        $isSituacaoIntimacao = $objMdLitProcessoSituacaoRN->verificaIsSituacaoIntimacao( $idProcedimento, $idTpControle );
 
         $strComboCreditoProcesso = MdLitLancamentoINT::montarSelectCreditosProcesso($idProcedimento);
 
