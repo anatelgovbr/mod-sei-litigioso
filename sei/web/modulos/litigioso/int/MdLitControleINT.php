@@ -162,7 +162,7 @@ class MdLitControleINT extends InfraINT
         // NUMERO SEI - EXISTE
         if (count($objDocumentoDTO) > 0) {
 
-            // SITUAO - SOMENTE UMA INSTAURAO
+            // SITUA플O - SOMENTE UMA INSTAURA플O
             $objSituacaoLitigiosoDTO = new MdLitSituacaoDTO();
             $objSituacaoLitigiosoDTO->setNumIdTipoControleLitigioso($idTipoControleLitigioso);
             $objSituacaoLitigiosoDTO->setStrSinInstauracao('S');
@@ -170,7 +170,7 @@ class MdLitControleINT extends InfraINT
             $objSituacaoLitigiosoRN  = new MdLitSituacaoRN();
             $objSituacaoLitigiosoDTO = $objSituacaoLitigiosoRN->consultar($objSituacaoLitigiosoDTO);
 
-            // SITUAO - SOMENTE UMA INSTAURAO - EXISTE
+            // SITUA플O - SOMENTE UMA INSTAURA플O - EXISTE
             if (count($objSituacaoLitigiosoDTO) > 0) {
                 $xml .= "<StrSinInstauracao>S</StrSinInstauracao>\n";
                 //$xml .= "<SinDataIntimacao>" . $objSituacaoLitigiosoDTO->getStrSinDataIntimacao() . "</SinDataIntimacao>\n";
@@ -183,7 +183,7 @@ class MdLitControleINT extends InfraINT
                 $objRelSituacaoLitigiosoSerieRN  = new MdLitRelSituacaoSerieRN();
                 $objRelSituacaoLitigiosoSerieDTO = $objRelSituacaoLitigiosoSerieRN->consultar($objSituacaoLitigiosoSerieDTO);
 
-                // RELAO SITUAO X TIPO DOCUMENTO - EXISTE
+                // RELA플O SITUA플O X TIPO DOCUMENTO - EXISTE
                 if (count($objRelSituacaoLitigiosoSerieDTO) > 0) {
                     // s retorna campos situao se estiver presente no tipo documento
                     $xml .= "<IdSerie>" . $objRelSituacaoLitigiosoSerieDTO->getNumIdSerie() . "</IdSerie>\n";
