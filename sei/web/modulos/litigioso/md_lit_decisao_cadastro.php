@@ -167,7 +167,7 @@ if($numRegistros > 0){
         $strTbCadastroDecisao .= "<input type='hidden' name='decisao[idDispositivoNormativo_{$idLinha}][data]'>";
         $strTbCadastroDecisao .= "<input type='hidden' name='decisao[idDispositivoNormativo_{$idLinha}][nome_usuario]'>";
         $strTbCadastroDecisao .= "<input type='hidden' name='decisao[idDispositivoNormativo_{$idLinha}][sigla_unidade]'>";
-        $strTbCadastroDecisao .= "<input type='hidden' name='decisao[idDispositivoNormativo_{$idLinha}][sin_cadastro_parcial]' value='S' >";
+        $strTbCadastroDecisao .= "<input type='hidden' id='decisao_idDispositivoNormativo_{$idLinha}_sin_cadastro_parcial' name='decisao[idDispositivoNormativo_{$idLinha}][sin_cadastro_parcial]' value='S' >";
         $strTbCadastroDecisao .= "</td>";
 
         $strTbCadastroDecisao .= "</tr> \n";

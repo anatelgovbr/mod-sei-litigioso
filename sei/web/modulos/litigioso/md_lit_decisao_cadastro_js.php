@@ -557,7 +557,7 @@
             '<input type="hidden" name="decisao['+nomeLinha+'][data]">'+
             '<input type="hidden" name="decisao['+nomeLinha+'][nome_usuario]">'+
             '<input type="hidden" name="decisao['+nomeLinha+'][sigla_unidade]">'+
-            '<input type="hidden" name="decisao['+nomeLinha+'][sin_cadastro_parcial]">';
+            '<input type="hidden" id="decisao_'+nomeLinha+'_sin_cadastro_parcial" name="decisao['+nomeLinha+'][sin_cadastro_parcial]">';
 
         showHideCamposDinamicos();
 
@@ -640,8 +640,12 @@
         var numRows=document.getElementById("tableDadosComplementarInteressado").rows.length;
         var table = document.getElementById("tableDadosComplementarInteressado");
         var infracaoParcial=false;
+        var idTr = '';
+        var digito = 0;
+        var rowspan = 0;
         for (var i=1;i<numRows;i++){
 //             verificar se a linha da tabela foi mesclado e se é a primeira opção entra no 1°if.
+            infracaoParcial=false;
             if(table.rows[i].cells.length == 8){
                 infracao            = table.rows[i].cells[0].childNodes[1].textContent;
                 var tipoDecisao     = table.rows[i].cells[2].childNodes[0];
@@ -656,6 +660,7 @@
                 var chkUF           = $(table.rows[i].cells[1]).find('input[type=radio][value="U"]')[0];
                 var selUF           = table.rows[i].cells[1].childNodes[6].childNodes[0];
                 var cadastroParcial = table.rows[i].cells[7].childNodes[6];
+
             }else if(table.rows[i].cells.length == 6){
                 var tipoDecisao     = table.rows[i].cells[0].childNodes[0];
                 var especieDecisao  = table.rows[i].cells[1].childNodes[0];
@@ -693,18 +698,38 @@
                 if((prazo.value == 'null' || prazo.value == '')  && prazo.style.display == ''){
                     infracaoParcial = true;
                 }
+
             }else{
                 infracaoParcial = true;
             }
-            if(infracaoParcial){
-                cadastroParcial.value = 'S';
-            }else{
-                cadastroParcial.value = 'N';
+
+            var posicao = '';
+            if(table.rows[i].id != ''){
+                idTr = table.rows[i].id;
+                digito = 0;
+            }
+            var arrPosicao = idTr.split('_');
+            posicao = arrPosicao[1];
+            rowspan = $('#CadastroDecisaoTable_' + posicao + ' > td#td-infracao' + posicao).prop('rowspan');
+            console.log("Rowspan: " + rowspan);
+            if(rowspan > 1){
+                if(digito == 0){
+                    digito = 2;
+                } else if(digito > 0 && digito <= rowspan){
+                    posicao = posicao + "." + digito;
+                    digito = digito+1;
+                }
+
             }
 
-
+            if(infracaoParcial){
+                cadastroParcial.value = 'S';
+                document.getElementById('decisao_idDispositivoNormativo_' + posicao + '_sin_cadastro_parcial').value = 'S';
+            }else{
+                cadastroParcial.value = 'N';
+                document.getElementById('decisao_idDispositivoNormativo_' + posicao + '_sin_cadastro_parcial').value = 'N';
+            }
         }
-
         return true;
     }
 

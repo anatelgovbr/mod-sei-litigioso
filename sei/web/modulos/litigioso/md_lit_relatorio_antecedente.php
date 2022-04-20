@@ -144,15 +144,15 @@ try {
       
             $objMdLitDadoInteressadoDTO = new MdLitDadoInteressadoDTO();
             $objMdLitDadoInteressadoDTO->retNumIdMdLitDadoInteressado();
-            $objMdLitDadoInteressadoDTO->retDblCnpjContatoParticipante();
-            $objMdLitDadoInteressadoDTO->retDblCpfContatoParticipante();
+            $objMdLitDadoInteressadoDTO->retDblCnpj();
+            $objMdLitDadoInteressadoDTO->retDblCpf();
             $objMdLitDadoInteressadoDTO->setDblControleIdProcedimento($_GET['id_procedimento']);
 
             $objMdLitDadoInteressadoRN = new MdLitDadoInteressadoRN();
             $arrObjMdLitDadoInteressadoDTO = $objMdLitDadoInteressadoRN->listar($objMdLitDadoInteressadoDTO);
 
-            $arrCnpjContato = InfraArray::retirarElementoArray(InfraArray::converterArrInfraDTO($arrObjMdLitDadoInteressadoDTO, 'CnpjContatoParticipante'), null);
-            $arrCpfContato = InfraArray::retirarElementoArray(InfraArray::converterArrInfraDTO($arrObjMdLitDadoInteressadoDTO, 'CpfContatoParticipante'), null);
+            $arrCnpjContato = InfraArray::retirarElementoArray(InfraArray::converterArrInfraDTO($arrObjMdLitDadoInteressadoDTO, 'Cnpj'), null);
+            $arrCpfContato = InfraArray::retirarElementoArray(InfraArray::converterArrInfraDTO($arrObjMdLitDadoInteressadoDTO, 'Cpf'), null);
 
             if(count($arrCpfContato) && count($arrCnpjContato)){
                 $objMdLitDecisaoDTO->adicionarCriterio(array('CpfContato', 'CnpjContato'),array(InfraDTO::$OPER_IN,InfraDTO::$OPER_IN), array($arrCpfContato, $arrCnpjContato), InfraDTO::$OPER_LOGICO_OR);
