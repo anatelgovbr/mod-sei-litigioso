@@ -118,8 +118,11 @@ class MdLitDecisaoRN extends InfraRN {
 
         $ret = array();
         foreach ($arrDecisao['lista'] as $decisao){
-            $decisao[4] = str_replace('.', '',$decisao[4]);
-            $decisao[5] = str_replace('.', '',$decisao[5]);
+
+            // retira a máscara vinda do front e coloca no formato aceito pelo banco
+            $decisao[4] = str_replace(array('.',','), array('','.'),$decisao[4]);
+            $decisao[5] = str_replace(array('.',','), array('','.'),$decisao[5]);
+
             $objMdLitDecisaoDTO = new MdLitDecisaoDTO();
             $objMdLitEspecieDecisaoRN = new MdLitEspecieDecisaoRN();
 

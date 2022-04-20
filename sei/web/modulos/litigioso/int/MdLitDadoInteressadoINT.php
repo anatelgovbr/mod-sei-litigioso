@@ -331,7 +331,7 @@ class MdLitDadoInteressadoINT extends InfraINT {
                             $objMdLitServicoRN = new MdLitServicoRN();
                             $arrObjMdLitServicoDTO = self::buscarDTOUtilWS($objMdLitServicoDTO, $objMdLitServicoRN, array('Codigo', 'Sigla', 'Descricao'), utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]));
                             if (!$arrObjMdLitServicoDTO)
-                                return '<erros><erro descricao="O serviço \'' . ($resultado[$objMdLitParamEntradaDTO->getStrCampo()]) . '\' recuperado pelo web-service não foi cadastrado no SEI"></erro></erros>';
+                                return '<erros><erro descricao="O serviço \'' . utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]) . '\' recuperado pelo web-service não foi cadastrado no SEI"></erro></erros>';
 
                             $arrItensTabela = self::gerarItensTabela($arrObjMdLitServicoDTO , 'IdMdLitServico', 'Descricao');
                             $arrResultadoParametrizado[$key]['id_servico'] = $arrItensTabela['id'];
