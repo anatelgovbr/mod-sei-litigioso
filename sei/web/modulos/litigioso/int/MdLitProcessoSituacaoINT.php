@@ -81,7 +81,7 @@ class MdLitProcessoSituacaoINT extends InfraINT {
                                   inner join md_lit_lancamento l on l.id_procedimento = ps.id_procedimento
                             where ps.id_md_lit_processo_situacao <>  " . (int)$data['id_processo_situacao'] . "
                             and ps.id_procedimento = " . (int)$data['id_procedimento'] . "
-                        );");
+                        )");
 
         $arrIdLancamentos = [];
         $lista = [];
