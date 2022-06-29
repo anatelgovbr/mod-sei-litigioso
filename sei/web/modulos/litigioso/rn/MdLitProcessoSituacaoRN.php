@@ -442,7 +442,7 @@ class MdLitProcessoSituacaoRN extends InfraRN
         $sql = "select distinct d.*
                 from md_lit_processo_situacao ps
                          inner join md_lit_decisao d on d.id_md_lit_processo_situacao = ps.id_md_lit_processo_situacao
-                where ps.id_md_lit_processo_situacao =" . (int)$data['id_processo_situacao'].";";
+                where ps.id_md_lit_processo_situacao =" . (int)$data['id_processo_situacao'];
 
         $instanciaBanco = BancoSEI::getInstance();
         $arr = $instanciaBanco->consultarSql($sql);
@@ -453,7 +453,7 @@ class MdLitProcessoSituacaoRN extends InfraRN
     {
         $sql = "select rdl.*
                     from md_lit_rel_decis_lancament rdl
-                where rdl.id_md_lit_decisao  =" . (int)$data['id_md_lit_decisao'].";";
+                where rdl.id_md_lit_decisao  =" . (int)$data['id_md_lit_decisao'];
 
         $instanciaBanco = BancoSEI::getInstance();
         $arr = $instanciaBanco->consultarSql($sql);
@@ -732,7 +732,7 @@ class MdLitProcessoSituacaoRN extends InfraRN
         $dados['idDocumento']   = $objDocumentoDTO->getDblIdDocumento();
         $dados['urlValidada']   = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=documento_visualizar&id_procedimento=' . $idProcedimento . '&id_documento=' . $objDocumentoDTO->getDblIdDocumento() . '&arvore=1');
         $dados['tituloDoc']     = $this->_retornaTitleDocumento($objDocumentoDTO->getStrNomeSerie(), $objDocumentoDTO->getStrNumero());
-            
+
       }
     }
 
@@ -990,7 +990,7 @@ class MdLitProcessoSituacaoRN extends InfraRN
       $retorno = $this->_formatarRetornoDadosSituacaoAnterior($objMdLitSitProcessoDTO->getNumOrdemParametrizarSit(),$objMdLitSitProcessoDTO->getStrNomeFase().' / '.$objMdLitSitProcessoDTO->getStrNomeSituacao(), $dadosSitAtual, $idTpControle, $idProcedimento, $anteriorIsIntimacao);
       return $retorno;
     }
-    
+
     return array();
   }
 
@@ -1524,7 +1524,7 @@ class MdLitProcessoSituacaoRN extends InfraRN
 
       return $dtRet;
   }
-  
+
 
 
 
@@ -1678,8 +1678,8 @@ class MdLitProcessoSituacaoRN extends InfraRN
         $dataDecursoPrazoDefesa = null;
 
         $objMdLitProcessoSituacaoDTOPrimeiraIntimacao = $this->consultarPrimeiraIntimacao($idProcedimento);
-        
-        
+
+
         if( $objMdLitProcessoSituacaoDTOPrimeiraIntimacao){
             $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
             $objMdLitSituacaoDTO->retTodos(false);
@@ -1745,19 +1745,19 @@ class MdLitProcessoSituacaoRN extends InfraRN
       return null;
     }
   }
-  
+
   protected function existePreCadastroConectado($idProcedimento)
   {
     $objMdLitProcessoSituacaoDTO = $this->_buscarPreCadastroProcSituacaoPorProcedimento($idProcedimento);
-    
+
     if(!is_null($objMdLitProcessoSituacaoDTO))
     {
       return true;
     }
-    
+
     return false;
   }
-  
+
   protected function retornaTipoControleConectado($objProcedimentoAPI)
   {
     $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
@@ -1793,14 +1793,14 @@ class MdLitProcessoSituacaoRN extends InfraRN
         }
 
     }
-    
+
     return null;
   }
 
   public function addBotaoProcessoSituacao($idDocumento, $idTpControle, $idProcedimento){
 
     $link = 'controlador.php?acao=md_lit_processo_situacao_cadastrar&arvore=1&id_tipo_controle=' . $idTpControle . '&id_procedimento=' . $idProcedimento;
-    
+
     if($idDocumento){
       $link .= '&id_doc=' . $idDocumento;
     }
