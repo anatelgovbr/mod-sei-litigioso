@@ -1,22 +1,17 @@
 <?
 require_once dirname(__FILE__) . '/../web/Sip.php';
 
-set_include_path(implode(PATH_SEPARATOR, array(
-    realpath(__DIR__ . '/../../infra/infra_php'),
-    get_include_path(),
-)));
-
-
 class MdLitAtualizadorSipRN extends InfraRN
 {
 
-    private $nomeGestorControleLitigioso = "Gestor de Controle Litigioso";
-    private $descricaoGestorControleLitigioso = "Acesso aos recursos específicos de Gestor de Controle Litigioso do módulo Litigioso do SEI.";
+    private $numSeg = 0;
+    private $versaoAtualDesteModulo = '2.0.0';
     private $nomeDesteModulo = 'MÓDULO DE CONTROLE LITIGIOSO';
     private $nomeParametroModulo = 'VERSAO_MODULO_LITIGIOSO';
-    private $versaoAtualDesteModulo = '1.10.0';
-    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4', '1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0');
-    private $numSeg = 0;
+    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4', '1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '2.0.0');
+
+    private $nomeGestorControleLitigioso = "Gestor de Controle Litigioso";
+    private $descricaoGestorControleLitigioso = "Acesso aos recursos específicos de Gestor de Controle Litigioso do módulo Litigioso do SEI.";
 
     public function __construct()
     {
@@ -28,34 +23,33 @@ class MdLitAtualizadorSipRN extends InfraRN
         return BancoSip::getInstance();
     }
 
-    private function inicializar($strTitulo)
+    protected function inicializar($strTitulo)
     {
         session_start();
         SessaoSip::getInstance(false);
 
         ini_set('max_execution_time', '0');
         ini_set('memory_limit', '-1');
-        @ini_set('zlib.output_compression', '0');
         @ini_set('implicit_flush', '1');
         ob_implicit_flush();
 
-        $this->objDebug = InfraDebug::getInstance();
-        $this->objDebug->setBolLigado(true);
-        $this->objDebug->setBolDebugInfra(true);
-        $this->objDebug->setBolEcho(true);
-        $this->objDebug->limpar();
+        InfraDebug::getInstance()->setBolLigado(true);
+        InfraDebug::getInstance()->setBolDebugInfra(true);
+        InfraDebug::getInstance()->setBolEcho(true);
+        InfraDebug::getInstance()->limpar();
 
         $this->numSeg = InfraUtil::verificarTempoProcessamento();
+
         $this->logar($strTitulo);
     }
 
-    private function logar($strMsg)
+    protected function logar($strMsg)
     {
-        $this->objDebug->gravar($strMsg);
+        InfraDebug::getInstance()->gravar($strMsg);
         flush();
     }
 
-    private function finalizar($strMsg = null, $bolErro = false)
+    protected function finalizar($strMsg = null, $bolErro = false)
     {
         if (!$bolErro) {
             $this->numSeg = InfraUtil::verificarTempoProcessamento($this->numSeg);
@@ -89,7 +83,7 @@ class MdLitAtualizadorSipRN extends InfraRN
             }
 
             //testando versao do framework
-            $numVersaoInfraRequerida = '1.532.3';
+            $numVersaoInfraRequerida = '1.600.0';
             $versaoInfraFormatada = (int)str_replace('.', '', VERSAO_INFRA);
             $versaoInfraReqFormatada = (int)str_replace('.', '', $numVersaoInfraRequerida);
 
@@ -97,14 +91,14 @@ class MdLitAtualizadorSipRN extends InfraRN
                 $this->finalizar('VERSÃO DO FRAMEWORK PHP INCOMPATÍVEL (VERSÃO ATUAL ' . VERSAO_INFRA . ', SENDO REQUERIDA VERSÃO IGUAL OU SUPERIOR A ' . $numVersaoInfraRequerida . ')', true);
             }
 
-
             //checando permissoes na base de dados
             $objInfraMetaBD = new InfraMetaBD(BancoSip::getInstance());
 
             if (count($objInfraMetaBD->obterTabelas('sip_teste')) == 0) {
                 BancoSip::getInstance()->executarSql('CREATE TABLE sip_teste (id ' . $objInfraMetaBD->tipoNumero() . ' null)');
             }
-            BancoSip::getInstance()->executarSql('DROP TABLE sip_teste');
+            
+			BancoSip::getInstance()->executarSql('DROP TABLE sip_teste');
 
             $objInfraParametro = new InfraParametro(BancoSip::getInstance());
 
@@ -141,6 +135,8 @@ class MdLitAtualizadorSipRN extends InfraRN
                     $this->instalarv190();
                 case '1.9.0':
                     $this->instalarv1100();
+                case '1.10.0':
+                    $this->instalarv200();
                     break;
 
                 default:
@@ -152,10 +148,10 @@ class MdLitAtualizadorSipRN extends InfraRN
             $this->finalizar('FIM');
             InfraDebug::getInstance()->setBolDebugInfra(true);
         } catch (Exception $e) {
-            InfraDebug::getInstance()->setBolLigado(false);
-            InfraDebug::getInstance()->setBolDebugInfra(false);
-            InfraDebug::getInstance()->setBolEcho(false);
-            throw new InfraException('Erro atualizando versão.', $e);
+            InfraDebug::getInstance()->setBolLigado(true);
+            InfraDebug::getInstance()->setBolDebugInfra(true);
+            InfraDebug::getInstance()->setBolEcho(true);
+            throw new InfraException('Erro instalando/atualizando versão.', $e);
         }
 
     }
@@ -2054,6 +2050,17 @@ class MdLitAtualizadorSipRN extends InfraRN
         $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.10.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
     }
 
+    protected function instalarV200()
+    {
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 2.0.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        //Atualizando parametro para controlar versao do modulo
+        $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'2.0.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+
+        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 2.0.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+    }
+
+
     private function adicionarRecursoPerfil($numIdSistema, $numIdPerfil, $strNome, $strCaminho = null)
     {
 
@@ -2142,6 +2149,8 @@ class MdLitAtualizadorSipRN extends InfraRN
             $objItemMenuDTO->setNumSequencia($numSequencia);
             $objItemMenuDTO->setStrSinNovaJanela('N');
             $objItemMenuDTO->setStrSinAtivo('S');
+            $objItemMenuDTO->setStrIcone(null);
+
             $objItemMenuDTO = $objItemMenuRN->cadastrar($objItemMenuDTO);
         }
 
@@ -2353,32 +2362,15 @@ class MdLitAtualizadorSipRN extends InfraRN
 
 }
 
-//========================= INICIO SCRIPT EXECUÇAO =============
-
 try {
 
-    session_start();
     SessaoSip::getInstance(false);
     BancoSip::getInstance()->setBolScript(true);
 
-    if (!ConfiguracaoSip::getInstance()->isSetValor('BancoSip', 'UsuarioScript')) {
-        throw new InfraException('Chave BancoSip/UsuarioScript não encontrada.');
-    }
-
-    if (InfraString::isBolVazia(ConfiguracaoSip::getInstance()->getValor('BancoSip', 'UsuarioScript'))) {
-        throw new InfraException('Chave BancoSip/UsuarioScript não possui valor.');
-    }
-
-    if (!ConfiguracaoSip::getInstance()->isSetValor('BancoSip', 'SenhaScript')) {
-        throw new InfraException('Chave BancoSip/SenhaScript não encontrada.');
-    }
-
-    if (InfraString::isBolVazia(ConfiguracaoSip::getInstance()->getValor('BancoSip', 'SenhaScript'))) {
-        throw new InfraException('Chave BancoSip/SenhaScript não possui valor.');
-    }
-
-    $objVersaoRN = new MdLitAtualizadorSipRN();
-    $objVersaoRN->atualizarVersao();
+    InfraScriptVersao::solicitarAutenticacao(BancoSip::getInstance());
+    $objVersaoSipRN = new MdLitAtualizadorSipRN();
+    $objVersaoSipRN->atualizarVersao();
+	exit;
 
 } catch (Exception $e) {
     echo(InfraException::inspecionar($e));
@@ -2388,5 +2380,3 @@ try {
     }
     exit(1);
 }
-
-print PHP_EOL;
