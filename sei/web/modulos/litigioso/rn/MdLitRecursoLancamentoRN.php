@@ -77,7 +77,7 @@ class MdLitRecursoLancamentoRN extends InfraRN {
                     $arrSituacaoUltimaSituacao = end($arrSituacaoUltimaSituacao);
 
                     //verificar se o ultima situação e do tipo recursal
-                    if($arrSituacaoUltimaSituacao['17'] != 'Recursal'){
+                    if($arrSituacaoUltimaSituacao['17'] != 'Recursal' && $arrSituacaoUltimaSituacao['17'] != ' (Recursal)'){
                         $infraException = new InfraException();
                         $infraException->adicionarValidacao('Não é um tipo recursal!');
                         $infraException->lancarValidacoes();

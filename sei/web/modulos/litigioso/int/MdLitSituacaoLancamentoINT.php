@@ -35,8 +35,8 @@ class MdLitSituacaoLancamentoINT extends InfraINT {
         foreach ($arrRadio as $strValue=>$strNome) {
             $strChecked = $strValue == $sinCancelamento ? "checked='checked'" : '';
             $strRadio .= '<label class="radio-label infraLabelRadio" for="rdoSinCancelamento_' . $strValue . '">';
-            $strRadio .= '<input type ="radio" name="rdoSinCancelamento" value="' . $strValue . '" id="rdoSinCancelamento_' . $strValue . '"' . $strChecked . '  />';
-            $strRadio .= $strNome . '</label>';
+            $strRadio .= '<input class="infraRadio" type ="radio" name="rdoSinCancelamento" value="' . $strValue . '" id="rdoSinCancelamento_' . $strValue . '"' . $strChecked . '  />';
+            $strRadio .= $strNome . '</label>&nbsp;&nbsp;';
         }
         $strRadio .= '</div>';
         return $strRadio;

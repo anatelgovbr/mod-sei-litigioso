@@ -17,31 +17,13 @@ $retEditor = $objEditorRN->montarSimples($objEditorDTO);
 echo $retEditor->getStrInicializacao();
 
 ?>
-<style type="text/css">
-
-    #divOritentacao{
-        width: 100%;
-        margin-left: 0px;
-    }
-    #txaConteudo{
-        height: 6.5%;
-
-    }
-
-
-
-</style>
-<div id="divOritentacao">
 <table id="tbOrientacao">
     <td>
-        <div id="divEditores" style="overflow: auto;">
-            <textarea type="text" id="txaConteudo" rows="4" name="txtOrientacoes"
-                 class="infraText" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
-                <?=PaginaSEI::tratarHTML($orientacaoRein); ?></textarea>
-            <script type="text/javascript">
-                <?=$retEditor->getStrEditores();?>
-            </script>
-        </div>
+        <textarea type="text" id="txaConteudo" rows="4" name="txtOrientacoes"
+                  class="infraText form-control" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+            <?= PaginaSEI::tratarHTML($orientacaoRein); ?></textarea>
+        <script type="text/javascript">
+            <?=$retEditor->getStrEditores();?>
+        </script>
     </td>
 </table>
-</div>

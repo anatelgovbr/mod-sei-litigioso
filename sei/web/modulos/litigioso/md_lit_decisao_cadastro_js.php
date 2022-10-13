@@ -250,12 +250,12 @@
                         }else{
                             if(arrItens[i][16] == 'N'){
                                 //checkbox localidade Nacional
-                                table.rows[j].children[1].children[0].checked = true;
-                                changeLocalidades(table.rows[j].children[1].children[0], false);
+                                table.rows[j].children[1].children[0].children[0].checked = true;
+                                changeLocalidades(table.rows[j].children[1].children[0].children[0], false);
                             }else if(arrItens[i][16] == 'U'){
                                 //checkbox localidade U
-                                table.rows[j].children[1].children[3].checked = true;
-                                changeLocalidades(table.rows[j].children[1].children[3], true);
+                                table.rows[j].children[1].children[3].children[0].checked = true;
+                                changeLocalidades(table.rows[j].children[1].children[3].children[0], true);
                                 var selectUF = table.rows[j].children[1].children[5].children[0];
                                 var arrUf = arrItens[j - 1][17].split('#');
                                 $(selectUF).multipleSelect("setSelects", arrUf);
@@ -541,17 +541,17 @@
 
         var optionTipoDecisao = document.getElementById("tipo_decisao_0").innerHTML;
         var cell1Html = '';
-        cell1Html += '<select name="decisao['+nomeLinha+'][id_md_lit_tipo_decisao]" onchange="carregarComboEspecieDecisao(this); carregarTipoDecisao(this, $(this).val(), false)" style="width: 100%">';
+        cell1Html += '<select name="decisao['+nomeLinha+'][id_md_lit_tipo_decisao]" class="infraSelect form-control" onchange="carregarComboEspecieDecisao(this); carregarTipoDecisao(this, $(this).val(), false)" style="width: 100%">';
         cell1Html += optionTipoDecisao;
 
         cell1.innerHTML = cell1Html+'</select>'+
             '<input type="hidden" name="decisao['+nomeLinha+'][id]" value="'+valueId+'">'+
             '<input type="hidden" name="decisao['+nomeLinha+'][id_decisao]" value="" /> ';
-        cell2.innerHTML = '<select class="especie-decisao" name="decisao['+nomeLinha+'][id_md_lit_especie_decisao]" onchange="refreshEspecieAtivos(this); carregarEspecieDecisao(this)" style="width: 100%;display: none"></select>';
-        cell3.innerHTML = '<input type="text" name="decisao['+nomeLinha+'][multa]" name="decisao['+nomeLinha+'][multa]" onkeypress="return infraMascaraDinheiro(this,event,2,12);" style="width: 90%;display: none" decisao_valor_antigo="">';
-        cell4.innerHTML = '<input type="text" name="decisao['+nomeLinha+'][valor_ressarcimento]" onkeypress="return infraMascaraDinheiro(this,event,2,12);" style="width: 90%;display: none">';
-        cell5.innerHTML = '<select name="decisao['+nomeLinha+'][id_md_lit_obrigacao]" style="width: 100%;display: none"></select>';
-        cell6.innerHTML = '<input type="text" name="decisao['+nomeLinha+'][prazo]" style="width: 90%;display: none" onkeypress="return infraMascaraNumero(this,event,16);">'+
+        cell2.innerHTML = '<select class="especie-decisao infraSelect form-control" name="decisao['+nomeLinha+'][id_md_lit_especie_decisao]" onchange="refreshEspecieAtivos(this); carregarEspecieDecisao(this)" style="width: 100%;display: none"></select>';
+        cell3.innerHTML = '<input type="text" name="decisao['+nomeLinha+'][multa]" name="decisao['+nomeLinha+'][multa]" class="infraText form-control" onkeypress="return infraMascaraDinheiro(this,event,2,12);" style="width: 90%;display: none" decisao_valor_antigo="">';
+        cell4.innerHTML = '<input type="text" name="decisao['+nomeLinha+'][valor_ressarcimento]" class="infraText form-control" onkeypress="return infraMascaraDinheiro(this,event,2,12);" style="width: 90%;display: none">';
+        cell5.innerHTML = '<select name="decisao['+nomeLinha+'][id_md_lit_obrigacao]" class="infraSelect form-control" style="width: 100%;display: none"></select>';
+        cell6.innerHTML = '<input type="text" name="decisao['+nomeLinha+'][prazo]" class="infraText form-control" style="width: 90%;display: none" onkeypress="return infraMascaraNumero(this,event,16);">'+
             '<input type="hidden" name="decisao['+nomeLinha+'][id_usuario]">'+
             '<input type="hidden" name="decisao['+nomeLinha+'][id_unidade]">'+
             '<input type="hidden" name="decisao['+nomeLinha+'][data]">'+

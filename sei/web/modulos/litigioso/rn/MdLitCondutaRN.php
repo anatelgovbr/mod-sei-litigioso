@@ -295,7 +295,9 @@
                 if ($retTotal > 0) {
 
                     $objInfraException = new InfraException();
-                    $objInfraException->adicionarValidacao('A desativação da Conduta não é permitida, pois já existem registros vinculados.');
+                    $objInfraException->adicionarValidacao('A desativação da Conduta não é permitida, pois ainda está vinculada aos Dispositivos Normativos abaixo:
+                                                                     - Art. 38, inciso I/Anexo à Resolução nº 632/2014
+                    ');
                     $objInfraException->lancarValidacoes();
 
                 } else if (count($arrObjCondutaLitigiosoDTO) > 0) {

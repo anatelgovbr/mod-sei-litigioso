@@ -13,6 +13,8 @@
 
         public static $STA_ORIGEM_MANUAL     = 'M';
         public static $STA_ORIGEM_INTEGRACAO = 'I';
+        public static $SIN_ATIVO             = 'S';
+        public static $SIN_INATIVO           = 'N';
 
         public function __construct()
         {

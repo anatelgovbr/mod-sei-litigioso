@@ -1,63 +1,94 @@
-<?
-    /**
-     * ANATEL
-     *
-     * 04/11/2016 - CAST
-     *
-     */
-?>
-<?if(0){?><style><?}?>
-.NumeroSEIValidado {display:inherit !important;}
-.NumeroSEINaoValidado {display:none !important;}
+<style type="text/css">
+    .linha{
+        padding-top: 10px;
+    }
 
-.NumeroSEIAdicionar {:disabled !important;}
+    #fieldsetDocInstaurador{
+        height: auto;
+    }
 
-#txtNumeroSei            {width:7em}
-#txtDtInstauracao        {width:6em}
+    .NumeroSEIValidado {
+        display: inherit !important;
+    }
 
-#txtIDNDispNormat        {width:85%}
-#selIDNCondutas          {width:98%;position: relative;top: 3px;}
-#selICCondutas           {width:98%}
-#txtICDispNormat         {width:85%;position: relative;top: -3px;}
+    .NumeroSEINaoValidado {
+        display: none !important;
+        margin-top: 5px;
+        margin-left: 2px;
+    }
 
-#txtNumeroSeiPS          {width:7em}
-#txtNumeroSeiTipoPS      {width:93%}
-#txtDtSobrestamentoPS    {width:6em}
-#txtNumeroProcessoPS     {width:11em}
-#txtNumeroProcessoTipoPS {width:93%}
+    #sbmAdicionarNumeroSei {
+        margin-top: 5px;
+        margin-left: 2px;
+    }
 
-.tooltipAjuda{
-background: url('<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/ajuda.gif') no-repeat;
-height: 15px;
-width: 20px;
-display: inline-block;
-margin-bottom: -3px;
-}
+    #sbmICAdicionar {
+        margin-left: 12px;
+        margin-top: 2px;
+    }
 
+    #selMotivos{
+        width: calc(100% - 75px);
+    }
 
-#lblTipo{display: block}
-input#txtTipo{width: 85%;}
+    .rowFieldSet fieldset {
+        height: 100%;
+    }
 
-    /* Motivos */
-    #lblMotivos {position: absolute;left: 0%;top: 0%;}
-    #txtMotivos {position: absolute;left: 0%;top: 13%;width: 50%;}
-    #selMotivos {position: absolute;left: 0%; top: 33%;width: 75%;}
+    #txtTipo {
+        margin-top: 5px;
+    }
 
-    #imgLupaMotivos {position: absolute;left: 76%;top: 33%;}
-    #imgExcluirMotivos {position: absolute;left: 76%;top: 50%;}
+    .sbmValidarNumeroSei {
+        margin-left: 5px;
+    }
 
-    #divMotivos{left: 1%;}
+    #imgDadoComplementar {
+        width: 24px;
+    }
 
+    #txtDtaInfracaoPorDispositivo {
+        width: 60%;
+    }
 
-    #fieldMotivo{margin-bottom: 12px;}
-    img#imgLupaIDNDispNorma {position: relative;top: 3px;left: 3px;}
-    img#imgDtaInfracaoInicialPorDispositivo,
-    img#imgDtaInfracaoFinalPorDispositivo,
-    img#imgDtaInfracaoPorDispositivo {position: relative;top: 3px;}
-    img#imgDtaInfracaoInicialPorConduta,
-    img#imgDtaInfracaoFinalPorConduta,
-    img#imgDtaInfracaoPorConduta {position: relative;top: 3px;}
-    img#imgLupaTipoProcesso {position: relative;top: 1px;}
-    img#imgDtaInfracaoPorConduta {position: relative;top: 3px;}
+    #sbmIDNAdicionar {
+        margin-top: 2px
+    }
 
-<?if(0){?></style><?}?>
+    #txtDtaInfracaoInicialPorConduta {
+        width:30%;
+    }
+
+    #txtDtaInfracaoFinalPorConduta {
+        width:30%;
+    }
+
+    .mb-3 {
+        margin-bottom: 0px !important;
+    }
+
+    .infraImgModulo {
+        width: 20px;
+    }
+
+    .botoes {
+        margin-left: 5px;
+    }
+
+    .tooltipAjuda {
+        background: url(<?=PaginaSEI::getInstance()->getDiretorioImagensGlobal()?>/ajuda.gif) no-repeat;
+        height: 15px;
+        width: 20px;
+        display: inline-block;
+        margin-bottom: -3px;
+    }
+
+    .classDispositivoNormativo{
+        margin-left: 40px;
+    }
+
+    .classCondutas{
+        margin-left: 40px;
+    }
+
+</style>

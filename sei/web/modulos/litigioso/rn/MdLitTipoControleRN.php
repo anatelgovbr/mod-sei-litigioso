@@ -143,7 +143,7 @@
 
                         $ret = $objTipoControleLitigiosoBD->consultar($objTipoControleLitigiosoFiltrDTO);
 
-                        if (count($ret) > 0) {
+                        if ($ret) {
                             $objInfraException->adicionarValidacao('Sigla duplicada. Não é possível ter tipos de processos litigiosos com a mesma Sigla.');
                         }
 
@@ -552,8 +552,8 @@
 
                 $objTipoControleLitigiosoBD = new MdLitTipoControleBD($this->getObjInfraIBanco());
 
-                for ($i = 0; $i < count($arrObjTipoControleLitigiosoDTO); $i++) {
-                    $objTipoControleLitigiosoBD->desativar($arrObjTipoControleLitigiosoDTO[$i]);
+                foreach ($arrObjTipoControleLitigiosoDTO as $objTipoControleLitigiosoDTO){
+                    $objTipoControleLitigiosoBD->desativar($objTipoControleLitigiosoDTO);
                 }
 
             } catch (Exception $e) {
@@ -1291,13 +1291,15 @@
         }
 
         public function montarIconeControleProcessoSinalizarPendencia($arrObjProcedimentoAPI,$arrIcone){
-            $imgIcone             = "modulos/litigioso/imagens/Balanca_vermelha.png";
+            $imgIcone             = "modulos/litigioso/imagens/svg/balanca_vermelha_menor.svg?".Icone::VERSAO;
 
             foreach ($arrObjProcedimentoAPI as $objProcedimentoAPI) {
                 $titulo               = 'Controle Litigioso: ';
 
+                $countArrIcone = is_array($arrIcone[$objProcedimentoAPI->getIdProcedimento()]) ? $arrIcone[$objProcedimentoAPI->getIdProcedimento()] : 0;
+
                 //pula todos os processo que já possui icones pois ele não estarão pendentes
-                if(count($arrIcone[$objProcedimentoAPI->getIdProcedimento()]) > 0){
+                if($countArrIcone > 0){
                     continue;
                 }
 
@@ -1328,7 +1330,7 @@
 
                     $titulo               .= $objMdLitTipoControleDTO->getStrSigla().'\n';
                     $linhaDeBaixo         = 'Cadastro Pendente no Controle Litigioso desde o dia '. $objSaidaConsultarProcedimentoAPI->getDataAutuacao().'.\n '.$diferencaEntreDiasTexto;
-                    $img = "<a href='javascript:void(0);' ".PaginaSEI::montarTitleTooltip($linhaDeBaixo,$titulo)." ><img src='".$imgIcone."' class='imagemStatus' /></a>";
+                    $img = "<a href='javascript:void(0);' ".PaginaSEI::montarTitleTooltip($linhaDeBaixo,$titulo)." ><img src='".$imgIcone."' class='imagemStatus' style='padding-top: 1px' /></a>";
                     $arrIcone[$objProcedimentoAPI->getIdProcedimento()][] = $img;
                 }
             }
@@ -1338,7 +1340,7 @@
         }
 
         public function montarIconeProcessoSinalizarPendencia(ProcedimentoAPI $objProcedimentoAPI, $arrObjArvoreAcaoItemAPI){
-            $imgIcone             = "modulos/litigioso/imagens/Balanca_vermelha.png";
+            $imgIcone             = "modulos/litigioso/imagens/svg/balanca_vermelha_menor.svg?".Icone::VERSAO;
             $titulo               = 'Controle Litigioso: ';
 
             $objSeiRN = new SeiRN();

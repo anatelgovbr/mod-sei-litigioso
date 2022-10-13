@@ -602,6 +602,5 @@ class MdLitDadoInteressadoINT extends InfraINT {
         return self::gerarXMLItensArr($arrResultado);
     }
 
-
 }
 ?>

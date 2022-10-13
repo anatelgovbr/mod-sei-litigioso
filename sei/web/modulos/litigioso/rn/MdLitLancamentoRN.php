@@ -678,7 +678,7 @@ class MdLitLancamentoRN extends InfraRN {
         $objInfraException      = $this->realizarValidacoesGerais($objMdLitIntegracaoDTO, $post, $objInfraException);
 
         $objMdLitLancamentoDTO->retTodos(false);
-        $objMdLitLancamentoDTO->setNumIdMdLitLancamento($post['selCreditosProcesso']);
+        $objMdLitLancamentoDTO->setNumIdMdLitLancamento($post['selCreditosProcesso'] ? $post['selCreditosProcesso'] : $post['hdnCreditosProcesso']);
 
         $objMdLitLancamentoDTO = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
 
@@ -1097,11 +1097,11 @@ class MdLitLancamentoRN extends InfraRN {
         $objMdLitIntegracaoRN     = new MdLitIntegracaoRN();
         $objMdLitLancamentoDTO      = false;
 
-       $arrObjMdLitLancamentoDTOAntigo    = $this->_retornaObjLancamentoPorProcedimento($idProcedimento, $idLancamento);
+       $arrObjMdLitLancamentoDTOAntigo    = $this->_retornaObjLancamentoPorProcedimento($idProcedimento);
 
        if(count($arrObjMdLitLancamentoDTOAntigo)){
            foreach ($arrObjMdLitLancamentoDTOAntigo as $objMdLitLancamentoDTOAntigo){
-               if($objMdLitLancamentoDTOAntigo){
+               if($objMdLitLancamentoDTOAntigo && !is_null($idLancamento) && $objMdLitLancamentoDTOAntigo->getNumIdMdLitLancamento() == $idLancamento){
                    $objMdLitIntegracaoDTO = $objMdLitIntegracaoRN->retornarObjIntegracaoDTOPorFuncionalidade(MdLitIntegracaoRN::$ARRECADACAO_CONSULTAR_LANCAMENTO);
 
                    $post = array('selCreditosProcesso' => $objMdLitLancamentoDTOAntigo->getNumIdMdLitLancamento(),'numInteressado' => $objMdLitLancamentoDTOAntigo->getStrNumeroInteressado(), 'chkReducaoRenuncia' => $objMdLitLancamentoDTOAntigo->getStrSinRenunciaRecorrer());

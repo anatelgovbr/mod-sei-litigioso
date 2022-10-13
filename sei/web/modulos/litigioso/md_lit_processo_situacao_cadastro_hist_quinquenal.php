@@ -14,14 +14,13 @@ $arrComandos = array();
 $idProcedimento = $_GET['id_procedimento'];
 $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
 
-switch($_GET['acao']) {
+switch ($_GET['acao']) {
     case 'md_lit_processo_situacao_cadastro_hist_quin_listar':
         try {
             $strTitulo = 'Histórico de Datas de Prescrição Quinquenal';
 
             $arrComandos[] = '<button type="button" accesskey="I" id="btnImprimir" value="Imprimir" onclick="infraImprimirTabela();" class="infraButton"><span class="infraTeclaAtalho">I</span>mprimir</button>';
-            $arrComandos[] = '<button type="button" accesskey="C" name="sbmFechar" id="sbmFechar"  onclick="window.close();" value="Fechar" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
-
+            $arrComandos[] = '<button type="button" accesskey="C" name="sbmFechar" id="sbmFechar"  onclick="infraFecharJanelaModal();" value="Fechar" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
 
 
         } catch (Exception $e) {
@@ -29,7 +28,7 @@ switch($_GET['acao']) {
         }
         break;
     default:
-        throw new InfraException("Ação '".$_GET['acao']."' não reconhecida.");
+        throw new InfraException("Ação '" . $_GET['acao'] . "' não reconhecida.");
 }
 
 $objMdLitProcessoSituacaoDTO = new MdLitProcessoSituacaoDTO();
@@ -89,11 +88,11 @@ if ($numRegistros > 0) {
 
     for ($i = 0; $i < $numRegistros; $i++) {
 
-        $strId            = $arrObjs[$i]->getDblIdDocumento();
-        $strDescricao     = PaginaSEI::getInstance()->formatarParametrosJavaScript($arrObjs[$i]->getStrProtocoloFormatadoDocumento());
+        $strId = $arrObjs[$i]->getDblIdDocumento();
+        $strDescricao = PaginaSEI::getInstance()->formatarParametrosJavaScript($arrObjs[$i]->getStrProtocoloFormatadoDocumento());
         $bolRegistroAtivo = $arrObjs[$i]->getStrSinAtivo() == 'S';
-        $arrDtFormatada   = explode(' ',$arrObjs[$i]->getDthInclusao());
-        $dtFormatada      = $arrDtFormatada[0];
+        $arrDtFormatada = explode(' ', $arrObjs[$i]->getDthInclusao());
+        $dtFormatada = $arrDtFormatada[0];
 
         $strCssTr = !$bolRegistroAtivo ? '<tr class="trVermelha">' : ($strCssTr == '<tr class="infraTrClara">' ? '<tr class="infraTrEscura">' : '<tr class="infraTrClara">');
         $strResultado .= $strCssTr;
@@ -119,11 +118,11 @@ if ($numRegistros > 0) {
         $strResultado .= '</td>';
 
         $strResultado .= '<td align="center">';
-        $strResultado .= '<a alt="'.$arrObjs[$i]->getStrNomeUsuario().'" title="'.$arrObjs[$i]->getStrNomeUsuario().'" class="ancoraSigla"> '.$arrObjs[$i]->getStrSiglaUsuario().' </a>';
+        $strResultado .= '<a alt="' . $arrObjs[$i]->getStrNomeUsuario() . '" title="' . $arrObjs[$i]->getStrNomeUsuario() . '" class="ancoraSigla"> ' . $arrObjs[$i]->getStrSiglaUsuario() . ' </a>';
         $strResultado .= '</td>';
 
         $strResultado .= '<td align="center">';
-        $strResultado .= '<a alt="'.$arrObjs[$i]->getStrDescricaoUnidade().'" title="'.$arrObjs[$i]->getStrDescricaoUnidade().'" class="ancoraSigla"> '.$arrObjs[$i]->getStrSiglaUnidade().' </a>';
+        $strResultado .= '<a alt="' . $arrObjs[$i]->getStrDescricaoUnidade() . '" title="' . $arrObjs[$i]->getStrDescricaoUnidade() . '" class="ancoraSigla"> ' . $arrObjs[$i]->getStrSiglaUnidade() . ' </a>';
         $strResultado .= '</td>';
 
         $strResultado .= '<td>';
@@ -141,7 +140,7 @@ PaginaSEI::getInstance()->montarDocType();
 PaginaSEI::getInstance()->abrirHtml();
 PaginaSEI::getInstance()->abrirHead();
 PaginaSEI::getInstance()->montarMeta();
-PaginaSEI::getInstance()->montarTitle(':: '.PaginaSEI::getInstance()->getStrNomeSistema().' - '.$strTitulo.' ::');
+PaginaSEI::getInstance()->montarTitle(':: ' . PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo . ' ::');
 PaginaSEI::getInstance()->montarStyle();
 PaginaSEI::getInstance()->abrirStyle();
 ?>
@@ -154,13 +153,14 @@ PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->abrirJavaScript();
 PaginaSEI::getInstance()->fecharJavaScript();
 PaginaSEI::getInstance()->fecharHead();
-PaginaSEI::getInstance()->abrirBody($strTitulo,'onload=""');
+PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload=""');
 
 ?>
-<form action="<?php /*echo SessaoSEI::getInstance()->assinarLink('controlador_externo.php?acao=md_pet_intimacao_usu_ext_confirmar_aceite&id_procedimento='.$_GET['id_procedimento'].'&id_acesso_externo='.$_GET['id_acesso_externo'].'&id_documento='.$_GET['id_documento']);*/ ?>" method="post" id="frmMdLitHistoricoQuinquenal" name="frmMdLitHistoricoQuinquenal">
+<form action="<?php /*echo SessaoSEI::getInstance()->assinarLink('controlador_externo.php?acao=md_pet_intimacao_usu_ext_confirmar_aceite&id_procedimento='.$_GET['id_procedimento'].'&id_acesso_externo='.$_GET['id_acesso_externo'].'&id_documento='.$_GET['id_documento']);*/ ?>"
+      method="post" id="frmMdLitHistoricoQuinquenal" name="frmMdLitHistoricoQuinquenal">
 
-    <?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
-    PaginaSEI::getInstance()->fecharAreaDados();
+    <?php
+    PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
     PaginaSEI::getInstance()->montarAreaTabela($strResultado, $numRegistros);
     PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos);
     ?>

@@ -29,14 +29,14 @@ class MdLitControleINT extends InfraINT
             $objDocumentoDTO->retStrStaProtocoloProtocolo();
             $objDocumentoDTO->retDtaGeracaoProtocolo();
             $objDocumentoDTO->retArrObjAssinaturaDTO();
-            $objDocumentoRN  = new DocumentoRN();
+            $objDocumentoRN = new DocumentoRN();
             $objDocumentoDTO = $objDocumentoRN->consultarRN0005($objDocumentoDTO);
 
             $xml = "<documento>\n";
             $xml .= "<NumeroSei>" . $numeroSEI . "</NumeroSei>\n";
 
             // NUMERO SEI - EXISTE
-            if (count($objDocumentoDTO) > 0) {
+            if (is_object($objDocumentoDTO) > 0) {
 
                 //DOCUMENTO
                 $arrAtributos = $objDocumentoDTO->getArrAtributos();
@@ -56,18 +56,17 @@ class MdLitControleINT extends InfraINT
                 $xml .= "</SinInterno>\n";
 
                 //ASSINATURA
-                $arrAssinatura = $objDocumentoDTO->getArrObjAssinaturaDTO();
-                $xml           .= "<Assinatura>";
-                if (count($arrAssinatura) > 0) {
-                    $objAssinaturaDTO = new AssinaturaDTO();
-                    $objAssinaturaDTO->setDblIdDocumento($objDocumentoDTO->getDblIdDocumento());
-                    $objAssinaturaDTO->retDthAberturaAtividade();
-                    $objAssinaturaRN     = new AssinaturaRN();
-                    $arrObjAssinaturaDTO = $objAssinaturaRN->listarRN1323($objAssinaturaDTO);
-                    if (count($arrObjAssinaturaDTO) > 0) {
-                        $xml .= $arrObjAssinaturaDTO[0]->getDthAberturaAtividade();
-                    }
+                $xml .= "<Assinatura>";
+                $objAssinaturaDTO = new AssinaturaDTO();
+                $objAssinaturaDTO->setDblIdDocumento($objDocumentoDTO->getDblIdDocumento());
+                $objAssinaturaDTO->retDthAberturaAtividade();
+                $objAssinaturaRN = new AssinaturaRN();
+                $arrObjAssinaturaDTO = $objAssinaturaRN->listarRN1323($objAssinaturaDTO);
+                $countArrObjAssinaturaDTO = is_array($arrObjAssinaturaDTO) ? count($arrObjAssinaturaDTO) : 0;
+                if ($countArrObjAssinaturaDTO > 0) {
+                    $xml .= $arrObjAssinaturaDTO[0]->getDthAberturaAtividade();
                 }
+
                 $xml .= "</Assinatura>\n";
 
             }
@@ -86,7 +85,7 @@ class MdLitControleINT extends InfraINT
             $objProcedimentoDTO->retTodos();
             $objProcedimentoDTO->retStrStaNivelAcessoGlobalProtocolo();
             $objProcedimentoDTO->retStrNomeTipoProcedimento();
-            $objProcedimentoRN  = new ProcedimentoRN();
+            $objProcedimentoRN = new ProcedimentoRN();
             $objProcedimentoDTO = $objProcedimentoRN->consultarRN0201($objProcedimentoDTO);
 
             $xml = "<processo>\n";
@@ -97,8 +96,8 @@ class MdLitControleINT extends InfraINT
 
                 // TIPO DE CONTROLE LITIGIOSO - GERAR SOBRESTADOS
                 // TELA : Alterar Tipo de Controle Litigioso
-                // OPO: Pode sobrestar a tramitao de outros processos
-                // [RN16] ... validar nmeros de processos apenas se forem dos tipos indicados sendo passiveis de sobrestamento.
+                // OPÇÃO: Pode sobrestar a tramitação de outros processos
+                // [RN16] ... validar números de processos apenas se forem dos tipos indicados sendo passiveis de sobrestamento.
 
                 //tipos de processos sobrestados relacionados
                 $objTipoControleLitigiosoTipoProcedimentoSobrestadoDTO = new MdLitRelTipoControleTipoProcedimentoSobrestadoDTO();
@@ -107,9 +106,9 @@ class MdLitControleINT extends InfraINT
                 $objTipoControleLitigiosoTipoProcedimentoSobrestadoDTO->retTodos();
 
                 $objRelTipoControleLitigiosoTipoProcedimentoSobrestadoRN = new MdLitRelTipoControleTipoProcedimentoSobrestadoRN();
-                $arrTipoProcedimentosSobrestados                         = $objRelTipoControleLitigiosoTipoProcedimentoSobrestadoRN->listar($objTipoControleLitigiosoTipoProcedimentoSobrestadoDTO);
+                $arrTipoProcedimentosSobrestados = $objRelTipoControleLitigiosoTipoProcedimentoSobrestadoRN->listar($objTipoControleLitigiosoTipoProcedimentoSobrestadoDTO);
 
-                // 0 - No  "tipos indicados sendo passiveis de sobrestamento"
+                // 0 - Não é "tipos indicados sendo passiveis de sobrestamento"
                 if (count($arrTipoProcedimentosSobrestados) > 0) {
                     //PROCESSO
                     $arrAtributos = $objProcedimentoDTO->getArrAtributos();
@@ -128,7 +127,7 @@ class MdLitControleINT extends InfraINT
             $objAtividadeDTO->setDblIdProtocolo($objProcedimentoDTO->getDblIdProcedimento());
             $objAtividadeDTO->setDthConclusao(null);
 
-            $objAtividadeRN     = new AtividadeRN();
+            $objAtividadeRN = new AtividadeRN();
             $arrObjAtividadeDTO = $objAtividadeRN->listarRN0036($objAtividadeDTO);
 
             foreach ($arrObjAtividadeDTO as $objAtividadeDTO) {
@@ -153,25 +152,25 @@ class MdLitControleINT extends InfraINT
         $objDocumentoDTO = new DocumentoDTO();
         $objDocumentoDTO->setStrProtocoloDocumentoFormatado($numeroSEI);
         $objDocumentoDTO->retNumIdSerie();
-        $objDocumentoRN  = new DocumentoRN();
+        $objDocumentoRN = new DocumentoRN();
         $objDocumentoDTO = $objDocumentoRN->consultarRN0005($objDocumentoDTO);
 
         $xml = "<documento>\n";
         $xml .= "<NumeroSei>" . $numeroSEI . "</NumeroSei>\n";
 
         // NUMERO SEI - EXISTE
-        if (count($objDocumentoDTO) > 0) {
+        if (is_object($objDocumentoDTO) > 0) {
 
             // SITUAÇÃO - SOMENTE UMA INSTAURAÇÃO
             $objSituacaoLitigiosoDTO = new MdLitSituacaoDTO();
             $objSituacaoLitigiosoDTO->setNumIdTipoControleLitigioso($idTipoControleLitigioso);
             $objSituacaoLitigiosoDTO->setStrSinInstauracao('S');
             $objSituacaoLitigiosoDTO->retTodos();
-            $objSituacaoLitigiosoRN  = new MdLitSituacaoRN();
+            $objSituacaoLitigiosoRN = new MdLitSituacaoRN();
             $objSituacaoLitigiosoDTO = $objSituacaoLitigiosoRN->consultar($objSituacaoLitigiosoDTO);
 
             // SITUAÇÃO - SOMENTE UMA INSTAURAÇÃO - EXISTE
-            if (count($objSituacaoLitigiosoDTO) > 0) {
+            if (is_object($objSituacaoLitigiosoDTO) > 0) {
                 $xml .= "<StrSinInstauracao>S</StrSinInstauracao>\n";
                 //$xml .= "<SinDataIntimacao>" . $objSituacaoLitigiosoDTO->getStrSinDataIntimacao() . "</SinDataIntimacao>\n";
 
@@ -180,12 +179,12 @@ class MdLitControleINT extends InfraINT
                 $objSituacaoLitigiosoSerieDTO->setNumIdSerie($objDocumentoDTO->getNumIdSerie());
                 $objSituacaoLitigiosoSerieDTO->retTodos();
 
-                $objRelSituacaoLitigiosoSerieRN  = new MdLitRelSituacaoSerieRN();
+                $objRelSituacaoLitigiosoSerieRN = new MdLitRelSituacaoSerieRN();
                 $objRelSituacaoLitigiosoSerieDTO = $objRelSituacaoLitigiosoSerieRN->consultar($objSituacaoLitigiosoSerieDTO);
 
                 // RELAÇÃO SITUAÇÃO X TIPO DOCUMENTO - EXISTE
-                if (count($objRelSituacaoLitigiosoSerieDTO) > 0) {
-                    // s retorna campos situao se estiver presente no tipo documento
+                if (is_object($objRelSituacaoLitigiosoSerieDTO) > 0) {
+                    // só retorna campos situação se estiver presente no tipo documento
                     $xml .= "<IdSerie>" . $objRelSituacaoLitigiosoSerieDTO->getNumIdSerie() . "</IdSerie>\n";
                 }
             }
@@ -207,7 +206,7 @@ class MdLitControleINT extends InfraINT
 
             //SOBRESTAMENTO - C0RE
             $objRelProtocoloProtocoloDTO = new RelProtocoloProtocoloDTO();
-            $objRelProtocoloProtocoloRN  = new RelProtocoloProtocoloRN();
+            $objRelProtocoloProtocoloRN = new RelProtocoloProtocoloRN();
             $objRelProtocoloProtocoloDTO->setDblIdProtocolo2($id_procedimento);
             $objRelProtocoloProtocoloDTO->retTodos();
             $arrObjRelProtocoloProtocoloDTO = $objRelProtocoloProtocoloRN->listarRN0187($objRelProtocoloProtocoloDTO);
@@ -220,7 +219,7 @@ class MdLitControleINT extends InfraINT
 
             //SOBRESTAMENTO - LITIGIOSO
             $objRelProtocoloProtocoloLitigiosoDTO = new MdLitRelProtocoloProtocoloDTO();
-            $objRelProtocoloProtocoloLitigiosoRN  = new MdLitRelProtocoloProtocoloRN();
+            $objRelProtocoloProtocoloLitigiosoRN = new MdLitRelProtocoloProtocoloRN();
             $objRelProtocoloProtocoloLitigiosoDTO->retTodos();
             $objRelProtocoloProtocoloLitigiosoDTO->setDblIdProtocolo2($id_procedimento);
             $objRelProtocoloProtocoloLitigiosoDTO = $objRelProtocoloProtocoloLitigiosoRN->listar($objRelProtocoloProtocoloLitigiosoDTO);
@@ -230,17 +229,17 @@ class MdLitControleINT extends InfraINT
 
             $xml = "<documento>";
             $xml .= '<mensagemtipo>sucesso</mensagemtipo>';
-            $xml .= '<mensagem>Remoo de sobrestamento realizada com sucesso.</mensagem>';
+            $xml .= '<mensagem>Remoção de sobrestamento realizada com sucesso.</mensagem>';
             $xml .= '</documento>';
         }
 
         return $xml;
     }
 
-    public static function montarXmlInteressadoProcesso($idProcedimento, $idMdLitControle, $idMdLitTipoControle, $arrIdContato= array())
+    public static function montarXmlInteressadoProcesso($idProcedimento, $idMdLitControle, $idMdLitTipoControle, $arrIdContato = array())
     {
-        $objMdLitControleRN               = new MdLitControleRN();
-        $arrParametros['idProcedimento']  = $idProcedimento;
+        $objMdLitControleRN = new MdLitControleRN();
+        $arrParametros['idProcedimento'] = $idProcedimento;
         $arrParametros['idMdLitControle'] = $idMdLitControle;
 
         $objMdlItDadoInteressadoDTO = new MdLitDadoInteressadoDTO();
@@ -249,7 +248,7 @@ class MdLitControleINT extends InfraINT
 
         $objMdlItDadoInteressadoRN = new MdLitDadoInteressadoRN();
         $arrObjMdlItDadoInteressadoDTO = $objMdlItDadoInteressadoRN->listar($objMdlItDadoInteressadoDTO);
-        $arrIdContatoDadoInteressado   = InfraArray::converterArrInfraDTO($arrObjMdlItDadoInteressadoDTO, 'IdContato');
+        $arrIdContatoDadoInteressado = InfraArray::converterArrInfraDTO($arrObjMdlItDadoInteressadoDTO, 'IdContato');
 
         $arrParametros['arrIdContato'] = array_merge($arrIdContatoDadoInteressado, $arrIdContato);
 
@@ -259,7 +258,7 @@ class MdLitControleINT extends InfraINT
         $objMdLitTipoControleDTO->setNumIdTipoControleLitigioso($idMdLitTipoControle);
         $objMdLitTipoControleDTO->retStrSinParamModalComplInteressado();
         $objMdLitTipoControleRN = new MdLitTipoControleRN();
-        $objMdLitTipoControleDTO =  $objMdLitTipoControleRN->consultar($objMdLitTipoControleDTO);
+        $objMdLitTipoControleDTO = $objMdLitTipoControleRN->consultar($objMdLitTipoControleDTO);
 
 
         $xml = "<Interessado>\n";
@@ -270,23 +269,23 @@ class MdLitControleINT extends InfraINT
 
             foreach ($arrObjContatoDTO as $objContatoDTO) {
 
-                $endereco   = $objContatoDTO->isSetStrEndereco() ? $objContatoDTO->getStrEndereco() : '';
-                $bairro     = $objContatoDTO->isSetStrBairro() ? $objContatoDTO->getStrBairro() : '';
-                $idCidade   = $objContatoDTO->isSetNumIdCidade() ? $objContatoDTO->getNumIdCidade() : '';
-                $idUf       = $objContatoDTO->isSetNumIdUf() ? $objContatoDTO->getNumIdUf() : '';
-                $cep       = $objContatoDTO->isSetStrCep() ? $objContatoDTO->getStrCep() : '';
+                $endereco = $objContatoDTO->isSetStrEndereco() ? $objContatoDTO->getStrEndereco() : '';
+                $bairro = $objContatoDTO->isSetStrBairro() ? $objContatoDTO->getStrBairro() : '';
+                $idCidade = $objContatoDTO->isSetNumIdCidade() ? $objContatoDTO->getNumIdCidade() : '';
+                $idUf = $objContatoDTO->isSetNumIdUf() ? $objContatoDTO->getNumIdUf() : '';
+                $cep = $objContatoDTO->isSetStrCep() ? $objContatoDTO->getStrCep() : '';
                 $contarLancamento = 0;
 
-                if($objContatoDTO->isSetNumIdTipoContatoAssociado() && $objContatoDTO->getNumIdTipoContatoAssociado() != '' && $objContatoDTO->getStrSinEnderecoAssociado() == 'S'){
+                if ($objContatoDTO->isSetNumIdTipoContatoAssociado() && $objContatoDTO->getNumIdTipoContatoAssociado() != '' && $objContatoDTO->isSetStrSinEnderecoAssociado() && $objContatoDTO->getStrSinEnderecoAssociado() == 'S') {
 
-                    $endereco   = $objContatoDTO->isSetStrEnderecoContatoAssociado() ? $objContatoDTO->getStrEnderecoContatoAssociado() : '';
-                    $bairro     = $objContatoDTO->isSetStrBairroContatoAssociado() ? $objContatoDTO->getStrBairroContatoAssociado() : '';
-                    $idCidade   = $objContatoDTO->isSetNumIdCidadeContatoAssociado() ? $objContatoDTO->getNumIdCidadeContatoAssociado() : '';
-                    $idUf       = $objContatoDTO->isSetNumIdUfContatoAssociado() ? $objContatoDTO->getNumIdUfContatoAssociado() : '';
-                    $cep      = $objContatoDTO->isSetStrCepContatoAssociado() ? $objContatoDTO->getStrCepContatoAssociado() : '';
+                    $endereco = $objContatoDTO->isSetStrEnderecoContatoAssociado() ? $objContatoDTO->getStrEnderecoContatoAssociado() : '';
+                    $bairro = $objContatoDTO->isSetStrBairroContatoAssociado() ? $objContatoDTO->getStrBairroContatoAssociado() : '';
+                    $idCidade = $objContatoDTO->isSetNumIdCidadeContatoAssociado() ? $objContatoDTO->getNumIdCidadeContatoAssociado() : '';
+                    $idUf = $objContatoDTO->isSetNumIdUfContatoAssociado() ? $objContatoDTO->getNumIdUfContatoAssociado() : '';
+                    $cep = $objContatoDTO->isSetStrCepContatoAssociado() ? $objContatoDTO->getStrCepContatoAssociado() : '';
                 }
 
-                if($idMdLitControle){
+                if ($idMdLitControle) {
                     $objMdLitNumeroInteressadoDTO = new MdLitNumeroInteressadoDTO();
                     $objMdLitNumeroInteressadoDTO->setNumIdContatoMdLitDadoInteressado($objContatoDTO->getNumIdContato());
                     $objMdLitNumeroInteressadoDTO->setNumIdMdLitControleMdLitDadoInteressado($idMdLitControle);
@@ -305,7 +304,7 @@ class MdLitControleINT extends InfraINT
                 $xml .= "</UrlAlterar>\n";
 
                 $xml .= '<UrlDadosComplementares>';
-                $xml .= htmlentities(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_dados_complementares_cadastrar&id_tp_controle='.$idMdLitTipoControle.'&id_contato=' . $objContatoDTO->getNumIdContato().'&id_procedimento='.$idProcedimento.'&id_md_lit_controle='.$idMdLitControle));
+                $xml .= htmlentities(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_dados_complementares_cadastrar&id_tp_controle=' . $idMdLitTipoControle . '&id_contato=' . $objContatoDTO->getNumIdContato() . '&id_procedimento=' . $idProcedimento . '&id_md_lit_controle=' . $idMdLitControle));
                 $xml .= "</UrlDadosComplementares>\n";
 
                 $xml .= '<IdContato>';
@@ -341,7 +340,7 @@ class MdLitControleINT extends InfraINT
                 $xml .= "</Bairro>\n";
 
                 $xml .= '<IdCidade>';
-                $xml .=  $idCidade;
+                $xml .= $idCidade;
                 $xml .= "</IdCidade>\n";
 
                 $xml .= '<IdUf>';

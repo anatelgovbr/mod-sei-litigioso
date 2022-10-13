@@ -65,11 +65,13 @@ class MdLitLancamentoINT extends InfraINT {
       $strLinkModalHistLanc              = InfraString::formatarXML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_historic_lancamento_listar&id_procedimento='.$idProcedimento.'&id_lancamento='.$idmdLitLancamento));
       $valorTotaMulta = 0;
       $sinExibeCancelamento = 'N';
-
+      $sinSuspenso = 'N';
 
       $objMdLitLancamentoRN = new MdLitLancamentoRN();
 
-      if(count($arrDecisao)){
+      $countArrDecisao = is_array($arrDecisao) ? count($arrDecisao) : 0;
+
+      if($countArrDecisao > 0){
           foreach ($arrDecisao as $decisao){
               $valorMulta = str_replace($source, $replace, $decisao[4]);
               $creditoNaoLancado = bcadd($creditoNaoLancado, $valorMulta, 2);
@@ -84,13 +86,15 @@ class MdLitLancamentoINT extends InfraINT {
                   $objMdLitDecisaoDTO->retDblMulta();
                   $objMdLitDecisaoDTO = $objMdLitDecisaoRN->consultar($objMdLitDecisaoDTO);
 
-                  if(count($objMdLitDecisaoDTO)){
+                  if(is_object($objMdLitDecisaoDTO)){
                       if( $objMdLitDecisaoDTO->getNumIdMdLitEspecieDecisao() != $decisao[3] && $decisao[4] != '')
                           $isNovoLancamento = 'S';
                   }
 
               }
 
+              if($valorMulta == '')
+                  $valorMulta = 0;
               $valorTotalMulta += $valorMulta;
 
           }
@@ -114,11 +118,20 @@ class MdLitLancamentoINT extends InfraINT {
 
           $objMdLitLancamentoDTO = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
 
+          //Verificar se tem decisão para esse lançamento
+          $temDecisaoLancamento = 'N';
+          $objMdLitControleDTO = new MdLitControleDTO();
+          $objMdLitControleDTO->setDblIdProcedimento($idProcedimento);
+          $objMdLitControleDTO->retNumIdMdLitTipoControle();
+          $objMdLitControleDTO = (new MdLitControleRN())->consultar($objMdLitControleDTO);
+          $temDecisaoLancamento = (new MdLitProcessoSituacaoRN())->verificaSeHouveDecisaoMulta($idProcedimento, $objMdLitControleDTO->getNumIdMdLitTipoControle(), $idmdLitLancamento) == true ? 'S' : 'N';
+
           //calculando o valor lançado e o não lançado e a multa aplicada
           $creditoLancado = InfraUtil::prepararDbl($objMdLitLancamentoDTO->getDblVlrLancamento());
           $totalCreditoLancado = $objMdLitLancamentoRN->valorLancadoPorProcedimento($idProcedimento);
           $creditoNaoLancado = bcsub($creditoNaoLancado, $totalCreditoLancado, 2);
           $multaAplicada = bcadd($creditoLancado,$creditoNaoLancado, 2);
+          $sinSuspenso = $objMdLitLancamentoDTO->getStrSinSuspenso();
 
           $arrecadado = $objMdLitLancamentoDTO->getDblVlrPago()? InfraUtil::prepararDbl($objMdLitLancamentoDTO->getDblVlrPago()): 0;
           $devedorAtualizado = $objMdLitLancamentoDTO->getDblVlrSaldoDevedor() ? InfraUtil::prepararDbl($objMdLitLancamentoDTO->getDblVlrSaldoDevedor()): 0;
@@ -208,6 +221,8 @@ class MdLitLancamentoINT extends InfraINT {
       $xml .= "<valorTotalMulta>".InfraUtil::formatarDin($valorTotalMulta)."</valorTotalMulta>\n";
       $xml .= "<sinExibeCancelamento>$sinExibeCancelamento</sinExibeCancelamento>\n";
       $xml .= "<sinExisteMajoracao>$sinExisteMajoracao</sinExisteMajoracao>\n";
+      $xml .= "<sinSuspenso>$sinSuspenso</sinSuspenso>\n";
+      $xml .= "<sinTemDecisaoLancamento>$temDecisaoLancamento</sinTemDecisaoLancamento>\n";
       $xml .= "</dados>";
 
       return $xml;
@@ -234,15 +249,20 @@ class MdLitLancamentoINT extends InfraINT {
       $objMdLitLancamentoRN = new MdLitLancamentoRN();
       $arrObjMdLitLancamentoDTO = $objMdLitLancamentoRN->listar($objMdLitLancamentoDTO);
       $strRet = '';
-
+      $arrIdMdLitLancamento = [];
       if (count($arrObjMdLitLancamentoDTO)>0){
-
           foreach($arrObjMdLitLancamentoDTO as $key => $objMdLitLancamentoDTO){
+              if(is_null($strValorItemSelecionado) && $key == 0){
+                  $strValorItemSelecionado = $objMdLitLancamentoDTO->getNumIdMdLitLancamento();
+              }
+              $arrIdMdLitLancamento[] = $objMdLitLancamentoDTO->getNumIdMdLitLancamento();
               $selected = $objMdLitLancamentoDTO->getNumIdMdLitLancamento() == $strValorItemSelecionado ? 'selected="selected"': '';
-              $strRet .= "<option value='{$objMdLitLancamentoDTO->getNumIdMdLitLancamento()}' {$selected} >{$objMdLitLancamentoDTO->getStrNomeTipoLancamentoComValor()}</option>";
+              $strRet .= "<option value='{$objMdLitLancamentoDTO->getNumIdMdLitLancamento()}' {$selected} >{$objMdLitLancamentoDTO->getStrNomeTipoLancamentoComValor($key)}</option>";
+
           }
       }
-      return $strRet;
+
+      return array('opcoes' => $strRet, 'selecionado' => $strValorItemSelecionado, 'todosIdsLancamento' => $arrIdMdLitLancamento);
   }
 
   public static function getLancamentos($idProcedimento)
@@ -256,5 +276,31 @@ class MdLitLancamentoINT extends InfraINT {
 
       return $arrLancamentoDTO;
   }
+
+  public static function consultarUltimoLancamento($idProcedimento)
+  {
+      $objMdLitSituacaoLancamentoDTO = new MdLitSituacaoLancamentoDTO();
+      $objMdLitSituacaoLancamentoDTO->retTodos(false);
+
+      $objMdLitSituacaoLancamentoRN = new MdLitSituacaoLancamentoRN();
+      $objMdLitSituacaoLancamentoDTO = $objMdLitSituacaoLancamentoRN->consultarSituacaoCancelamento($objMdLitSituacaoLancamentoDTO);
+
+      $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+      $objMdLitLancamentoDTO->retNumIdMdLitLancamento();
+      $objMdLitLancamentoDTO->retTodos(false);
+
+      $objMdLitLancamentoDTO->setDblIdProcedimento($idProcedimento);
+      $objMdLitLancamentoDTO->setOrdNumIdMdLitLancamento(InfraDTO::$TIPO_ORDENACAO_DESC);
+      $objMdLitLancamentoDTO->setNumMaxRegistrosRetorno(1);
+      if($objMdLitSituacaoLancamentoDTO){
+          $objMdLitLancamentoDTO->adicionarCriterio(array('IdMdLitSituacaoLancamento', 'IdMdLitSituacaoLancamento'), array(InfraDTO::$OPER_DIFERENTE, InfraDTO::$OPER_IGUAL), array($objMdLitSituacaoLancamentoDTO->getNumIdMdLitSituacaoLancamento(), null), array(InfraDTO::$OPER_LOGICO_OR));
+      }
+
+      $objMdLitLancamentoRN = new MdLitLancamentoRN();
+      $objMdLitLancamento = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
+
+      return $objMdLitLancamento ? $objMdLitLancamento->getNumIdMdLitLancamento() : null;
+  }
+
 }
 ?>

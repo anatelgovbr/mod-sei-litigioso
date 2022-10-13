@@ -18,7 +18,7 @@ try {
         . '&acao_origem=' . $_GET['acao'] . PaginaSEI::getInstance()->montarAncora($_GET['id_servico']));
 
 
-    $strAcaoForm            = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'] . '&id_md_lit_situacao=' . $_GET['id_md_lit_situacao']);
+    $strAcaoForm = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'] . '&id_md_lit_situacao=' . $_GET['id_md_lit_situacao']);
     $strLinkAjaxValidarWsdl = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_servico_busca_operacao_wsdl');
 
 
@@ -29,10 +29,10 @@ try {
     $strToolTipLblMan = 'Caso não exista sistema próprio de cadastro e controle da lista de Situações do Lançamento de Crédito pela instituição. O código da situação deve ser único, mesmo entre as Situações cadastradas manualmente ou por integração.';
 
 
-    $idMdLitSituacao  = $_GET['id_md_lit_situacao'];
-    $rdoOrigem        = '';
-    $txtCodigo        = '';
-    $txtDescricao     = '';
+    $idMdLitSituacao = $_GET['id_md_lit_situacao'];
+    $rdoOrigem = '';
+    $txtCodigo = '';
+    $txtDescricao = '';
     $idMdLitSituacaoIntegracao = '';
 
     switch ($_GET['acao']) {
@@ -47,24 +47,24 @@ try {
                                     <span class="infraTeclaAtalho">C</span>ancelar
                               </button>';
 
-            $rdoOrigem              = $_POST['rdoOrigem'];
-            $txtCodigo              = $_POST['txtCodigo'];
-            $txtDescricao           = $_POST['txtDescricao'];
-            $rdoSinCancelamento     = $_POST['rdoSinCancelamento'] ? $_POST['rdoSinCancelamento']: 'N';
-            $selCor                 = $_POST['selCor'];
+            $rdoOrigem = $_POST['rdoOrigem'];
+            $txtCodigo = $_POST['txtCodigo'];
+            $txtDescricao = $_POST['txtDescricao'];
+            $rdoSinCancelamento = $_POST['rdoSinCancelamento'] ? $_POST['rdoSinCancelamento'] : 'N';
+            $selCor = $_POST['selCor'];
             // valor do input do integracao
-            $selOperacao            = $_POST['selOperacao'];
-            $txtEnderecoWsdl        = $_POST['txtEnderecoWsdl'];
-            $txtIntegracao          = $_POST['txtIntegracao'];
-            $txtTipoWs              = $_POST['tipoWs'];
-            $txtVersaoSoap          = $_POST['versaoSoap'];
+            $selOperacao = $_POST['selOperacao'];
+            $txtEnderecoWsdl = $_POST['txtEnderecoWsdl'];
+            $txtIntegracao = $_POST['txtIntegracao'];
+            $txtTipoWs = $_POST['tipoWs'];
+            $txtVersaoSoap = $_POST['versaoSoap'];
 
-            if(!empty($rdoSinCancelamento))
-                $strRadioCancelamento  =  MdLitSituacaoLancamentoINT::montarRadioCancelamento($rdoSinCancelamento);
+            if (!empty($rdoSinCancelamento))
+                $strRadioCancelamento = MdLitSituacaoLancamentoINT::montarRadioCancelamento($rdoSinCancelamento);
 
             if (isset($_POST['hdnSalvarSituacao'])) {
 
-                if($_POST['rdoOrigem'] == MdLitSituacaoLancamentoRN::$STA_ORIGEM_MANUAL){
+                if ($_POST['rdoOrigem'] == MdLitSituacaoLancamentoRN::$STA_ORIGEM_MANUAL) {
                     $objMdLitSituacaoLancamentoDTO = new MdLitSituacaoLancamentoDTO();
                     $objMdLitSituacaoLancamentoDTO->setStrStaOrigem(MdLitSituacaoLancamentoRN::$STA_ORIGEM_MANUAL);
                     $objMdLitSituacaoLancamentoDTO->setNumCodigo($_POST['txtCodigo']);
@@ -74,14 +74,14 @@ try {
                     $objMdLitSituacaoLancamentoDTO->setStrCorSituacao($_POST['selCor']);
                     $objMdLitSituacaoLancamentoDTO->setStrSinCancelamento($_POST['rdoSinCancelamento']);
 
-                    $objMdLitSituacaoLancamentoRN  = new MdLitSituacaoLancamentoRN();
+                    $objMdLitSituacaoLancamentoRN = new MdLitSituacaoLancamentoRN();
                     $objMdLitSituacaoLancamentoDTO = $objMdLitSituacaoLancamentoRN->cadastrar($objMdLitSituacaoLancamentoDTO);
                     header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_situacao_lancamento_listar' . '&acao_origem=' . $_GET['acao'] .
                             PaginaSEI::getInstance()->montarAncora($objMdLitSituacaoLancamentoDTO->getNumIdMdLitSituacaoLancamento())));
-                }elseif($_POST['rdoOrigem'] == MdLitSituacaoLancamentoRN::$STA_ORIGEM_INTEGRACAO){
+                } elseif ($_POST['rdoOrigem'] == MdLitSituacaoLancamentoRN::$STA_ORIGEM_INTEGRACAO) {
 
                     $objMdLitSituacaoLancamIntDTO = new MdLitSituacaoLancamIntDTO();
-                    $arrMapeamento                = json_decode($_POST['hdnMapeamentoJson']);
+                    $arrMapeamento = json_decode($_POST['hdnMapeamentoJson']);
                     $objMdLitSituacaoLancamIntDTO->setStrEnderecoWsdl($_POST['txtEnderecoWsdl']);
                     $objMdLitSituacaoLancamIntDTO->setStrNomeIntegracao($_POST['txtIntegracao']);
                     $objMdLitSituacaoLancamIntDTO->setStrOperacaoWsdl($_POST['selOperacao']);
@@ -90,7 +90,7 @@ try {
                     $objMdLitSituacaoLancamIntDTO->setStrTipoClienteWs($_POST['tipoWs']);
                     $objMdLitSituacaoLancamIntDTO->setStrVersaoSoap($_POST['versaoSoap']);
 
-                    if(count($arrMapeamento) > 0){
+                    if (count($arrMapeamento) > 0) {
                         foreach ($arrMapeamento as $mapeamento) {
 
                             switch ($mapeamento->value) {
@@ -107,7 +107,7 @@ try {
                         }
                     }
 
-                    $objMdLitSituacaoLancamIntRN  = new MdLitSituacaoLancamIntRN();
+                    $objMdLitSituacaoLancamIntRN = new MdLitSituacaoLancamIntRN();
                     $objMdLitSituacaoLancamIntDTO = $objMdLitSituacaoLancamIntRN->cadastrar($objMdLitSituacaoLancamIntDTO);
 
                     //responsavel por selecionar os itens que foram salvos
@@ -117,7 +117,7 @@ try {
                     $objMdLitSituacaoLancamentoDTO->setNumIdMdLitSituacaoLancInt($objMdLitSituacaoLancamIntDTO->getNumIdMdLitSituacaoLancamInt());
                     $arrObjMdLitSituacaoLancamentoDTO = $objMdLitSituacaoLancamentoRN->listar($objMdLitSituacaoLancamentoDTO);
 
-                    header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_situacao_lancamento_listar' . '&acao_origem=' . $_GET['acao'].
+                    header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_situacao_lancamento_listar' . '&acao_origem=' . $_GET['acao'] .
                             PaginaSEI::getInstance()->montarAncora(InfraArray::converterArrInfraDTO($arrObjMdLitSituacaoLancamentoDTO, 'IdMdLitSituacaoLancamento'))));
                 }
                 die;
@@ -137,11 +137,11 @@ try {
 
             if (isset($_POST['hdnSalvarSituacao'])) {
 
-                if($_POST['rdoOrigem'] == MdLitSituacaoLancamentoRN::$STA_ORIGEM_MANUAL) {
+                if ($_POST['rdoOrigem'] == MdLitSituacaoLancamentoRN::$STA_ORIGEM_MANUAL) {
                     $rdoOrigem = MdLitSituacaoLancamentoRN::$STA_ORIGEM_MANUAL;
                     $txtCodigo = $_POST['txtCodigo'];
                     $txtDescricao = $_POST['txtDescricao'];
-                    $selCor       = $_POST['selCor'];
+                    $selCor = $_POST['selCor'];
                     $rdoSinCancelamento = $_POST['rdoSinCancelamento'];
 
                     $objMdLitSituacaoLancamentoDTO = new MdLitSituacaoLancamentoDTO();
@@ -158,7 +158,7 @@ try {
                     $obMdLitSituacaoLancamentoRN->alterar($objMdLitSituacaoLancamentoDTO);
                     header('Location: ' . $strUrlCancelar);
                     die;
-                }elseif($_POST['rdoOrigem'] == MdLitSituacaoLancamentoRN::$STA_ORIGEM_INTEGRACAO) {
+                } elseif ($_POST['rdoOrigem'] == MdLitSituacaoLancamentoRN::$STA_ORIGEM_INTEGRACAO) {
                     $idMdLitSituacaoIntegracao = $_POST['hdnIdMdLitSituacaoIntegracao'];
                     $objMdLitSituacaoLancamIntRN = new MdLitSituacaoLancamIntRN();
                     $objMdLitSituacaoLancamIntDTO = new MdLitSituacaoLancamIntDTO();
@@ -167,7 +167,7 @@ try {
 
                     $objMdLitSituacaoLancamIntDTO = $objMdLitSituacaoLancamIntRN->consultar($objMdLitSituacaoLancamIntDTO);
 
-                    $arrMapeamento                = json_decode($_POST['hdnMapeamentoJson']);
+                    $arrMapeamento = json_decode($_POST['hdnMapeamentoJson']);
                     $objMdLitSituacaoLancamIntDTO->setStrEnderecoWsdl($_POST['txtEnderecoWsdl']);
                     $objMdLitSituacaoLancamIntDTO->setStrNomeIntegracao($_POST['txtIntegracao']);
                     $objMdLitSituacaoLancamIntDTO->setStrOperacaoWsdl($_POST['selOperacao']);
@@ -176,7 +176,7 @@ try {
                     $objMdLitSituacaoLancamIntDTO->setStrTipoClienteWs($_POST['tipoWs']);
                     $objMdLitSituacaoLancamIntDTO->setStrVersaoSoap($_POST['versaoSoap']);
 
-                    if($arrMapeamento){
+                    if ($arrMapeamento) {
                         foreach ($arrMapeamento as $mapeamento) {
 
                             switch ($mapeamento->value) {
@@ -202,7 +202,7 @@ try {
                     $objMdLitSituacaoLancamentoDTO->setNumIdMdLitSituacaoLancInt($idMdLitSituacaoIntegracao);
                     $arrObjMdLitSituacaoLancamentoDTO = $objMdLitSituacaoLancamentoRN->listar($objMdLitSituacaoLancamentoDTO);
 
-                    header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_situacao_lancamento_listar' . '&acao_origem=' . $_GET['acao'].
+                    header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_situacao_lancamento_listar' . '&acao_origem=' . $_GET['acao'] .
                             PaginaSEI::getInstance()->montarAncora(InfraArray::converterArrInfraDTO($arrObjMdLitSituacaoLancamentoDTO, 'IdMdLitSituacaoLancamento'))));
 
                 }
@@ -213,7 +213,7 @@ try {
             $objMdLitSituacaoLancamentoDTO->setNumIdMdLitSituacaoLancamento($idMdLitSituacao);
             $objMdLitSituacaoLancamentoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoLancamentoDTO->retTodos(true);
-            $objMdLitSituacaoLancamentoRN  = new MdLitSituacaoLancamentoRN();
+            $objMdLitSituacaoLancamentoRN = new MdLitSituacaoLancamentoRN();
             $objMdLitSituacaoLancamentoDTO = $objMdLitSituacaoLancamentoRN->consultar($objMdLitSituacaoLancamentoDTO);
 
             if (!$objMdLitSituacaoLancamentoDTO) {
@@ -225,12 +225,12 @@ try {
             if ($rdoOrigem == MdLitSituacaoLancamentoRN::$STA_ORIGEM_MANUAL) {
 
                 //Campos Situação Manual
-                $txtCodigo    = $objMdLitSituacaoLancamentoDTO->getNumCodigo();
+                $txtCodigo = $objMdLitSituacaoLancamentoDTO->getNumCodigo();
                 $txtDescricao = $objMdLitSituacaoLancamentoDTO->getStrNome();
-                $selCor       = $objMdLitSituacaoLancamentoDTO->getStrCorSituacao();
+                $selCor = $objMdLitSituacaoLancamentoDTO->getStrCorSituacao();
                 $rdoSinCancelamento = $objMdLitSituacaoLancamentoDTO->getStrSinCancelamento();
 
-            }elseif( !empty($objMdLitSituacaoLancamentoDTO->getNumIdMdLitSituacaoLancInt()) ){
+            } elseif (!empty($objMdLitSituacaoLancamentoDTO->getNumIdMdLitSituacaoLancInt())) {
 
                 $idMdLitSituacaoIntegracao = $objMdLitSituacaoLancamentoDTO->getNumIdMdLitSituacaoLancInt();
                 $objMdLitSituacaoLancamIntRN = new MdLitSituacaoLancamIntRN();
@@ -244,11 +244,11 @@ try {
                     throw new InfraException('Situação do lançamento por integração não encontrado!');
                 }
 
-                $selOperacao            = $objMdLitSituacaoLancamIntDTO->getStrOperacaoWsdl();
-                $txtEnderecoWsdl        = $objMdLitSituacaoLancamIntDTO->getStrEnderecoWsdl();
-                $txtIntegracao          = $objMdLitSituacaoLancamIntDTO->getStrNomeIntegracao();
-                $txtTipoWs              = $objMdLitSituacaoLancamIntDTO->getStrTipoClienteWs();
-                $txtVersaoSoap          = $objMdLitSituacaoLancamIntDTO->getStrVersaoSoap();
+                $selOperacao = $objMdLitSituacaoLancamIntDTO->getStrOperacaoWsdl();
+                $txtEnderecoWsdl = $objMdLitSituacaoLancamIntDTO->getStrEnderecoWsdl();
+                $txtIntegracao = $objMdLitSituacaoLancamIntDTO->getStrNomeIntegracao();
+                $txtTipoWs = $objMdLitSituacaoLancamIntDTO->getStrTipoClienteWs();
+                $txtVersaoSoap = $objMdLitSituacaoLancamIntDTO->getStrVersaoSoap();
             }
 
             break;
@@ -266,7 +266,7 @@ try {
             $objMdLitSituacaoLancamentoDTO = new MdLitSituacaoLancamentoDTO();
             $objMdLitSituacaoLancamentoDTO->setNumIdMdLitSituacaoLancamento($idMdLitSituacao);
             $objMdLitSituacaoLancamentoDTO->retTodos(true);
-            $objMdLitSituacaoLancamentoRN  = new MdLitSituacaoLancamentoRN();
+            $objMdLitSituacaoLancamentoRN = new MdLitSituacaoLancamentoRN();
             $objMdLitSituacaoLancamentoDTO = $objMdLitSituacaoLancamentoRN->consultar($objMdLitSituacaoLancamentoDTO);
 
             if (!$objMdLitSituacaoLancamentoDTO) {
@@ -278,12 +278,12 @@ try {
             if ($rdoOrigem == MdLitSituacaoLancamentoRN::$STA_ORIGEM_MANUAL) {
 
                 //Campos Serviço Manual
-                $txtCodigo    = $objMdLitSituacaoLancamentoDTO->getNumCodigo();
+                $txtCodigo = $objMdLitSituacaoLancamentoDTO->getNumCodigo();
                 $txtDescricao = $objMdLitSituacaoLancamentoDTO->getStrNome();
-                $selCor       = $objMdLitSituacaoLancamentoDTO->getStrCorSituacao();
+                $selCor = $objMdLitSituacaoLancamentoDTO->getStrCorSituacao();
                 $rdoSinCancelamento = $objMdLitSituacaoLancamentoDTO->getStrSinCancelamento();
 
-            }elseif( !empty($objMdLitSituacaoLancamentoDTO->getNumIdMdLitSituacaoLancInt()) ){
+            } elseif (!empty($objMdLitSituacaoLancamentoDTO->getNumIdMdLitSituacaoLancInt())) {
 
                 $idMdLitSituacaoIntegracao = $objMdLitSituacaoLancamentoDTO->getNumIdMdLitSituacaoLancInt();
                 $objMdLitSituacaoLancamIntRN = new MdLitSituacaoLancamIntRN();
@@ -297,11 +297,11 @@ try {
                     throw new InfraException('Situação do lançamento por integração não encontrado!');
                 }
 
-                $selOperacao            = $objMdLitSituacaoLancamIntDTO->getStrOperacaoWsdl();
-                $txtEnderecoWsdl        = $objMdLitSituacaoLancamIntDTO->getStrEnderecoWsdl();
-                $txtIntegracao          = $objMdLitSituacaoLancamIntDTO->getStrNomeIntegracao();
-                $txtTipoWs              = $objMdLitSituacaoLancamIntDTO->getStrTipoClienteWs();
-                $txtVersaoSoap          = $objMdLitSituacaoLancamIntDTO->getStrVersaoSoap();
+                $selOperacao = $objMdLitSituacaoLancamIntDTO->getStrOperacaoWsdl();
+                $txtEnderecoWsdl = $objMdLitSituacaoLancamIntDTO->getStrEnderecoWsdl();
+                $txtIntegracao = $objMdLitSituacaoLancamIntDTO->getStrNomeIntegracao();
+                $txtTipoWs = $objMdLitSituacaoLancamIntDTO->getStrTipoClienteWs();
+                $txtVersaoSoap = $objMdLitSituacaoLancamIntDTO->getStrVersaoSoap();
             }
 
             break;
@@ -324,17 +324,17 @@ try {
 
 if (isset($_POST['hdnMapeamentoJson']) && !empty($_POST['hdnMapeamentoJson'])) {
     $objMdLitSituacaoLancamIntDTO = new MdLitSituacaoLancamIntDTO();
-    $arrMapeamento                = json_decode($_POST['hdnMapeamentoJson']);
+    $arrMapeamento = json_decode($_POST['hdnMapeamentoJson']);
     $objMdLitSituacaoLancamIntDTO->setStrEnderecoWsdl($_POST['txtEnderecoWsdl']);
     $objMdLitSituacaoLancamIntDTO->setStrOperacaoWsdl($_POST['selOperacao']);
     $objMdLitSituacaoLancamIntDTO->setStrTipoClienteWs($_POST['tipoWs']);
     $objMdLitSituacaoLancamIntDTO->setStrVersaoSoap($_POST['versaoSoap']);
 
-    $txtIntegracao          = $_POST['txtIntegracao'];
-    $selOperacao            = $_POST['selOperacao'];
-    $txtEnderecoWsdl        = $_POST['txtEnderecoWsdl'];
-    $txtTipoWs              = $_POST['tipoWs'];
-    $txtVersaoSoap          = $_POST['versaoSoap'];
+    $txtIntegracao = $_POST['txtIntegracao'];
+    $selOperacao = $_POST['selOperacao'];
+    $txtEnderecoWsdl = $_POST['txtEnderecoWsdl'];
+    $txtTipoWs = $_POST['tipoWs'];
+    $txtVersaoSoap = $_POST['versaoSoap'];
 
     foreach ($arrMapeamento as $mapeamento) {
 
@@ -351,11 +351,11 @@ if (isset($_POST['hdnMapeamentoJson']) && !empty($_POST['hdnMapeamentoJson'])) {
         }
     }
 }
-try{
-    if($objMdLitSituacaoLancamIntDTO)
+try {
+    if ($objMdLitSituacaoLancamIntDTO)
         $strResultadoTabelaSituacaoLancamentoIntegracao = MdLitSituacaoLancamIntINT::montarTabelaSituacaoLancamentoIntegracao($objMdLitSituacaoLancamIntDTO);
 
-}catch (Exception $e){
+} catch (Exception $e) {
     $exception = new InfraException();
     $exception->adicionarValidacao('Não foi possível carregar o web-service.');
     PaginaSEI::getInstance()->processarExcecao($exception);
@@ -368,187 +368,200 @@ PaginaSEI::getInstance()->montarMeta();
 PaginaSEI::getInstance()->montarTitle(':: ' . PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo . ' ::');
 PaginaSEI::getInstance()->montarStyle();
 PaginaSEI::getInstance()->abrirStyle();
-
-require_once 'md_lit_css_geral.php';
-?>
-
-    label.checkbox-label input[type=checkbox]{
-    position: relative;
-    vertical-align: middle;
-    bottom: 1px;
-    }
-
-    label.radio-label input[type=radio]{
-    position: relative;
-    vertical-align: middle;
-    bottom: 2px;
-    }
-    div#divInfraAreaTabela {margin-top: 20px;float:left;}
-    div#divInfraAreaDados {overflow: visible;}
-    #btnValidar{margin: 19px 0px 0 13px;}
-    #gridOperacao{display:none}
-    table td div.ms-parent.infraSelect.multipleSelect{font-size: 0.9em;}
-<?php if($_GET['acao'] == 'md_lit_situacao_lancamento_consultar'){  ?>
-    #btnValidar, #btnMapeamento{display: none}
-<?php } ?>
-
-<?php
 PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->abrirJavaScript();
-
-require_once('md_lit_situacao_lancamento_cadastro_js.php');
-
 PaginaSEI::getInstance()->fecharJavaScript();
+require_once('md_lit_situacao_lancamento_cadastro_css.php');
 PaginaSEI::getInstance()->fecharHead();
 PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 ?>
+<?php PaginaSEI::getInstance()->abrirAreaDados(); ?>
     <form id="frmSituacaoCadastro" method="post" action="<?= $strAcaoForm ?>">
         <?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos); ?>
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-10 col-xl-9">
+                <fieldset class="infraFieldset form-control">
+                    <legend class="infraLegend">&nbsp;Origem&nbsp;</legend>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <div class="form-group">
+                                <label for="rdoIntegracao" name="lblIntegracao" class="radio-label infraLabelRadio">
+                                    <input type="radio" name="rdoOrigem" id="rdoIntegracao" class="infraRadio"
+                                            value="<?= MdLitServicoRN::$STA_ORIGEM_INTEGRACAO ?>"
+                                            onchange="changeOrigem();"
+                                        <?= $rdoOrigem == MdLitServicoRN::$STA_ORIGEM_INTEGRACAO ? "checked='checked'" : '' ?>>
+                                    Integração
 
-        <?php PaginaSEI::getInstance()->abrirAreaDados('220px'); ?>
-        <div class="grid grid_8">
-            <fieldset class="infraFieldset">
-                <legend class="infraLegend">&nbsp;Origem&nbsp;</legend>
-                <div class="grid grid_6">
-
-                    <div class="grid grid_3">
-                        <label for="rdoIntegracao" name="lblIntegracao" class="radio-label infraLabelRadio">
-                            <input type="radio" name="rdoOrigem" id="rdoIntegracao"
-                                   value="<?= MdLitServicoRN::$STA_ORIGEM_INTEGRACAO ?>" onchange="changeOrigem();"
-                                <?= $rdoOrigem == MdLitServicoRN::$STA_ORIGEM_INTEGRACAO ? "checked='checked'" : '' ?>>
-                            Integração
-                        </label>
-                        <span class="tooltipAjuda" <?= PaginaSEI::montarTitleTooltip($strToolTipLblInt) ?> ></span>
+                                    <a id="btAjuda" <?= PaginaSEI::montarTitleTooltip($strToolTipLblInt, 'Ajuda') ?>
+                                        tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                        <img border="0"
+                                                src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg?<?= Icone::VERSAO ?>"
+                                                class="infraImgModulo"/>
+                                    </a>
+                                </label>
+                                <br/>
+                                <label for="rdoManual" name="lblManual" class="radio-label infraLabelRadio">
+                                    <input type="radio" name="rdoOrigem" id="rdoManual" class="infraRadio"
+                                            value="<?= MdLitServicoRN::$STA_ORIGEM_MANUAL ?>"
+                                            onchange="changeOrigem();"
+                                        <?= $rdoOrigem == MdLitServicoRN::$STA_ORIGEM_MANUAL ? "checked='checked'" : '' ?>>
+                                    Manual
+                                    <a id="btAjuda" <?= PaginaSEI::montarTitleTooltip($strToolTipLblMan, 'Ajuda') ?>
+                                        tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                        <img border="0"
+                                                src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg?<?= Icone::VERSAO ?>"
+                                                class="infraImgModulo"/>
+                                    </a>
+                                </label>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="grid grid_3">
-                        <label for="rdoManual" name="lblManual" class="radio-label infraLabelRadio">
-                            <input type="radio" name="rdoOrigem" id="rdoManual"
-                                   value="<?= MdLitServicoRN::$STA_ORIGEM_MANUAL ?>" onchange="changeOrigem();"
-                                <?= $rdoOrigem == MdLitServicoRN::$STA_ORIGEM_MANUAL ? "checked='checked'" : '' ?>>
-                            Manual
-                        </label>
-                        <span class="tooltipAjuda" <?= PaginaSEI::montarTitleTooltip($strToolTipLblMan) ?> ></span>
-                    </div>
-
-                </div>
-            </fieldset>
+                </fieldset>
+            </div>
         </div>
-
-
         <div class="" id="divIntegracao"
-             style="display:<?= $rdoOrigem == MdLitServicoRN::$STA_ORIGEM_INTEGRACAO ? 'block' : 'none' ?>">
-            <div class="clear-margin-3"></div>
+                style="display:<?= $rdoOrigem == MdLitServicoRN::$STA_ORIGEM_INTEGRACAO ? 'block' : 'none' ?>">
             <?php $strToolTipEnd = '<<a descrição do texto de ajuda será elaborado após o serviço estar disponível no barramento, pois teremos verificado todas as validações necessárias>>' ?>
-            <div class="grid grid_8">
-                <div class="grid grid_8">
-                    <label class="infraLabelObrigatorio" id="lblIntegracao" for="txtIntegracao">Nome da Integração:</label>
-                    <input type="text" id="txtIntegracao" name="txtIntegracao" value="<?= $txtIntegracao ?>" />
-                </div>
-                <div class="clear-margin-2"></div>
-                <div class="clear"></div>
-                <div class="grid grid_3">
-                    <label id="lbltipoWs" for="tipoWs" class="infraLabelObrigatorio">
-                        Tipo Cliente WS:
-                    </label>
-                    <div class="clear"></div>
-                    <input type="radio" name="tipoWs" value="SOAP" <?=$txtTipoWs != 'REST' ?'checked' : ''; ?> >
-                    <span>
-                        <label for="tipoWs" class="infraLabelCheckbox">
-                            SOAP
-                        </label>
-                    </span>
-                    <!--         O campo com  apção rest deve ser desabilidado quando houver suporte -->
-                    <!--        <input type="radio" name="tipoWs" value="REST" disabled>-->
-                    <!--        <span>-->
-                    <!--            <label for="tipoWs" class="infraLabelCheckbox">-->
-                    <!--                REST-->
-                    <!--            </label>-->
-                    <!--        </span>-->
-                </div>
-                <div class="grid grid_2 soap">
-                    <label id="lbltipoWs" for="tipoWs" class="infraLabelObrigatorio">
-                        Versão SOAP:
-                    </label>
-                    <div class="clear"></div>
-                    <select id="versaoSoap" name="versaoSoap">
-                        <option value="1.2" <?= PaginaSEI::tratarHTML( $txtVersaoSoap ) == '1.2' ?'selected' : '';?>>1.2</option>
-                        <option value="1.1" <?= PaginaSEI::tratarHTML( $txtVersaoSoap ) == '1.1' ?'selected' : '';?>>1.1</option>
-                    </select>
-                </div>
-                <div class="clear-margin-2"></div>
-                <div class="grid grid_11">
-                    <div class="grid grid_8">
-                        <label class="infraLabelObrigatorio" id="lblEndereco" for="txtEndereco">Endereço WSDL:</label>
-                        <input type="text" id="txtEnderecoWsdl" name="txtEnderecoWsdl" onchange="apagarOperacao()" value="<?= $txtEnderecoWsdl ?>" />
-                    </div>
-                    <div class="grid grid_3">
-                        <button class="infraButton" name="btnValidar" type="button" id="btnValidar" onclick="validarWsdl()">Validar</button>
-                    </div>
-                </div>
-                <div class="clear-margin-2"></div>
-                <div class="grid grid_11" id="gridOperacao">
-                    <div class="grid grid_8">
-                        <label class="infraLabelObrigatorio" id="lbloperacao" for="txtOperacao">Operação:</label>
-                        <select id="selOperacao" name="selOperacao" onchange="apagarMapear()" />
-                        </select>
-                    </div>
-                    <div class="grid grid_3">
-                        <span <?= PaginaSEI::montarTitleTooltip($strToolTipEnd) ?> class="tooltipAjuda tooltipAjudaInput"></span>
-                        <button class="infraButton" type="button" name="btnMapeamento" id="btnMapeamento"
-                                onclick="abrirJanelaMapeamento();">Mapeamento
-                        </button>
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-10 col-xl-9">
+                    <div class="form-group">
+                        <label class="infraLabelObrigatorio" id="lblIntegracao" for="txtIntegracao">Nome da
+                            Integração:</label>
+                        <input type="text" id="txtIntegracao" class="infraText form-control" name="txtIntegracao"
+                                value="<?= $txtIntegracao ?>"/>
                     </div>
                 </div>
             </div>
-            <input type="hidden" id="hdnMapeamentoJson" name="hdnMapeamentoJson" value='<?= $_POST['hdnMapeamentoJson'] ?>'/>
-
+            <div class="row">
+                <div class="col-sm-6 col-md-6 col-lg-5 col-xl-4">
+                    <div class="form-group">
+                        <label id="lbltipoWs" for="tipoWs" class="infraLabelObrigatorio">
+                            Tipo Cliente WS:
+                        </label>
+                        <br/>
+                        <label for="tipoWs" class="infraLabelCheckbox">
+                            <input type="radio" class="infraRadio" name="tipoWs"
+                                    value="SOAP" <?= $txtTipoWs != 'REST' ? 'checked' : ''; ?> >
+                            SOAP
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-5 col-xl-5">
+                    <div class="form-group">
+                        <label id="lbltipoWs" for="tipoWs" class="infraLabelObrigatorio">
+                            Versão SOAP:
+                        </label>
+                        <select id="versaoSoap" name="versaoSoap" class="infraSelect form-control">
+                            <option value="1.2" <?= PaginaSEI::tratarHTML($txtVersaoSoap) == '1.2' ? 'selected' : ''; ?>>
+                                1.2
+                            </option>
+                            <option value="1.1" <?= PaginaSEI::tratarHTML($txtVersaoSoap) == '1.1' ? 'selected' : ''; ?>>
+                                1.1
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-10 col-xl-9">
+                    <div class="form-group">
+                        <label class="infraLabelObrigatorio" id="lblEndereco" for="txtEndereco">Endereço
+                            WSDL:</label>
+                        <div class="input-group mb-3">
+                            <input type="text" id="txtEnderecoWsdl" name="txtEnderecoWsdl"
+                                    onchange="apagarOperacao()"
+                                    class="infraText form-control"
+                                    value="<?= $txtEnderecoWsdl ?>"/>
+                            <button class="infraButton" name="btnValidar" type="button" id="btnValidar"
+                                    onclick="validarWsdl()">Validar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="gridOperacao" style="display: none">
+                <div class="col-sm-12 col-md-12 col-lg-10 col-xl-9">
+                    <label class="infraLabelObrigatorio" id="lbloperacao" for="txtOperacao">Operação:
+                        <a id="btAjuda" <?= PaginaSEI::montarTitleTooltip($strToolTipEnd, 'Ajuda') ?>
+                            tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                            <img border="0"
+                                    src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg?<?= Icone::VERSAO ?>"
+                                    class="infraImgModulo"/>
+                        </a>
+                    </label>
+                    <div class="form-group">
+                        <div class="input-group mb-3">
+                            <select id="selOperacao" name="selOperacao" class="infraSelect form-control"
+                                    onchange="apagarMapear()"/>
+                            </select>
+                            <button class="infraButton" type="button" name="btnMapeamento" id="btnMapeamento"
+                                    onclick="abrirJanelaMapeamento();">Mapeamento
+                            </button>
+                        </div>
+                        <input type="hidden" id="hdnMapeamentoJson" name="hdnMapeamentoJson"
+                                value='<?= $_POST['hdnMapeamentoJson'] ?>'/>
+                    </div>
+                </div>
+            </div>
             <?php
             //Get Integração
             PaginaSEI::getInstance()->montarAreaTabela($strResultadoTabelaSituacaoLancamentoIntegracao['strResultado'], $strResultadoTabelaSituacaoLancamentoIntegracao['numRegistros']);
             ?>
         </div>
-
         <div class="" id="divManual"
-             style="display:<?= $rdoOrigem == MdLitServicoRN::$STA_ORIGEM_MANUAL ? 'block' : 'none' ?>">
-            <div class="clear-margin-3"></div>
-            <div class="grid grid_7-8">
-                <div class="grid grid_4">
-                    <label class="infraLabelObrigatorio" id="lblCodigo" for="txtCodigo">Código:</label>
-                    <input type="text" id="txtCodigo" name="txtCodigo" maxlength="10" value="<?= $txtCodigo ?>"
-                           onkeypress="return infraMascaraNumero(this, event, 10)"/>
+                style="display:<?= $rdoOrigem == MdLitServicoRN::$STA_ORIGEM_MANUAL ? 'block' : 'none' ?>">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-10 col-xl-9">
+                    <div class="form-group">
+                        <label class="infraLabelObrigatorio" id="lblCodigo" for="txtCodigo">Código:</label>
+                        <input type="text" id="txtCodigo" name="txtCodigo" class="infraText form-control"
+                                maxlength="10"
+                                value="<?= $txtCodigo ?>"
+                                onkeypress="return infraMascaraNumero(this, event, 10)"/>
+                    </div>
                 </div>
-                <div class="clear-margin-2"></div>
-                <div class="grid grid_7-8">
-                    <label class="infraLabelObrigatorio" id="lblDescricao" for="txtDescricao">Descrição:</label>
-                    <input type="text" id="txtDescricao" name="txtDescricao" maxlength="100"
-                           value="<?= PaginaSEI::tratarHTML($txtDescricao); ?>"
-                           onkeypress="return infraMascaraTexto(this,event,100);"/>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-10 col-xl-9">
+                    <div class="form-group">
+                        <label class="infraLabelObrigatorio" id="lblDescricao" for="txtDescricao">Descrição:</label>
+                        <input type="text" id="txtDescricao" name="txtDescricao" maxlength="100"
+                                class="infraText form-control"
+                                value="<?= PaginaSEI::tratarHTML($txtDescricao); ?>"
+                                onkeypress="return infraMascaraTexto(this,event,100);"/>
+                    </div>
                 </div>
-                <div class="clear-margin-2"></div>
-                <div class="grid grid_8">
-                    <div class="grid grid_4">
-                        <label class="infraLabelObrigatorio" id="lblDescricao" for="txtDescricao">Cor para Apresentação da Situação:</label>
-                        <select id="selCor" name="selCor" class="infraSelect" >
-                            <?=MdLitSituacaoLancamentoINT::montarSelectCor($selCor)?>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-10 col-xl-9">
+                    <div class="form-group">
+                        <label class="infraLabelObrigatorio" id="lblDescricao" for="txtDescricao">Cor para
+                            Apresentação
+                            da Situação:</label>
+                        <select id="selCor" name="selCor" class="infraSelect form-control">
+                            <?= MdLitSituacaoLancamentoINT::montarSelectCor($selCor) ?>
                         </select>
                     </div>
                 </div>
-                <div class="clear-margin-2"></div>
-                <div class="grid grid_4-5">
-                    <label class="infraLabelObrigatorio" id="lblDescricao" for="txtDescricao">Situação de Cancelamento?</label>
-                    <?=$strRadioCancelamento?>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-10 col-xl-9">
+                    <div class="form-group">
+                        <label class="infraLabelObrigatorio" id="lblDescricao" for="txtDescricao">Situação de
+                            Cancelamento?</label>
+                        <?= $strRadioCancelamento ?>
+                    </div>
                 </div>
-
             </div>
         </div>
         <input type="hidden" id="hdnSalvarSituacao" name="hdnSalvarSituacao" value=""/>
         <input type="hidden" id="hdnIdMdLitSituacao" name="hdnIdMdLitSituacao" value="<?= $idMdLitSituacao ?>"/>
-        <input type="hidden" id="hdnIdMdLitSituacaoIntegracao" name="hdnIdMdLitSituacaoIntegracao" value="<?= $idMdLitSituacaoIntegracao ?>"/>
-
-        <?php PaginaSEI::getInstance()->fecharAreaDados(); ?>
+        <input type="hidden" id="hdnIdMdLitSituacaoIntegracao" name="hdnIdMdLitSituacaoIntegracao"
+               value="<?= $idMdLitSituacaoIntegracao ?>"/>
     </form>
-
-<?php PaginaSEI::getInstance()->fecharBody(); ?>
-<?php PaginaSEI::getInstance()->fecharHtml(); ?>
+<?php
+require_once('md_lit_situacao_lancamento_cadastro_js.php');
+PaginaSEI::getInstance()->fecharBody();
+PaginaSEI::getInstance()->fecharHtml();
+?>

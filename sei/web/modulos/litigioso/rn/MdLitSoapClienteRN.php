@@ -182,7 +182,7 @@ class MdLitSoapClienteRN extends nusoap_client{
 
         }
 
-        if(count($complexTypes['elements'])){
+        if($complexTypes['elements']){
             foreach ($complexTypes['elements'] as $nome => $elementArr){
                 $outputArr[] = $nome;
             }

@@ -1,113 +1,113 @@
 <?
 /**
-* TRIBUNAL REGIONAL FEDERAL DA 4ª REGIÃO
-*
-* 15/03/2017 - criado por Ellyson de Jesus Silva
-*
-* Versão do Gerador de Código: 1.40.0
-*
-* Versão no SVN: $Id$
-*/
+ * TRIBUNAL REGIONAL FEDERAL DA 4ª REGIÃO
+ *
+ * 15/03/2017 - criado por Ellyson de Jesus Silva
+ *
+ * Versão do Gerador de Código: 1.40.0
+ *
+ * Versão no SVN: $Id$
+ */
 
 try {
-  require_once dirname(__FILE__).'/../../SEI.php';
+    require_once dirname(__FILE__) . '/../../SEI.php';
 
-  session_start();
+    session_start();
 
-  //////////////////////////////////////////////////////////////////////////////
-  //InfraDebug::getInstance()->setBolLigado(false);
-  //InfraDebug::getInstance()->setBolDebugInfra(true);
-  //InfraDebug::getInstance()->limpar();
-  //////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
+    //InfraDebug::getInstance()->setBolLigado(false);
+    //InfraDebug::getInstance()->setBolDebugInfra(true);
+    //InfraDebug::getInstance()->limpar();
+    //////////////////////////////////////////////////////////////////////////////
 
-  SessaoSEI::getInstance()->validarLink();
+    SessaoSEI::getInstance()->validarLink();
 
-  PaginaSEI::getInstance()->verificarSelecao('md_lit_param_interessado_selecionar');
+    PaginaSEI::getInstance()->verificarSelecao('md_lit_param_interessado_selecionar');
 
-  SessaoSEI::getInstance()->validarPermissao($_GET['acao']);
+    SessaoSEI::getInstance()->validarPermissao($_GET['acao']);
 
-  PaginaSEI::getInstance()->salvarCamposPost(array('selMdLitTipoControle','selMdLitNomeFuncional'));
+    PaginaSEI::getInstance()->salvarCamposPost(array('selMdLitTipoControle', 'selMdLitNomeFuncional'));
 
-  $objMdLitParametrizarInteressadoDTO = new MdLitParametrizarInteressadoDTO();
+    $objMdLitParametrizarInteressadoDTO = new MdLitParametrizarInteressadoDTO();
 
-  $strDesabilitar = '';
+    $strDesabilitar = '';
 
-  $arrComandos = array();
+    $arrComandos = array();
 
-  switch($_GET['acao']){
-    case 'md_lit_parametrizar_interessado_cadastrar':
-      $strTitulo = 'Parametrizar Dados Complementares do Interessado - ';
-      $arrComandos[] = '<button type="submit" accesskey="S" name="sbmCadastrarMdLitParamInteressado" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
-      $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href=\''.SessaoSEI::getInstance()->assinarLink('controlador.php?acao='.PaginaSEI::getInstance()->getAcaoRetorno().'&acao_origem='.$_GET['acao']).'\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
+    switch ($_GET['acao']) {
+        case 'md_lit_parametrizar_interessado_cadastrar':
+            $strTitulo = 'Parametrizar Dados Complementares do Interessado - ';
+            $arrComandos[] = '<button type="submit" accesskey="S" name="sbmCadastrarMdLitParamInteressado" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
+            $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href=\''.PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao='.PaginaSEI::getInstance()->getAcaoRetorno().'&acao_origem='.$_GET['acao'].PaginaSEI::getInstance()->montarAncora($_GET['id_tipo_processo_litigioso']))).'\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
 
-      //chamando o objeto do MdLitTipoControleRN
-      $objTipoControleLitigiosoDTO = new MdLitTipoControleDTO();
-      $objTipoControleLitigiosoRN  = new MdLitTipoControleRN();
+            //chamando o objeto do MdLitTipoControleRN
+            $objTipoControleLitigiosoDTO = new MdLitTipoControleDTO();
+            $objTipoControleLitigiosoRN = new MdLitTipoControleRN();
 
-      //consulta do tipo de controle
-      $objTipoControleLitigiosoDTO->retTodos();
-      $objTipoControleLitigiosoDTO->setNumIdTipoControleLitigioso($_GET['id_tipo_processo_litigioso']);
-      $objTipoControleLitigiosoDTO = $objTipoControleLitigiosoRN->consultar($objTipoControleLitigiosoDTO);
+            //consulta do tipo de controle
+            $objTipoControleLitigiosoDTO->retTodos();
+            $objTipoControleLitigiosoDTO->setNumIdTipoControleLitigioso($_GET['id_tipo_processo_litigioso']);
+            $objTipoControleLitigiosoDTO = $objTipoControleLitigiosoRN->consultar($objTipoControleLitigiosoDTO);
 
-      if (isset($_POST['sbmCadastrarMdLitParamInteressado'])) {
+            if (isset($_POST['sbmCadastrarMdLitParamInteressado'])) {
 
-        $objTipoControleLitigiosoDTO->setStrSinParamModalComplInteressado($_POST['rdoSinParamModalComplInteres']);
+                $objTipoControleLitigiosoDTO->setStrSinParamModalComplInteressado($_POST['rdoSinParamModalComplInteres']);
 
-        $arrObjParametrizarInteressadoDTOSalvar = array();
-        $bolEditar = false;
+                $arrObjParametrizarInteressadoDTOSalvar = array();
+                $bolEditar = false;
 
-          //populando o $arrObjParametrizarInteressadoDTOSalvar que foram salvo
-          foreach ($_POST['hdnArrayIdMdLitNomeFuncional'] as $IdMdLitNomeFuncional ){
-              $objMdLitParametrizarInteressadoDTO = new MdLitParametrizarInteressadoDTO();
+                //populando o $arrObjParametrizarInteressadoDTOSalvar que foram salvo
+                foreach ($_POST['hdnArrayIdMdLitNomeFuncional'] as $IdMdLitNomeFuncional) {
+                    $objMdLitParametrizarInteressadoDTO = new MdLitParametrizarInteressadoDTO();
 
-              $objMdLitParametrizarInteressadoDTO->setStrSinExibe(PaginaSEI::getInstance()->getCheckbox($_POST['chkSinExibe_'.$IdMdLitNomeFuncional]));
-              $objMdLitParametrizarInteressadoDTO->setStrSinObrigatorio(PaginaSEI::getInstance()->getCheckbox($_POST['chkSinObrigatorio_'.$IdMdLitNomeFuncional]));
-              $objMdLitParametrizarInteressadoDTO->setStrLabelCampo($_POST['txtLabelCampo_'.$IdMdLitNomeFuncional]);
-              $objMdLitParametrizarInteressadoDTO->setNumTamanho($_POST['txtTamanho_'.$IdMdLitNomeFuncional]);
-              $objMdLitParametrizarInteressadoDTO->setStrDescricaoAjuda($_POST['txtDescricaoAjuda_'.$IdMdLitNomeFuncional]);
-              $objMdLitParametrizarInteressadoDTO->setStrSinCampoMapeado($_POST['hdnSinCampoMapeado_'.$IdMdLitNomeFuncional]);
-              $objMdLitParametrizarInteressadoDTO->setNumIdMdLitNomeFuncional($IdMdLitNomeFuncional);
-              $objMdLitParametrizarInteressadoDTO->setNumIdMdLitTipoControle($objTipoControleLitigiosoDTO->getNumIdTipoControleLitigioso());
-              $objMdLitParametrizarInteressadoDTO->setNumIdMdLitParamInteressado($_POST['IdMdLitParamInteressado_'.$IdMdLitNomeFuncional]);
-              if(!empty($_POST['IdMdLitParamInteressado_'.$IdMdLitNomeFuncional]))
-                  $bolEditar = true;
+                    $objMdLitParametrizarInteressadoDTO->setStrSinExibe(PaginaSEI::getInstance()->getCheckbox($_POST['chkSinExibe_' . $IdMdLitNomeFuncional]));
+                    $objMdLitParametrizarInteressadoDTO->setStrSinObrigatorio(PaginaSEI::getInstance()->getCheckbox($_POST['chkSinObrigatorio_' . $IdMdLitNomeFuncional]));
+                    $objMdLitParametrizarInteressadoDTO->setStrLabelCampo($_POST['txtLabelCampo_' . $IdMdLitNomeFuncional]);
+                    $objMdLitParametrizarInteressadoDTO->setNumTamanho($_POST['txtTamanho_' . $IdMdLitNomeFuncional]);
+                    $objMdLitParametrizarInteressadoDTO->setStrDescricaoAjuda($_POST['txtDescricaoAjuda_' . $IdMdLitNomeFuncional]);
+                    $objMdLitParametrizarInteressadoDTO->setStrSinCampoMapeado($_POST['hdnSinCampoMapeado_' . $IdMdLitNomeFuncional]);
+                    $objMdLitParametrizarInteressadoDTO->setNumIdMdLitNomeFuncional($IdMdLitNomeFuncional);
+                    $objMdLitParametrizarInteressadoDTO->setNumIdMdLitTipoControle($objTipoControleLitigiosoDTO->getNumIdTipoControleLitigioso());
+                    $objMdLitParametrizarInteressadoDTO->setNumIdMdLitParamInteressado($_POST['IdMdLitParamInteressado_' . $IdMdLitNomeFuncional]);
+                    if (!empty($_POST['IdMdLitParamInteressado_' . $IdMdLitNomeFuncional]))
+                        $bolEditar = true;
 
-              $arrObjParametroSalvar['MdLitParametrizarInteressadoDTO'][] = $objMdLitParametrizarInteressadoDTO;
-          }
+                    $arrObjParametroSalvar['MdLitParametrizarInteressadoDTO'][] = $objMdLitParametrizarInteressadoDTO;
+                }
 
-        try{
+                try {
 
-          //populando o array com o tipo de processo
-          $arrObjParametroSalvar['MdLitTipoControleDTO'] = $objTipoControleLitigiosoDTO;
-          $objMdLitParametrizarInteressadoRN = new MdLitParametrizarInteressadoRN();
+                    //populando o array com o tipo de processo
+                    $arrObjParametroSalvar['MdLitTipoControleDTO'] = $objTipoControleLitigiosoDTO;
+                    $objMdLitParametrizarInteressadoRN = new MdLitParametrizarInteressadoRN();
 
-          if($bolEditar && $_POST['rdoSinParamModalComplInteres'] == 'N'){
-              // se modificar o SinParamModalComplInteres para Não os registro do ParametrizarInteressado será excluido
-              $objMdLitParametrizarInteressadoRN->excluirMultiplos($arrObjParametroSalvar);
-          }elseif($bolEditar){
-              $objMdLitParametrizarInteressadoDTO = $objMdLitParametrizarInteressadoRN->alterarMultiplos($arrObjParametroSalvar);
-          }else{
-              $objMdLitParametrizarInteressadoDTO = $objMdLitParametrizarInteressadoRN->cadastrarMultiplos($arrObjParametroSalvar);
-          }
+                    if ($bolEditar && $_POST['rdoSinParamModalComplInteres'] == 'N') {
+                        // se modificar o SinParamModalComplInteres para Não os registro do ParametrizarInteressado será excluido
+                        $objMdLitParametrizarInteressadoRN->excluirMultiplos($arrObjParametroSalvar);
+                    } elseif ($bolEditar) {
+                        $objMdLitParametrizarInteressadoDTO = $objMdLitParametrizarInteressadoRN->alterarMultiplos($arrObjParametroSalvar);
+                    } else {
+                        $objMdLitParametrizarInteressadoDTO = $objMdLitParametrizarInteressadoRN->cadastrarMultiplos($arrObjParametroSalvar);
+                    }
 
-          PaginaSEI::getInstance()->setStrMensagem('Os dados foram parametrizados com sucesso!',InfraPagina::$TIPO_MSG_AVISO);
-          header('Location: '.SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_parametrizar_interessado_cadastrar&acao_origem='.$_GET['acao'].'&id_tipo_processo_litigioso='.$objTipoControleLitigiosoDTO->getNumIdTipoControleLitigioso()));
-          die;
-        }catch(Exception $e){
-          PaginaSEI::getInstance()->processarExcecao($e);
-        }
+                    PaginaSEI::getInstance()->setStrMensagem('Os dados foram parametrizados com sucesso!', InfraPagina::$TIPO_MSG_AVISO);
+                    header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_parametrizar_interessado_cadastrar&acao_origem=' . $_GET['acao'] . '&id_tipo_processo_litigioso=' . $objTipoControleLitigiosoDTO->getNumIdTipoControleLitigioso()));
+                    die;
+                } catch (Exception $e) {
+                    PaginaSEI::getInstance()->processarExcecao($e);
+                }
 
-      }
+            }
 
-      $sigla = $objTipoControleLitigiosoDTO->getStrSigla() ? $objTipoControleLitigiosoDTO->getStrSigla() : '';
+            $sigla = $objTipoControleLitigiosoDTO->getStrSigla() ? $objTipoControleLitigiosoDTO->getStrSigla() : '';
 
-      $strSubTitulo = 'Tipo de Controle Litigioso: ' . PaginaSEI::tratarHTML($sigla);
-      $strTitulo .= PaginaSEI::tratarHTML($sigla);
-      break;
+            $strSubTitulo = 'Tipo de Controle Litigioso: ' . PaginaSEI::tratarHTML($sigla);
+            $strTitulo .= PaginaSEI::tratarHTML($sigla);
+            break;
 
-    default:
-      throw new InfraException("Ação '".$_GET['acao']."' não reconhecida.");
-  }
+        default:
+            throw new InfraException("Ação '" . $_GET['acao'] . "' não reconhecida.");
+    }
 
     //começo da tabela
     $objMdLitParametrizarInteressadoRN = new MdLitParametrizarInteressadoRN();
@@ -131,11 +131,11 @@ try {
         $strResultado .= '<tr>';
 
         $strResultado .= '<th class="infraTh" width="20%">&nbsp;Nome funcional&nbsp;</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="5%">&nbsp;Exibe?&nbsp;</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="5%">&nbsp;Obrigatório?&nbsp;</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="5%">&nbsp;Label do campo&nbsp;</th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="3%">&nbsp;Exibe?&nbsp;</th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="3%">&nbsp;Obrigatório?&nbsp;</th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="20%" style="min-width: 200px">&nbsp;Label do campo&nbsp;</th>' . "\n";
         $strResultado .= '<th class="infraTh" width="5%">&nbsp;Tamanho&nbsp;</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="25%">&nbsp;Descrição da ajuda&nbsp;</th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="35%" style="min-width: 300px">&nbsp;Descrição da ajuda&nbsp;</th>' . "\n";
         $strResultado .= '<th class="infraTh" width="5%">&nbsp;Campo mapeado&nbsp;</th>' . "\n";
         $strResultado .= '</tr>' . "\n";
         $strCssTr = '';
@@ -149,17 +149,17 @@ try {
                 $strCssTr = '<tr id="paramInteressadoTable_' . $idLinha . '" name="paramInteressadoTable_' . $idLinha . '" class="infraTrClara">';
             }
 
-            $totalRegistros        = count($arrObjMdLitParametrizarInteressadoDTO);
+            $totalRegistros = count($arrObjMdLitParametrizarInteressadoDTO);
 
-            $exibe                      = $arrObjMdLitParametrizarInteressadoDTO[$i]->getStrSinExibe() === 'S' ? 'checked="checked"' : '';
-            $obrigatorio                = $arrObjMdLitParametrizarInteressadoDTO[$i]->getStrSinObrigatorio() === 'S' ? 'checked="checked"' : '';
-            $disabled                   = $arrObjMdLitParametrizarInteressadoDTO[$i]->getStrSinExibe() !== 'S' ? 'disabled="disabled"' : '';
-            $numIdMdLitNomeFuncional    = $arrObjMdLitParametrizarInteressadoDTO[$i]->getNumIdMdLitNomeFuncional();
-            $sinCampoMapeado            = $arrObjMdLitParametrizarInteressadoDTO[$i]->getStrSinCampoMapeado() == 'S'? 'Sim': 'Não' ;
+            $exibe = $arrObjMdLitParametrizarInteressadoDTO[$i]->getStrSinExibe() === 'S' ? 'checked="checked"' : '';
+            $obrigatorio = $arrObjMdLitParametrizarInteressadoDTO[$i]->getStrSinObrigatorio() === 'S' ? 'checked="checked"' : '';
+            $disabled = $arrObjMdLitParametrizarInteressadoDTO[$i]->getStrSinExibe() !== 'S' ? 'disabled="disabled"' : '';
+            $numIdMdLitNomeFuncional = $arrObjMdLitParametrizarInteressadoDTO[$i]->getNumIdMdLitNomeFuncional();
+            $sinCampoMapeado = $arrObjMdLitParametrizarInteressadoDTO[$i]->getStrSinCampoMapeado() == 'S' ? 'Sim' : 'Não';
 
-            if($arrObjMdLitParametrizarInteressadoDTO[$i]->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$CNPJ_CPF || $arrObjMdLitParametrizarInteressadoDTO[$i]->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$OUTORGA){
+            if ($arrObjMdLitParametrizarInteressadoDTO[$i]->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$CNPJ_CPF || $arrObjMdLitParametrizarInteressadoDTO[$i]->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$OUTORGA) {
                 $exibe = 'checked="checked" disabled="disabled" ';
-                $obrigatorio =  'checked="checked" disabled="disabled"';
+                $obrigatorio = 'checked="checked" disabled="disabled"';
                 $disabled = '';
             }
 
@@ -168,11 +168,11 @@ try {
             $strResultado .= "<input type='hidden' name='hdnArrayIdMdLitNomeFuncional[]' value='{$numIdMdLitNomeFuncional}' /> <input type='hidden' name='IdMdLitParamInteressado_{$numIdMdLitNomeFuncional}' value='{$arrObjMdLitParametrizarInteressadoDTO[$i]->getNumIdMdLitParamInteressado()}' /> ";
             $strResultado .= PaginaSEI::tratarHTML($arrObjMdLitParametrizarInteressadoDTO[$i]->getStrNomeMdLitNomeFuncional());
             $strResultado .= "</td>";
-            $strResultado .= "<td align='center'><input type='checkbox' onchange='campoTabelaDisabilidado(this)' name='chkSinExibe_{$numIdMdLitNomeFuncional}' class='exibe'  id='chkSinExibe_{$numIdMdLitNomeFuncional}' {$exibe}> </input></td>";
-            $strResultado .= "<td align='center'><input type='checkbox' {$disabled} name='chkSinObrigatorio_{$numIdMdLitNomeFuncional}' class='obrigatorio'  id='chkSinObrigatorio_{$numIdMdLitNomeFuncional}' $obrigatorio > </input></td>";
-            $strResultado .= "<td align='center'> <input type='text' {$disabled} maxlength='25' name='txtLabelCampo_{$numIdMdLitNomeFuncional}'  id='txtLabelCampo_{$numIdMdLitNomeFuncional}' value='".PaginaSEI::tratarHTML($arrObjMdLitParametrizarInteressadoDTO[$i]->getStrLabelCampo())."'  /> </td>";
-            $strResultado .= $arrObjMdLitParametrizarInteressadoDTO[$i]->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$NUMERO ? "<td align='center'> <input style='width: 50%;' {$disabled} type='text' maxlength='3' onkeypress='return SomenteNumero(event)' name='txtTamanho_{$numIdMdLitNomeFuncional}' id='txtTamanho_{$numIdMdLitNomeFuncional}' value='".PaginaSEI::tratarHTML($arrObjMdLitParametrizarInteressadoDTO[$i]->getNumTamanho())."' /> </td>": "<td></td>";
-            $strResultado .= "<td align='center'> <input type='text' maxlength='150' name='txtDescricaoAjuda_{$numIdMdLitNomeFuncional}' id='txtDescricaoAjuda_{$numIdMdLitNomeFuncional}' {$disabled} style='width: 95%;'  value='".PaginaSEI::tratarHTML($arrObjMdLitParametrizarInteressadoDTO[$i]->getStrDescricaoAjuda())."'  /> </td>";
+            $strResultado .= "<td align='center'><input type='checkbox' onchange='campoTabelaDisabilidado(this)' name='chkSinExibe_{$numIdMdLitNomeFuncional}' class='infraCheckbox exibe'  id='chkSinExibe_{$numIdMdLitNomeFuncional}' {$exibe}> </input></td>";
+            $strResultado .= "<td align='center'><input type='checkbox' {$disabled} name='chkSinObrigatorio_{$numIdMdLitNomeFuncional}' class='obrigatorio infraCheckbox'  id='chkSinObrigatorio_{$numIdMdLitNomeFuncional}' $obrigatorio > </input></td>";
+            $strResultado .= "<td align='center'> <input type='text' class='form-control' {$disabled} maxlength='25' name='txtLabelCampo_{$numIdMdLitNomeFuncional}'  id='txtLabelCampo_{$numIdMdLitNomeFuncional}' value='" . PaginaSEI::tratarHTML($arrObjMdLitParametrizarInteressadoDTO[$i]->getStrLabelCampo()) . "'  /> </td>";
+            $strResultado .= $arrObjMdLitParametrizarInteressadoDTO[$i]->getNumIdMdLitNomeFuncional() == MdLitNomeFuncionalRN::$NUMERO ? "<td align='center'> <input {$disabled} type='text' class='form-control' maxlength='3' onkeypress='return SomenteNumero(event)' name='txtTamanho_{$numIdMdLitNomeFuncional}' id='txtTamanho_{$numIdMdLitNomeFuncional}' value='" . PaginaSEI::tratarHTML($arrObjMdLitParametrizarInteressadoDTO[$i]->getNumTamanho()) . "' /> </td>" : "<td></td>";
+            $strResultado .= "<td align='center'><textarea id='txtDescricaoAjuda_{$numIdMdLitNomeFuncional}' name='txtDescricaoAjuda_{$numIdMdLitNomeFuncional}' rows='3' class='infraTextArea form-control' onkeypress='return infraLimitarTexto(this,event,250);' {$disabled}>".PaginaSEI::tratarHTML($arrObjMdLitParametrizarInteressadoDTO[$i]->getStrDescricaoAjuda())." </textarea></td>";
             $strResultado .= "<td align='center'> <input type='hidden' name='hdnSinCampoMapeado_{$numIdMdLitNomeFuncional}' id='chkSinCampoMapeado_{$numIdMdLitNomeFuncional}' value='{$arrObjMdLitParametrizarInteressadoDTO[$i]->getStrSinCampoMapeado()}' /> {$sinCampoMapeado} </td>";
 
             $strResultado .= '</tr>' . "\n";
@@ -181,200 +181,76 @@ try {
     }
     //fim da tabela
 
-}catch(Exception $e){
-  PaginaSEI::getInstance()->processarExcecao($e);
+} catch (Exception $e) {
+    PaginaSEI::getInstance()->processarExcecao($e);
 }
 
 PaginaSEI::getInstance()->montarDocType();
 PaginaSEI::getInstance()->abrirHtml();
 PaginaSEI::getInstance()->abrirHead();
 PaginaSEI::getInstance()->montarMeta();
-PaginaSEI::getInstance()->montarTitle(PaginaSEI::getInstance()->getStrNomeSistema().' - '.$strTitulo);
+PaginaSEI::getInstance()->montarTitle(PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo);
 PaginaSEI::getInstance()->montarStyle();
 PaginaSEI::getInstance()->abrirStyle();
-?>
-<?if(0){?><style><?}?>
-#lblSinParamModalComplInteres{position:absolute;left:0%;top:0%;}
-#imgSinParamModalComplInteres{position:absolute;left:0%;top:0%;left:355px;}
-#divSinParamModalComplInteresSim{position:absolute;left:0%;top:40%;width:50%;}
-#divSinParamModalComplInteresNao{position:absolute;left:5%;top:40%;width:50%;}
-#divInfraAreaTabela{visibility: hidden;}
-
-/*#btAjuda>img{width: 16px;height: 16px;}*/
-
-<?if(0){?></style><?}?>
-<?
 PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->abrirJavaScript();
-?>
-<?if(0){?><script type="text/javascript"><?}?>
-
-function inicializar(){
-  if ('<?=$_GET['acao']?>'=='md_lit_parametrizar_interessado_cadastrar'){
-    document.getElementById('optSinParamModalComplInteresSim').focus();
-  } else if ('<?=$_GET['acao']?>'=='md_lit_param_interessado_consultar'){
-    infraDesabilitarCamposAreaDados();
-  }else{
-    document.getElementById('btnCancelar').focus();
-  }
-
-  infraEfeitoTabelas();
-    configurarTabelaDados();
-}
-
-function validarCadastro() {
-  if (!document.getElementById('optSinParamModalComplInteresSim').checked && !document.getElementById('optSinParamModalComplInteresNao').checked) {
-    alert('Escolha uma opção apresenta modal de dados complementares do interessado.');
-    document.getElementById('optSinParamModalComplInteresSim').focus();
-    return false;
-  }
-
-  if (document.getElementById('optSinParamModalComplInteresSim').checked ) {
-    var elementExibeChecked = false;
-    for(var i = 1; i < 10; i++){
-        var elementExibe = document.getElementById('chkSinExibe_'+i);
-        if(elementExibe == null){
-            break;
-        }
-        if(elementExibe.checked){
-            elementExibeChecked = true;
-            var nomeFuncional = infraTrim(document.getElementById('nome_funcional_'+i).textContent);
-            if(document.getElementById('txtLabelCampo_'+i) != null && document.getElementById('txtLabelCampo_'+i).value == ''){
-                alert('O label do campo da linha "'+nomeFuncional+'" é obrigatório');
-                return false;
-            }
-            if(document.getElementById('txtTamanho_'+i) != null && document.getElementById('txtTamanho_'+i).value == '') {
-                alert('O tamanho da linha "'+nomeFuncional+'" é obrigatório');
-                return false;
-            }else if(document.getElementById('txtTamanho_'+i) != null && parseInt(document.getElementById('txtTamanho_'+i).value) == 0){
-                alert('O tamanho da linha "'+nomeFuncional+'" precisa ser maior que zero!');
-                return false;
-
-            }
-        }
-    }
-
-    if(!elementExibeChecked){
-        alert('Ao menos um campo deve ser marcado como Exibe.');
-        return false;
-    }
-
-  }
-    document.getElementById('chkSinExibe_1').disabled = false;
-    document.getElementById('chkSinObrigatorio_1').disabled = false;
-    document.getElementById('chkSinExibe_2').disabled = false;
-    document.getElementById('chkSinObrigatorio_2').disabled = false;
-  return true;
-}
-
-function OnSubmitForm() {
-  return validarCadastro();
-}
-function configurarTabelaDados(){
-    document.getElementById('divInfraAreaTabela').style.visibility = 'hidden';
-    if (document.getElementById('optSinParamModalComplInteresSim').checked){
-        document.getElementById('divInfraAreaTabela').style.visibility = 'visible';
-    }else if (document.getElementById('optSinParamModalComplInteresNao').checked){
-        document.getElementById('divInfraAreaTabela').style.visibility = 'hidden';
-    }
-}
-
-//função responsavel por limpar e disabilitar os inputs da linha da tabela
-// Element e o checkbox dentro da td da table
-function campoTabelaDisabilidado(element){
-    if(!element.checked){
-        var row = document.getElementById('tableDadosComplementarInteressado').rows[element.parentNode.parentNode.rowIndex];
-
-        //td "Obrigatório?"
-        row.cells[2].children[0].disabled = true;
-        row.cells[2].children[0].checked = false;
-
-        //td "label do campo"
-        row.cells[3].children[0].disabled = true;
-        row.cells[3].children[0].value = '';
-
-        //td "Tamanho"
-        if(row.cells[4].children[0]) {
-            row.cells[4].children[0].disabled = true;
-            row.cells[4].children[0].value = '';
-        }
-
-        //td "Descrição da ajuda"
-        row.cells[5].children[0].disabled = true;
-        row.cells[5].children[0].value = '';
-    }else{
-        var row = document.getElementById('tableDadosComplementarInteressado').rows[element.parentNode.parentNode.rowIndex];
-
-        //td "Obrigatório?"
-        row.cells[2].children[0].disabled = false;
-
-        //td "label do campo"
-        row.cells[3].children[0].disabled = false;
-
-        //td "Tamanho"
-        if(row.cells[4].children[0]){
-            row.cells[4].children[0].disabled = false;
-        }
-
-        //td "Descrição da ajuda"
-        row.cells[5].children[0].disabled = false;
-
-    }
-}
-
-
-    function SomenteNumero(e) {
-        var tecla = (window.event) ? event.keyCode : e.which;
-        if ((tecla > 47 && tecla < 58)) return true;
-        else {
-            if (tecla == 8 || tecla == 0) return true;
-            else  return false;
-        }
-    }
-
-<?if(0){?></script><?}?>
-<?
 PaginaSEI::getInstance()->fecharJavaScript();
+require_once("md_lit_param_interessado_cadastro_css.php");
 PaginaSEI::getInstance()->fecharHead();
-PaginaSEI::getInstance()->abrirBody($strTitulo,'onload="inicializar();"');
+PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 ?>
 
-<form id="frmMdLitParamInteressadoCadastro" method="post" onsubmit="return OnSubmitForm();" action="<?=SessaoSEI::getInstance()->assinarLink('controlador.php?acao='.$_GET['acao']. '&id_tipo_processo_litigioso=' . $_GET['id_tipo_processo_litigioso'] . '&acao_origem='.$_GET['acao'])?>">
-<?
-
-PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
-//PaginaSEI::getInstance()->montarAreaValidacao();
-?>
-    <p><label class="infraLabel"><?= $strSubTitulo ?></label></p>
-<?
-    PaginaSEI::getInstance()->abrirAreaDados('4em');
-?>
-    <div id="divSinParamModalComplInteres" class="infraDivRadio">
-
-        <label id="lblSinParamModalComplInteres" for="lblSinParamModalComplInteres" accesskey="" class="infraLabelObrigatorio">Apresenta Modal de Dados Complementares do Interessado:</label>
-        <img src="<?= PaginaSEI::getInstance()->getDiretorioImagensGlobal() ?>/ajuda.gif" name="ajuda" id="imgSinParamModalComplInteres" <?= PaginaSEI::montarTitleTooltip('Este parâmetro define se a modal de Dados Complementares de Interessado será apresentada para os Usuários no cadastro dos processos no Controle Litigioso. Esta opção deve ser marcada caso o órgão queira fazer a Gestão de Multas por integração.') ?> class="infraImg"/>
-        <div id="divSinParamModalComplInteresSim" class="infraDivRadio">
-            <input type="radio" name="rdoSinParamModalComplInteres" onclick="configurarTabelaDados();" id="optSinParamModalComplInteresSim" <?=PaginaSEI::getInstance()->setRadio($objTipoControleLitigiosoDTO->getStrSinParamModalComplInteressado(), 'S')?> class="infraRadio" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
-            <span id="spnSinParamModalComplInteresSim"><label id="lblSinParamModalComplInteresSim" for="optSinParamModalComplInteresSim" class="infraLabelRadio">Sim</label></span>
+    <form id="frmMdLitParamInteressadoCadastro" method="post" onsubmit="return OnSubmitForm();"
+          action="<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&id_tipo_processo_litigioso=' . $_GET['id_tipo_processo_litigioso'] . '&acao_origem=' . $_GET['acao']) ?>">
+        <?
+        PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
+        ?>
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                <p><label class="infraLabel"><?= $strSubTitulo ?></label></p>
+            </div>
         </div>
-        <div id="divSinParamModalComplInteresNao" class="infraDivRadio">
-            <input type="radio" name="rdoSinParamModalComplInteres" onclick="configurarTabelaDados();" id="optSinParamModalComplInteresNao" <?=PaginaSEI::getInstance()->setRadio($objTipoControleLitigiosoDTO->getStrSinParamModalComplInteressado(),'N')?> class="infraRadio" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
-            <span id="spnSinParamModalComplInteresNao"><label id="lblSinParamModalComplInteresNao" for="optSinParamModalComplInteresNao" class="infraLabelRadio">Não</label></span>
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <label id="lblSinParamModalComplInteres" for="lblSinParamModalComplInteres" accesskey=""
+                       class="infraLabelObrigatorio">Apresenta Modal de Dados Complementares do Interessado:
+                    <img src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>" name="ajuda"
+                         id="imgSinParamModalComplInteres" <?= PaginaSEI::montarTitleTooltip('Este parâmetro define se a modal de Dados Complementares de Interessado será apresentada para os Usuários no cadastro dos processos no Controle Litigioso. Esta opção deve ser marcada caso o órgão queira fazer a Gestão de Multas por integração.', 'Ajuda') ?>
+                         class="infraImgModulo"/>
+                </label>
+            </div>
         </div>
-    </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6 col-xl-3">
+                <div id="divSinParamModalComplInteresSim" class="infraDivRadio">
+                    <input type="radio" name="rdoSinParamModalComplInteres" onclick="configurarTabelaDados();"
+                           id="optSinParamModalComplInteresSim" <?= PaginaSEI::getInstance()->setRadio($objTipoControleLitigiosoDTO->getStrSinParamModalComplInteressado(), 'S') ?>
+                           class="infraRadio" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                    <span id="spnSinParamModalComplInteresSim"><label id="lblSinParamModalComplInteresSim"
+                                                                      for="optSinParamModalComplInteresSim"
+                                                                      class="infraLabelRadio">Sim</label></span>
+                </div>
+                <div id="divSinParamModalComplInteresNao" class="infraDivRadio">
+                    <input type="radio" name="rdoSinParamModalComplInteres" onclick="configurarTabelaDados();"
+                           id="optSinParamModalComplInteresNao" <?= PaginaSEI::getInstance()->setRadio($objTipoControleLitigiosoDTO->getStrSinParamModalComplInteressado(), 'N') ?>
+                           class="infraRadio" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                    <span id="spnSinParamModalComplInteresNao"><label id="lblSinParamModalComplInteresNao"
+                                                                      for="optSinParamModalComplInteresNao"
+                                                                      class="infraLabelRadio">Não</label></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <?
+                PaginaSEI::getInstance()->montarAreaTabela($strResultado, $numRegistros);
+                ?>
+            </div>
+        </div>
+    </form>
 <?
-PaginaSEI::getInstance()->fecharAreaDados();
-?>
-
-<?
-    PaginaSEI::getInstance()->montarAreaTabela($strResultado, $numRegistros);
-?>
-  <?
-  //PaginaSEI::getInstance()->montarAreaDebug();
-  ?>
-</form>
-<?
+require_once("md_lit_param_interessado_cadastro_js.php");
 PaginaSEI::getInstance()->fecharBody();
 PaginaSEI::getInstance()->fecharHtml();
 ?>

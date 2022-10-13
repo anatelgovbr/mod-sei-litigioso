@@ -1,66 +1,54 @@
-button#sbmConsultarNumero {z-index: 1;}
+#fldInfoComplementares{ height: 100%;}
+#fldAbrangencia{ height: 100%;}
+#fldModalidadesOutorga{ height: 100%;}
+#fldModalidadesNaoOutorgada{ height: 100%;}
+#fldAbrangenciaNaoOutorgado{ height: 100%;}
 
-#imgAjudaCpf{position: relative;top: 4px;}
-#imgAjudaModalidade{vertical-align: middle;padding: .1em 0;width: 16px;height: 16px;}
-#imgAjudaAbrangencia{vertical-align: middle;padding: .1em 0;width: 16px;height: 16px;}
+.linha{
+padding-top: 10px;
+}
 
-#lblNumero {position:absolute;left:0;top:0;}
-#txtNumero {position:absolute;left:0;top: 35%;width:50%;}
-#imgAjudaNumero {position:absolute;left:51%;top:40%;}
-#divNumero{height:5em;}
+.botoes{
+padding-left: 5px;
+width: 40px;
+}
 
-#lblServicosNaoOutorga {position:absolute;left:0;top:0;}
-#txtServicosNaoOutorga {position:absolute;left:0;top:18%;width:50%;}
-#imgAjudaServicosNaoOutorga {position:absolute;left:51%;top:19%;}
-#selServicosNaoOutorga {position:absolute;left:0;top:38%;width:90%;height:56%;}
-#divOpcoesServicosNaoOutorga {position:absolute;left:91%;top:38%;}
+.infraImgModulo{
+width:20px;
+margin-top: 3px;
+padding-left: 1px;
+}
 
- #lblServicos {position:absolute;left:0;top:0;}
-#txtServicos {position:absolute;left:0;top:18%;width:50%;}
-#imgAjudaServicos {position:absolute;left:51%;top:19%;}
-#selServicos {position:absolute;left:0;top:38%;width:90%;height:56%;}
-#divOpcoesServicos {position:absolute;left:91%;top:38%;}
+#imgAjudaModalidadeNaoOutorga{
+margin-top: 4px;
+}
 
-#lblEstado {position:absolute;left:0;top:0;}
-#txtEstado {position:absolute;left:0;top:18%;width:50%;}
-#imgAjudaEstado {position:absolute;left:51%;top:19%;}
-#selEstado {position:absolute;left:0;top:38%;width:90%;height:56%;}
-#divOpcoesEstado {position:absolute;left:91%;top:38%;}
+#imgAjudaAbrangenciaNaoOutorgado{
+margin-top: 4px;
+}
 
-#lblCidade {position:absolute;left:0;top:0;}
-#txtCidade {position:absolute;left:0;top:18%;width:50%;}
-#imgAjudaCidade {position:absolute;left:51%;top:19%;}
-#selCidade {position:absolute;left:0;top:38%;width:90%;height:56%;}
-#divOpcoesCidade {position:absolute;left:91%;top:38%;}
+#imgAjudaModalidade{
+margin-top: 4px;
+}
+
+#btnSbmGrarusuario{
+margin-top: 10px;
+width: 100%;
+}
+
+#sbmConsultarNumero {
+float: right;
+}
+
+#AdicionarNaoOutorgado {
+float: right;
+}
+
+#divServicos {
+height:11em;
+}
 
 #fldModalidadesOutorga {display: inline-block;float:left;}
 #fldAbrangencia {display: inline-block;float:left;}
 #fldAbrangencia label,#fldModalidadesOutorga label{cursor: pointer;}
-#sbmConsultarNumero{position:absolute; left:85%;}
 #sbmGravarUsuario{float: right;margin-bottom: 10px;}
-
-fieldset#fldInfoComplementares {margin-bottom: 10px;}
-legend#legendNumero {margin-bottom: 10px;}
-#dvDadosComplementaresConsulta {margin-bottom: 15px;}
-
-#AdicionarNaoOutorgado{float: right;margin-bottom: 10px;}
-
-#imgAjudaModalidadeNaoOutorga{vertical-align: middle;padding: .1em 0;width: 16px;height: 16px;}
-#fldModalidadesNaoOutorgada {display: inline-block;float:left;}
-
-#imgAjudaAbrangenciaNaoOutorgado{vertical-align: middle;padding: .1em 0;width: 16px;height: 16px;}
-#fldAbrangenciaNaoOutorgado {display: inline-block;float:left;}
-#fldAbrangenciaNaoOutorgado label,#fldModalidadesNaoOutorgada label{cursor: pointer;}
-
-#lblEstadoNaoOutorgado {position:absolute;left:0;top:0;}
-#txtEstadoNaoOutorgado {position:absolute;left:0;top:18%;width:50%;}
-#imgAjudaEstadoNaoOutorgado {position:absolute;left:51%;top:19%;}
-#selEstadoNaoOutorgado {position:absolute;left:0;top:38%;width:90%;height:56%;}
-#divOpcoesEstadoNaoOutorgado {position:absolute;left:91%;top:38%;}
-
-#lblCidadeNaoOutorgado {position:absolute;left:0;top:0;}
-#txtCidadeNaoOutorgado {position:absolute;left:0;top:18%;width:50%;}
-#imgAjudaCidadeNaoOutorgado {position:absolute;left:51%;top:19%;}
-#selCidadeNaoOutorgado {position:absolute;left:0;top:38%;width:90%;height:56%;}
-#divOpcoesCidadeNaoOutorgado {position:absolute;left:91%;top:38%;}
-

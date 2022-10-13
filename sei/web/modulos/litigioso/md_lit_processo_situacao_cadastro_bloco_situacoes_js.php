@@ -2,15 +2,15 @@
 
     var validarDataIntimacaoMulta = '';
 
-    function validarDocumento(idDocAlterar){
-        if(isDadosFinalizadosAlt){
-           validarDocumentoAlterar();
-        }else{
+    function validarDocumento(idDocAlterar) {
+        if (isDadosFinalizadosAlt) {
+            validarDocumentoAlterar();
+        } else {
             validarDocumentoCadastro(idDocAlterar);
         }
     }
 
-    function validarDocumentoAlterar(){
+    function validarDocumentoAlterar() {
         var txtNumeroSei = document.getElementById('txtNumeroSei');
 
         if (txtNumeroSei.value != '') {
@@ -18,7 +18,7 @@
                 numeroSei: txtNumeroSei.value,
                 idTipoControle: document.getElementById('hdnIdTipoControle').value,
                 idProcedimento: document.getElementById('hdnIdProcedimento').value,
-                idSituacao    : document.getElementById('selSituacoes').value
+                idSituacao: document.getElementById('selSituacoes').value
             };
 
             $.ajax({
@@ -31,14 +31,14 @@
                         alert($(r).find('Msg').text());
                         txtNumeroSei.value = '';
                     } else {
-                        document.getElementById('txtNumeroSei').value            = $(r).find('NumeroSei').text();
-                        document.getElementById('txtDataDocumento').value        = $(r).find('DtDocumento').text();
-                        document.getElementById('hdnDtDocumento').value          = $(r).find('DtDocumento').text();
-                        document.getElementById('txtTipoDocumento').value        = $(r).find('TipoDocumento').text();
-                        document.getElementById('hdnIdSerieDocNumeroSei').value  = $(r).find('IdSerieNumeroSei').text();
+                        document.getElementById('txtNumeroSei').value = $(r).find('NumeroSei').text();
+                        document.getElementById('txtDataDocumento').value = $(r).find('DtDocumento').text();
+                        document.getElementById('hdnDtDocumento').value = $(r).find('DtDocumento').text();
+                        document.getElementById('txtTipoDocumento').value = $(r).find('TipoDocumento').text();
+                        document.getElementById('hdnIdSerieDocNumeroSei').value = $(r).find('IdSerieNumeroSei').text();
                         document.getElementById('hdnIdDocumentoNumeroSei').value = $(r).find('IdDocumentoNumeroSei').text();
-                        document.getElementById('hdnUrlDocumento').value         = $(r).find('UrlDocumento').text();
-                        document.getElementById('hdnTituloDoc').value            = $(r).find('TituloDoc').text();
+                        document.getElementById('hdnUrlDocumento').value = $(r).find('UrlDocumento').text();
+                        document.getElementById('hdnTituloDoc').value = $(r).find('TituloDoc').text();
                     }
                 }
             })
@@ -53,7 +53,7 @@
 
         if (txtNumeroSei.value != '') {
             var paramsAjax = {
-                idDocAlterar : idDocAlterar,
+                idDocAlterar: idDocAlterar,
                 numeroSei: txtNumeroSei.value,
                 idTipoControle: document.getElementById('hdnIdTipoControle').value,
                 idProcedimento: document.getElementById('hdnIdProcedimento').value
@@ -70,15 +70,15 @@
                         txtNumeroSei.value = '';
                     } else {
                         document.getElementById('txtNumeroSei').value = $(r).find('NumeroSei').text();
-                        document.getElementById('txtDataDocumento').value        = $(r).find('DtDocumento').text();
-                        document.getElementById('hdnDtDocumento').value          = $(r).find('DtDocumento').text();
-                        document.getElementById('txtTipoDocumento').value        = $(r).find('TipoDocumento').text();
-                        document.getElementById('hdnIdSerieDocNumeroSei').value  = $(r).find('IdSerieNumeroSei').text();
+                        document.getElementById('txtDataDocumento').value = $(r).find('DtDocumento').text();
+                        document.getElementById('hdnDtDocumento').value = $(r).find('DtDocumento').text();
+                        document.getElementById('txtTipoDocumento').value = $(r).find('TipoDocumento').text();
+                        document.getElementById('hdnIdSerieDocNumeroSei').value = $(r).find('IdSerieNumeroSei').text();
                         document.getElementById('hdnIdDocumentoNumeroSei').value = $(r).find('IdDocumentoNumeroSei').text();
-                        document.getElementById('hdnUrlDocumento').value         = $(r).find('UrlDocumento').text();
-                        document.getElementById('hdnTituloDoc').value            = $(r).find('TituloDoc').text();
+                        document.getElementById('hdnUrlDocumento').value = $(r).find('UrlDocumento').text();
+                        document.getElementById('hdnTituloDoc').value = $(r).find('TituloDoc').text();
                         manterComboFasesAtualizada();
-                        if(idDocAlterar == '0'){
+                        if (idDocAlterar == '0') {
                             document.getElementById('txtDtTipoSituacao').value = $(r).find('DtDocumento').text();
                         }
                     }
@@ -106,19 +106,19 @@
     }
 
     function enterValidarDocumento(e) {
-        if(e && e.keyCode == 13) {
+        if (e && e.keyCode == 13) {
             validarDocumento('0');
             return false;
         }
     }
 
-    function limparCamposRelacionados(){
+    function limparCamposRelacionados() {
         limparNumeroSei();
         limparFaseSituacao();
         limparCamposRelacionadosSituacao();
     }
 
-    function limparFaseSituacao(){
+    function limparFaseSituacao() {
         var selFases = document.getElementById('selFases');
         selFases.value = '';
         document.getElementById('selSituacoes').innerHTML = "";
@@ -133,23 +133,23 @@
             var isValidoDependencia = validarCamposObrigatoriosDependencia();
             if (isValidoDependencia) {
                 limparCamposRelacionadosSituacao();
-                return infraAjaxMontarPostPadraoSelect('null', '', 'null') + '&idSerie='+ document.getElementById('hdnIdSerieDocNumeroSei').value +'&idFase=' + document.getElementById('selFases').value;
+                return infraAjaxMontarPostPadraoSelect('null', '', 'null') + '&idSerie=' + document.getElementById('hdnIdSerieDocNumeroSei').value + '&idFase=' + document.getElementById('selFases').value;
             }
 
             return false;
         }
 
-        objAjaxFasesSit.processarResultado = function(){
+        objAjaxFasesSit.processarResultado = function () {
             var atr = document.createAttribute("class");
         }
     }
 
-    function limparCamposRelacionadosSituacao(){
+    function limparCamposRelacionadosSituacao() {
         document.getElementById("divCamposExtraJudicial").style.display = 'none';
         document.getElementById("divDataTipoSituacao").style.display = 'none';
-//        document.getElementById("divMainPrescricao").style.display = 'none';
+// //        document.getElementById("divMainPrescricao").style.display = 'none';
         document.getElementById('divRdsPrescricao').style.display = 'none';
-//        document.getElementById("divsDatasBdPrescricao").style.display = 'none';
+// //        document.getElementById("divsDatasBdPrescricao").style.display = 'none';
         document.getElementById('divsDatasPrescricao').style.display = 'none';
         document.getElementById("chkDpExtraJudicial").checked = false;
         document.getElementById("lblDtaTipoSituacao").innerHTML = '';
@@ -160,12 +160,12 @@
         document.getElementById("rdAlteraPrescricao").checked = false;
         document.getElementById("txtSituacao").innerHTML = '';
         document.getElementById("divTxtSituacao").style.display = '';
-        document.getElementById('divDatasSelectPrescricao').style.display = 'none';
+        // document.getElementById('divDatasSelectPrescricao').style.display = 'none';
 
         limparEsconderCamposCheckedExtraJudicial();
     }
 
-    function limparEsconderCamposCheckedExtraJudicial(){
+    function limparEsconderCamposCheckedExtraJudicial() {
         document.getElementById("txtValor").value = '';
         document.getElementById("divValor").style.display = 'none';
         document.getElementById("txtDtDeposito").value = '';
@@ -175,13 +175,14 @@
     }
 
     function changeSituacoes() {
+
         limparCamposRelacionadosSituacao();
         var selSituacoes = document.getElementById('selSituacoes');
 
         var paramsAjax = {
             idSituacao: selSituacoes.value,
-            idProcedimento : document.getElementById("hdnIdProcedimento").value,
-            idTpControle   : document.getElementById('hdnIdTipoControle').value
+            idProcedimento: document.getElementById("hdnIdProcedimento").value,
+            idTpControle: document.getElementById('hdnIdTipoControle').value
         };
 
         $.ajax({
@@ -196,6 +197,7 @@
                 var nomeLabel = $.trim($(r).find('NomeLabel').text());
                 var tipoSituacao = $.trim($(r).find('TipoSituacao').text());
                 var sinPrimeiraIntimacao = $.trim($(r).find('SinPrimeiraIntimacao').text());
+                var sinConslusiva = $.trim($(r).find('Conclusiva').text());
                 validarDataIntimacaoMulta = $.trim($(r).find('ValidarDataIntimacaoMulta').text());
 
                 var lblDtaTipoSituacao = document.getElementById('lblDtaTipoSituacao');
@@ -205,10 +207,9 @@
                 divDataTipoSituacao.style.display = '';
 
                 isTpSitDecisoria = tipoSituacao == 'Decisoria' ? true : false;
-                isTpSitLivre     = tipoSituacao == 'Livre' ? true : false;
+                isTpSitLivre = tipoSituacao == 'Livre' ? true : false;
 
                 prepararCamposRecursal(tipoSituacao);
-
                 if (erro == '1') {
 //                    document.getElementById('divsDatasBdPrescricao').style.display = 'none';
                     document.getElementById('divsDatasPrescricao').style.display = 'none';
@@ -216,13 +217,13 @@
                     document.getElementById("btnAdicionar").disabled = true;
                     document.getElementById("txtSituacao").style.color = 'red';
                 } else {
-                    if(sinPrimeiraIntimacao == 'S'){
+                    if (sinPrimeiraIntimacao == 'S') {
                         //se for a primeira intimação irá alterar a prescrição
                         document.getElementById('rdAlteraPrescricao').checked = true;
                         changePrescricao(document.getElementById('rdAlteraPrescricao'), false);
                         document.getElementById("divBtnAdicionar").style.display = '';
                         document.getElementById("btnAdicionar").disabled = false;
-                    }else if('<?= $idMdLitProcessoSituacaoPrimeiraIntimacao ?>' != '' ){
+                    } else if ('<?= $idMdLitProcessoSituacaoPrimeiraIntimacao ?>' != '') {
                         document.getElementById('divsDatasPrescricao').style.display = '';
 //                        document.getElementById('divsDatasBdPrescricao').style.display = '';
 //                        document.getElementById("divMainPrescricao").style.display = '';
@@ -238,31 +239,32 @@
                 document.getElementById('hdnStrSituacao').value = tipoSituacao;
                 document.getElementById("hdnErroSituacao").value = erro;
                 document.getElementById('txtSituacao').innerHTML = msgExibicao;
+                document.getElementById('hdnSinConslusiva').value = sinConslusiva;
             }
         })
     }
 
-    function prepararCamposRecursal(tipoSituacao){
+    function prepararCamposRecursal(tipoSituacao) {
         if (tipoSituacao == 'Recursal') {
             isTpSitRecursal = true;
             document.getElementById('divDataTipoSituacao').style.marginTop = "6px";
             var divCamposExtraJudicial = document.getElementById("divCamposExtraJudicial");
             divCamposExtraJudicial.style.display = '';
-        }else{
+        } else {
             isTpSitRecursal = false;
         }
     }
 
-    function validarCamposObrigatoriosDependencia(){
+    function validarCamposObrigatoriosDependencia() {
         var valNumeroSei = document.getElementById('txtNumeroSei').value;
-        var valTpDoc     = document.getElementById('txtTipoDocumento').value;
+        var valTpDoc = document.getElementById('txtTipoDocumento').value;
 
-        if(valNumeroSei == ''){
+        if (valNumeroSei == '') {
             alert('Preencha o Número SEI.');
             document.getElementById('selFases').value = '';
             return false;
-        }else{
-            if(valTpDoc == ''){
+        } else {
+            if (valTpDoc == '') {
                 alert('Valide o Número SEI');
                 document.getElementById('selFases').value = '';
                 return false;
@@ -282,11 +284,11 @@
         }
     }
 
-    function checkedDpExtraJudicial(el){
+    function checkedDpExtraJudicial(el) {
         limparEsconderCamposCheckedExtraJudicial();
         document.getElementById('divDataTipoSituacao').style.marginTop = "6px";
         var isChecked = el.checked == true;
-        if(isChecked){
+        if (isChecked) {
             document.getElementById("divValor").style.display = '';
             document.getElementById("divDtDeposito").style.display = '';
         }
@@ -294,7 +296,7 @@
 
 
     function changePrescricao(el, chamadaAlt) {
-        var objTxtInt   = document.getElementById('txtDtIntercorrente');
+        var objTxtInt = document.getElementById('txtDtIntercorrente');
         var objTxtQuinq = document.getElementById('txtDtQuinquenal');
 
         var hdnSinInst = isAlterarSit ? document.getElementById('hdnSinInstauracaoAlt').value : document.getElementById('hdnSinInstauracao').value;
@@ -304,10 +306,10 @@
 
         var vlRadio = el.value;
 
-        if(!chamadaAlt){
-            var dtDefault     = document.getElementById('hdnDtUltimaSituacao').value;
-            objTxtInt.value   = objTxtInt.value == '' ?dtDefault:objTxtInt.value;
-            objTxtQuinq.value = objTxtQuinq.value == '' ?dtDefault:objTxtQuinq.value;
+        if (!chamadaAlt) {
+            var dtDefault = document.getElementById('hdnDtUltimaSituacao').value;
+            objTxtInt.value = objTxtInt.value == '' ? dtDefault : objTxtInt.value;
+            objTxtQuinq.value = objTxtQuinq.value == '' ? dtDefault : objTxtQuinq.value;
         }
 
 
@@ -319,7 +321,7 @@
 
     }
 
-    function somarAnosData(el, anos){
+    function somarAnosData(el, anos) {
 
         var objDataAtual = new Date();
         objDataAtual.setFullYear(objDataAtual.getFullYear() + parseInt(anos));
@@ -329,36 +331,36 @@
         document.getElementById(idCampo).value = strData;
     }
 
-    function dataAtualFormatada(objData){
+    function dataAtualFormatada(objData) {
         var dia = objData.getDate();
         if (dia.toString().length == 1)
-            dia = "0"+dia;
-        var mes = objData.getMonth()+1;
+            dia = "0" + dia;
+        var mes = objData.getMonth() + 1;
         if (mes.toString().length == 1)
-            mes = "0"+mes;
+            mes = "0" + mes;
         var ano = objData.getFullYear();
-        return dia+"/"+mes+"/"+ano;
+        return dia + "/" + mes + "/" + ano;
     }
 
-    function validoCamposObrigatoriosSituacao(){
+    function validoCamposObrigatoriosSituacao() {
 
         // Só existe possibilidade desses fluxos na alteração
         var txtNumeroSei = $.trim(document.getElementById('txtNumeroSei').value);
-        if(txtNumeroSei == ''){
+        if (txtNumeroSei == '') {
             alert("O Número SEI é de preenchimento obrigatório.");
             return false;
         }
 
 
         var tipoDocumento = $.trim(document.getElementById('txtTipoDocumento').value);
-        if(tipoDocumento == ''){
+        if (tipoDocumento == '') {
             alert("Para realizar a alteração é necessário validar o documento adicionado!");
             return false;
         }
 
         //Verificando a Data Base para Todas Situações
         var txtDtTipoSituacao = $.trim(document.getElementById('txtDtTipoSituacao').value);
-        if(txtDtTipoSituacao == ''){
+        if (txtDtTipoSituacao == '') {
             var lblDinamica = document.getElementById("lblDtaTipoSituacao").innerHTML;
             var msgDinamica = 'A Data ' + lblDinamica + ' é de preenchimento obrigatório.';
             alert(msgDinamica);
@@ -369,16 +371,16 @@
         //Quando a situação é Recursal
         var isCheckedExJud = document.getElementById('chkDpExtraJudicial').checked;
 
-        if(isCheckedExJud && isTpSitRecursal){
+        if (isCheckedExJud && isTpSitRecursal) {
             var txtValor = $.trim(document.getElementById("txtValor").value);
             var txtDtDeposito = $.trim(document.getElementById('txtDtDeposito').value);
 
-            if(txtValor == ''){
+            if (txtValor == '') {
                 alert('O Valor do Depósito é de preenchimento obrigatório.');
                 return false;
             }
 
-            if(txtDtDeposito == ''){
+            if (txtDtDeposito == '') {
                 alert('A Data do Depósito é de preenchimento obrigatório.');
                 return false;
             }
@@ -386,26 +388,25 @@
 
         //Quando existe alteração de prescrição
         var isCheckedRdAltera = document.getElementById('rdAlteraPrescricao').checked;
-        var dtsHide           = document.getElementById('divDatasSelectPrescricao').style.display == 'none';
+        var dtsHide = document.getElementById('divDatasSelectPrescricao').style.display == 'none';
 
-        if(isCheckedRdAltera && !dtsHide){
+        if (isCheckedRdAltera && !dtsHide) {
             var txtIntercorrente = $.trim(document.getElementById('txtDtIntercorrente').value);
-            var txtQuinquenal    = $.trim(document.getElementById('txtDtQuinquenal').value);
-            var hdnSinInst       = document.getElementById('hdnSinInstauracao').value;
+            var txtQuinquenal = $.trim(document.getElementById('txtDtQuinquenal').value);
+            var hdnSinInst = document.getElementById('hdnSinInstauracao').value;
 
-            if(txtIntercorrente == '' && txtQuinquenal == '' && hdnSinInst != '0'){
+            if (txtIntercorrente == '' && txtQuinquenal == '' && hdnSinInst != '0') {
                 alert('Para alterar a prescrição é necessário preencher pelo menos uma Data.');
                 return false;
             }
 
-            var hdnDtDefaultInt  = document.getElementById('hdnDtPrimSitInter').value;
+            var hdnDtDefaultInt = document.getElementById('hdnDtPrimSitInter').value;
             var hdnDtDefaultQuin = document.getElementById('hdnDtPrimSitQuiq').value;
-            var dtDefaultInt     = retornarDate(hdnDtDefaultInt);
-            var dtDefaultQuin    = retornarDate(hdnDtDefaultQuin);
+            var dtDefaultInt = retornarDate(hdnDtDefaultInt);
+            var dtDefaultQuin = retornarDate(hdnDtDefaultQuin);
 
             //Verificando datas quando existe alteração de prescrição
-            if (txtIntercorrente != '')
-            {
+            if (txtIntercorrente != '') {
                 var dtInter = retornarDate(txtIntercorrente);
                 if (dtInter < dtDefaultInt) {
                     alert("Data Intercorrente não pode ser menor que a Data da Primeira Intimação ou menor do histórico de Datas Intercorrentes.");
@@ -413,8 +414,7 @@
                 }
             }
 
-            if (txtQuinquenal != '')
-            {
+            if (txtQuinquenal != '') {
                 var dtQuinq = retornarDate(txtQuinquenal);
                 if (dtQuinq < dtDefaultQuin) {
                     alert("Data Quinquenal não pode ser menor que a Data da Primeira Intimação ou menor do histórico de Datas Quinquenais.");
@@ -423,27 +423,35 @@
             }
 
             var houveMotivicacao = false;
-            if(txtQuinquenal != '' && txtQuinquenal !=  document.getElementById('txtDtQuinquenal').getAttribute('data-valor-antigo')){
+            if (txtQuinquenal != '' && txtQuinquenal != document.getElementById('txtDtQuinquenal').getAttribute('data-valor-antigo')) {
                 houveMotivicacao = true;
-            }else if(txtIntercorrente != '' && txtIntercorrente !=  document.getElementById('txtDtIntercorrente').getAttribute('data-valor-antigo')){
+            } else if (txtIntercorrente != '' && txtIntercorrente != document.getElementById('txtDtIntercorrente').getAttribute('data-valor-antigo')) {
                 houveMotivicacao = true;
             }
-            if(!houveMotivicacao){
+            if (!houveMotivicacao) {
                 alert('As datas de alteração de prescrição Intercorrente e Quinquenal não podem ser iguais as últimas datas cadastradas.');
                 return false;
             }
         }
-        if(document.getElementById('hdnIdProcessoSituacao').value == '<?= $idMdLitProcessoSituacaoPrimeiraIntimacao ?>'){
+        if (document.getElementById('hdnIdProcessoSituacao').value == '<?= $idMdLitProcessoSituacaoPrimeiraIntimacao ?>') {
             var addSituacao = confirm('Após os dados serem salvos, a alteração da Situação da intimação da instauração será recalculado as datas Intercorrente e Quinquenal baseado na data da intimação. Confirma a operação?');
-            if(!addSituacao) {
+            if (!addSituacao) {
                 return false;
             }
+        }
+
+        var hdnSinSuspenso = document.getElementById('hdnSinSuspenso').value;
+        var hdnSinConclusiva = document.getElementById('hdnSinConslusiva').value;
+
+        if(hdnSinSuspenso == 'S' && hdnSinConclusiva == 'S'){
+            alert('A situação Formalização do Trânsito em Julgado Administrativo (Conclusiva) não pode ser incluída, pois está relacionada a uma Suspensão de Lançamento em Razão de Recurso. \n\nAntes de incluir esta Situação deve primeiro Cancelar ou Denegar o Recurso.');
+            return false;
         }
 
         return true;
     }
 
-    function retornarDate(hdnDtDefault){
+    function retornarDate(hdnDtDefault) {
         var arrDtEntrada = hdnDtDefault.split('/');
         var data = new Date();
 
@@ -468,17 +476,17 @@
             }
 
             //Caso a seja a intimação posterior a decisao que aplicou a multa armazena o valor
-            if(validarDataIntimacaoMulta == '1' && $('[name="txtDtTipoSituacao"]').val() != ''){
+            if (validarDataIntimacaoMulta == '1' && $('[name="txtDtTipoSituacao"]').val() != '') {
                 //adiciona a data da intimação que aplicou multa (intimação apos a decisao) para uso na validacoes
                 $('[name="hdnIntimacaoPosDecisao"]').val($('[name="txtDtTipoSituacao"]').val());
             } else {
                 $('[name="hdnIntimacaoPosDecisao"]').val('');
             }
 
-            var hdnStrIsGestor  = document.getElementById('hdnIsGestor').value;
-            var hdnIsExcluirSituacao  = '<?= $isExcluirSituacao ? 1 : 0 ?>';
+            var hdnStrIsGestor = document.getElementById('hdnIsGestor').value;
+            var hdnIsExcluirSituacao = '<?= $isExcluirSituacao ? 1 : 0 ?>';
 
-            var isRemoverTabela = hdnStrIsGestor == '1' && hdnIsExcluirSituacao == '1'? false : true;
+            var isRemoverTabela = hdnStrIsGestor == '1' && hdnIsExcluirSituacao == '1' ? false : true;
 
             //Set Campos Alteração
             var idAlteracao = document.getElementById('hdnIdProcessoSituacao').value;
@@ -487,31 +495,31 @@
             document.getElementById('hdnIdProcessoSituacao').value = '0';
 
             //Set Vars
-            var hdnIdDocumento  = document.getElementById('hdnIdDocumentoNumeroSei');
+            var hdnIdDocumento = document.getElementById('hdnIdDocumentoNumeroSei');
 
             //Pega o Id Certo (Existem dois sels, um pra alteração, outro pra inserção)
-            var selFases         = retornaSelFasesCorreto();
-            var selSituacoes    = document.getElementById("selSituacoes");
-            var dataAtual        = infraDataAtual();
-            var checkedAltPrecr  =  document.getElementById('rdAlteraPrescricao').checked;
+            var selFases = retornaSelFasesCorreto();
+            var selSituacoes = document.getElementById("selSituacoes");
+            var dataAtual = infraDataAtual();
+            var checkedAltPrecr = document.getElementById('rdAlteraPrescricao').checked;
 
             //Preenchendo valores do Recursal
-            var vlTxtValor    = isTpSitRecursal  ? document.getElementById("txtValor").value : '';
-            var vlDtDepos     = isTpSitRecursal  ? document.getElementById("txtDtDeposito").value : '';
-            var chkDpExtraJudicial = isTpSitRecursal  ? document.getElementById("chkDpExtraJudicial").checked ?'S': 'N' : '';
+            var vlTxtValor = isTpSitRecursal ? document.getElementById("txtValor").value : '';
+            var vlDtDepos = isTpSitRecursal ? document.getElementById("txtDtDeposito").value : '';
+            var chkDpExtraJudicial = isTpSitRecursal ? document.getElementById("chkDpExtraJudicial").checked ? 'S' : 'N' : '';
 
             //Preenchendo Valores das Datas para alterar prescrição ou não
-            var txtIntercorr  =  checkedAltPrecr ? document.getElementById("txtDtIntercorrente").value : '';
-            var txtQuinquenal =  checkedAltPrecr ? document.getElementById("txtDtQuinquenal").value : '';
+            var txtIntercorr = checkedAltPrecr ? document.getElementById("txtDtIntercorrente").value : '';
+            var txtQuinquenal = checkedAltPrecr ? document.getElementById("txtDtQuinquenal").value : '';
 
             //Variáveis Uteis
-            var ordemMaior    = objTabelaDinamicaSituacao.verificaOrdemMaior();
-            var ordemAdd      = parseInt(ordemMaior)  + 1;
-            var ordemAlterar  = document.getElementById('hdnOrdemAtual').value != '' ? document.getElementById('hdnOrdemAtual').value : ordemAdd;
-            var novaOrdem     = isAlterarSit  ? ordemAlterar : ordemAdd;
+            var ordemMaior = objTabelaDinamicaSituacao.verificaOrdemMaior();
+            var ordemAdd = parseInt(ordemMaior) + 1;
+            var ordemAlterar = document.getElementById('hdnOrdemAtual').value != '' ? document.getElementById('hdnOrdemAtual').value : ordemAdd;
+            var novaOrdem = isAlterarSit ? ordemAlterar : ordemAdd;
             var sinPrescricao = document.getElementById('rdAlteraPrescricao').checked ? '1' : '0';
-            var idTabela      = document.getElementById('hdnIdMainTabela').value;
-            var hdnSinInst    = isAlterarSit ? document.getElementById('hdnSinInstauracaoAlt').value : document.getElementById('hdnSinInstauracao').value;
+            var idTabela = document.getElementById('hdnIdMainTabela').value;
+            var hdnSinInst = isAlterarSit ? document.getElementById('hdnSinInstauracaoAlt').value : document.getElementById('hdnSinInstauracao').value;
             var linkDocumento = addLinkExibicaoDocumento(document.getElementById("txtNumeroSei").value);
             var addBranco;
             var nomeUsuario = document.getElementById('hdnNomeUsuario').value;
@@ -568,7 +576,7 @@
             bloquearTelaParaAdicao(true, false);
 
             //Se for alteração é necessário limpar os campos que ficam bloqueados nessa ação.
-            if(isAlterarSit){
+            if (isAlterarSit) {
                 limparCombosSituacaoFasesPosAlteracao();
             }
 
@@ -576,8 +584,8 @@
             document.getElementById('lblDtaTipoSituacao').innerHTML = '';
 
             //Zerar Vars de Controle
-            isAlterarSit          = false;
-            isAlterarRegNovo      = false;
+            isAlterarSit = false;
+            isAlterarRegNovo = false;
             isDadosFinalizadosAlt = false;
             document.getElementById('hdnIdDocumentoAlterado').value = '';
 
@@ -589,26 +597,26 @@
             document.getElementById('hdnIdMainTabela').value = '0';
 
             //mostrando os fieldset de decisões e de gestão de multa quanto a situação for do tipo decisorio
-            if(isTpSitDecisoria && document.getElementById('hdnErroSituacao').value == 0 && document.getElementById('hdnTbDecisao').value == ''){
+            if (isTpSitDecisoria && document.getElementById('hdnErroSituacao').value == 0 && document.getElementById('hdnTbDecisao').value == '') {
                 document.getElementById('fieldsetDecisao').style.display = '';
             }
 
             //Corrrigindo o problema do core do Sei que não aceita HTML para alteração (função remover XML)
-           var row = objTabelaDinamicaSituacao.procuraLinha(idTabela);
-           atualizarTodosLinks(row);
-           document.getElementById('tbSituacao').rows[row].cells[9].innerHTML = '<div style="text-align:center;">' + linkDocumento + '</div>';
-           document.getElementById('tbSituacao').rows[row].cells[15].innerHTML = '<div style="text-align:center;">' + nomeUsuario + '</div>';
-           document.getElementById('tbSituacao').rows[row].cells[16].innerHTML = '<div style="text-align:center;">' + document.getElementById('hdnNomeUnidade').value + '</div>';
+            var row = objTabelaDinamicaSituacao.procuraLinha(idTabela);
+            atualizarTodosLinks(row);
+            document.getElementById('tbSituacao').rows[row].cells[9].innerHTML = '<div style="text-align:center;">' + linkDocumento + '</div>';
+            document.getElementById('tbSituacao').rows[row].cells[15].innerHTML = '<div style="text-align:center;">' + nomeUsuario + '</div>';
+            document.getElementById('tbSituacao').rows[row].cells[16].innerHTML = '<div style="text-align:center;">' + document.getElementById('hdnNomeUnidade').value + '</div>';
 
-            if(document.getElementById('fieldsetMulta') != null){
-                if(!isTpSitDecisoria && document.getElementById('hdnErroSituacao').value == 0){
+            if (document.getElementById('fieldsetMulta') != null) {
+                if (!isTpSitDecisoria && document.getElementById('hdnErroSituacao').value == 0) {
                     document.getElementById('btnCancelarLancamento').style.display = 'none';
                 }
                 consultarExtratoMulta();
             }
 
             //Botão apresentado apenas se a última situação cadastrada for do tipo Recursal(suspender recurso no fieldset multa).
-            if(adicionouSit && isTpSitRecursal && !document.getElementById('chkReducaoRenuncia').checked){
+            if (adicionouSit && isTpSitRecursal && !document.getElementById('chkReducaoRenuncia').checked && document.getElementById('hdnSinSuspenso').value == 'N') {
                 document.getElementById('btnSuspenderLancamento').style.display = '';
             }
 
@@ -618,20 +626,20 @@
     }
 
 
-    function replicarDataParaFieldsetGestaoMulta(){
-        var isConclusiva        = $.trim(document.getElementById('hdnStrSituacao').value) == 'Conclusiva';
+    function replicarDataParaFieldsetGestaoMulta() {
+        var isConclusiva = $.trim(document.getElementById('hdnStrSituacao').value) == 'Conclusiva';
         var isVisibleFieldMulta = false;
-        if(document.getElementById('fieldsetMulta') != null){
+        if (document.getElementById('fieldsetMulta') != null) {
             isVisibleFieldMulta = document.getElementById('fieldsetMulta').style.display != "none";
         }
 
-        if(isConclusiva && isVisibleFieldMulta){
+        if (isConclusiva && isVisibleFieldMulta) {
             var valorDt = document.getElementById('txtDtTipoSituacao').value;
             document.getElementById('txtDtConstituicao').value = valorDt;
-            if(document.getElementById('txtDtConstituicao').getAttribute('data-valor-antigo') != 'N' && document.getElementById('txtDtConstituicao').getAttribute('data-valor-antigo') != ''){
-                if( document.getElementById('txtDtConstituicao').value !=  document.getElementById('txtDtConstituicao').getAttribute('data-valor-antigo')) {
+            if (document.getElementById('txtDtConstituicao').getAttribute('data-valor-antigo') != 'N' && document.getElementById('txtDtConstituicao').getAttribute('data-valor-antigo') != '') {
+                if (document.getElementById('txtDtConstituicao').value != document.getElementById('txtDtConstituicao').getAttribute('data-valor-antigo')) {
                     document.getElementById('btnRetificarLancamento').style.display = '';
-                }else{
+                } else {
                     document.getElementById('btnRetificarLancamento').style.display = 'none';
                 }
             }
@@ -646,13 +654,13 @@
         for (var i = 1; i <= tbSituacaoLinhas.length; i++) {
             if (i != row) {
                 //Linhas em Jquery por necessidade.
-                var url             = tbSituacaoLinhas.eq(i).find('td:eq(27)').text();
-                var strLink         = "window.open('" + url + "')";
-                var txtNumeroSei    = tbSituacaoLinhas.eq(i).find('td:eq(26)').text();
+                var url = tbSituacaoLinhas.eq(i).find('td:eq(27)').text();
+                var strLink = "window.open('" + url + "')";
+                var txtNumeroSei = tbSituacaoLinhas.eq(i).find('td:eq(26)').text();
                 var tituloDocumento = tbSituacaoLinhas.eq(i).find('td:eq(10)').text();
-                var html            = '<div style="text-align:center;"><a title="' + tituloDocumento + '" style="font-size:12.4px" class="ancoraPadraoAzul" onclick ="' + strLink + '"> ' + txtNumeroSei + ' </a></div>';
+                var html = '<div style="text-align:center;"><a title="' + tituloDocumento + '" style="" class="ancoraPadraoAzul" onclick ="' + strLink + '"> ' + txtNumeroSei + ' </a></div>';
                 tbSituacaoLinhas.eq(i).find('td:eq(9)').html(html);
-            }else{
+            } else {
                 tbSituacaoLinhas.eq(i).removeClass('infraTrClara');
                 tbSituacaoLinhas.eq(i).removeClass('infraTrEscura');
                 tbSituacaoLinhas.eq(i).addClass('infraTrAcessada');
@@ -660,12 +668,12 @@
         }
     }
 
-    function addLinkExibicaoDocumento(txtNumeroSei){
-        var url     = document.getElementById('hdnUrlDocumento').value
+    function addLinkExibicaoDocumento(txtNumeroSei) {
+        var url = document.getElementById('hdnUrlDocumento').value
 
         var strLink = "window.open('" + url + "')";
         var tituloDocumento = document.getElementById('hdnTituloDoc').value;
-        var html = '<a title="'+ tituloDocumento +'" style="font-size:12.4px" class="ancoraPadraoAzul" onclick ="' + strLink + '"> ' + txtNumeroSei + ' </a>';
+        var html = '<a title="' + tituloDocumento + '" style="" class="ancoraPadraoAzul" onclick ="' + strLink + '"> ' + txtNumeroSei + ' </a>';
 
         return html;
     }
@@ -674,19 +682,19 @@
         return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    function retornaSelFasesCorreto(){
-        var idFases    = isAlterarSit ? 'selFasesAlteracao' : 'selFases';
-        var selFases   = document.getElementById(idFases);
+    function retornaSelFasesCorreto() {
+        var idFases = isAlterarSit ? 'selFasesAlteracao' : 'selFases';
+        var selFases = document.getElementById(idFases);
 
-        if($.trim(selFases.value) == ''){
+        if ($.trim(selFases.value) == '') {
             var idFasesPreench = !isAlterarSit ? 'selFasesAlteracao' : 'selFases';
-            selFases   = document.getElementById(idFasesPreench);
+            selFases = document.getElementById(idFasesPreench);
         }
 
         return selFases;
     }
 
-    function limparCombosSituacaoFasesPosAlteracao(){
+    function limparCombosSituacaoFasesPosAlteracao() {
         document.getElementById('selFases').disabled = false;
         document.getElementById('selSituacoes').innerHTML = '';
         document.getElementById('selSituacoes').disabled = false;
@@ -694,18 +702,18 @@
 
     //Se existir Inserção permite o bloqueio da tela
     //Se não existir, não permite
-    function permiteBloqueioTela(isAlterar){
-        if(isAlterar){
+    function permiteBloqueioTela(isAlterar) {
+        if (isAlterar) {
             return true;
         }
 
         var existeInsercao = objTabelaDinamicaSituacao.verificaSeExisteInsercao();
 
-        if(existeInsercao){
+        if (existeInsercao) {
             return true;
         }
 
-       return false;
+        return false;
     }
 
     function bloquearTelaParaAdicao(bloquear, isAlterar) {
@@ -728,16 +736,16 @@
         }
 
     }
-    
-    function validarVinculoDecisao(idProcSituacao){
+
+    function validarVinculoDecisao(idProcSituacao) {
 
         //verificar os lancamentos associados a situaca e não cancelados
-        if(validarDependenciasDeLancamentosNaoCancelados(idProcSituacao) == false){
+        if (validarDependenciasDeLancamentosNaoCancelados(idProcSituacao) == false) {
             return false;
         }
 
         //verficiar as dependencias de decisões com a situacao
-        if(validarDependenciasDeDecisoesPreenchidas(idProcSituacao) == false){
+        if (validarDependenciasDeDecisoesPreenchidas(idProcSituacao) == false) {
             return false;
         }
         return true;
@@ -757,30 +765,29 @@
             success: function (result) {
                 var dtoResult = $(result).find('MdLitLancamentoDTO');
                 var lancamentos = '';
-                if(dtoResult.length > 0){
-                    $.each(dtoResult, function(key, value){
+                if (dtoResult.length > 0) {
+                    $.each(dtoResult, function (key, value) {
                         var tipoLancamento = 'Principal';
-                        if($(value).find('TipoLancamento').text().trim() == 'M') {
-                          tipoLancamento = 'Majorado'
+                        if ($(value).find('TipoLancamento').text().trim() == 'M') {
+                            tipoLancamento = 'Majorado'
                         }
 
-                        lancamentos += 'Sequencial: '+ $(value).find('Sequencial').text() +'\n';
-                        lancamentos += 'Tipo de lançamento: '+ tipoLancamento +'\n';
-                        lancamentos += 'Valor do lançamento: '+ $(value).find('VlrLancamento').text() +'\n';
-                        lancamentos += 'Vencimento: '+ $(value).find('Vencimento').text() +'\n';
-                        lancamentos += 'Data da decisão: '+ $(value).find('Decisao').text() +'\n';
+                        lancamentos += 'Sequencial: ' + $(value).find('Sequencial').text() + '\n';
+                        lancamentos += 'Tipo de lançamento: ' + tipoLancamento + '\n';
+                        lancamentos += 'Valor do lançamento: ' + $(value).find('VlrLancamento').text() + '\n';
+                        lancamentos += 'Vencimento: ' + $(value).find('Vencimento').text() + '\n';
+                        lancamentos += 'Data da decisão: ' + $(value).find('Decisao').text() + '\n';
                         lancamentos += '\n';
                     });
 
                     alert('Antes de excluir a Situação de Decisão, é necessário efetivar o Cancelamento do(s) Lançamento(s).\n\n' +
-                            lancamentos+
+                        lancamentos +
                         'Para efetivar o Cancelamento do Lançamento, em Gestão de Multa acione o botão Cancelar.');
                     valid = false;
                 }
             },
             error: function (msgError) {
                 msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;
-                console.log(msgCommit);
                 valid = false;
             }
         });
@@ -801,8 +808,8 @@
             },
             success: function (result) {
                 var boolResult = $(result).find('resultado').text();
-                if(boolResult == 1){
-                    if(confirm('Ao realizar a exclusão da Situação de Decisão todas as decisões vinculadas a ela tambem serão excluídas.\n\n Deseja seguir com esta operação?')){
+                if (boolResult == 1) {
+                    if (confirm('Ao realizar a exclusão da Situação de Decisão todas as decisões vinculadas a ela tambem serão excluídas.\n\n Deseja seguir com esta operação?')) {
                         valid = true;
                     } else {
                         valid = false;
@@ -811,7 +818,6 @@
             },
             error: function (msgError) {
                 msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;
-                console.log(msgCommit);
                 valid = false;
             }
         });
@@ -819,19 +825,19 @@
         return valid;
     }
 
-    function validarOrdemExclusao(ordemEx){
+    function validarOrdemExclusao(ordemEx) {
         var ordemMaior = objTabelaDinamicaSituacao.verificaOrdemMaior();
 
-       if(ordemMaior != ordemEx){
-           alert('A exclusão das Situações devem obdecer as ordens parametrizadas na Administração.');
-           return false;
-       }
+        if (ordemMaior != ordemEx) {
+            alert('A exclusão das Situações devem obdecer as ordens parametrizadas na Administração.');
+            return false;
+        }
 
         return true;
     }
 
-    function controlarTelaRemover(){
-        if(registroBancoExcluido){
+    function controlarTelaRemover() {
+        if (registroBancoExcluido) {
             isAlterarRegNovo = false;
             isAlterarSit = false;
             isDadosFinalizadosAlt = false;
@@ -840,7 +846,7 @@
             document.getElementById("txtNumeroSei").value = '';
             document.getElementById("hdnIdDocumentoAlterado").value = '';
             bloquearTelaParaAdicao(true, true);
-        }else{
+        } else {
             bloquearTelaParaAdicao(false, true);
         }
     }
@@ -849,16 +855,16 @@
      * deixa habilitado somente a opção de excluir para o primeiro item da lista de situações
      */
     function montarIconeRemover() {
-        $('img[src="/infra_css/imagens/remover.gif"]:gt(0)').remove()
+        $('img[src="/infra_css/svg/remover.svg?<?= Icone::VERSAO ?>"]:gt(0)').remove()
     }
 
-    function inicializarGridSituacao(){
-        var hdnStrIsGestor  = document.getElementById('hdnIsGestor').value;
+    function inicializarGridSituacao() {
+        var hdnStrIsGestor = document.getElementById('hdnIsGestor').value;
         var hdnOpenProcesso = document.getElementById('hdnOpenProcesso').value;
-        var hdnIsAlterarSituacao  = '<?= $isAlterarSituacao ? 1 : 0 ?>';
-        var hdnIsExcluirSituacao  = '<?= $isExcluirSituacao ? 1 : 0 ?>';
-        var alterar         = hdnStrIsGestor == '1' && hdnOpenProcesso != '1' && hdnIsAlterarSituacao == '1' ? true : false;
-        var excluir         = hdnStrIsGestor == '1' && hdnOpenProcesso != '1' && hdnIsExcluirSituacao == '1' ? true : false;
+        var hdnIsAlterarSituacao = '<?= $isAlterarSituacao ? 1 : 0 ?>';
+        var hdnIsExcluirSituacao = '<?= $isExcluirSituacao ? 1 : 0 ?>';
+        var alterar = hdnStrIsGestor == '1' && hdnOpenProcesso != '1' && hdnIsAlterarSituacao == '1' ? true : false;
+        var excluir = hdnStrIsGestor == '1' && hdnOpenProcesso != '1' && hdnIsExcluirSituacao == '1' ? true : false;
 
         objTabelaDinamicaSituacao = new infraTabelaDinamica('tbSituacao', 'hdnTbSituacoes', alterar, excluir);
         objTabelaDinamicaSituacao.gerarEfeitoTabela = true;
@@ -868,14 +874,17 @@
 
         objTabelaDinamicaSituacao.remover = function (arr) {
             var possuiDecisao = document.getElementById('hdnProcessoSitIsDecisao') == '1' ? true : false;
-            var tipoItemExcl  = arr[1][0];
-            isAlterarSit      = false;
-            isAlterarRegNovo  = false;
+            var isRecursal = $('#hdnStrUltimaSituacao').val() == '(Recursal)' ? true : false;
+            var strNomeUltimaSituacao = $('#hdnStrNomeUltimaSituacao').val();
+            var existeSuspensao = document.getElementById('hdnExisteSuspensao').value;
+            var tipoItemExcl = arr[1][0];
+            isAlterarSit = false;
+            isAlterarRegNovo = false;
 
-        //Se o registro excluido for do banco ou de alteração então tudo deve ser bloqueado
-            if(tipoItemExcl == 'B' || tipoItemExcl == 'A'){
-                 registroBancoExcluido = true;
-            }else{
+            //Se o registro excluido for do banco ou de alteração então tudo deve ser bloqueado
+            if (tipoItemExcl == 'B' || tipoItemExcl == 'A') {
+                registroBancoExcluido = true;
+            } else {
                 registroBancoExcluido = false;
                 adicionouSit = false;
             }
@@ -883,16 +892,19 @@
             var qtd = document.getElementById('tbSituacao').rows.length;
 
             //Se gestor
-            if (hdnStrIsGestor == '1')
-            {
-                if(validarVinculoDecisao(arr[0]) && validarOrdemExclusao(arr[21]))
-                {
+            if (hdnStrIsGestor == '1') {
+                if (validarVinculoDecisao(arr[0]) && validarOrdemExclusao(arr[21])) {
                     controlarTelaRemover();
-                    if(registroBancoExcluido){
+                    if (registroBancoExcluido) {
+                        if(isRecursal && existeSuspensao == 'true' ){
+                            alert('A situação ' + strNomeUltimaSituacao + ' não pode ser excluída, pois está relacionada a uma Suspensão de Lançamento em Razão de Recurso. \n\nAntes de excluir esta Situação deve primeiro Cancelar ou Denegar os Recursos existentes que tenham Suspendido Lançamento.');
+                            return false;
+                        } else {
                             alert('Após realizar a exclusão, é necessário salvar os dados para adicionar novos registros.');
-                    }else{
+                        }
+                    } else {
                         //Se não for registro do banco excluído verificar se deve esconder os dados de decisão
-                        if(!possuiDecisao){
+                        if (!possuiDecisao) {
                             document.getElementById('fieldsetDecisao').style.display = 'none';
                             document.getElementById('fieldsetMulta').style.display = 'none';
                         }
@@ -902,23 +914,22 @@
                         document.getElementById('tbSituacao').style.display = 'none';
                     }
                     return true;
-                }else{
+                } else {
                     return false;
                 }
 
 
-            } else
-            {
+            } else {
                 //Se não for gestor
                 if (qtd == 2) {
                     document.getElementById('tbSituacao').style.display = 'none';
                 }
 
-                if(!possuiDecisao){
+                if (!possuiDecisao) {
                     document.getElementById('fieldsetDecisao').style.display = 'none';
                     document.getElementById('fieldsetMulta').style.display = 'none';
                 }
-                
+
                 controlarTelaRemover();
                 bloquearTelaParaAdicao(false, false);
                 return true;
@@ -926,22 +937,22 @@
 
         }
 
-        objTabelaDinamicaSituacao.verificarTabelaVazia = function (){
+        objTabelaDinamicaSituacao.verificarTabelaVazia = function () {
             var qtd = document.getElementById('tbSituacao').rows.length;
 
             if (qtd == 1) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         }
 
         objTabelaDinamicaSituacao.verificaOrdemMaior = function () {
-            var ordemLinha  = 0;
+            var ordemLinha = 0;
             var tbTabelaDinamicaSit = document.getElementById('tbSituacao');
             for (var i = 1; i < tbTabelaDinamicaSit.rows.length; i++) {
-               var ordemAtual = tbTabelaDinamicaSit.rows[i].cells[21].innerText.trim();
-                if(parseInt(ordemLinha) < parseInt(ordemAtual)){
+                var ordemAtual = tbTabelaDinamicaSit.rows[i].cells[21].innerText.trim();
+                if (parseInt(ordemLinha) < parseInt(ordemAtual)) {
                     ordemLinha = ordemAtual;
                 }
             }
@@ -955,7 +966,7 @@
             for (var i = 1; i < tbTabelaDinamicaSit.rows.length; i++) {
                 var tipoAcao = tbTabelaDinamicaSit.rows[i].cells[1].innerText.trim();
 
-                if(tipoAcao == 'N'){
+                if (tipoAcao == 'N') {
                     return true;
                 }
             }
@@ -970,7 +981,7 @@
 
             for (i = 1; i < qtd; i++) {
                 linha = document.getElementById('tbSituacao').rows[i];
-            var valorLinha = linha.cells[0].innerText;
+                var valorLinha = linha.cells[0].innerText;
                 if (id) {
                     id = $.trim(id);
                     if (valorLinha == id) {
@@ -985,19 +996,19 @@
         };
 
 
-        objTabelaDinamicaSituacao.alterar = function(arr){
+        objTabelaDinamicaSituacao.alterar = function (arr) {
             limparCamposRelacionados();
 
-            if(isAlterarSit){
+            if (isAlterarSit) {
                 isDadosFinalizadosAlt = false;
             }
-            
+
             //Set Campo Main Alteração
             isAlterarSit = true;
 
             //Quando um registro novo sofrer alteração
             isAlterarRegNovo = arr[1] == 'N' ? true : false;
-            
+
             //Setta o valor do Id da tabela
             document.getElementById('hdnIdMainTabela').value = arr[0];
 
@@ -1018,12 +1029,12 @@
 
             //Setta os Campos Simples
             document.getElementById('hdnIdDocumentoNumeroSei').value = arr[24];
-            document.getElementById('txtNumeroSei').value            = arr[26];
-            document.getElementById('txtTipoDocumento').value        = arr[10];
-            document.getElementById('txtDataDocumento').value        = arr[11];
-            document.getElementById('txtDataDocumento').value        = arr[11];
-            document.getElementById('hdnIdProcessoSituacao').value   = arr[20];
-            document.getElementById("hdnUrlDocumento").value         = arr[26];
+            document.getElementById('txtNumeroSei').value = arr[26];
+            document.getElementById('txtTipoDocumento').value = arr[10];
+            document.getElementById('txtDataDocumento').value = arr[11];
+            document.getElementById('txtDataDocumento').value = arr[11];
+            document.getElementById('hdnIdProcessoSituacao').value = arr[20];
+            document.getElementById("hdnUrlDocumento").value = arr[26];
 
             // Valida o Documento e faz os processos iniciais
             validarDocumento(arr[24]);
@@ -1039,14 +1050,14 @@
             document.getElementById('hdnSinInstauracaoAlt').value = arr[25];
 
             //Realiza o controle de Prescrição
-            if('<?= $idMdLitProcessoSituacaoPrimeiraIntimacao ?>' != '' && document.getElementById('hdnIdProcessoSituacao').value > '<?= $idMdLitProcessoSituacaoPrimeiraIntimacao ?>'){
+            if ('<?= $idMdLitProcessoSituacaoPrimeiraIntimacao ?>' != '' && document.getElementById('hdnIdProcessoSituacao').value > '<?= $idMdLitProcessoSituacaoPrimeiraIntimacao ?>') {
                 controlarExibicaoPrescricaoAlterar(arr);
             }
 
             document.getElementById('divBtnAdicionar').style.display = '';
             document.getElementById("btnAdicionar").disabled = false;
             //Situação Recursal
-            if(tipoSituacao == 'Recursal'){
+            if (tipoSituacao == 'Recursal') {
                 controlarExibicaoRecursalAlteracao(tipoSituacao, arr);
             }
 
@@ -1067,27 +1078,27 @@
 
     }
 
-    function controlarExibicaoCorretaSelFases(isAlteracao){
-        if(isAlteracao){
+    function controlarExibicaoCorretaSelFases(isAlteracao) {
+        if (isAlteracao) {
             document.getElementById('divSelFasesInicial').style.display = 'none';
             document.getElementById('divSelFasesAlteracao').style.display = '';
-        }else{
+        } else {
             document.getElementById('divSelFasesInicial').style.display = '';
             document.getElementById('divSelFasesAlteracao').style.display = 'none';
         }
     }
 
-    function controlarExibicaoPrescricaoAlterar(arr){
+    function controlarExibicaoPrescricaoAlterar(arr) {
         var txtIntercorrente = $.trim(arr[7]);
-        var txtQuinquenal    = $.trim(arr[8]);
-        var alteraPrescr     = arr[22] == '1' ? true : false;
-        var idCampo          = '';
-        var isInstauracao     = arr[25];
+        var txtQuinquenal = $.trim(arr[8]);
+        var alteraPrescr = arr[22] == '1' ? true : false;
+        var idCampo = '';
+        var isInstauracao = arr[25];
 
-        if(alteraPrescr){
+        if (alteraPrescr) {
             document.getElementById('rdAlteraPrescricao').checked = true;
             idCampo = 'rdAlteraPrescricao';
-        }else{
+        } else {
             document.getElementById('rdNaoAlteraPrescricao').checked = true;
             idCampo = 'rdNaoAlteraPrescricao';
         }
@@ -1100,58 +1111,58 @@
         document.getElementById("hdnErroSituacao").value = '0';
         document.getElementById('divsDatasPrescricao').style.display = '';
 
-       if(alteraPrescr && isInstauracao == '1'){
+        if (alteraPrescr && isInstauracao == '1') {
             document.getElementById('txtDtIntercorrente').value = txtIntercorrente;
             document.getElementById('txtDtQuinquenal').value = txtQuinquenal;
-       }else{
-           document.getElementById('txtDtIntercorrente').value = '';
-           document.getElementById('txtDtQuinquenal').value = '';
-       }
+        } else {
+            document.getElementById('txtDtIntercorrente').value = '';
+            document.getElementById('txtDtQuinquenal').value = '';
+        }
 
         changePrescricao(campo, true);
     }
 
-    function controlarExibicaoRecursalAlteracao(tipoSituacao, arr){
+    function controlarExibicaoRecursalAlteracao(tipoSituacao, arr) {
         prepararCamposRecursal(tipoSituacao);
 
         var txtValor = arr[18];
         var dtDeposi = arr[19];
 
-        if(txtValor != '' && dtDeposi != ''){
-            document.getElementById('chkDpExtraJudicial').checked =  true;
+        if (txtValor != '' && dtDeposi != '') {
+            document.getElementById('chkDpExtraJudicial').checked = true;
             checkedDpExtraJudicial(document.getElementById('chkDpExtraJudicial'));
             document.getElementById('txtValor').value = txtValor;
             document.getElementById('txtDtDeposito').value = dtDeposi;
         }
     }
 
-    function verificaSituacao(){
+    function verificaSituacao() {
         var hdnTipoSituacao = document.getElementById('hdnStrSituacao').value;
         var tipoSituacaoForm = $.trim(hdnTipoSituacao.replace(/[()]/g, ' '));
 
         return tipoSituacaoForm;
     }
 
-    function addOption(id, nome, idSelected){
-        var htmlOption = '<option value="'+id+'"> '+nome+'</option>';
+    function addOption(id, nome, idSelected) {
+        var htmlOption = '<option value="' + id + '"> ' + nome + '</option>';
         document.getElementById(idSelected).innerHTML = '';
         document.getElementById(idSelected).innerHTML = htmlOption;
         document.getElementById(idSelected).disabled = true;
     }
 
 
-    function abrirModalDtIntercorrente(){
-        infraAbrirJanela('<?=$strLinkModalDtIntercorrente?>','janelaDtIntercorrente',900,400,'location=0,status=1,resizable=1,scrollbars=1');
+    function abrirModalDtIntercorrente() {
+        infraAbrirJanelaModal('<?=$strLinkModalDtIntercorrente?>', 900, 400, 'location=0,status=1,resizable=1,scrollbars=1');
     }
 
-    function abrirModalDtQuinquenal(){
-        infraAbrirJanela('<?=$strLinkModalDtQuinquenal?>','janelaDtIntercorrente',900,400,'location=0,status=1,resizable=1,scrollbars=1');
+    function abrirModalDtQuinquenal() {
+        infraAbrirJanelaModal('<?=$strLinkModalDtQuinquenal?>', 900, 400, 'location=0,status=1,resizable=1,scrollbars=1');
     }
 
-    function verificarCondicionaisSituacao(){
+    function verificarCondicionaisSituacao() {
         var tabelaVazia = objTabelaDinamicaSituacao.verificarTabelaVazia();
 
-        if(isTpSitDecisoria && document.getElementById('hdnErroSituacao').value == 0 && document.getElementById('hdnTbDecisao').value == '' && adicionouSit){
+        if (isTpSitDecisoria && document.getElementById('hdnErroSituacao').value == 0 && document.getElementById('hdnTbDecisao').value == '' && adicionouSit) {
             alert('É obrigatório adicionar ao menos uma decisão.');
             return false;
         }
@@ -1159,22 +1170,22 @@
         return true;
     }
 
-    function isUltimaSituacaoDecisoria(){
+    function isUltimaSituacaoDecisoria() {
         var hdnSituacaoIsDecisao = document.getElementById("hdnSituacaoIsDecisao").value;
         var arrObjTabelaSituacao = objTabelaDinamicaSituacao.obterItens();
         var decisoria = false;
 
-        if(isTpSitDecisoria && document.getElementById('hdnErroSituacao').value == 0 ){
+        if (isTpSitDecisoria && document.getElementById('hdnErroSituacao').value == 0) {
             return true;
         }
 
-        if(hdnSituacaoIsDecisao != ''){
+        if (hdnSituacaoIsDecisao != '') {
 
             var ret = JSON.parse(hdnSituacaoIsDecisao);
-            var idUltimaSituacao = arrObjTabelaSituacao[objTabelaDinamicaSituacao.obterItens().length -1][0];
+            var idUltimaSituacao = arrObjTabelaSituacao[objTabelaDinamicaSituacao.obterItens().length - 1][0];
 
             for (i in ret) {
-                if(ret[i] == idUltimaSituacao){
+                if (ret[i] == idUltimaSituacao) {
                     decisoria = true;
                     break;
                 }
@@ -1183,17 +1194,17 @@
         return decisoria;
     }
 
-    function isExisteSituacaoConclusiva(){
+    function isExisteSituacaoConclusiva() {
         var hdnSituacaoIsDecisao = document.getElementById("hdnSituacaoIsDecisao").value;
         var arrObjTabelaSituacao = objTabelaDinamicaSituacao.obterItens();
         var bolConclusiva = false;
 
-        if(hdnSituacaoIsDecisao != ''){
+        if (hdnSituacaoIsDecisao != '') {
 
             var idSituacaoParametrizada = '<?php echo $idSituacaoConclusivaParametrizada ?>';
-            for(var i = 0; i < arrObjTabelaSituacao.length; i++){
+            for (var i = 0; i < arrObjTabelaSituacao.length; i++) {
                 //o id_md_lit_situacao na parametrização é conclusiva
-                if(idSituacaoParametrizada == arrObjTabelaSituacao[i][4]){
+                if (idSituacaoParametrizada == arrObjTabelaSituacao[i][4]) {
                     bolConclusiva = true;
                 }
             }

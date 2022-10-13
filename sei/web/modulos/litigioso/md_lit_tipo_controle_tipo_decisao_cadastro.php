@@ -1,374 +1,218 @@
 <?
-    /**
-     * ANATEL
-     *
-     * 01/06/2016 - criado por alan.campos@castgroup.com.br - CAST
-     *
-     */
+/**
+ * ANATEL
+ *
+ * 01/06/2016 - criado por alan.campos@castgroup.com.br - CAST
+ *
+ */
 
-    try {
+try {
 
-        require_once dirname(__FILE__) . '/../../SEI.php';
+    require_once dirname(__FILE__) . '/../../SEI.php';
 
-        session_start();
+    session_start();
 
-        SessaoSEI::getInstance()->validarLink();
+    SessaoSEI::getInstance()->validarLink();
 
-        PaginaSEI::getInstance()->verificarSelecao('md_lit_tipo_decisao_selecionar');
+    PaginaSEI::getInstance()->verificarSelecao('md_lit_tipo_decisao_selecionar');
 
-        SessaoSEI::getInstance()->validarPermissao($_GET['acao']);
+    SessaoSEI::getInstance()->validarPermissao($_GET['acao']);
 
-        $arrComandos = array();
+    $arrComandos = array();
 
-        //TipoDecisao
-        $strLinkTipoDecisaoSelecao       = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_tipo_decisao_selecionar&tipo_selecao=2&id_object=objLupaTipoDecisao');
-        $strLinkAjaxComboEspecieDecisao = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_especie_decisao_montar_select');
+    //TipoDecisao
+    $strLinkTipoDecisaoSelecao = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_tipo_decisao_selecionar&tipo_selecao=2&id_object=objLupaTipoDecisao');
+    $strLinkAjaxComboEspecieDecisao = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_especie_decisao_montar_select');
 
-        switch ($_GET['acao']) {
+    switch ($_GET['acao']) {
 
-            case 'md_lit_tipo_controle_tipo_decisao_consultar':
+        case 'md_lit_tipo_controle_tipo_decisao_consultar':
 
-                //INICIO ALTERAÇÃO
+            //INICIO ALTERAÇÃO
 
-                $objTipoControleLitigiosoDTO = new MdLitTipoControleDTO();
-                $objTipoControleLitigiosoRN = new MdLitTipoControleRN();
+            $objTipoControleLitigiosoDTO = new MdLitTipoControleDTO();
+            $objTipoControleLitigiosoRN = new MdLitTipoControleRN();
 
-                $objTipoControleLitigiosoDTO->retStrSigla();
-                $objTipoControleLitigiosoDTO->setNumIdTipoControleLitigioso($_GET['id_tipo_controle_litigioso']);
-                $arrObjTipoControleLitigiosoDTO = $objTipoControleLitigiosoRN->listar($objTipoControleLitigiosoDTO);
-
-
-                //FIM ALTERAÇÂO
-
-                $strItensSelTipoDecisaoLitigioso = "";
-
-                foreach ($arrObjTipoControleLitigiosoDTO as $objTipoControleLitigiosoDTO) {
-                    $valor = $objTipoControleLitigiosoDTO->getStrSigla();
-                }
-
-                $strTitulo                       = 'Associar Tipos de Decisão - ' . PaginaSEI::tratarHTML($valor);
+            $objTipoControleLitigiosoDTO->retStrSigla();
+            $objTipoControleLitigiosoDTO->setNumIdTipoControleLitigioso($_GET['id_tipo_controle_litigioso']);
+            $arrObjTipoControleLitigiosoDTO = $objTipoControleLitigiosoRN->listar($objTipoControleLitigiosoDTO);
 
 
-                $arrComandos[] = '<button type="submit" accesskey="S" name="sbmCadastrarTipoDecisaoLitigioso" id="sbmCadastrarTipoDecisaoLitigioso" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
-                $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&id_tipo_processo_litigioso=' . $_GET['id_tipo_processo_litigioso'] . '&acao_origem=' . $_GET['acao'])) . '\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
-                //cadastrando associaçoes
-                if (isset($_POST['hdnTbTiposDecisao'])) {
+            //FIM ALTERAÇÂO
 
-                    try {
+            $strItensSelTipoDecisaoLitigioso = "";
 
-                        $objAssocTipoDecisaoLitigiosoRN = new MdLitRelTipoControleTipoDecisaoRN();
-                        $arrTipoDecisao                 = PaginaSEI::getInstance()->getArrItensTabelaDinamica($_POST['hdnTbTiposDecisao']);
+            foreach ($arrObjTipoControleLitigiosoDTO as $objTipoControleLitigiosoDTO) {
+                $valor = $objTipoControleLitigiosoDTO->getStrSigla();
+            }
 
-                        //SET DECISOES
-                        $arrObjAssocTipoDecisaoDTO = array();
+            $strTitulo = 'Associar Tipos de Decisão - ' . PaginaSEI::tratarHTML($valor);
 
-                        for ($x = 0; $x < count($arrTipoDecisao); $x++) {
 
-                            $objAssocTipoDecisaoDTO = new MdLitRelTipoControleTipoDecisaoDTO();
-                            $objAssocTipoDecisaoDTO->setNumIdTipoDecisaoLitigioso($arrTipoDecisao[$x][1]);
-                            $objAssocTipoDecisaoDTO->setNumIdMdLitEspecieDecisao($arrTipoDecisao[$x][2]);
-                            $objAssocTipoDecisaoDTO->setNumIdTipoControleLitigioso($_POST['hdnIdTipoControle']);
-                            array_push($arrObjAssocTipoDecisaoDTO, $objAssocTipoDecisaoDTO);
-                        }
+            $arrComandos[] = '<button type="submit" accesskey="S" name="sbmCadastrarTipoDecisaoLitigioso" id="sbmCadastrarTipoDecisaoLitigioso" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
+            $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href=\''.PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao='.PaginaSEI::getInstance()->getAcaoRetorno().'&acao_origem='.$_GET['acao'].PaginaSEI::getInstance()->montarAncora($_GET['id_tipo_controle_litigioso']))).'\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
+            //cadastrando associaçoes
+            if (isset($_POST['hdnTbTiposDecisao'])) {
 
-                        // Cadastro - remove os relacionamentos atuais, adiciona os novos
-                        $objAssocTipoDecisaoLitigiosoRN->cadastrar($arrObjAssocTipoDecisaoDTO);
-                        //header('Location: '.SessaoSEI::getInstance()->assinarLink('controlador.php?&acao=md_lit_tipo_controle_listar'));
-                        header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'] . PaginaSEI::getInstance()->montarAncora($_POST['hdnIdTipoControle'])));
-                        die;
-
-                    } catch (Exception $e) {
-                        PaginaSEI::getInstance()->processarExcecao($e);
-                    }
-
-                } else {
-                    //obter tipos de decisão já associados ao tipo de controle selecionado
-                    $idTipoControle = $_GET['id_tipo_controle_litigioso'];
-
-                    $objAssocTipoDecisaoDTO = new MdLitRelTipoControleTipoDecisaoDTO();
-                    $objAssocTipoDecisaoDTO->retTodos();
-                    $objAssocTipoDecisaoDTO->retStrNome();
-                    $objAssocTipoDecisaoDTO->retStrSinAtivoDecisao();
-                    $objAssocTipoDecisaoDTO->retStrNomeEspecieDecisao();
-
-                    $objAssocTipoDecisaoDTO->setNumIdTipoControleLitigioso($idTipoControle);
-                    $objAssocTipoDecisaoDTO->setStrSinAtivoDecisao('S');
-
-                    PaginaSEI::getInstance()->prepararOrdenacao($objAssocTipoDecisaoDTO, 'Nome', InfraDTO::$TIPO_ORDENACAO_ASC);
+                try {
 
                     $objAssocTipoDecisaoLitigiosoRN = new MdLitRelTipoControleTipoDecisaoRN();
-                    $arrItens                       = $objAssocTipoDecisaoLitigiosoRN->listar($objAssocTipoDecisaoDTO);
+                    $arrTipoDecisao = PaginaSEI::getInstance()->getArrItensTabelaDinamica($_POST['hdnTbTiposDecisao']);
 
+                    //SET DECISOES
+                    $arrObjAssocTipoDecisaoDTO = array();
 
-                    $strItensSelTipoDecisao = MdLitTipoDecisaoINT::montarSelectTipoDecisao('null', '&nbsp;', '');
-                    $arrItensTbEspecieDecisao = array();
-                    $objMdLitDecisaoRN = new MdLitDecisaoRN();
+                    for ($x = 0; $x < count($arrTipoDecisao); $x++) {
 
-                    foreach ($arrItens as $key => $objAssocTipoDecisaoDTO){
-                        $objMdLitDecisaoDTO = new MdLitDecisaoDTO();
-                        $objMdLitDecisaoDTO->retNumIdMdLitTipoDecisao();
-                        $objMdLitDecisaoDTO->retNumIdMdLitEspecieDecisao();
-                        $objMdLitDecisaoDTO->retNumIdMdLitTipoControleMdLitProcessoSituacao();
-                        $objMdLitDecisaoDTO->setNumIdMdLitTipoDecisao($objAssocTipoDecisaoDTO->getNumIdTipoDecisaoLitigioso());
-                        $objMdLitDecisaoDTO->setNumIdMdLitEspecieDecisao($objAssocTipoDecisaoDTO->getNumIdMdLitEspecieDecisao());
-                        $objMdLitDecisaoDTO->setNumIdMdLitTipoControleMdLitProcessoSituacao($objAssocTipoDecisaoDTO->getNumIdTipoControleLitigioso());
-
-                        $arrItensTbEspecieDecisao[$key][] = $objAssocTipoDecisaoDTO->getNumIdTipoDecisaoLitigioso().'-'.$objAssocTipoDecisaoDTO->getNumIdMdLitEspecieDecisao();
-                        $arrItensTbEspecieDecisao[$key][] = $objAssocTipoDecisaoDTO->getNumIdTipoDecisaoLitigioso();
-                        $arrItensTbEspecieDecisao[$key][] = $objAssocTipoDecisaoDTO->getNumIdMdLitEspecieDecisao();
-                        $arrItensTbEspecieDecisao[$key][] = $objAssocTipoDecisaoDTO->getStrNome();
-                        $arrItensTbEspecieDecisao[$key][] = $objAssocTipoDecisaoDTO->getStrNomeEspecieDecisao();
-                        $arrItensTbEspecieDecisao[$key][] = $objMdLitDecisaoRN->contar($objMdLitDecisaoDTO);
-
+                        $objAssocTipoDecisaoDTO = new MdLitRelTipoControleTipoDecisaoDTO();
+                        $objAssocTipoDecisaoDTO->setNumIdTipoDecisaoLitigioso($arrTipoDecisao[$x][1]);
+                        $objAssocTipoDecisaoDTO->setNumIdMdLitEspecieDecisao($arrTipoDecisao[$x][2]);
+                        $objAssocTipoDecisaoDTO->setNumIdTipoControleLitigioso($_POST['hdnIdTipoControle']);
+                        array_push($arrObjAssocTipoDecisaoDTO, $objAssocTipoDecisaoDTO);
                     }
 
-                    $hdnTbTiposDecisao = PaginaSEI::getInstance()->gerarItensTabelaDinamica($arrItensTbEspecieDecisao);
+                    // Cadastro - remove os relacionamentos atuais, adiciona os novos
+                    $objAssocTipoDecisaoLitigiosoRN->cadastrar($arrObjAssocTipoDecisaoDTO);
+                    //header('Location: '.SessaoSEI::getInstance()->assinarLink('controlador.php?&acao=md_lit_tipo_controle_listar'));
+                    header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'] . PaginaSEI::getInstance()->montarAncora($_POST['hdnIdTipoControle'])));
+                    die;
+
+                } catch (Exception $e) {
+                    PaginaSEI::getInstance()->processarExcecao($e);
                 }
 
-                break;
-
-            default:
-                throw new InfraException("Ação '" . $_GET['acao'] . "' não reconhecida.");
-
-        }
-
-    } catch (Exception $e) {
-        PaginaSEI::getInstance()->processarExcecao($e);
-    }
-
-    PaginaSEI::getInstance()->montarDocType();
-    PaginaSEI::getInstance()->abrirHtml();
-    PaginaSEI::getInstance()->abrirHead();
-    PaginaSEI::getInstance()->montarMeta();
-    PaginaSEI::getInstance()->montarTitle(':: ' . PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo . ' ::');
-    PaginaSEI::getInstance()->montarStyle();
-    PaginaSEI::getInstance()->abrirStyle();
-?>
-
-#lblTipoDecisaoLitigioso {position:absolute;left:0%;top:0%;width:50%;}
-#selDescricaoTipoDecisaoLitigioso{position:absolute;left:0%;top:3%;width:50%;}
-
-#lblEspecieDecisao{position:absolute;left:0%;top:8%;width:50%;}
-#selEspecieDecisaoLitigioso{position:absolute;left:0%;top:11%;width:50%;}
-
-#addTipoDecisao{position:absolute;left:51%;top:11%;}
-#tableTiposDecisao{position:absolute;left:0%;top:18%;}
-
-<?
-    PaginaSEI::getInstance()->fecharStyle();
-    PaginaSEI::getInstance()->montarJavaScript();
-    PaginaSEI::getInstance()->abrirJavaScript();
-?>
-
-
-<?
-    PaginaSEI::getInstance()->fecharJavaScript();
-    PaginaSEI::getInstance()->fecharHead();
-    PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
-?>
-<form id="frmTipoDecisaoCadastro" method="post" onsubmit="return OnSubmitForm();"
-      action="<?= PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao_origem'])) ?>">
-    <?
-        PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
-        PaginaSEI::getInstance()->abrirAreaDados('530px');
-    ?>
-
-    <!--  Componente TipoDecisao  -->
-    <div id="divUn1" class="infraAreaDados" style="height:530px">
-
-        <label id="lblDescricaoTipoDecisao" for="txtTipoDecisao" accesskey="q" class="infraLabelObrigatorio">Tipo de
-            Decisão:</label>
-        <select id="selDescricaoTipoDecisaoLitigioso" name="selDescricaoTipoDecisaoLitigioso"  class="infraSelect">
-            <?= $strItensSelTipoDecisao ?>
-        </select>
-
-        <label id="lblEspecieDecisao" for="txtTipoDecisao" class="infraLabelObrigatorio">Espécies de Decisão:</label>
-        <select id="selEspecieDecisaoLitigioso" name="selEspecieDecisaoLitigioso" class="infraSelect">
-        </select>
-
-
-        <table width="99%" class="infraTable" summary="Lista de Tipos de Decisão" id="tableTiposDecisao">
-
-            <caption class="infraCaption">
-                <?= PaginaSEI::getInstance()->gerarCaptionTabela('Lista de Tipos de Decisão', 0) ?>
-            </caption>
-
-            <tr>
-                <th class="infraTh" style="display: none">ID</th>
-                <th class="infraTh" style="display: none">ID Tipo de Decisao</th>
-                <th class="infraTh" style="display: none">ID Especie de decisao</th>
-                <th class="infraTh">Tipo de Decisão</th>
-                <th class="infraTh">Espécies de Decisão</th>
-                <th class="infraTh" style="display: none">Contar Decisão</th>
-                <th class="infraTh" style="width: 60px;">Ações</th>
-            </tr>
-        </table>
-
-        <!-- Hidden Relacionado à tabela -->
-        <input type="hidden" name="hdnTbTiposDecisao" id="hdnTbTiposDecisao" value="<?php echo $hdnTbTiposDecisao?>"/>
-
-        <button type="button" id='addTipoDecisao' class="infraButton" onclick="adicionarTipoDecisao()" accesskey="A"><span class="infraTeclaAtalho">A</span>dicionar</button>
-        <input type="hidden" id="hdnIdTipoDecisaoLitigioso" name="hdnIdTipoDecisaoLitigioso"
-               value="<?= $_POST['hdnIdTipoDecisaoLitigioso'] ?>"/>
-        <input type="hidden" id="hdnIdTipoControle" name="hdnIdTipoControle"
-               value="<?php echo isset($_GET['id_tipo_controle_litigioso']) ? $_GET['id_tipo_controle_litigioso'] : $_POST['hdnIdTipoControle']; ?>"/>
-
-    </div>
-    <?
-    PaginaSEI::getInstance()->fecharAreaDados();
-    ?>
-
-</form>
-<?
-    PaginaSEI::getInstance()->fecharBody();
-    PaginaSEI::getInstance()->fecharHtml();
-?>
-
-<script type="text/javascript">
-    var objTabelaAssociacao = null;
-    function inicializar() {
-        document.getElementById('btnCancelar').focus();
-        infraEfeitoTabelas();
-        buscarComboEspecieDecisao();
-        objTabelaAssociacao = new infraTabelaDinamica('tableTiposDecisao', 'hdnTbTiposDecisao', false, true);
-        objTabelaAssociacao.gerarEfeitoTabela = true;
-        objTabelaAssociacao.inserirNoInicio = false;
-        objTabelaAssociacao.exibirMensagens = true;
-
-    }
-
-
-    function validarCadastro() {
-
-        var optionsTipoDecisao = document.getElementById('selDescricaoTipoDecisao').options;
-
-        if (optionsTipoDecisao.length == 0) {
-
-            if (confirm("Nenhum Tipo de Decisão foi associado. Deseja salvar o registro?")) {
-                return true;
             } else {
-                return false;
-            }
+                //obter tipos de decisão já associados ao tipo de controle selecionado
+                $idTipoControle = $_GET['id_tipo_controle_litigioso'];
 
-        } else {
-            return true;
-        }
+                $objAssocTipoDecisaoDTO = new MdLitRelTipoControleTipoDecisaoDTO();
+                $objAssocTipoDecisaoDTO->retTodos();
+                $objAssocTipoDecisaoDTO->retStrNome();
+                $objAssocTipoDecisaoDTO->retStrSinAtivoDecisao();
+                $objAssocTipoDecisaoDTO->retStrNomeEspecieDecisao();
 
-    }
+                $objAssocTipoDecisaoDTO->setNumIdTipoControleLitigioso($idTipoControle);
+                $objAssocTipoDecisaoDTO->setStrSinAtivoDecisao('S');
 
-    function OnSubmitForm() {
-        return validarCadastro();
-    }
+                PaginaSEI::getInstance()->prepararOrdenacao($objAssocTipoDecisaoDTO, 'Nome', InfraDTO::$TIPO_ORDENACAO_ASC);
 
-    function buscarComboEspecieDecisao(){
+                $objAssocTipoDecisaoLitigiosoRN = new MdLitRelTipoControleTipoDecisaoRN();
+                $arrItens = $objAssocTipoDecisaoLitigiosoRN->listar($objAssocTipoDecisaoDTO);
 
-        //Ajax para carregar as especie de decisao de acordo com o tipo de decisao
-        objAjaxComboEspecieDecisao = new infraAjaxMontarSelectDependente('selDescricaoTipoDecisaoLitigioso', 'selEspecieDecisaoLitigioso', '<?=$strLinkAjaxComboEspecieDecisao?>');
 
-        objAjaxComboEspecieDecisao.prepararExecucao = function () {
-            if (document.getElementById('selDescricaoTipoDecisaoLitigioso').value != 'null' || document.getElementById('selDescricaoTipoDecisaoLitigioso').value != '') {
-                return infraAjaxMontarPostPadraoSelect('null', '', 'null') +'&id_md_lit_tipo_decisao=' + document.getElementById('selDescricaoTipoDecisaoLitigioso').value;
-            }
+                $strItensSelTipoDecisao = MdLitTipoDecisaoINT::montarSelectTipoDecisao('null', '&nbsp;', '');
+                $arrItensTbEspecieDecisao = array();
+                $objMdLitDecisaoRN = new MdLitDecisaoRN();
 
-            return false;
-        };
+                foreach ($arrItens as $key => $objAssocTipoDecisaoDTO) {
+                    $objMdLitDecisaoDTO = new MdLitDecisaoDTO();
+                    $objMdLitDecisaoDTO->retNumIdMdLitTipoDecisao();
+                    $objMdLitDecisaoDTO->retNumIdMdLitEspecieDecisao();
+                    $objMdLitDecisaoDTO->retNumIdMdLitTipoControleMdLitProcessoSituacao();
+                    $objMdLitDecisaoDTO->setNumIdMdLitTipoDecisao($objAssocTipoDecisaoDTO->getNumIdTipoDecisaoLitigioso());
+                    $objMdLitDecisaoDTO->setNumIdMdLitEspecieDecisao($objAssocTipoDecisaoDTO->getNumIdMdLitEspecieDecisao());
+                    $objMdLitDecisaoDTO->setNumIdMdLitTipoControleMdLitProcessoSituacao($objAssocTipoDecisaoDTO->getNumIdTipoControleLitigioso());
 
-        objAjaxComboEspecieDecisao.processarResultado = function(){
-            var itensTabela = objTabelaAssociacao.obterItens();
-            for(var i = 0; i < itensTabela.length; i++){
-                if(document.getElementById('selDescricaoTipoDecisaoLitigioso').value == itensTabela[i][1]){
-                    removerOptionSelect(document.getElementById('selEspecieDecisaoLitigioso'),itensTabela[i][2] );
+                    $arrItensTbEspecieDecisao[$key][] = $objAssocTipoDecisaoDTO->getNumIdTipoDecisaoLitigioso() . '-' . $objAssocTipoDecisaoDTO->getNumIdMdLitEspecieDecisao();
+                    $arrItensTbEspecieDecisao[$key][] = $objAssocTipoDecisaoDTO->getNumIdTipoDecisaoLitigioso();
+                    $arrItensTbEspecieDecisao[$key][] = $objAssocTipoDecisaoDTO->getNumIdMdLitEspecieDecisao();
+                    $arrItensTbEspecieDecisao[$key][] = $objAssocTipoDecisaoDTO->getStrNome();
+                    $arrItensTbEspecieDecisao[$key][] = $objAssocTipoDecisaoDTO->getStrNomeEspecieDecisao();
+                    $arrItensTbEspecieDecisao[$key][] = $objMdLitDecisaoRN->contar($objMdLitDecisaoDTO);
+
                 }
+
+                $hdnTbTiposDecisao = PaginaSEI::getInstance()->gerarItensTabelaDinamica($arrItensTbEspecieDecisao);
             }
 
-        };
+            break;
+
+        default:
+            throw new InfraException("Ação '" . $_GET['acao'] . "' não reconhecida.");
+
     }
 
-    function removerOptionSelect(idSelect, valueOption){
-        idSelect = infraGetElementById(idSelect);
-        for(var i = 0; i < idSelect.options.length; i++){
-            if(idSelect.options[i].value == valueOption){
-                idSelect.options[i].remove()
-            }
-        }
-    }
+} catch (Exception $e) {
+    PaginaSEI::getInstance()->processarExcecao($e);
+}
 
-    function getNomeSelectSelecionado(idSelect) {
-        idSelect = infraGetElementById(idSelect);
-        for(var i = 0; i < idSelect.options.length; i++){
-            if(idSelect.options[i].value == idSelect.value){
-                return idSelect.options[i].text;
-            }
-        }
-    }
+PaginaSEI::getInstance()->montarDocType();
+PaginaSEI::getInstance()->abrirHtml();
+PaginaSEI::getInstance()->abrirHead();
+PaginaSEI::getInstance()->montarMeta();
+PaginaSEI::getInstance()->montarTitle(':: ' . PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo . ' ::');
+PaginaSEI::getInstance()->montarStyle();
+PaginaSEI::getInstance()->abrirStyle();
+PaginaSEI::getInstance()->fecharStyle();
+PaginaSEI::getInstance()->montarJavaScript();
+PaginaSEI::getInstance()->abrirJavaScript();
+PaginaSEI::getInstance()->fecharJavaScript();
+require_once("md_lit_tipo_controle_tipo_decisao_cadastro_css.php");
+PaginaSEI::getInstance()->fecharHead();
+PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
+?>
+    <form id="frmTipoDecisaoCadastro" method="post" onsubmit="return OnSubmitForm();"
+          action="<?= PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao_origem'])) ?>">
+        <?
+        PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
+        ?>
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-4 col-xl-6">
+                <div class="form-group">
+                    <label id="lblDescricaoTipoDecisao" for="txtTipoDecisao" accesskey="q" class="infraLabelObrigatorio">Tipo
+                        de
+                        Decisão:</label>
+                    <select id="selDescricaoTipoDecisaoLitigioso" name="selDescricaoTipoDecisaoLitigioso"
+                            class="infraSelect form-control">
+                        <?= $strItensSelTipoDecisao ?>
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-8 col-xl-6">
+                <div class="form-group">
+                    <label id="lblEspecieDecisao" for="txtTipoDecisao" class="infraLabelObrigatorio">Espécies de
+                        Decisão:</label>
+                    <div class="input-group mb-3">
+                        <select id="selEspecieDecisaoLitigioso" name="selEspecieDecisaoLitigioso"
+                                class="infraSelect form-control">
+                        </select>
+                        <input type="hidden" name="hdnTbTiposDecisao" id="hdnTbTiposDecisao"
+                            value="<?php echo $hdnTbTiposDecisao ?>"/>
 
-    function adicionarTipoDecisao(){
-        var idTipoDecisao = document.getElementById('selDescricaoTipoDecisaoLitigioso').value;
-        var idEspecieDecisao = document.getElementById('selEspecieDecisaoLitigioso').value;
-        var nomeTipoDecisao = getNomeSelectSelecionado(document.getElementById('selDescricaoTipoDecisaoLitigioso'));
-        var nomeEspecieDecisao = getNomeSelectSelecionado(document.getElementById('selEspecieDecisaoLitigioso'));
-        var arrIdEspecieDecisao = new Array();
+                        <button type="button" id='addTipoDecisao' class="infraButton" onclick="adicionarTipoDecisao()"
+                                accesskey="A"><span class="infraTeclaAtalho">A</span>dicionar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <table width="99%" class="infraTable" summary="Lista de Tipos de Decisão" id="tableTiposDecisao">
 
-        if(document.getElementById('selDescricaoTipoDecisaoLitigioso').value == '' || document.getElementById('selDescricaoTipoDecisaoLitigioso').value == 'null'){
-            alert('Selecione o Tipo de Decisão');
-            return;
-        }
+                    <caption class="infraCaption">
+                        <?= PaginaSEI::getInstance()->gerarCaptionTabela('Lista de Tipos de Decisão', 0) ?>
+                    </caption>
 
-        if(document.getElementById('selEspecieDecisaoLitigioso').value == '' || document.getElementById('selEspecieDecisaoLitigioso').value == 'null'){
-            alert('Selecione a Espécies de Decisão');
-            return;
-        }
-
-
-        var arrItens = objTabelaAssociacao.obterItens();
-        var i;
-        for(i = 0; i < arrItens.length; i++){
-            arrIdEspecieDecisao.push(arrItens[i][2]);
-        }
-
-        arrIdEspecieDecisao.push(idEspecieDecisao);
-
-        var objResult = validarEspecieDecisaoGestaoMultasDiferentes(arrIdEspecieDecisao);
-        if(objResult.valid == false){
-            alert(objResult.mensagem);
-            return false;
-        }
-
-        objTabelaAssociacao.adicionar([
-            idTipoDecisao+'-'+idEspecieDecisao,
-            idTipoDecisao,
-            idEspecieDecisao,
-            nomeTipoDecisao,
-            nomeEspecieDecisao,
-            0
-        ]);
-        objAjaxComboEspecieDecisao.executar();
-    }
-
-    function validarEspecieDecisaoGestaoMultasDiferentes(arrEspecies) {
-        var valid = true;
-
-        $.ajax({
-            type: "POST",
-            url: "<?php echo SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_validar_especie_decisao');?>",
-            dataType: "xml",
-            async: false,
-            data: {'arrEspeciesId': arrEspecies},
-            success: function (data) {
-                if ($(data).find('resultado').text() == '0') {
-                    valid = false;
-                }
-            },
-            error: function (msgError) {
-                msgCommit = "Erro ao processar o validação do do SEI: " + msgError.responseText;
-                console.log(msgCommit);
-            },
-            complete: function (result) {
-                infraAvisoCancelar();
-            }
-        });
-        return {'valid': valid, 'mensagem': "Não é possivel associar Espécies de Decisão com Indicação de Multa de tipos distintos (Gestão por Integração e Apenas Indicação de Valor). \n" +
-                        "\nEscolha Espécies de Decisão diferentes ou entre em contato com o Gestor do SEI para dúvidas a respeito"};
-    }
-
-</script>
+                    <tr>
+                        <th class="infraTh" style="display: none">ID</th>
+                        <th class="infraTh" style="display: none">ID Tipo de Decisao</th>
+                        <th class="infraTh" style="display: none">ID Especie de decisao</th>
+                        <th class="infraTh">Tipo de Decisão</th>
+                        <th class="infraTh">Espécies de Decisão</th>
+                        <th class="infraTh" style="display: none">Contar Decisão</th>
+                        <th class="infraTh" style="width: 60px;">Ações</th>
+                    </tr>
+                </table>
+                <input type="hidden" id="hdnIdTipoDecisaoLitigioso" name="hdnIdTipoDecisaoLitigioso"
+                       value="<?= $_POST['hdnIdTipoDecisaoLitigioso'] ?>"/>
+                <input type="hidden" id="hdnIdTipoControle" name="hdnIdTipoControle"
+                       value="<?php echo isset($_GET['id_tipo_controle_litigioso']) ? $_GET['id_tipo_controle_litigioso'] : $_POST['hdnIdTipoControle']; ?>"/>
+            </div>
+        </div>
+    </form>
+<?
+require_once("md_lit_tipo_controle_tipo_decisao_cadastro_js.php");
+PaginaSEI::getInstance()->fecharBody();
+PaginaSEI::getInstance()->fecharHtml();
+?>

@@ -1,72 +1,121 @@
-#btnValidarNumeroSei{
-margin-top: 4px;
-margin-left: -10px;
-}
+<style type="text/css">
 
-#divCheckExtraJudicial {
-margin-top: 6px;
-}
-/**
-#txtSituacao{
-font-size: 14px;
-}*/
+    #divCheckExtraJudicial {
+        margin-top: 6px;
+    }
 
-#chkReducaoRenuncia{
-margin-top: 10px;
-}
+    /**
+    #txtSituacao{
+    font-size: 14px;
+    }*/
 
-#chkHouveConstituicao{
-margin-top: 20px;
-}
+    #chkReducaoRenuncia {
+        margin-top: 10px;
+    }
 
-#btnConstituirDefinitivamente{
-margin-top: 13px;
-}
+    #chkHouveConstituicao {
+        margin-top: 20px;
+    }
 
-#lblDtaTipoSituacao{
-font-weight: bold;
-}
+    #btnConstituirDefinitivamente {
+        margin-top: 13px;
+    }
 
-#divBtnAdicionar{
-margin-bottom: 1%;
-}
+    #lblDtaTipoSituacao {
+        font-weight: bold;
+    }
 
-#divsDatasBdPrescricao{
-margin-top: 5px;
-}
+    #divsDatasBdPrescricao {
+        margin-top: 5px;
+    }
 
-.btnMaisAnos{
-margin-left: -35px;
-}
+    .btnMaisAnos {
+        margin-left: 10px;
+    }
 
-.lblIntQuinq{
-margin-right: 7px
-}
-
-.campoData {
-width : 68%!important;
-}
-
-.infraImg{
-margin-bottom: -4px;
-}
-
-.botoesDecisao{
-float: right;
-}
-
-.imgAjudaCtrlProcLit{
-max-width: 16px;
-max-height: 16px;
-visibility: visible !important;
-}
-
-.botoesGestaoMulta{float:right;margin-bottom: 10px;margin-right: 0px;}
-.btnLancamento{float: right;margin-left: 10px;}
-.nao-tem-constituicao{display:none;}
-.tem-constituicao{display:block;}
+    .lblIntQuinq {
+        margin-right: 7px
+    }
 
 
+    .infraImg {
+        margin-bottom: -4px;
+    }
+
+    .botoesDecisao {
+        float: right;
+    }
+
+    .imgAjudaCtrlProcLit {
+        width: 20px;
+        visibility: visible !important;
+    }
+
+    .botoesGestaoMulta {
+        float: right;
+        margin-bottom: 10px;
+        margin-right: 0px;
+    }
+
+    .btnLancamento {
+        float: right;
+        margin-left: 10px;
+    }
+
+    .nao-tem-constituicao {
+        display: none;
+    }
+
+    .tem-constituicao {
+        display: block;
+    }
+
+    .infraImgEngrenagem{
+        width: 20px;
+        position:relative;
+        top: 4px;
+    }
+
+    .infraFieldset{
+        height: auto;
+    }
+
+    .linha{
+        padding-top: 10px;
+    }
+
+    .mb-3{
+        margin-bottom: 0px;
+    }
+
+    #btnValidarNumeroSei{
+        margin-left: 5px;
+    }
+
+
+    #txtDtIntercorrente{
+        width: calc(100% - 200px) !important;
+    }
+
+    #txtDtQuinquenal{
+        width: calc(100% - 200px) !important;
+    }
+
+    #fieldsetDecisao{
+        height: auto;
+        padding-bottom: 20px;
+    }
+    #fieldsetMulta{
+        height: auto;
+    }
+
+    .campoData{
+        width: 80%;
+    }
+    #divHouveConstituicao .infraCheckboxDiv {
+        margin-left: 0;
+    }
+</style>
 
 
 

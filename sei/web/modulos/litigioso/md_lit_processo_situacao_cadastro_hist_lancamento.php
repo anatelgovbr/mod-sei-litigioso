@@ -21,7 +21,8 @@ switch($_GET['acao']) {
             $strTitulo = 'Histórico de Lançamentos';
 
             $arrComandos[] = '<button type="button" accesskey="I" id="btnImprimir" value="Imprimir" onclick="infraImprimirTabela();" class="infraButton"><span class="infraTeclaAtalho">I</span>mprimir</button>';
-            $arrComandos[] = '<button type="button" accesskey="C" name="sbmFechar" id="sbmFechar"  onclick="window.close();" value="Fechar" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
+            $arrComandos[] = '<button type="button" accesskey="C" name="sbmFechar" id="sbmFechar"  onclick="infraFecharJanelaModal();" value="Fechar" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
+            //'<button type="button" accesskey="C" name="sbmFechar" id="sbmFechar"  onclick="window.close();" value="Fechar" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
 
 
         } catch (Exception $e) {
@@ -74,7 +75,7 @@ $numRegistros = count($arrObjs);
 
 //Tabela de resultado.
 if ($numRegistros > 0) {
-    $strResultado .= '<table width="99%" class="infraTable" summary="Histórico de Lançamentos">';
+    $strResultado .= '<table width="100%" class="infraTable" summary="Histórico de Lançamentos">';
     $strResultado .= '<caption class="infraCaption">';
     $strResultado .= PaginaSEI::getInstance()->gerarCaptionTabela('Histórico de Lançamentos', $numRegistros);
     $strResultado .= '</caption>';
@@ -99,7 +100,7 @@ if ($numRegistros > 0) {
     $strResultado .= '</th>';
 
     $strResultado .= '<th class="infraTh" width="15%">';
-    $strResultado .= PaginaSEI::getInstance()->getThOrdenacao($objMdLitHistLancamentoDTO, 'Data do Último Pagamento', 'UltimoPagamento', $arrObjs);
+    $strResultado .= PaginaSEI::getInstance()->getThOrdenacao($objMdLitHistLancamentoDTO, 'Data Último Pagamento', 'UltimoPagamento', $arrObjs);
     $strResultado .= '</th>';
 
     $strResultado .= '<th class="infraTh" width="15%">';
@@ -137,7 +138,7 @@ if ($numRegistros > 0) {
         $strCssTr = $strCssTr == '<tr class="infraTrClara">' ? '<tr class="infraTrEscura">' : '<tr class="infraTrClara">';
         $strResultado .= $strCssTr;
 
-        $strResultado .= '<td align="center" valign="top">';
+        $strResultado .= '<td align="center" valign="center">';
         $strResultado .= PaginaSEI::getInstance()->getTrCheck($i, $strId, $strDescricao);
         $strResultado .= '</td>';
 
@@ -146,7 +147,7 @@ if ($numRegistros > 0) {
                 $strResultado .= $objMdLitHistLancamentoRN->formatarSequencialLink($arrObjs[$i]->getStrSequencial(), $arrObjs[$i]->getStrLinkBoleto());
                 $primeiroRegistro = false;
             }else{
-                $strResultado .= '<span style="padding:0 .5em 0 .5em;" >'.$arrObjs[$i]->getStrSequencial().'</span>';
+                $strResultado .= '<span style="padding:0 .5em 0 .5em; font-size: .875rem;" >'.$arrObjs[$i]->getStrSequencial().'</span>';
             }
         $strResultado .= '</td>';
 
@@ -208,11 +209,6 @@ PaginaSEI::getInstance()->montarMeta();
 PaginaSEI::getInstance()->montarTitle(':: '.PaginaSEI::getInstance()->getStrNomeSistema().' - '.$strTitulo.' ::');
 PaginaSEI::getInstance()->montarStyle();
 PaginaSEI::getInstance()->abrirStyle();
-?>
-
-
-
-<?php
 PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->abrirJavaScript();
@@ -227,13 +223,13 @@ PaginaSEI::getInstance()->abrirBody($strTitulo,'onload=""');
     <?php PaginaSEI::getInstance()->abrirAreaDados('') ?>
     <div id="divOrientacoes">
         <div id="divTitulo">
-            <label id="lblTitulo"><?php echo $titulo ?></label>
+            <label id="lblTitulo" class="infraLabelOpcional"><strong><?php echo $titulo ?></strong></label>
         </div>
 
-        <div id="divInformacoes">
-          <label style="margin-left:70px" id="lblInformacoes">- Somente é possível acessar o Boleto sobre último registro do Histórico, para que seja apresentado sempre atualizado.</label>
-            <p style="margin-left:70px;font-size: 1.2em;margin-top: 5px;margin-bottom: 0;">- São apresentadas novas linhas no Histórico somente quando ocorre atualizações sobre o Crédito Lançado, Desconto, pagamento ou modificação da situação do lançamento.</p>
-        </div>
+        <ul style="list-style-type: disc; padding-left: 25px; font-size: .846rem;">
+            <li> Somente é possível acessar o Boleto sobre último registro do Histórico, para que seja apresentado sempre atualizado. </li>
+            <li> São apresentadas novas linhas no Histórico somente quando ocorre atualizações sobre o Crédito Lançado, Desconto, pagamento ou modificação da situação do lançamento. </li>
+        </ul>
     </div>
 
 <?php
@@ -243,6 +239,24 @@ PaginaSEI::getInstance()->abrirBody($strTitulo,'onload=""');
     ?>
 
 </form>
+
+<script>
+    // Adiciona a class "infraLabelOpcional" quando não retorna nenhum registro na grid
+    // para ficar na mesma formatação das labels da infra
+    if( $('#divInfraAreaTabela').find('table').length == 0 ){
+        $('#divInfraAreaPaginacaoSuperior').hide();
+        $('#divInfraAreaTabela').parent().parent().addClass('mt-2');
+        $('#divInfraAreaTabela > label').addClass('infraLabelOpcional'); 
+    }else{
+        if( $('#divInfraAreaPaginacaoSuperior').find('select').length == 0 ){
+            $('#divInfraAreaPaginacaoSuperior').hide();
+        }
+    }
+
+    $('.ancoraPadraoAzul').css({
+        'font-size': '.875rem'
+    });
+</script>
 <?php
 PaginaSEI::getInstance()->fecharBody();
 PaginaSEI::getInstance()->fecharHtml();

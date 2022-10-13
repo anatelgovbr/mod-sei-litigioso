@@ -117,10 +117,10 @@ try{
     }
 
     $bordaCompleta = $primeiraPosition.':'.$ultimaPosition;
-    $objPHPExcel->getActiveSheet()->getStyle('A1:G1')->getBorders()->getOutline()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
-    $objPHPExcel->getActiveSheet()->getStyle('A1:G1')->getFont()->setBold(true);
+    $objPHPExcel->getActiveSheet()->getStyle('A1:F1')->getBorders()->getOutline()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+    $objPHPExcel->getActiveSheet()->getStyle('A1:F1')->getFont()->setBold(true);
     $objPHPExcel->getActiveSheet()
-        ->getStyle('A1:G1')
+        ->getStyle('A1:F1')
         ->getFill()
         ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
         ->getStartColor()
@@ -129,9 +129,9 @@ try{
     $objPHPExcel->getActiveSheet()->getStyle($bordaCompleta)->getBorders()->getOutline()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 
     if(empty($arrObjTipoControleLitigiosoDTO)){
-        $objPHPExcel->setActiveSheetIndex(0)->mergeCells('A2:G2');
+        $objPHPExcel->setActiveSheetIndex(0)->mergeCells('A2:F2');
         $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A2', 'Nenhum registro encontrado.');
-        $objPHPExcel->getActiveSheet()->getStyle('A2:G2')->getBorders()->getOutline()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+        $objPHPExcel->getActiveSheet()->getStyle('A2:F2')->getBorders()->getOutline()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
     }
 
 // Indicação da criação do ficheiro

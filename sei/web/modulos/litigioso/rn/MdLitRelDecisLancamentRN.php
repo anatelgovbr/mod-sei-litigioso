@@ -189,7 +189,7 @@ class MdLitRelDecisLancamentRN extends InfraRN {
   }
 
   protected function vincularDecisaoComLancamentoControlado($arrObjMdLitDecisaoDTO){
-      if(count($arrObjMdLitDecisaoDTO)){
+      if(!is_null($arrObjMdLitDecisaoDTO)){
           $arrIdProcedimento = InfraArray::converterArrInfraDTO($arrObjMdLitDecisaoDTO, 'IdProcedimentoMdLitProcessoSituacao');
           $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
           $objMdLitLancamentoDTO->retNumIdMdLitLancamento();

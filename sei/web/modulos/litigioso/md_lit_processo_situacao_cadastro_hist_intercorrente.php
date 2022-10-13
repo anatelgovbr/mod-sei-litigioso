@@ -14,22 +14,21 @@ $arrComandos = array();
 $idProcedimento = $_GET['id_procedimento'];
 $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
 
-switch($_GET['acao']) {
+switch ($_GET['acao']) {
     case 'md_lit_processo_situacao_cadastro_hist_int_listar':
         try {
             $strTitulo = 'Histórico de Datas de Prescrição Intercorrente';
 
             $arrComandos[] = '<button type="button" accesskey="I" id="btnImprimir" value="Imprimir" onclick="infraImprimirTabela();" class="infraButton"><span class="infraTeclaAtalho">I</span>mprimir</button>';
-            $arrComandos[] = '<button type="button" accesskey="C" name="sbmFechar" id="sbmFechar"  onclick="window.close();" value="Fechar" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
+            $arrComandos[] = '<button type="button" accesskey="C" name="sbmFechar" id="sbmFechar"  onclick="infraFecharJanelaModal();" value="Fechar" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
 
-            
 
         } catch (Exception $e) {
             PaginaSEI::getInstance()->processarExcecao($e);
         }
         break;
     default:
-        throw new InfraException("Ação '".$_GET['acao']."' não reconhecida.");
+        throw new InfraException("Ação '" . $_GET['acao'] . "' não reconhecida.");
 }
 
 $objMdLitProcessoSituacaoDTO = new MdLitProcessoSituacaoDTO();
@@ -87,51 +86,51 @@ if ($numRegistros > 0) {
 
     $strCssTr = '<tr class="infraTrEscura">';
 
-for ($i = 0; $i < $numRegistros; $i++) {
+    for ($i = 0; $i < $numRegistros; $i++) {
 
-    $strId            = $arrObjs[$i]->getDblIdDocumento();
-    $strDescricao     = PaginaSEI::getInstance()->formatarParametrosJavaScript($arrObjs[$i]->getStrProtocoloFormatadoDocumento());
-    $bolRegistroAtivo = $arrObjs[$i]->getStrSinAtivo() == 'S';
-    $arrDtFormatada   = explode(' ',$arrObjs[$i]->getDthInclusao());
-    $dtFormatada      = $arrDtFormatada[0];
+        $strId = $arrObjs[$i]->getDblIdDocumento();
+        $strDescricao = PaginaSEI::getInstance()->formatarParametrosJavaScript($arrObjs[$i]->getStrProtocoloFormatadoDocumento());
+        $bolRegistroAtivo = $arrObjs[$i]->getStrSinAtivo() == 'S';
+        $arrDtFormatada = explode(' ', $arrObjs[$i]->getDthInclusao());
+        $dtFormatada = $arrDtFormatada[0];
 
-    $strCssTr = !$bolRegistroAtivo ? '<tr class="trVermelha">' : ($strCssTr == '<tr class="infraTrClara">' ? '<tr class="infraTrEscura">' : '<tr class="infraTrClara">');
-    $strResultado .= $strCssTr;
+        $strCssTr = !$bolRegistroAtivo ? '<tr class="trVermelha">' : ($strCssTr == '<tr class="infraTrClara">' ? '<tr class="infraTrEscura">' : '<tr class="infraTrClara">');
+        $strResultado .= $strCssTr;
 
-    $strResultado .= '<td align="center" valign="top">';
-    $strResultado .= PaginaSEI::getInstance()->getTrCheck($i, $strId, $strDescricao);
-    $strResultado .= '</td>';
+        $strResultado .= '<td align="center" valign="top">';
+        $strResultado .= PaginaSEI::getInstance()->getTrCheck($i, $strId, $strDescricao);
+        $strResultado .= '</td>';
 
-    $strResultado .= '<td>';
-    $strResultado .= PaginaSEI::tratarHTML($arrObjs[$i]->getStrProtocoloFormatadoDocumento());
-    $strResultado .= '</td>';
+        $strResultado .= '<td>';
+        $strResultado .= PaginaSEI::tratarHTML($arrObjs[$i]->getStrProtocoloFormatadoDocumento());
+        $strResultado .= '</td>';
 
-    $strResultado .= '<td>';
-    $strResultado .= PaginaSEI::tratarHTML($arrObjs[$i]->getStrNomeFase());
-    $strResultado .= '</td>';
+        $strResultado .= '<td>';
+        $strResultado .= PaginaSEI::tratarHTML($arrObjs[$i]->getStrNomeFase());
+        $strResultado .= '</td>';
 
-    $strResultado .= '<td  style="word-break:break-all">';
-    $strResultado .= PaginaSEI::tratarHTML($arrObjs[$i]->getStrNomeSituacao());
-    $strResultado .= '</td>';
+        $strResultado .= '<td  style="word-break:break-all">';
+        $strResultado .= PaginaSEI::tratarHTML($arrObjs[$i]->getStrNomeSituacao());
+        $strResultado .= '</td>';
 
-    $strResultado .= '<td>';
-    $strResultado .= $dtFormatada;
-    $strResultado .= '</td>';
+        $strResultado .= '<td>';
+        $strResultado .= $dtFormatada;
+        $strResultado .= '</td>';
 
-    $strResultado .= '<td align="center">';
-    $strResultado .= '<a alt="'.$arrObjs[$i]->getStrNomeUsuario().'" title="'.$arrObjs[$i]->getStrNomeUsuario().'" class="ancoraSigla"> '.$arrObjs[$i]->getStrSiglaUsuario().' </a>';
-    $strResultado .= '</td>';
+        $strResultado .= '<td align="center">';
+        $strResultado .= '<a alt="' . $arrObjs[$i]->getStrNomeUsuario() . '" title="' . $arrObjs[$i]->getStrNomeUsuario() . '" class="ancoraSigla"> ' . $arrObjs[$i]->getStrSiglaUsuario() . ' </a>';
+        $strResultado .= '</td>';
 
-    $strResultado .= '<td align="center">';
-    $strResultado .= '<a alt="'.$arrObjs[$i]->getStrDescricaoUnidade().'" title="'.$arrObjs[$i]->getStrDescricaoUnidade().'" class="ancoraSigla"> '.$arrObjs[$i]->getStrSiglaUnidade().' </a>';
-    $strResultado .= '</td>';
+        $strResultado .= '<td align="center">';
+        $strResultado .= '<a alt="' . $arrObjs[$i]->getStrDescricaoUnidade() . '" title="' . $arrObjs[$i]->getStrDescricaoUnidade() . '" class="ancoraSigla"> ' . $arrObjs[$i]->getStrSiglaUnidade() . ' </a>';
+        $strResultado .= '</td>';
 
 
-    $strResultado .= '<td>';
-    $strResultado .= PaginaSEI::tratarHTML($arrObjs[$i]->getDtaIntercorrente());
-    $strResultado .= '</td>';
+        $strResultado .= '<td>';
+        $strResultado .= PaginaSEI::tratarHTML($arrObjs[$i]->getDtaIntercorrente());
+        $strResultado .= '</td>';
 
-}
+    }
 
     $strResultado .= '</table>';
 
@@ -142,7 +141,7 @@ PaginaSEI::getInstance()->montarDocType();
 PaginaSEI::getInstance()->abrirHtml();
 PaginaSEI::getInstance()->abrirHead();
 PaginaSEI::getInstance()->montarMeta();
-PaginaSEI::getInstance()->montarTitle(':: '.PaginaSEI::getInstance()->getStrNomeSistema().' - '.$strTitulo.' ::');
+PaginaSEI::getInstance()->montarTitle(':: ' . PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo . ' ::');
 PaginaSEI::getInstance()->montarStyle();
 PaginaSEI::getInstance()->abrirStyle();
 ?>
@@ -155,13 +154,14 @@ PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->abrirJavaScript();
 PaginaSEI::getInstance()->fecharJavaScript();
 PaginaSEI::getInstance()->fecharHead();
-PaginaSEI::getInstance()->abrirBody($strTitulo,'onload=""');
+PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload=""');
 
 ?>
-<form action="<?php echo SessaoSEI::getInstance()->assinarLink('controlador.php?acao='.$_GET['acao'].'&id_procedimento='.$_GET['id_procedimento']); ?>" method="post" id="frmMdLitHistoricoIntercorrente" name="frmMdLitHistoricoIntercorrente">
+<form action="<?php echo SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&id_procedimento=' . $_GET['id_procedimento']); ?>"
+      method="post" id="frmMdLitHistoricoIntercorrente" name="frmMdLitHistoricoIntercorrente">
 
-    <?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
-    PaginaSEI::getInstance()->fecharAreaDados();
+    <?php
+    PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
     PaginaSEI::getInstance()->montarAreaTabela($strResultado, $numRegistros);
     PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos);
     ?>

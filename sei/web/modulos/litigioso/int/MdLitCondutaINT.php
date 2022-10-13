@@ -22,7 +22,7 @@
             $objCondutaDTO->setOrdStrNome(InfraDTO::$TIPO_ORDENACAO_ASC);
             $objCondutaDTO->setStrSinAtivo('S');
             $objCondutaDTO->setNumMaxRegistrosRetorno(50);
-            if(count($arrIdDispositivo)){
+            if(!empty($arrIdDispositivo)){
                 $objRelDispositivoNormativoCondutaRN  = new MdLitRelDispositivoNormativoCondutaRN ();
                 $objRelDispositivoNormativoCondutaDTO = new MdLitRelDispositivoNormativoCondutaDTO ();
 
@@ -30,7 +30,7 @@
                 $objRelDispositivoNormativoCondutaDTO->retNumIdConduta();
 
                 $arrObjRelDispositivoNormativoCondutaDTO = $objRelDispositivoNormativoCondutaRN->listar($objRelDispositivoNormativoCondutaDTO);
-                if(count($arrObjRelDispositivoNormativoCondutaDTO)){
+                if(!empty($arrObjRelDispositivoNormativoCondutaDTO)){
                     $arrIdConduta = InfraArray::converterArrInfraDTO($arrObjRelDispositivoNormativoCondutaDTO, 'IdConduta' );
 
                     $objCondutaDTO->setNumIdCondutaLitigioso($arrIdConduta, InfraDTO::$OPER_IN);
@@ -61,8 +61,11 @@
                 $arrObjRelDispositivoNormativoTipoControleDTO = $objRelDispositivoNormativoTipoControleRN->listar($objRelDispositivoNormativoTipoControleDTO);
 
                 $idDispositivoNormativo = array();
-                foreach ($arrObjRelDispositivoNormativoTipoControleDTO as $objRelDispositivoNormativoTipoControle) {
-                    $idDispositivoNormativo[] = $objRelDispositivoNormativoTipoControle->getNumIdDispositivoNormativo();
+                $countArrObjRelDispositivoNormativoTipoControleDTO = is_array($arrObjRelDispositivoNormativoTipoControleDTO) ? count($arrObjRelDispositivoNormativoTipoControleDTO) : 0;
+                if($countArrObjRelDispositivoNormativoTipoControleDTO > 0){
+                    foreach ($arrObjRelDispositivoNormativoTipoControleDTO as $objRelDispositivoNormativoTipoControle) {
+                        $idDispositivoNormativo[] = $objRelDispositivoNormativoTipoControle->getNumIdDispositivoNormativo();
+                    }
                 }
 
             }

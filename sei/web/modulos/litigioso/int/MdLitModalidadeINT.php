@@ -70,7 +70,7 @@ echo $strCheckBox;
                 $strChecked  = in_array($objMdLitModalidadeDTO->getNumIdMdLitModalidade(), $arrIdModalidade) ? "checked='checked'" : '';
                 $strCheckBox .= '<div class="infraDivCheckbox"><label class="infraLabelCheckbox checkbox-label '.$classSinObrigatorio.'" for="' . $nomeId . '">';
                 $strCheckBox .= '<input type ="checkbox" name="'.$nameInput.'" value="' . $strValue . '" class="infraCheckbox" id="' . $nomeId . '"' . $strChecked . ' '.$funcaoJS.'/> ';
-                $strCheckBox .= $strNome . '</label></div><br>';
+                $strCheckBox .= $strNome . '</label></div>';
             }
             return $strCheckBox;
         }

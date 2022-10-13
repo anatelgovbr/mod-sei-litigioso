@@ -41,8 +41,7 @@
                     $objAssociarDispositivoNormativoLitigiosoDTO2->setNumIdDispositivoNormativoLitigioso($dispositivoNormativo);
                     $arrTiposControle = $objAssociarDispositivoNormativoLitigiosoRN->listar($objAssociarDispositivoNormativoLitigiosoDTO2);
 
-                    if (count($arrTiposControle) == 1) {
-
+                    if (!$arrTiposControle) {
                         $objInfraException->adicionarValidacao('Pelo menos um Tipo de Controle Litigioso deve ser associado a este Dispositivo Normativo.');
                     }
                 }
@@ -102,16 +101,13 @@
                 SessaoSEI::getInstance()->validarAuditarPermissao('md_lit_associar_dispositivo_normativo_cadastrar', __METHOD__, $relDispositivoNormativoTipoControleDTO);
 
                 $relDispositivoNormativoTipoControleConsultarRN = new MdLitRelDispositivoNormativoTipoControleRN();
+                $relDispositivoNormativoTipoControleDTO->retTodos();
 
-                $relDispositivoNormativoTipoControleConsultarDTO = new MdLitRelDispositivoNormativoTipoControleDTO();
-                $relDispositivoNormativoTipoControleConsultarDTO->retTodos();
-                $relDispositivoNormativoTipoControleConsultarDTO->setNumIdTipoControle($relDispositivoNormativoTipoControleDTO->getNumIdTipoControle());
-
-                $arrRelDispositivoNormativoTipoControleDTO = $relDispositivoNormativoTipoControleConsultarRN->listar($relDispositivoNormativoTipoControleConsultarDTO);
+                $arrRelDispositivoNormativoTipoControleDTO = $relDispositivoNormativoTipoControleConsultarRN->listar($relDispositivoNormativoTipoControleDTO);
 
                 $objMdLitRelDispositivoNormativoTipoControleBD = new MdLitRelDispositivoNormativoTipoControleBD($this->getObjInfraIBanco());
-                for ($i = 0; $i < count($arrRelDispositivoNormativoTipoControleDTO); $i++) {
-                    $objMdLitRelDispositivoNormativoTipoControleBD->excluir($arrRelDispositivoNormativoTipoControleDTO[$i]);
+                foreach($arrRelDispositivoNormativoTipoControleDTO as $objRelDispositivoNormativo){
+                    $objMdLitRelDispositivoNormativoTipoControleBD->excluir($objRelDispositivoNormativo);
                 }
 
             } catch (Exception $e) {

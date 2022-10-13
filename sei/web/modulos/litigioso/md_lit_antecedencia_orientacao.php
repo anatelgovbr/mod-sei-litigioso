@@ -17,33 +17,15 @@ $retEditor = $objEditorRN->montarSimples($objEditorDTO);
 echo $retEditor->getStrInicializacao();
 
 ?>
-<style type="text/css">
-
-    #ConteudoAntecedente{
-    position: absolute;
-        width: 100%;
-        top:5%
-
-    }
-    #txaConteudoAntecedente{
-        height: 6.5%;
-
-    }
-
-</style>
-
-<div id="ConteudoAntecedente">
 <table id="tbConteudoAntecedente">
     <td>
-        <div id="divEditores" style="overflow: auto;">
-            <textarea type="text" id="txaConteudoAntecedente" rows="4" name="txtAnteOrientacoes" class="infraText"
-                tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
-                <?=$orientacaoAnte; ?>
-            </textarea>
-            <script type="text/javascript">
-                <?=$retEditor->getStrEditores();?>
-            </script>
-        </div>
+        <textarea type="text" id="txaConteudoAntecedente" rows="4" name="txtAnteOrientacoes" class="infraText"
+                  tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+            <?= $orientacaoAnte; ?>
+        </textarea>
+        <script type="text/javascript">
+            <?=$retEditor->getStrEditores();?>
+        </script>
     </td>
 </table>
-</div>
+

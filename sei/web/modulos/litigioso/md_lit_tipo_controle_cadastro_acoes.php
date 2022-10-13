@@ -353,7 +353,7 @@
 
     case 'md_lit_tipo_controle_consultar':
       $strTitulo = 'Consultar Tipo de Controle Litigioso';
-      $arrComandos[] = '<button type="button" accesskey="F" name="btnFechar" value="Fechar" onclick="location.href=\''.PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao='.PaginaSEI::getInstance()->getAcaoRetorno().'&acao_origem='.$_GET['acao'].PaginaSEI::getInstance()->montarAncora($_GET['id_tipo_processo_litigioso']))).'\';" class="infraButton"><span class="infraTeclaAtalho">F</span>echar</button>';
+      $arrComandos[] = '<button type="button" accesskey="F" name="btnFechar" value="Fechar" onclick="location.href=\''.PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao='.PaginaSEI::getInstance()->getAcaoRetorno().'&acao_origem='.$_GET['acao'].PaginaSEI::getInstance()->montarAncora($_GET['id_tipo_processo_litigioso']))).'\';" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
       $objTipoControleLitigiosoDTO->setNumIdTipoControleLitigioso($_GET['id_tipo_processo_litigioso']);
       $objTipoControleLitigiosoDTO->setBolExclusaoLogica(false);
       $objTipoControleLitigiosoDTO->retTodos();

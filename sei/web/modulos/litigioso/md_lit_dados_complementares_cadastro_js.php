@@ -235,7 +235,6 @@
                     }
 
                     if($(this).attr('outorgado') == 'S'){
-                        console.log(document.getElementById('outorgada'));
                         document.getElementById('optOutorgadaSim').checked = true;
                         document.getElementById('outorgada').style.display = "block";
                     }else if($(this).attr('outorgado') == 'N'){
@@ -254,14 +253,13 @@
             },
             error: function (msgError) {
                 msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;
-                console.log(msgCommit);
             }
         });
     }
 
     function validarNumeroVazio(){
         var dadosInteressadosArr = objTblDadosComplementares.tbl;
-        for(var i = 0; i < dadosInteressadosArr.rows.length; i++){console.log(objTblDadosComplementares.tbl.rows[i].cells[0].textContent);
+        for(var i = 0; i < dadosInteressadosArr.rows.length; i++){
             if(dadosInteressadosArr.rows[i].cells[0].textContent =="Número a ser gerado" ){
                 dadosInteressadosArr.rows[i].cells[0].innerHTML = '<div></div>';
             }
@@ -705,7 +703,15 @@
                     objDadosComplementares[8] = null;//Modalidade de Outorga
                     objDadosComplementares[9] = null;//Abrangências
 
-                    objDadosComplementares[0] = '<input type="checkbox" onclick="toggleSelecionarTabela(this)" id="chkInfraItem'+count+'" name="chkInfraItem'+count+'" class="infraCheckbox" value="'+count+'">';
+                    objDadosComplementares[0] =    '<div class="infraDivCheckbox">' +
+                        '<label class="infraLabelCheckbox checkbox-label " for="chkInfraItem'+count+'">' +
+                            '<div class="infraCheckboxDiv ">' +
+                                '<input onclick="toggleSelecionarTabela(this)" type="checkbox" name="chkInfraItem'+count+'" value="'+count+'" class="infraCheckboxInput" id="chkInfraItem'+count+'">' +
+                                    '<label class="infraCheckboxLabel " for="chkInfraItem'+count+'"></label>' +
+                            '</div>' +
+                        '</label>' +
+                    '</div>';
+
                     if($(this).attr('id_servico') != undefined)
                         objDadosComplementares[1] = $(this).attr('id_servico');
 
@@ -742,7 +748,6 @@
             },
             error: function (msgError) {
                 msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;
-                console.log(msgCommit);
             },
             complete: function (result) {
                 infraAvisoCancelar();

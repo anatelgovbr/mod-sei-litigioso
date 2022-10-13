@@ -48,7 +48,7 @@
         window.parent.document.getElementById(id).scrolling = "yes";
     }
 
-    //function para impedir o enter de submit o formulário
+    //function para impedir o enter de submit o formulrio
     function enterValidarDocumento(e) {
         if (e && e.keyCode == 13) {
             document.getElementById('sbmValidarNumeroSei').onclick();
@@ -105,12 +105,12 @@
          //acoes
          if (objTabelaPS.hdn.value!=''){
          hdnListaPSIndicados = objTabelaPS.hdn.value;
-         arrhdnListaPSIndicados = hdnListaPSIndicados.split('¥');
+         arrhdnListaPSIndicados = hdnListaPSIndicados.split('');
 
          //array
          if (arrhdnListaPSIndicados.length>0){
          for (i=0; i<arrhdnListaPSIndicados.length; i++) {
-         hdnListaPSIndicado = arrhdnListaPSIndicados[i].split('±');
+         hdnListaPSIndicado = arrhdnListaPSIndicados[i].split('');
          objTabelaPS.adicionarAcoes(hdnListaPSIndicado[0],"<img onclick='javascript:alert()' title='Remover Sobrestamento' alt='Remover Sobrestamento' src='imagens/sei_remover_sobrestamento_processo_pequeno.gif' class='infraImg'/>",false,false);
          }
          }else{
@@ -124,12 +124,12 @@
             /*
              //acoes
              hdnListaDIIndicados = objTabelaDI.hdn.value;
-             arrhdnListaDIIndicados = hdnListaDIIndicados.split('¥');
+             arrhdnListaDIIndicados = hdnListaDIIndicados.split('');
 
              //array
              if (arrhdnListaDIIndicados.length>0){
              for (i=0; i<arrhdnListaDIIndicados.length; i++) {
-             hdnListaDIIndicados = arrhdnListaDIIndicados[i].split('±');
+             hdnListaDIIndicados = arrhdnListaDIIndicados[i].split('');
              objTabelaDI.adicionarAcoes(hdnListaDIIndicados[0], "", true, true);
              }
              }else{
@@ -143,16 +143,16 @@
 
             //acoes
             hdnListaPSIndicados = objTabelaPS.hdn.value;
-            arrhdnListaPSIndicados = hdnListaPSIndicados.split('¥');
+            arrhdnListaPSIndicados = hdnListaPSIndicados.split('');
 
             //array
             if (arrhdnListaPSIndicados.length > 0) {
                 for (i = 0; i < arrhdnListaPSIndicados.length; i++) {
-                    hdnListaPSIndicado = arrhdnListaPSIndicados[i].split('±');
+                    hdnListaPSIndicado = arrhdnListaPSIndicados[i].split('');
                     objTabelaPS.adicionarAcoes(hdnListaPSIndicado[0], "<img onclick=\"javascript:removerSobrestamentoProcesso('" + hdnListaPSIndicado[0] + "'," + hdnListaPSIndicado[1] + ")\" title='Remover Sobrestamento' alt='Remover Sobrestamento' src='imagens/sei_remover_sobrestamento_processo_pequeno.gif' class='infraImg'/>", false, false);
                 }
             } else {
-                hdnListaPSIndicado = hdnListaPSIndicados.split('±');
+                hdnListaPSIndicado = hdnListaPSIndicados.split('');
                 objTabelaPS.adicionarAcoes(hdnListaPSIndicados, "<img Onclick=\"javascript:removerSobrestamentoProcesso('" + hdnListaPSIndicado[0] + "'," + hdnListaPSIndicado[1] + ")\" title='Remover Sobrestamento' alt='Remover Sobrestamento' src='imagens/sei_remover_sobrestamento_processo_pequeno.gif' class='infraImg'/>", false, false);
             }
         }
@@ -317,7 +317,7 @@
 
     function OnSubmitForm(formulario) {
         if (validarCadastro(formulario)) {
-            //exibe o aviso pois o serviço pode deixar a requisição lenta
+            //exibe o aviso pois o servio pode deixar a requisio lenta
             addArrayInflacaoExcluidaNoHidden();
 
             infraExibirAviso(false);
@@ -327,7 +327,6 @@
     }
 
     function addArrayInflacaoExcluidaNoHidden() {
-        console.log(arrIdsExcluidosInflacao.length)
         if (arrIdsExcluidosInflacao.length > 0) {
             var arrJson = JSON.stringify(arrIdsExcluidosInflacao);
             document.getElementById('hdnIdsInfracoesExcluidas').value = arrJson;
@@ -342,7 +341,7 @@
             return false;
         }
         if (infraTrim(document.getElementById('txtDtInstauracao').value) == '') {
-            alert('Informe o "Data da Instauração".');
+            alert('Informe o "Data da Instaurao".');
             document.getElementById('txtDtInstauracao').focus();
             return false;
         } else {
@@ -356,7 +355,7 @@
 
             if (infraCompararDatas(document.getElementById('txtDtInstauracao').value, dataHoje) < 0) {
                 // [MSG11]
-                alert('Data da Instauração não deve ser superior à data atual.');
+                alert('Data da Instaurao no deve ser superior  data atual.');
                 return false;
             }
 
@@ -384,7 +383,7 @@
         if(document.getElementById('selMotivos') != null) {
             var optionsMotivos = document.getElementById('selMotivos').options;
             if (optionsMotivos != null && optionsMotivos.length == 0 && document.getElementById('lblMotivos').className.match(/infraLabelOpcional/) == null) {
-                alert('Informe ao menos um Motivo para Instauração.');
+                alert('Informe ao menos um Motivo para Instaurao.');
                 document.getElementById('selMotivos').focus();
                 return false;
             }
@@ -415,7 +414,7 @@
         //vazio
         if (numeroSEI.length == 0) return false;
 
-        // #EU4864 - INFRAAJAX - não encontrado método que retorna somente dados, sem componentes
+        // #EU4864 - INFRAAJAX - no encontrado mtodo que retorna somente dados, sem componentes
         $.ajax({
             type: "POST",
             url: "<?= $strLinkAjaxValidarSEI ?>",
@@ -435,7 +434,7 @@
                     arrValidaSEI["Numero"] = $(result).find('Numero').text();
                     arrValidaSEI["SiglaUnidadeGeradoraProtocolo"] = $(result).find('SiglaUnidadeGeradoraProtocolo').text();
                     arrValidaSEI["NomeSerie"] = $(result).find('NomeSerie').text();
-                    //Documento Externo - data geração
+                    //Documento Externo - data gerao
                     arrValidaSEI["GeracaoProtocolo"] = $(result).find('GeracaoProtocolo').text();
                     arrValidaSEI["SinInterno"] = $(result).find('SinInterno').text();
                     //Documento Externo - data primeira assinatura
@@ -454,7 +453,6 @@
             },
             error: function (msgError) {
                 msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;
-                //console.log(msgCommit);
             },
             complete: function (result) {
             }
@@ -470,7 +468,7 @@
 
         arrValidaSituacaoSEI = new Array();
 
-        // #EU4864 - INFRAAJAX - não encontrado método que retorna somente dados, sem componentes
+        // #EU4864 - INFRAAJAX - no encontrado mtodo que retorna somente dados, sem componentes
         $.ajax({
             type: "POST",
             url: "<?= $strLinkAjaxValidarSituacaoSEI ?>",
@@ -487,7 +485,6 @@
             },
             error: function (msgError) {
                 msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;
-                console.log(msgCommit);
             },
             complete: function (result) {
             }
@@ -506,7 +503,7 @@
         mostrarTabelaDI(false);
         mostrarTabelaPS(false);
 
-        //[RN3]	O formulário completo somente será apresentado, caso os campos “Número SEI” e o “Tipo de Documentos” seja válido.
+        //[RN3]	O formulrio completo somente ser apresentado, caso os campos Nmero SEI e o Tipo de Documentos seja vlido.
         validaSEI(campo.value, 'd');
 
         if ((arrValidaSEI["ProtocoloProcedimentoFormatado"] != '' && arrValidaSEI["ProtocoloProcedimentoFormatado"] != undefined)
@@ -519,20 +516,20 @@
 
             validaSituacaoSEI(campo.value);
 
-            //[RN2]	O campo “Número do SEI” deve aceitar somente :
-            //      Numero SEI dos Tipos de Documentos associados à Situação marcada como “Instauradora” para o correspondente Tipo de Controle Litigioso.
+            //[RN2]	O campo Nmero do SEI deve aceitar somente :
+            //      Numero SEI dos Tipos de Documentos associados  Situao marcada como Instauradora para o correspondente Tipo de Controle Litigioso.
             if (arrValidaSituacaoSEI["IdSerie"] != '' && arrValidaSituacaoSEI["IdSerie"] != undefined && !isNaN(arrValidaSituacaoSEI["IdSerie"]) && arrValidaSituacaoSEI["StrSinInstauracao"] == 'S') {
 
-                //[RN4]	Caso o Número SEI informado seja de Documento Interno, somente será validado caso o mesmo já estiver sido assinado.
+                //[RN4]	Caso o Nmero SEI informado seja de Documento Interno, somente ser validado caso o mesmo j estiver sido assinado.
                 if (arrValidaSEI["SinInterno"] == 'S') {
                     if (arrValidaSEI["Assinatura"] != '' && arrValidaSEI["Assinatura"] != undefined) {
                         SEIvalido = true;
                         arrDtAssinatura = arrValidaSEI["Assinatura"].split(" ");
                     } else {
-                        //[MSG9] O Número do SEI informado não possui o documento interno assinado.
-                        mensagem = 'Somente é permitido adicionar Documento gerado depois que for assinado.';
+                        //[MSG9] O Nmero do SEI informado no possui o documento interno assinado.
+                        mensagem = 'Somente  permitido adicionar Documento gerado depois que for assinado.';
                     }
-                    //[RN6]	Caso o “Número SEI” informado for de um Documento Externo, trás a Data do Documento indicada em seu cadastro, campo editável.
+                    //[RN6]	Caso o Nmero SEI informado for de um Documento Externo, trs a Data do Documento indicada em seu cadastro, campo editvel.
                 } else {
                     SEIvalido = true;
                 }
@@ -565,7 +562,7 @@
                     limparDocInstaurador();
                 }
             } else {
-                mensagem = 'Este documento não está vinculado ao Tipo de Controle deste processo na situação Instauração.';
+                mensagem = 'Este documento não está vinculado ao Tipo de Controle deste processo na situção Instauração.';
             }
 
 
@@ -579,7 +576,7 @@
             alert(mensagem);
         }
 
-        //[RN3]	O formulário completo somente será apresentado, caso os campos “Número SEI” e o “Tipo de Documentos” seja válido.
+        //[RN3]	O formulrio completo somente ser apresentado, caso os campos Nmero SEI e o Tipo de Documentos seja vlido.
         //      desabilitando
         var elements = document.getElementsByClassName('NumeroSEIValidado');
         var iLen = elements.length;
@@ -597,7 +594,7 @@
         document.getElementById('txtTipo').value = '';
         document.getElementById('txtDtInstauracao').value = '';
 
-        //[RN7]	Situação "Instauradora" - "Não exige Data da Intimação da Instauração do Procedimento" => "Data de Intimação" - obrigatório
+        //[RN7]	Situao "Instauradora" - "No exige Data da Intimao da Instaurao do Procedimento" => "Data de Intimao" - obrigatrio
 //        document.getElementById('lblDtIntimacao').className = document.getElementById('lblDtIntimacao').className.replace('infraLabelObrigatorio', 'infraLabelOpcional');
 
     }
@@ -607,20 +604,20 @@
         var mensagem = '';
         var arrDtAssinatura;
 
-        //[RN3]	O formulário completo somente será apresentado, caso os campos “Número SEI” e o “Tipo de Documentos” seja válido.
+        //[RN3]	O formulrio completo somente ser apresentado, caso os campos Nmero SEI e o Tipo de Documentos seja vlido.
         validaSEI(campo.value, 'd');
 
         if (arrValidaSEI["NomeSerie"] != '' && arrValidaSEI["NomeSerie"] != undefined) {
 
             validaSituacaoSEI(campo.value);
 
-            //[RN2]	O campo “Número do SEI” deve aceitar somente :
-            //      Numero SEI dos Tipos de Documentos associados à Situação marcada como “Instauradora” para o correspondente Tipo de Controle Litigioso.
+            //[RN2]	O campo Nmero do SEI deve aceitar somente :
+            //      Numero SEI dos Tipos de Documentos associados  Situao marcada como Instauradora para o correspondente Tipo de Controle Litigioso.
             if (arrValidaSituacaoSEI["IdSerie"] != '' && arrValidaSituacaoSEI["IdSerie"] != undefined && !isNaN(arrValidaSituacaoSEI["IdSerie"]) && arrValidaSituacaoSEI["StrSinInstauracao"] == 'S') {
 
                 var txtDtSobrestamentoPS = '';
 
-                //[RN4]	Caso o Número SEI informado seja de Documento Interno, somente será validado caso o mesmo já estiver sido assinado.
+                //[RN4]	Caso o Nmero SEI informado seja de Documento Interno, somente ser validado caso o mesmo j estiver sido assinado.
                 if (arrValidaSEI["SinInterno"] == 'S') {
                     if (arrValidaSEI["Assinatura"] != '' && arrValidaSEI["Assinatura"] != undefined) {
                         arrDtAssinatura = arrValidaSEI["Assinatura"].split(" ");
@@ -631,10 +628,10 @@
                         }
                         SEIvalido = true;
                     } else {
-                        //[MSG9] O Número do SEI informado não possui o documento interno assinado.
-                        mensagem = 'O Número do SEI informado não possui o documento interno assinado';
+                        //[MSG9] O Nmero do SEI informado no possui o documento interno assinado.
+                        mensagem = 'O Nmero do SEI informado no possui o documento interno assinado';
                     }
-                    //[RN6]	Caso o “Número SEI” informado for de um Documento Externo, trás a Data do Documento indicada em seu cadastro, campo editável.
+                    //[RN6]	Caso o Nmero SEI informado for de um Documento Externo, trs a Data do Documento indicada em seu cadastro, campo editvel.
                 } else {
                     txtDtSobrestamentoPS = arrValidaSEI["GeracaoProtocolo"];
                     SEIvalido = true;
@@ -701,7 +698,7 @@
 
     objTabelaPS.alterar = function (arr) {
         return false;
-        // não existe alteração?
+        // no existe alterao?
         ////document.getElementById('hdnListaPSIndicados').value = arr[0];
         //objTabelaPS.removerLinha(objTabelaPS.procuraLinha(arr[0]));
         //document.getElementById('txtNumeroSeiPS').value = arr[4];
@@ -802,7 +799,7 @@
             arrDadosPS[5],
             arrDadosPS[6],
             '']);
-        //Linha adicionada, adiciona as ações
+        //Linha adicionada, adiciona as aes
         if (qtdPSIndicados < objTabelaPS.tbl.rows.length) {
             if (PSCustomizado != "") {
                 objTabelaPS.adicionarAcoes(arrDadosPS[0], '', false, true);
@@ -829,7 +826,7 @@
     // PS - funcionalidades - FIM
 
 
-    // Infração - funcionalidades
+    // Infrao - funcionalidades
     objTabelaDI = new infraTabelaDinamica('tbDispositivosInfrigidos', 'hdnListaDIIndicados', true, true);
     objTabelaDI.gerarEfeitoTabela = true;
     objTabelaDI.inserirNoInicio = false;
@@ -914,7 +911,7 @@
             });
         }
         if (!retorno) {
-            alert('A exclusão da infração não é permitida, pois existem registros vinculados!');
+            alert('A excluso da infrao no  permitida, pois existem registros vinculados!');
             return retorno;
         }
 
@@ -922,7 +919,6 @@
             mostrarTabelaDI(false);
         }
 
-        console.log(arr);
         addIdExcluidoHidden(arr[0]);
         return true;
     }
@@ -971,29 +967,29 @@
             dispositivoid = document.getElementById("hdnIdIDNDispNormat").value;
 
             if (document.getElementById("selIDNCondutas").options.length > 1 && document.getElementById("selIDNCondutas").value == '') {
-                alert('A conduta é obrigatório!');
+                alert('A conduta  obrigatrio!');
                 return false;
             }
 
 
-            //data da infração
+            //data da infrao
             if (document.getElementById('rdDataInfracaoEspecificaPorDispositivo').checked) {
                 staInfracaoData = '<?php echo MdLitRelDispositivoNormativoCondutaControleRN::$TA_ESPECIFICA?>';
                 dtaInfracao = document.getElementById('txtDtaInfracaoPorDispositivo').value;
                 dtaInfracaoEspecifica = document.getElementById('txtDtaInfracaoPorDispositivo').value;
 
                 if (dtaInfracaoEspecifica == '') {
-                    alert('A data da infração é obrigatório!');
+                    alert('A data da infrao  obrigatrio!');
                     return false;
                 }
                 if (!infraValidarData(document.getElementById('txtDtaInfracaoPorDispositivo'), false)) {
-                    alert('A data da infração é inválida!');
+                    alert('A data da infrao  invlida!');
                     document.getElementById('txtDtaInfracaoPorDispositivo').value = '';
                     document.getElementById('txtDtaInfracaoPorDispositivo').focus();
                     return false;
                 }
                 if (infraCompararDatas(dtaInfracaoEspecifica, infraDataAtual()) < 0) {
-                    alert('A data da infração especifica é maior que a data atual!');
+                    alert('A data da infrao especifica  maior que a data atual!');
                     document.getElementById('txtDtaInfracaoPorDispositivo').focus();
                     return false;
                 }
@@ -1003,44 +999,44 @@
                 dtaInfracaoFinal = document.getElementById('txtDtaInfracaoFinalPorDispositivo').value;
 
                 if (dtaInfracaoInicial == '' || dtaInfracaoFinal == '') {
-                    alert('A data do periodo inicial e final é obrigatório!');
+                    alert('A data do periodo inicial e final  obrigatrio!');
                     return false;
                 }
 
                 if (infraCompararDatas(dtaInfracaoInicial, dtaInfracaoFinal) < 0) {
-                    alert('Período de datas inválido.');
+                    alert('Perodo de datas invlido.');
                     document.getElementById('txtDtaInfracaoInicialPorDispositivo').focus();
                     return false;
                 }
 
                 if (!infraValidarData(document.getElementById('txtDtaInfracaoInicialPorDispositivo'), false)) {
-                    alert('A data do periodo inicial é Inválida!');
+                    alert('A data do periodo inicial  Invlida!');
                     document.getElementById('txtDtaInfracaoInicialPorDispositivo').value = '';
                     document.getElementById('txtDtaInfracaoInicialPorDispositivo').focus();
                     return false;
                 }
 
                 if (!infraValidarData(document.getElementById('txtDtaInfracaoFinalPorDispositivo'), false)) {
-                    alert('A data do periodo final é Inválida!');
+                    alert('A data do periodo final  Invlida!');
                     document.getElementById('txtDtaInfracaoFinalPorDispositivo').value = '';
                     document.getElementById('txtDtaInfracaoFinalPorDispositivo').focus();
                     return false;
                 }
 
                 if (infraCompararDatas(dtaInfracaoInicial, infraDataAtual()) < 0) {
-                    alert('A data do periodo inicial é maior que a data atual!');
+                    alert('A data do periodo inicial  maior que a data atual!');
                     document.getElementById('txtDtaInfracaoInicialPorDispositivo').focus();
                     return false;
                 }
 
                 if (infraCompararDatas(dtaInfracaoFinal, infraDataAtual()) < 0) {
-                    alert('A data do periodo final é maior que a data atual!');
+                    alert('A data do periodo final  maior que a data atual!');
                     document.getElementById('txtDtaInfracaoFinalPorDispositivo').focus();
                     return false;
                 }
                 dtaInfracao = dtaInfracaoInicial + ' a ' + dtaInfracaoFinal;
             } else {
-                alert('Selecione o tipo da data de infração');
+                alert('Selecione o tipo da data de infrao');
                 return false;
             }
 
@@ -1060,28 +1056,28 @@
             condutaid = document.getElementById("selICCondutas").value;
 
             if (condutaid == '') {
-                alert('A conduta é obrigatório!');
+                alert('A conduta  obrigatrio!');
                 return false;
             }
 
-            //data da infração
+            //data da infrao
             if (document.getElementById('rdDataInfracaoEspecificaPorConduta').checked) {
                 staInfracaoData = '<?php echo MdLitRelDispositivoNormativoCondutaControleRN::$TA_ESPECIFICA?>';
                 dtaInfracao = document.getElementById('txtDtaInfracaoPorConduta').value;
                 dtaInfracaoEspecifica = document.getElementById('txtDtaInfracaoPorConduta').value;
 
                 if (dtaInfracaoEspecifica == '') {
-                    alert('A data da infração é obrigatório!');
+                    alert('A data da infrao  obrigatrio!');
                     return false;
                 }
                 if (!infraValidarData(document.getElementById('txtDtaInfracaoPorConduta'), false)) {
-                    alert('A data da infração é inválida!');
+                    alert('A data da infrao  invlida!');
                     document.getElementById('txtDtaInfracaoPorConduta').value = '';
                     document.getElementById('txtDtaInfracaoPorConduta').focus();
                     return false;
                 }
                 if (infraCompararDatas(dtaInfracaoEspecifica, infraDataAtual()) < 0) {
-                    alert('A data da infração especifica é maior que a data atual!');
+                    alert('A data da infrao especifica  maior que a data atual!');
                     document.getElementById('txtDtaInfracaoPorConduta').focus();
                     return false;
                 }
@@ -1092,69 +1088,69 @@
                 dtaInfracaoFinal = document.getElementById('txtDtaInfracaoFinalPorConduta').value;
 
                 if (dtaInfracaoInicial == '' || dtaInfracaoFinal == '') {
-                    alert('A data do periodo inicial e final é obrigatório!');
+                    alert('A data do periodo inicial e final  obrigatrio!');
                     return false;
                 }
 
                 if (infraCompararDatas(dtaInfracaoInicial, dtaInfracaoFinal) < 0) {
-                    alert('Período de datas inválido.');
+                    alert('Perodo de datas invlido.');
                     document.getElementById('txtDtaInfracaoFinalPorConduta').focus();
                     return false;
                 }
 
                 if (!infraValidarData(document.getElementById('txtDtaInfracaoFinalPorConduta'), false)) {
-                    alert('A data do periodo final é Inválida!');
+                    alert('A data do periodo final  Invlida!');
                     document.getElementById('txtDtaInfracaoFinalPorConduta').value = '';
                     document.getElementById('txtDtaInfracaoFinalPorConduta').focus();
                     return false;
                 }
 
                 if (!infraValidarData(document.getElementById('txtDtaInfracaoInicialPorConduta'), false)) {
-                    alert('A data do periodo inicial é Inválida!');
+                    alert('A data do periodo inicial  Invlida!');
                     document.getElementById('txtDtaInfracaoInicialPorConduta').value = '';
                     document.getElementById('txtDtaInfracaoInicialPorConduta').focus();
                     return false;
                 }
 
                 if (infraCompararDatas(dtaInfracaoInicial, infraDataAtual()) < 0) {
-                    alert('A data do periodo inicial é maior que a data atual!');
+                    alert('A data do periodo inicial  maior que a data atual!');
                     document.getElementById('txtDtaInfracaoInicialPorConduta').focus();
                     return false;
                 }
 
                 if (infraCompararDatas(dtaInfracaoFinal, infraDataAtual()) < 0) {
-                    alert('A data do periodo final é maior que a data atual!');
+                    alert('A data do periodo final  maior que a data atual!');
                     document.getElementById('txtDtaInfracaoFinalPorConduta').focus();
                     return false;
                 }
 
                 dtaInfracao = dtaInfracaoInicial + ' a ' + dtaInfracaoFinal;
             } else {
-                alert('Selecione o tipo da data de infração');
+                alert('Selecione o tipo da data de infrao');
                 return false;
             }
 
         }
 
-        // Somente Dispositivo e Norma são obrigatórios
+        // Somente Dispositivo e Norma so obrigatrios
         if (norma == '' || dispositivo == '' || dispositivoid == '' /*|| conduta=='' || condutaid==''*/) {
-            alert('O dispositivo normativo é obrigatório!');
+            alert('O dispositivo normativo  obrigatrio!');
             return false;
         }
 
         if (dtaInfracao == '') {
-            alert('A data da infração é obrigatório!');
+            alert('A data da infrao  obrigatrio!');
             return false;
         }
 
-        //verificar se a infração já existe na tabela
+        //verificar se a infrao j existe na tabela
         var arrItens = objTabelaDI.obterItens();
         if (arrItens.length > 0) {
             for (var i = 0; i < arrItens.length; i++) {
                 if (arrItens[i][3] == dispositivoid
                     && (arrItens[i][5] == condutaid || (arrItens[i][5] == 'null' && condutaid == ''))
                     && document.getElementById('hdnIdDispositivoNormativoNormaCondutaControle').value != arrItens[i][0]) {
-                    alert('Essa infração já foi adicionado!');
+                    alert('Essa infrao j foi adicionado!');
                     return false;
                 }
 
@@ -1183,7 +1179,7 @@
 
         var row = objTabelaDI.procuraLinha(arrDadosDIValido[1]);
 
-        //@todo Corrrigindo o problema do core(tabela dinâmica) do Sei que não aceita tag HTML para alteração (função remover XML)
+        //@todo Corrrigindo o problema do core(tabela dinmica) do Sei que no aceita tag HTML para alterao (funo remover XML)
         document.getElementById('tbDispositivosInfrigidos').rows[row].cells[2].innerHTML = '<div>' + obj.norma + '</div>';
         document.getElementById('tbDispositivosInfrigidos').rows[row].cells[4].innerHTML = '<div>' + obj.dispositivo + '</div>';
         document.getElementById('hdnIdDispositivoNormativoNormaCondutaControle').value = '';
@@ -1239,7 +1235,7 @@
             arrDadosDI[11],
             '']);
 
-        //Linha adicionada, adiciona as ações
+        //Linha adicionada, adiciona as aes
         //if (qtdPSIndicados < objTabelaDI.tbl.rows.length){
         //	objTabelaDI.adicionarAcoes(arrDadosDI[0], "", true, true);
         //}
@@ -1285,13 +1281,13 @@
     function changeInfracoes() {
         var dp = document.getElementsByName('rdInfracoes[]')[0].checked;
 
-        //datas de infração escondendo da tela
+        //datas de infrao escondendo da tela
         document.getElementById('conteudoDataInfracaoEspecificaPorDispositivo').style.display = 'none';
         document.getElementById('conteudoDataInfracaoPeriodoPorDispositivo').style.display = 'none';
         document.getElementById('conteudoDataInfracaoEspecificaPorConduta').style.display = 'none';
         document.getElementById('conteudoDataInfracaoPeriodoPorConduta').style.display = 'none';
 
-        //tirando os valores das datas de infrações
+        //tirando os valores das datas de infraes
         document.getElementById('txtDtaInfracaoInicialPorConduta').value = '';
         document.getElementById('txtDtaInfracaoFinalPorConduta').value = '';
         document.getElementById('txtDtaInfracaoPorConduta').value = '';
@@ -1310,7 +1306,7 @@
         }
     }
 
-    // Infração - funcionalidades - FIM
+    // Infrao - funcionalidades - FIM
 
 
     //Doc Instaurador - funcionalidades
@@ -1442,7 +1438,7 @@
             arrDados[5],
             arrDados[6],
             arrDados[7]]);
-        //Linha adicionada, adiciona as ações
+        //Linha adicionada, adiciona as aes
         //if (qtd < objTabelaDocInstaurador.tbl.rows.length){
         //	objTabelaDocInstaurador.adicionarAcoes(arrDados[0], "", true, true);
         //}
@@ -1480,8 +1476,8 @@
 
 
     function removerSobrestamentoProcesso(id, IdProcedimentoPS) {
-        if (confirm('Confirma remoção de sobrestamento do processo?')) {
-            // #EU4864 - INFRAAJAX - não encontrado método que retorna somente dados, sem componentes
+        if (confirm('Confirma remoo de sobrestamento do processo?')) {
+            // #EU4864 - INFRAAJAX - no encontrado mtodo que retorna somente dados, sem componentes
             $.ajax({
                 type: "POST",
                 url: "<?= $strLinkAjaxRemoverSobrestamento ?>",
@@ -1519,7 +1515,7 @@
 
         objTabelaInteressado.remover = function (arr) {
             if (objTabelaInteressado.obterItens().length == 1) {
-                alert("É necessário ao menos um Interessado");
+                alert(" necessrio ao menos um Interessado");
                 return false;
             }
 
@@ -1556,11 +1552,11 @@
 
         if (dadoCompleto) {
             acaoDadosComplementares = "<img onclick=\"abrirModalDadosInteressado('" + contato.urlDadosComplementares + "')\" " +
-                "style='width: 16px; height: 16px;' title='Dados Complementares do Interessado' src='imagens/juntar_documento.gif' class='infraImg'/>&nbsp;<input type='hidden' id='hdnContatoPossuiDadoComplementa_" + contato.idContato + "' value='" + contato.contatoPossuiDadoComplementar + "'>";
+                " style='width: 24px' title='Dados Complementares do Interessado' src='modulos/litigioso/imagens/svg/dado_complementar.svg?'.Icone::VERSAO.'' class='infraImg'/>&nbsp;<input type='hidden' id='hdnContatoPossuiDadoComplementa_" + contato.idContato + "' value='" + contato.contatoPossuiDadoComplementar + "'>";
         }
 
         var acaoAlterar = "<img onclick=\"alterarInteressado('" + contato.idContato + "','" + contato.urlAlterar + "')\" " +
-            "style='width: 16px; height: 16px;' title='Alterar Interessado' src='imagens/alterar.gif' class='infraImg'/>&nbsp;";
+            " title='Alterar Interessado' src='<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/alterar.svg?<?= Icone::VERSAO ?>' class='infraImg'/>&nbsp;";
 
         var mostrarExcluir = true;
         if (contato.contarLancamento > 0) {
@@ -1625,7 +1621,7 @@
             },
             success: function (r) {
                 if ($('Contato', r).text() == '' && $('SinParamModal', r).text() == 'S') {
-                    alert('É necessária a indicação de ao menos um Interessado de tipo diferente de: Órgãos, Sistemas e Temporário');
+                    alert(' necessria a indicao de ao menos um Interessado de tipo diferente de: rgos, Sistemas e Temporrio');
                     parent.document.getElementById('ifrVisualizacao').src = "<?= $strLinkAlteraProcesso?>";
                 }
 
@@ -1684,7 +1680,7 @@
     function abrirModalDadosInteressado(url) {
         infraAbrirJanela(url,
             'alterarContato',
-            780,
+            1024,
             600);
     }
 
@@ -1723,8 +1719,8 @@
                 valido = false;
             }
 
-            if (tds[3].innerText.trim() == '') { //Endereço
-                dados.push('Endereço');
+            if (tds[3].innerText.trim() == '') { //Endereo
+                dados.push('Endereo');
                 valido = false;
             }
 
@@ -1759,7 +1755,7 @@
                 msg += ' - ' + dados.join('\n - ') + '\n\n';
             } else {
                 var hdnContatoPossuiDadoComplementar = document.getElementById('hdnContatoPossuiDadoComplementa_' + tds[0].innerText.trim()).value;
-                //caso a modal de Dados Complementares tenha sido configurada para apresentar, então informar os dados dela é obrigatório.
+                //caso a modal de Dados Complementares tenha sido configurada para apresentar, ento informar os dados dela  obrigatrio.
                 if (tds[9].innerText.trim() == 'S' && hdnContatoPossuiDadoComplementar == 0) {
                     var hdnTbDadoInteressado = document.getElementById('hdnTbDadoInteressado_' + tds[0].innerText.trim());
                     if (hdnTbDadoInteressado == null || hdnTbDadoInteressado.value == '') {
@@ -1830,7 +1826,7 @@
 
                 for (var i = 0; i < options.length; i++) {
                     if (options[i].value == id) {
-                        alert('Motivo já consta na lista.');
+                        alert('Motivo j consta na lista.');
                         break;
                     }
                 }

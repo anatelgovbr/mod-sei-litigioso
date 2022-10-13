@@ -84,6 +84,8 @@ $strLinkModalCancelarLancamento    = SessaoSEI::getInstance()->assinarLink('cont
 switch($_GET['acao']) {
 
     case 'md_lit_processo_situacao_cadastrar':
+
+        $idUltimoLancamento = MdLitLancamentoINT::consultarUltimoLancamento($idProcedimento);
         $objMdLitDecisaoRN = new MdLitDecisaoRN();
 
         if($openProcesso != '1') {
@@ -113,7 +115,13 @@ switch($_GET['acao']) {
         $dtUltimaSitConclusiva = $objMdLitProcessoSituacaoRN->buscarDtSituacaoConclusiva($idProcedimento);
         $dtaConstituicaoDefinitiva = $dtUltimaSitConclusiva;
         $dtaIntimacaoDefinitiva    = $dtUltimaSitConclusiva;
-        
+
+        if(is_array($arrGridSitu)){
+            $posicao = count($arrGridSitu) - 1;
+            $strUltimaSituacao = $arrGridSitu[$posicao][17];
+            $strNomeUltimaSituacao = $arrGridSitu[$posicao][13];
+        }
+
       //  $arrGridSit = array();
         $strGridSituacao = PaginaSEI::getInstance()->gerarItensTabelaDinamica($arrGridSitu);
         
@@ -185,10 +193,14 @@ switch($_GET['acao']) {
         $isIntInstauracao = $objMdLitProcessoSituacaoRN->getIsInstauracaoIntimacaoPorTipoControle(array($idTpControle, $idProcedimento));
         $isSituacaoIntimacao = $objMdLitProcessoSituacaoRN->verificaIsSituacaoIntimacao( $idProcedimento, $idTpControle );
 
-        $strComboCreditoProcesso = MdLitLancamentoINT::montarSelectCreditosProcesso($idProcedimento);
+        $arrComboCreditoProcesso = MdLitLancamentoINT::montarSelectCreditosProcesso($idProcedimento);
+
+        $strComboCreditoProcesso = $arrComboCreditoProcesso['opcoes'];
 
         //lançamento do crédito
-        $idLancamentoSelecionado = null;
+        $idLancamentoSelecionado = $arrComboCreditoProcesso['selecionado'];
+
+        $isDecisaoMulta = $objMdLitProcessoSituacaoRN->verificaSeHouveDecisaoMulta( $idProcedimento, $idTpControle, $idLancamentoSelecionado);
 
         //Botão "Vincular Lancamento" deve ser exibido somente se o checkbox "Habilitar Funcionalidade de Vinculação de Lançamento
         // Pré Existente" estiver ativo no mapeamento da integração sob a funcionalidade "Arrecadação Consulta Lançamento"
@@ -208,7 +220,17 @@ switch($_GET['acao']) {
         }
 
         try {
+//            $existeSuspencao = false;
+//            foreach($arrComboCreditoProcesso['todosIdsLancamento'] as $itemLancamento){
+//                $objMdLitLancamentoDTO = $objMdLitLancamentoRN->atualizarLancamento($idProcedimento, $itemLancamento);
+//                if($objMdLitLancamentoDTO->getStrSinSuspenso() == 'S'){
+//                    $existeSuspencao = true;
+//                }
+//            }
+
             $objMdLitLancamentoDTO = $objMdLitLancamentoRN->atualizarLancamento($idProcedimento, $idLancamentoSelecionado);
+
+
         }catch (Exception $e){
             PaginaSEI::getInstance()->processarExcecao($e);
         }

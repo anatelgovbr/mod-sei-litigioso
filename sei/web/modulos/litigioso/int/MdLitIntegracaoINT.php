@@ -95,8 +95,8 @@ class MdLitIntegracaoINT extends InfraINT {
 
 
         if (!empty($arrObjMdLitTipoControleDTO)) {
-            $xml = '<div style="padding-top: 2px; padding-bottom: 2px;">';
-            $xml .= '<table width="80%" align="center" class="infraTable">';
+            $xml = '<div style="padding-top: 2px; padding-bottom: 2px; width: 80%">';
+            $xml .= '<table width="100%" align="center" class="infraTable table-striped">';
             $xml .= '<tr>';
             $xml .= '<th style="display: none;">ID</th>';
             $xml .= '<th class="infraTh" width="40%">Tipo de Controle</th>';
@@ -110,13 +110,13 @@ class MdLitIntegracaoINT extends InfraINT {
 
                 $xml .= '<tr class="infraTrClara">';
                 $xml .= '<td style="display: none">';
-                $xml .= '<input type="text" name="tpControle[' . $key . '][idMdLitTipoControle]" value="' . $id . '"/>';
+                $xml .= '<input type="text" class="form-control" name="tpControle[' . $key . '][idMdLitTipoControle]" value="' . $id . '"/>';
                 $xml .= '</td>';
                 $xml .= '<td>';
                 $xml .= '<span>' . $sigla . '</span>';
                 $xml .= '</td>';
                 $xml .= '<td>';
-                $xml .= '<input type="text" name="tpControle[' . $key . '][valorDefault]" value="' .$valorDefault.'"/>';
+                $xml .= '<input type="text"  class="form-control" name="tpControle[' . $key . '][valorDefault]" value="' .$valorDefault.'"/>';
                 $xml .= '</td>';
                 $xml .= '</tr>';
             }

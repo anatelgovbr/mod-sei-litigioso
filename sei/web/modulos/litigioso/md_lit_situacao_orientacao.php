@@ -24,7 +24,7 @@ try {
     }
 
 
-    $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="window.close();" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
+    $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="infraFecharJanelaModal();" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
 
 } catch (Exception $e) {
     PaginaSEI::getInstance()->processarExcecao($e);
@@ -60,7 +60,7 @@ PaginaSEI::getInstance()->abrirAreaDados();
 ?>
 <form id="frmSituacaoLitigiosoLista" method="post"
       action="<?= PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&id_tipo_processo_litigioso=' . $_GET['id_tipo_processo_litigioso'] . '&acao_origem=' . $_GET['acao'])) ?>">
-    <h1 style="margin: 0">Orientações</h1>
+    <h3 style="margin: 0">Orientações</h3>
     <?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos); ?>
 
     <label  style="line-height: 1.5;text-align: justify;">

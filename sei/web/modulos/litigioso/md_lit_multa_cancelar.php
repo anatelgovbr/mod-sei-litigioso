@@ -66,7 +66,39 @@ PaginaSEI::getInstance()->abrirStyle();
 PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->abrirJavaScript();
-if(0){?><script><?}?>
+PaginaSEI::getInstance()->fecharJavaScript();
+PaginaSEI::getInstance()->fecharHead();
+PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
+
+?>
+<form id="frmCadastroCancelarLancamento" method="post" onsubmit="return OnSubmitForm();" action="<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'] .'&id_procedimento='.$_GET['id_procedimento'] ) ?>">
+    <?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);?>
+    <?php PaginaSEI::getInstance()->abrirAreaDados(null); ?>
+    
+        <div class="row mb-3">
+            <div class="col-sm-10 col-md-9 col-lg-8">
+                <label class="infraLabelObrigatorio"> Motivo do Cancelamento: </label>
+                <select name="selMotivoCancelar" id="selMotivoCancelar" class="infraSelect form-control">
+                    <?= $strComboMotivoCancelar ?>
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <label class="infraLabelObrigatorio" > Justificativa do Cancelamento: </label>
+                <textarea rows="8" onkeypress="return infraLimitarTexto(this,event,250);" 
+                        maxlength="250" class="form-control"
+                        name="txtJustificativaCancelamento" 
+                        id="txtJustificativaCancelamento"></textarea>
+            </div>
+        </div>
+
+        <input type="hidden" name="hdnIdMdLitFuncionalidade" id="hdnIdMdLitFuncionalidade" value="<?= $_GET['id_md_lit_funcionalidade'] ?>">
+    <?php PaginaSEI::getInstance()->fecharAreaDados(); ?>
+</form>
+
+<script type="text/javascript">
     function inicializar(){
 
     }
@@ -101,32 +133,8 @@ if(0){?><script><?}?>
 
         return false;
     }
-    <? if(0){?></script><?}?>
-<?
-PaginaSEI::getInstance()->fecharJavaScript();
-PaginaSEI::getInstance()->fecharHead();
-PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
+</script>
 
-?>
-<form id="frmCadastroCancelarLancamento" method="post" onsubmit="return OnSubmitForm();" action="<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'] .'&id_procedimento='.$_GET['id_procedimento'] ) ?>">
-    <?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);?>
-    <?php PaginaSEI::getInstance()->abrirAreaDados(null); ?>
-    <div>
-        <label class="infraLabelObrigatorio" >
-            Motivo do Cancelamento:
-        </label>
-        <select name="selMotivoCancelar" id="selMotivoCancelar" class="infraSelect" ><?= $strComboMotivoCancelar ?></select>
-    </div>
-    <div>
-        <label class="infraLabelObrigatorio" >
-            Justificativa do Cancelamento:
-        </label>
-        <textarea rows="8" style="width: 100%"  onkeypress="return infraLimitarTexto(this,event,250);" maxlength="250" name="txtJustificativaCancelamento" id="txtJustificativaCancelamento" ></textarea>
-    </div>
-
-    <input type="hidden" name="hdnIdMdLitFuncionalidade" id="hdnIdMdLitFuncionalidade" value="<?= $_GET['id_md_lit_funcionalidade'] ?>">
-    <?php PaginaSEI::getInstance()->fecharAreaDados(); ?>
-</form>
 <?
 PaginaSEI::getInstance()->fecharBody();
 PaginaSEI::getInstance()->fecharHtml();

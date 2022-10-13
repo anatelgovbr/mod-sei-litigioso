@@ -142,7 +142,7 @@ if (!$bolSelecionar) {
                             </button>';
 
     $arrComandos[] = '<button type="button" accesskey="c" id="btnFecharSelecao" value="Fechar" onclick="window.close();" class="infraButton">
-                                    <span class="infraTeclaAtalho">F</span>echar
+                                    Fe<span class="infraTeclaAtalho">c</span>har
                             </button>';
 }
 
@@ -207,7 +207,7 @@ if ($numRegistros > 0) {
         $strResultado .= $strCssTr;
 
         #Linha Checkbox
-        $strResultado .= '<td align="center" valign="top">';
+        $strResultado .= '<td align="center" valign="top" style="vertical-align:middle">';
         $strResultado .= PaginaSEI::getInstance()->getTrCheck($i, $strId, $strNomeIntegracao);
         $strResultado .= '</td>';
 
@@ -230,23 +230,23 @@ if ($numRegistros > 0) {
 
         #Ação Consulta
         if (!$bolSelecionar) {
-            $strResultado .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink($strUrl . 'consultar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_md_lit_integracao=' . $strId)) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/consultar.gif" title="Consultar Integração" alt="Consultar Integração" class="infraImg" /></a>&nbsp;';
+            $strResultado .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink($strUrl . 'consultar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_md_lit_integracao=' . $strId)) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioSvgGlobal() . '/consultar.svg?'.Icone::VERSAO.'" title="Consultar Integração" alt="Consultar Integração" class="infraImg" /></a>&nbsp;';
 
             #Ação Alterar
-            $strResultado .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink($strUrl . 'alterar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_md_lit_integracao=' . $strId)) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/alterar.gif" title="Alterar Integração" alt="Alterar Integração" class="infraImg" /></a>&nbsp;';
+            $strResultado .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink($strUrl . 'alterar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_md_lit_integracao=' . $strId)) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioSvgGlobal() . '/alterar.svg?'.Icone::VERSAO.'" title="Alterar Integração" alt="Alterar Integração" class="infraImg" /></a>&nbsp;';
 
             #Ação Desativar
             if ($bolRegistroAtivo) {
-                $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($strId) . '" onclick="desativar(\'' . $strId . '\',\'' . PaginaSEI::getInstance()->formatarParametrosJavaScript($strNomeIntegracao) . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/desativar.gif" title="Desativar Integração" alt="Desativar Integração" class="infraImg" /></a>&nbsp;';
+                $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($strId) . '" onclick="desativar(\'' . $strId . '\',\'' . PaginaSEI::getInstance()->formatarParametrosJavaScript($strNomeIntegracao) . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioSvgGlobal() . '/desativar.svg?'.Icone::VERSAO.'" title="Desativar Integração" alt="Desativar Integração" class="infraImg" /></a>&nbsp;';
             }
 
             #Ação Reativar
             if (!$bolRegistroAtivo) {
-                $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($strId) . '" onclick="reativar(\'' . $strId . '\',\'' . PaginaSEI::getInstance()->formatarParametrosJavaScript($strNomeIntegracao) . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/reativar.gif" title="Reativar Integração" alt="Reativar Integração" class="infraImg" /></a>&nbsp;';
+                $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($strId) . '" onclick="reativar(\'' . $strId . '\',\'' . PaginaSEI::getInstance()->formatarParametrosJavaScript($strNomeIntegracao) . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioSvgGlobal() . '/reativar.svg?'.Icone::VERSAO.'" title="Reativar Integração" alt="Reativar Integração" class="infraImg" /></a>&nbsp;';
             }
 
             #Ação Excluir
-            $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($strId) . '" onclick="excluir(\'' . $strId . '\',\'' . PaginaSEI::getInstance()->formatarParametrosJavaScript($strNomeIntegracao) . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioImagensGlobal() . '/excluir.gif" title="Excluir Integração" alt="Excluir Integração" class="infraImg" /></a>&nbsp;';
+            $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($strId) . '" onclick="excluir(\'' . $strId . '\',\'' . PaginaSEI::getInstance()->formatarParametrosJavaScript($strNomeIntegracao) . '\');" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioSvgGlobal() . '/excluir.svg?'.Icone::VERSAO.'" title="Excluir Integração" alt="Excluir Integração" class="infraImg" /></a>&nbsp;';
         } else {
             $strResultado .= PaginaSEI::getInstance()->getAcaoTransportarItem($i, $strId);
         }
@@ -256,7 +256,7 @@ if ($numRegistros > 0) {
     }
     $strResultado .= '</table>';
 }
-$comboFuncionalidade = MdLitFuncionalidadeINT::montarSelectNome('null', '', $_POST['selFuncionalidade'],null, false);
+$comboFuncionalidade = MdLitFuncionalidadeINT::montarSelectNome('null', '', $_POST['selFuncionalidade'], null, false);
 
 PaginaSEI::getInstance()->montarDocType();
 PaginaSEI::getInstance()->abrirHtml();
@@ -265,62 +265,11 @@ PaginaSEI::getInstance()->montarMeta();
 PaginaSEI::getInstance()->montarTitle(':: ' . PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo . ' ::');
 PaginaSEI::getInstance()->montarStyle();
 PaginaSEI::getInstance()->abrirStyle();
-
-require_once 'md_lit_css_geral.php';
-
 PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
-PaginaSEI::getInstance()->abrirJavaScript(); ?>
-<?if(0){?><script><?}?>
-    function inicializar() {
-        infraEfeitoTabelas();
-    }
-
-    function pesquisar(){
-    document.getElementById('frmIntegracaoLista').action='<?= $strUrlPesquisar ?>';
-    document.getElementById('frmIntegracaoLista').submit();
-    }
-
-    function desativar(id, desc) {
-    if (confirm("Confirma desativação do Integração \"" + desc + "\"?")) {
-    document.getElementById('hdnInfraItemId').value = id;
-    document.getElementById('frmIntegracaoLista').action = '<?= $strUrlDesativar ?>';
-    document.getElementById('frmIntegracaoLista').submit();
-    }
-    }
-
-    function reativar(id, desc){
-    if (confirm("Confirma reativação do Integração \""+desc+"\"?")){
-    document.getElementById('hdnInfraItemId').value=id;
-    document.getElementById('frmIntegracaoLista').action='<?= $strUrlReativar ?>';
-    document.getElementById('frmIntegracaoLista').submit();
-    }
-    }
-
-    function excluir(id, desc){
-    if (confirm("Confirma exclusão do Integração \""+desc+"\"?")){
-    document.getElementById('hdnInfraItemId').value=id;
-    document.getElementById('frmIntegracaoLista').action='<?= $strUrlExcluir ?>';
-    document.getElementById('frmIntegracaoLista').submit();
-    }
-    }
-
-    function novo(){
-    location.href="<?= $strUrlNovo ?>";
-    }
-
-    function imprimir(){
-    infraImprimirTabela();
-    }
-
-    function fechar(){
-    location.href="<?= $strUrlFechar ?>";
-    }
-    <?if(0){?></script><?}?>
-<?php PaginaSEI::getInstance()->fecharJavaScript(); ?>
-
-
-<?php
+PaginaSEI::getInstance()->abrirJavaScript();
+PaginaSEI::getInstance()->fecharJavaScript();
+require_once("md_lit_integracao_lista_css.php");
 PaginaSEI::getInstance()->fecharHead();
 PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 ?>
@@ -328,37 +277,37 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
           action="<?= PaginaSEI::getInstance()->formatarXHTML(
               SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'])
           ) ?>">
-
-        <?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
-        PaginaSEI::getInstance()->abrirAreaDados('auto');
-        ?>
-
-
-        <div class="grid grid_5">
-            <label id="txtNome" for="txtNome" class="infraLabelOpcional">
-                Nome:
-            </label>
-            <input type="text" id="txtNome" name="txtNome" value="<?= $_POST['txtNome'] ?>">
+        <?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos); ?>
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5">
+                <div class="form-group">
+                    <label id="txtNome" for="txtNome" class="infraLabelOpcional">
+                        Nome:
+                    </label>
+                    <input type="text" id="txtNome" name="txtNome" class="infraText form-control"
+                            value="<?= $_POST['txtNome'] ?>">
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-7 col-xl-6">
+                <div class="form-group">
+                    <label id="lblFuncionalidade" for="selFuncionalidade" class="infraLabelOpcional">
+                        Funcionalidade:
+                    </label>
+                    <select id="selFuncionalidade" name="selFuncionalidade" class="infraSelect form-control"
+                            onchange="this.form.submit();">
+                        <?= $comboFuncionalidade ?>
+                    </select>
+                </div>
+            </div>
         </div>
-
-        <div class="grid grid_7">
-            <label id="lblFuncionalidade" for="selFuncionalidade" class="infraLabelOpcional">
-                Funcionalidade:
-            </label>
-            <select id="selFuncionalidade" name="selFuncionalidade"  onchange="this.form.submit();"   >
-                <?= $comboFuncionalidade?>
-            </select>
-        </div>
-
         <?php
         PaginaSEI::getInstance()->montarAreaTabela($strResultado, $numRegistros);
         PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos);
         PaginaSEI::getInstance()->fecharAreaDados();
         ?>
-
     </form>
-
 <?php
+require_once("md_lit_integracao_lista_js.php");
 PaginaSEI::getInstance()->fecharBody();
 PaginaSEI::getInstance()->fecharHtml();
 

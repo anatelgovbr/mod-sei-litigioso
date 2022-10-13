@@ -46,7 +46,7 @@ try {
             $strTitulo = 'Vincular Lançamento Pré Existente';
             $txtJustificativaPadrao = 'Vincular Lançamento Pré Existente com base no Processo nº ';
 
-            $arrComandos[] = '<button type="button" accesskey="C" name="btnFechar" id="btnFechar" value="Fechar" onclick="window.close();" class="infraButton"><span class="infraTeclaAtalho">F</span>echar</button>';
+            $arrComandos[] = '<button type="button" accesskey="C" name="btnFechar" id="btnFechar" value="Fechar" onclick="window.close();" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
 
             if(isset($_POST['sbmValidar'])){
                 $numIdentificacaoLancamento = $_POST['txtIdentificacaoLancamento'];
@@ -262,7 +262,6 @@ if(0){?><script><?}?>
 
         <?php if($objMdLitLancamentoDTO && $objMdLitLancamentoDTO->isSetDblVlrLancamento()){ ?>
             var valor = '<?php echo InfraUtil::formatarDin(InfraUtil::prepararDbl($objMdLitLancamentoDTO->getDblVlrLancamento()),2)?>';
-            console.log(valor,document.getElementById('hdnVlTotalMulta').value );
             bolValorDiferente = valor != document.getElementById('hdnVlTotalMulta').value;
         <?php } ?>
 
@@ -280,8 +279,6 @@ if(0){?><script><?}?>
                 'Antes, ajustes os valores de multas constantes nas decisões para que fiquem em conformidade com o lançamento a ser vinculado.');
             return;
         }
-
-
     }
 
     function validar(){
@@ -340,84 +337,149 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 
 ?>
 <form id="frmCadastroJustificativaLancamento" method="post" onsubmit="return OnSubmitForm();" action="<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'] . '&id_md_lit_funcionalidade='.$_GET['id_md_lit_funcionalidade'].'&id_procedimento='.$_GET['id_procedimento'] ) ?>">
-    <?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);?>
-    <?php PaginaSEI::getInstance()->abrirAreaDados(null); ?>
-    <div style="
-    width: 300px;
-    float: left;
-" >
-        <input type="hidden" name="hdnVlTotalMulta" id="hdnVlTotalMulta" value="" />
-        <input type="hidden" name="hdnDecisaoAplicacaoMulta" id="hdnDecisaoAplicacaoMulta" value="" />
-        <input type="hidden" name="hdnDtVencimento" id="hdnDtVencimento" value="" />
-        <label class="infraLabelObrigatorio" >
-            Número de Complemento do Interessado:
-        </label>
-        <input tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" type="text" name="txtNumeroComplementar" id="txtNumeroComplementar" class="infraText" title="" disabled="disabled">
-        <input type="hidden" name="hdnIdNumeroComplementar" id="hdnIdNumeroComplementar" value="">
-    </div>
-    <div style="
-    width: 180px;
-    float: left;
-">
-        <label class="infraLabelObrigatorio" >
-            Identificação do Lançamento:
-        </label>
-        <input tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" type="text" name="txtIdentificacaoLancamento" id="txtIdentificacaoLancamento" value="<?=$numIdentificacaoLancamento?>" class="infraText">
-    </div>
-    <div style="width: 90px;float: left;">
-        <button tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" style="margin-top: 18px;" type="submit" accesskey="V" name="sbmValidar" id="sbmValidar" value="Validar" class="infraButton"><span class="infraTeclaAtalho">V</span>alidar</button>
-    </div>
-
-    <input type="hidden" name="hdnIdMdLitFuncionalidade" id="hdnIdMdLitFuncionalidade" value="<?= $_GET['id_md_lit_funcionalidade'] ?>">
-    <?php PaginaSEI::getInstance()->fecharAreaDados(); ?>
-    <?php
-    if($strResultado && !$objMdLitLancamentoDTOExiste) {
-        PaginaSEI::getInstance()->montarAreaTabela($strResultado, 1);
+    <?php 
+        PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos); 
+        PaginaSEI::getInstance()->abrirAreaDados(null);
     ?>
-        <?php if(($objMdLitLancamentoDTO->isSetDtaDecisao() && InfraData::compararDatas($objMdLitLancamentoDTO->getDtaDecisao(), $dtaDecisaoMulta) != 0) || InfraData::compararDatas($objMdLitLancamentoDTO->getDtaVencimento(), $dtaVencimentoMulta) != 0 || InfraUtil::formatarDin(InfraUtil::prepararDbl($objMdLitLancamentoDTO->getDblVlrLancamento()),2) != $vlTotalMulta){?>
-            <div class="infraDivRadio" style="margin-top: 13px;">
-                <input type="checkbox"  tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" name="chkSinCienteVincular" id="chkSinVincularLancamento" class="infraCheckbox" value="S" >
-                <span>
-                <label  for="chkSinVincularLancamento" class="infraCheckbox" style="float:none">Ciente que as informações abaixo pertencentes ao lançamento serão sobrescritas no SEI, conforme as informações apresentadas na tabela acima.<br> A sobrescrita ocorrerá ao acionar o botão "Confirmar Vinculação" abaixo.</label>
-                </span>
 
+    <input type="hidden" name="hdnVlTotalMulta" id="hdnVlTotalMulta" value="" />
+    <input type="hidden" name="hdnDecisaoAplicacaoMulta" id="hdnDecisaoAplicacaoMulta" value="" />
+    <input type="hidden" name="hdnDtVencimento" id="hdnDtVencimento" value="" />
+    <input type="hidden" name="hdnIdNumeroComplementar" id="hdnIdNumeroComplementar" value="">
+    <input type="hidden" name="hdnIdMdLitFuncionalidade" id="hdnIdMdLitFuncionalidade" value="<?= $_GET['id_md_lit_funcionalidade'] ?>">
+    <input type="hidden" name="hdntbLancamento" id="hdntbLancamento">
+
+    <div class="row">
+        <div class="col-sm-12 col-md-6 col-lg-6">
+            <div class="form-group">
+                <label class="infraLabelObrigatorio"> Número de Complemento do Interessado: </label>
+                <input tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" type="text" name="txtNumeroComplementar" 
+                    id="txtNumeroComplementar" class="infraText form-control" title="" disabled="disabled">
             </div>
-            <?php if($objMdLitLancamentoDTO->isSetDtaDecisao() && InfraData::compararDatas($objMdLitLancamentoDTO->getDtaDecisao(), $dtaDecisaoMulta) != 0){?>
-                <div>
-                    <label class="infraLabelObrigatorio">Data da Constituição Definitiva:</label> <label><?php echo $objMdLitLancamentoDTO->isSetDtaConstituicaoDefinitiva()?$objMdLitLancamentoDTO->getDtaConstituicaoDefinitiva(): null; ?></label>
-                </div>
-            <?php }?>
-            <?php if($objMdLitLancamentoDTO->isSetDtaDecisao() && InfraData::compararDatas($objMdLitLancamentoDTO->getDtaDecisao(), $dtaDecisaoMulta) != 0){?>
-                <div>
-                    <label class="infraLabelObrigatorio">Data da Decisão de Aplicação da Multa:</label> <label> <?php echo $dtaDecisaoMulta ?></label>
-                </div>
-            <?php } ?>
-            <?php if(InfraData::compararDatas($objMdLitLancamentoDTO->getDtaVencimento(), $dtaVencimentoMulta) != 0){?>
-                <div>
-                    <label class="infraLabelObrigatorio">Data de Vencimento:</label> <label> <?php echo $dtaVencimentoMulta;?></label>
-                </div>
-            <?php } ?>
-            <?php if(InfraUtil::formatarDin(InfraUtil::prepararDbl($objMdLitLancamentoDTO->getDblVlrLancamento()),2) != $vlTotalMulta){?>
-                <div>
-                    <label class="infraLabelObrigatorio">Valor Total:</label> <label> R$ <?php echo $vlTotalMulta?></label>
-                </div>
-            <?php }?>
-        <?php }?>
-
-        <input type="hidden" name="hdntbLancamento" id="hdntbLancamento">
-        <div align="center" style="text-align: center">
-            <button tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>"  style="margin-top: 18px;" type="submit" name="sbmConfirmar" id="sbmConfirmar" onclick="return confirmarVinculacao()" value="Confirmar" class="infraButton">Confirmar Vinculação</button>
         </div>
-    <?php }elseif ($objMdLitLancamentoDTOExiste){?>
 
-    <div  style="margin-top: 13px;display: inline-block;">
-        <label style="color: #ff0000;">Este lançamento já está vinculado ao processo sob o número <?=$objMdLitLancamentoDTOExiste->getStrProtocoloProcedimentoFormatado()?>. Não é possível vincular lançamentos em mais de um
-            processo ao mesmo tempo.</label>
+        <div class="col-sm-12 col-md-4 col-lg-4">
+            <div class="form-group">
+                <label class="infraLabelObrigatorio"> Identificação do Lançamento: </label>
+                <input tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" type="text" name="txtIdentificacaoLancamento"
+                    id="txtIdentificacaoLancamento" value="<?=$numIdentificacaoLancamento?>" class="infraText form-control">
+            </div>
+        </div>
+
+        <div class="col-sm-12 col-md-2 col-lg-2 align-self-center pt-1">            
+                <button tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" type="submit" accesskey="V" 
+                        name="sbmValidar" id="sbmValidar" value="Validar" class="infraButton">
+                    <span class="infraTeclaAtalho">V</span>alidar
+                </button>
+        </div>
     </div>
-    <?php }?>
+
+    <?php PaginaSEI::getInstance()->fecharAreaDados(); ?>
+
+    <?php
+    if( $strResultado && !$objMdLitLancamentoDTOExiste )
+    {
+        PaginaSEI::getInstance()->montarAreaTabela($strResultado, 1);
+        if( 
+            ($objMdLitLancamentoDTO->isSetDtaDecisao() && InfraData::compararDatas($objMdLitLancamentoDTO->getDtaDecisao(), $dtaDecisaoMulta) != 0) || 
+            InfraData::compararDatas($objMdLitLancamentoDTO->getDtaVencimento(), $dtaVencimentoMulta) != 0 || 
+            InfraUtil::formatarDin(InfraUtil::prepararDbl($objMdLitLancamentoDTO->getDblVlrLancamento()),2) != $vlTotalMulta
+        ){
+    ?>
+            <div class="row">
+                <div class="col-12">
+                    <div class="input-group">
+                        <input type="checkbox" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" name="chkSinCienteVincular" id="chkSinVincularLancamento" class="infraCheckbox form-check-input"" value="S" >
+                    
+                        <div class="input-group-append ml-1">
+                            <label for="chkSinVincularLancamento" class="infraLabelOpcional">
+                                Ciente que as informações abaixo pertencentes ao lançamento serão sobrescritas no SEI, conforme as informações apresentadas na tabela acima.<br>
+                                A sobrescrita ocorrerá ao acionar o botão "Confirmar Vinculação" abaixo.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <?php 
+                if( $objMdLitLancamentoDTO->isSetDtaDecisao() && InfraData::compararDatas($objMdLitLancamentoDTO->getDtaDecisao(), $dtaDecisaoMulta) != 0 )
+                {
+            ?>    
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <label class="infraLabelObrigatorio">Data da Constituição Definitiva:</label> 
+                            <label><?= !empty($objMdLitLancamentoDTO ) ? $objMdLitLancamentoDTO->getDtaConstituicaoDefinitiva() : null ?></label>
+                        </div>
+                    </div>
+            <?php
+                }
+
+                if( $objMdLitLancamentoDTO->isSetDtaDecisao() && InfraData::compararDatas($objMdLitLancamentoDTO->getDtaDecisao(), $dtaDecisaoMulta) != 0 )
+                {
+            ?>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <label class="infraLabelObrigatorio">Data da Decisão de Aplicação da Multa:</label> 
+                            <label> <?= $dtaDecisaoMulta ?></label>
+                        </div>
+                    </div>
+            <?php
+                }
+
+                if( InfraData::compararDatas($objMdLitLancamentoDTO->getDtaVencimento(), $dtaVencimentoMulta) != 0 )
+                {
+            ?>
+                   <div class="row mt-2">
+                        <div class="col-12">
+                            <label class="infraLabelObrigatorio">Data de Vencimento:</label> 
+                            <label> <?= $dtaVencimentoMulta ?></label>
+                        </div>
+                    </div>
+            <?php
+                }
+
+                if( InfraUtil::formatarDin(InfraUtil::prepararDbl($objMdLitLancamentoDTO->getDblVlrLancamento()),2) != $vlTotalMulta )
+                {
+            ?>
+                    <div class="row">
+                        <div class="col-12">
+                            <label class="infraLabelObrigatorio">Valor Total:</label> 
+                            <label> R$ <?= $vlTotalMulta ?></label>
+                        </div>
+                    </div>
+    <?php
+                }
+        }
+    ?>   
+
+        <div class="row mt-2">
+            <div class="col-2">
+                <button tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" type="submit" name="sbmConfirmar" id="sbmConfirmar" onclick="return confirmarVinculacao()" value="Confirmar" class="infraButton">
+                    Confirmar Vinculação
+                </button>
+            </div>
+        </div>
+
+    <?php 
+    }
+    elseif( $objMdLitLancamentoDTOExiste )
+    {
+    ?>
+        <div class="row">
+            <div class="col-12">
+                <label class="infraLabelOpcional" style="color: #ff0000;">
+                    Este lançamento já está vinculado ao processo sob o número <?= $objMdLitLancamentoDTOExiste->getStrProtocoloProcedimentoFormatado()?>.<br> Não é possível vincular lançamentos em mais de um
+                    processo ao mesmo tempo.
+                </label>
+            </div>
+        </div>
+    <?php
+    }
+    ?>
 
 </form>
-<?
+
+<?php  
 PaginaSEI::getInstance()->fecharBody();
 PaginaSEI::getInstance()->fecharHtml();
 ?>

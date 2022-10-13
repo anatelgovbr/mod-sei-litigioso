@@ -45,11 +45,11 @@ switch($_GET['acao']){
             $arrObjMdLitMotivoDTO = array();
 
             //Verifica se o motivo esta sendo utilizado por algum processo
-            $objMdLitRelControleMotivoRN = new MdLitRelControleMotivoRN();
-            $objMdLitRelControleMotivoRN->verificarVinculoMotivo($arrStrIds);
-
-            $objMdLitRelTpControlMotiRN = new MdLitRelTpControlMotiRN();
-            $objMdLitRelTpControlMotiRN->verificarVinculoMotivo($arrStrIds);
+//            $objMdLitRelControleMotivoRN = new MdLitRelControleMotivoRN();
+//            $objMdLitRelControleMotivoRN->verificarVinculoMotivo($arrStrIds);
+//
+//            $objMdLitRelTpControlMotiRN = new MdLitRelTpControlMotiRN();
+//            $objMdLitRelTpControlMotiRN->verificarVinculoMotivo($arrStrIds);
 
             for ($i = 0; $i < count($arrStrIds); $i++) {
                 $objMdLitMotivoDTO = new MdLitMotivoDTO();
@@ -260,7 +260,7 @@ if ($numRegistros > 0){
         $strCaptionTabela = 'motivos Inativos';
     }
 
-    $strResultado .= '<table width="99%" class="infraTable" summary="'.$strSumarioTabela.'">'."\n";
+    $strResultado .= '<table width="100%" class="infraTable" style="margin-top: 50px" summary="'.$strSumarioTabela.'">'."\n";
     $strResultado .= '<caption class="infraCaption">'.PaginaSEI::getInstance()->gerarCaptionTabela($strCaptionTabela,$numRegistros).'</caption>';
     $strResultado .= '<tr>';
     if ($bolCheck) {
@@ -284,7 +284,7 @@ if ($numRegistros > 0){
         $strResultado .= $strCssTr;
 
         if ($bolCheck){
-            $strResultado .= '<td valign="top">'.PaginaSEI::getInstance()->getTrCheck($i,$arrObjMdLitMotivoDTO[$i]->getNumIdMdLitMotivo(),$arrObjMdLitMotivoDTO[$i]->getStrDescricao()).'</td>';
+            $strResultado .= '<td valign="top" style="vertical-align:middle;">'.PaginaSEI::getInstance()->getTrCheck($i,$arrObjMdLitMotivoDTO[$i]->getNumIdMdLitMotivo(),$arrObjMdLitMotivoDTO[$i]->getStrDescricao()).'</td>';
         }
         $strResultado .= '<td>'.PaginaSEI::tratarHTML($arrObjMdLitMotivoDTO[$i]->getStrDescricao()).'</td>';
         $strResultado .= '<td align="center">';
@@ -292,11 +292,11 @@ if ($numRegistros > 0){
         $strResultado .= PaginaSEI::getInstance()->getAcaoTransportarItem($i,$arrObjMdLitMotivoDTO[$i]->getNumIdMdLitMotivo());
 
         if ($bolAcaoConsultar){
-            $strResultado .= '<a href="'.SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_motivo_consultar&acao_origem='.$_GET['acao'].'&acao_retorno='.$_GET['acao'].'&id_md_lit_motivo='.$arrObjMdLitMotivoDTO[$i]->getNumIdMdLitMotivo()).'" tabindex="'.PaginaSEI::getInstance()->getProxTabTabela().'"><img src="'.PaginaSEI::getInstance()->getDiretorioImagensGlobal().'/consultar.gif" title="Consultar motivo" alt="Consultar motivo" class="infraImg" /></a>&nbsp;';
+            $strResultado .= '<a href="'.SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_motivo_consultar&acao_origem='.$_GET['acao'].'&acao_retorno='.$_GET['acao'].'&id_md_lit_motivo='.$arrObjMdLitMotivoDTO[$i]->getNumIdMdLitMotivo()).'" tabindex="'.PaginaSEI::getInstance()->getProxTabTabela().'"><img src="'.PaginaSEI::getInstance()->getDiretorioSvgGlobal().'/consultar.svg?'.Icone::VERSAO.'" title="Consultar motivo" alt="Consultar motivo" class="infraImg" /></a>&nbsp;';
         }
 
         if ($bolAcaoAlterar){
-            $strResultado .= '<a href="'.SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_motivo_alterar&acao_origem='.$_GET['acao'].'&acao_retorno='.$_GET['acao'].'&id_md_lit_motivo='.$arrObjMdLitMotivoDTO[$i]->getNumIdMdLitMotivo()).'" tabindex="'.PaginaSEI::getInstance()->getProxTabTabela().'"><img src="'.PaginaSEI::getInstance()->getDiretorioImagensGlobal().'/alterar.gif" title="Alterar motivo" alt="Alterar motivo" class="infraImg" /></a>&nbsp;';
+            $strResultado .= '<a href="'.SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_motivo_alterar&acao_origem='.$_GET['acao'].'&acao_retorno='.$_GET['acao'].'&id_md_lit_motivo='.$arrObjMdLitMotivoDTO[$i]->getNumIdMdLitMotivo()).'" tabindex="'.PaginaSEI::getInstance()->getProxTabTabela().'"><img src="'.PaginaSEI::getInstance()->getDiretorioSvgGlobal().'/alterar.svg?'.Icone::VERSAO.'" title="Alterar motivo" alt="Alterar motivo" class="infraImg" /></a>&nbsp;';
         }
 
         if ($bolAcaoDesativar || $bolAcaoReativar || $bolAcaoExcluir){
@@ -306,16 +306,16 @@ if ($numRegistros > 0){
 
         if ($bolAcaoDesativar && $arrObjMdLitMotivoDTO[$i]->getStrSinAtivo()=='S'){
 
-            $strResultado .= '<a href="'.PaginaSEI::getInstance()->montarAncora($strId).'" onclick="acaoDesativar(\''.$strId.'\',\''.$strDescricao.'\');" tabindex="'.PaginaSEI::getInstance()->getProxTabTabela().'"><img src="'.PaginaSEI::getInstance()->getDiretorioImagensGlobal().'/desativar.gif" title="Desativar motivo" alt="Desativar motivo" class="infraImg" /></a>&nbsp;';
+            $strResultado .= '<a href="'.PaginaSEI::getInstance()->montarAncora($strId).'" onclick="acaoDesativar(\''.$strId.'\',\''.$strDescricao.'\');" tabindex="'.PaginaSEI::getInstance()->getProxTabTabela().'"><img src="'.PaginaSEI::getInstance()->getDiretorioSvgGlobal().'/desativar.svg?'.Icone::VERSAO.'" title="Desativar motivo" alt="Desativar motivo" class="infraImg" /></a>&nbsp;';
         }else if($bolAcaoReativar && $arrObjMdLitMotivoDTO[$i]->getStrSinAtivo()=='N'){
-            $strResultado .= '<a href="'.PaginaSEI::getInstance()->montarAncora($strId).'" onclick="acaoReativar(\''.$strId.'\',\''.$strDescricao.'\');" tabindex="'.PaginaSEI::getInstance()->getProxTabTabela().'"><img src="'.PaginaSEI::getInstance()->getDiretorioImagensGlobal().'/reativar.gif" title="Reativar motivo" alt="Reativar motivo" class="infraImg" /></a>&nbsp;';
+            $strResultado .= '<a href="'.PaginaSEI::getInstance()->montarAncora($strId).'" onclick="acaoReativar(\''.$strId.'\',\''.$strDescricao.'\');" tabindex="'.PaginaSEI::getInstance()->getProxTabTabela().'"><img src="'.PaginaSEI::getInstance()->getDiretorioSvgGlobal().'/reativar.svg?'.Icone::VERSAO.'" title="Reativar motivo" alt="Reativar motivo" class="infraImg" /></a>&nbsp;';
 
         }
 
 
 
         if ($bolAcaoExcluir){
-            $strResultado .= '<a href="'.PaginaSEI::getInstance()->montarAncora($strId).'" onclick="acaoExcluir(\''.$strId.'\',\''.$strDescricao.'\');" tabindex="'.PaginaSEI::getInstance()->getProxTabTabela().'"><img src="'.PaginaSEI::getInstance()->getDiretorioImagensGlobal().'/excluir.gif" title="Excluir motivo" alt="Excluir motivo" class="infraImg" /></a>&nbsp;';
+            $strResultado .= '<a href="'.PaginaSEI::getInstance()->montarAncora($strId).'" onclick="acaoExcluir(\''.$strId.'\',\''.$strDescricao.'\');" tabindex="'.PaginaSEI::getInstance()->getProxTabTabela().'"><img src="'.PaginaSEI::getInstance()->getDiretorioSvgGlobal().'/excluir.svg?'.Icone::VERSAO.'" title="Excluir motivo" alt="Excluir motivo" class="infraImg" /></a>&nbsp;';
         }
 
         $strResultado .= '</td></tr>'."\n";
@@ -323,7 +323,7 @@ if ($numRegistros > 0){
     $strResultado .= '</table>';
 }
 if ($_GET['acao'] == 'md_lit_motivo_selecionar'){
-    $arrComandos[] = '<button type="button" accesskey="F" id="btnFecharSelecao" value="Fechar" onclick="window.close();" class="infraButton"><span class="infraTeclaAtalho">F</span>echar</button>';
+    $arrComandos[] = '<button type="button" accesskey="C" id="btnFecharSelecao" value="Fechar" onclick="window.close();" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
 }else{
     $arrComandos[] = '<button type="button" accesskey="C" id="btnFechar" value="Fechar" onclick="location.href=\''.SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_controlar&acao_origem=' . $_GET['acao']).'\'" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
 }

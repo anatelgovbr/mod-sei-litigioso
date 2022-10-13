@@ -47,7 +47,6 @@
         objAutoCompletarDecisaoRein.processarResultado = function (id, descricao, complemento) {
             if (id != '') {
               var desc =  $("<pre>").html(descricao).text();
-               // console.log(desc);
                 objLupaDecisaoReicidencia.adicionar(id, desc, document.getElementById('txtDecRein'));
 
             }

@@ -465,7 +465,9 @@ class MdLitFaseRN extends InfraRN
                 $objSituacaoLitigiosoDTO = new MdLitSituacaoDTO();
                 $objSituacaoLitigiosoRN = new MdLitSituacaoRN();
                 $objSituacaoLitigiosoDTO->setNumIdFaseLitigioso($arrObjFaseLitigiosoDTO[$i]->getNumIdFaseLitigioso());
+                $objSituacaoLitigiosoDTO->setStrSinAtivo($arrObjFaseLitigiosoDTO[$i]->getNumIdFaseLitigioso());
                 $objSituacaoLitigiosoDTO->retNumIdSituacaoLitigioso();
+                $objSituacaoLitigiosoDTO->retStrSinAtivo();
                 $countObjSitLitDTO = $objSituacaoLitigiosoRN->contar($objSituacaoLitigiosoDTO);
 
                 if ($countObjSitLitDTO > 0) {

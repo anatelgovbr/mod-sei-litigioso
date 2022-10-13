@@ -79,8 +79,8 @@ class MdLitSituacaoLancamIntINT extends InfraINT {
                 $strResultadoParamSaida .= "<input type='hidden' name='hdnArrayDadosSaida[$i]' value='{$arrParametroSaida[$i]}' />";
                 $strResultadoParamSaida .= PaginaSEI::tratarHTML($arrParametroSaida[$i]);
                 $strResultadoParamSaida .= "</td>";
-                $strResultadoParamSaida .= "<td align='center'><select id='campoDestino_$idLinha' name='campoDestino[$arrParametroSaida[$i]]' onchange='mudarcampoDestino(this)' style='width: 80%;'>{$strItensSelCampoDestino}</select></td>";
-                $strResultadoParamSaida .= "<td align='center'><input type='radio'name='chaveUnicaDadosSaida' value='{$arrParametroSaida[$i]}' $checked id='chaveUnicaDadosSaida_{$idLinha}' $disable> </td>";
+                $strResultadoParamSaida .= "<td align='center'><select  class='form-control' id='campoDestino_$idLinha' name='campoDestino[$arrParametroSaida[$i]]' onchange='mudarcampoDestino(this)'>{$strItensSelCampoDestino}</select></td>";
+                $strResultadoParamSaida .= "<td align='center'><div class='infraRadioDiv'><input type='radio'name='chaveUnicaDadosSaida' value='{$arrParametroSaida[$i]}' $checked id='chaveUnicaDadosSaida_{$idLinha}' $disable class='infraRadioInput'><label class='infraRadioLabel' for='chaveUnicaDadosSaida_{$idLinha}'></div></label></td>";
 
                 $strResultadoParamSaida .= '</tr>' . "\n";
             }
@@ -106,7 +106,7 @@ class MdLitSituacaoLancamIntINT extends InfraINT {
             $strSumarioTabela = 'Tabela de resultado do web-service de listar de situação de lançamento';
             $strCaptionTabela = 'Situação de Lançamento';
 
-            $strResultado .= '<table width="95%" id="tableWebServiceSituacaoLancamento" class="infraTable" summary="' . $strSumarioTabela . '">' . "\n";
+            $strResultado .= '<table width="100%" id="tableWebServiceSituacaoLancamento" class="infraTable" summary="' . $strSumarioTabela . '">' . "\n";
             $strResultado .= '<tr>';
 
             $strResultado .= '<th class="infraTh" width="5%">&nbsp;Código&nbsp;</th>' . "\n";
@@ -157,12 +157,12 @@ class MdLitSituacaoLancamIntINT extends InfraINT {
                 $codigo = trim($arrResultadoWebService[$i][$objMdLitSituacaoLancamIntDTO->getStrChaveUnica()]);
                 // Situação de Cancelamento
                 $strResultado .= "<td id='cancelamento_$idLinha' style='text-align: center;'>";
-                $strResultado .= "<input type='radio' {$sinCancelado} name='rdoSinCancelamentoIntegracao' id='rdoSinCancelamento_$i' value='$codigo'  >";
+                $strResultado .= "<input class='infraRadio' type='radio' {$sinCancelado} name='rdoSinCancelamentoIntegracao' id='rdoSinCancelamento_$i' value='$codigo'  >";
                 $strResultado .= "</td>";
 
                 // Cor
                 $strResultado .= "<td id='cor_$idLinha'>";
-                $strResultado .= "<select id='selCor_$i' name='selCores[{$codigo}]'  style='width: 80%;' class='infraSelect'>";
+                $strResultado .= "<select id='selCor_$i' name='selCores[{$codigo}]'  style='width: 80%;' class='infraSelect form-control'>";
                 $strResultado .= $strOptionCor;
                 $strResultado .= "</select>";
                 $strResultado .= "</td>";

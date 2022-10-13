@@ -105,7 +105,8 @@
 
                 $objTipoControleLitigiosoDTO = new MdLitTipoControleDTO();
                 $objTipoControleLitigiosoDTO->retTodos();
-                if(count($ArrObjRelTipoControleLitigiosoTipoProcedimentoDTO) > 0){
+                $cArrObjRelTipoControleLitigiosoTipoProcedimentoDTO = is_array($ArrObjRelTipoControleLitigiosoTipoProcedimentoDTO) ? count($ArrObjRelTipoControleLitigiosoTipoProcedimentoDTO) : 0;
+                if($cArrObjRelTipoControleLitigiosoTipoProcedimentoDTO > 0){
                     //id_MdLitRelTipoControleTipoProcedimentoDTO
                     $idMdRelTipoCntroleTipoProcedimento = $ArrObjRelTipoControleLitigiosoTipoProcedimentoDTO[0]->getNumIdTipoControleLitigioso();
 
@@ -202,7 +203,7 @@
                 $objControleLitigiosoDTO = $objControleLitigiosoRN->consultar($objControleLitigiosoDTO);
 
                 $hdnIdMdLitControle = '';
-                if (count($objControleLitigiosoDTO) > 0) {
+                if (is_object($objControleLitigiosoDTO)) {
 
                     $hdnIdMdLitControle = $objControleLitigiosoDTO->getNumIdControleLitigioso();
 
@@ -224,18 +225,17 @@
 
                     //ASSINATURA
                     $dataDocumento    = '';
-                    $arrAssinatura = $objDocumentoDTO->getArrObjAssinaturaDTO();
-                    if (count($arrAssinatura) > 0) {
-                        $objAssinaturaDTO = new AssinaturaDTO();
-                        $objAssinaturaDTO->setDblIdDocumento($objDocumentoDTO->getDblIdDocumento());
-                        $objAssinaturaDTO->retDthAberturaAtividade();
-                        $objAssinaturaRN     = new AssinaturaRN();
-                        $arrObjAssinaturaDTO = $objAssinaturaRN->listarRN1323($objAssinaturaDTO);
-                        if (count($arrObjAssinaturaDTO) > 0) {
-                            $dataDocumento = explode(' ', $arrObjAssinaturaDTO[0]->getDthAberturaAtividade());
-                            $dataDocumento = $dataDocumento[0];
-                        }
+
+                    $objAssinaturaDTO = new AssinaturaDTO();
+                    $objAssinaturaDTO->setDblIdDocumento($objDocumentoDTO->getDblIdDocumento());
+                    $objAssinaturaDTO->retDthAberturaAtividade();
+                    $objAssinaturaRN     = new AssinaturaRN();
+                    $arrObjAssinaturaDTO = $objAssinaturaRN->listarRN1323($objAssinaturaDTO);
+                    if (count($arrObjAssinaturaDTO) > 0) {
+                        $dataDocumento = explode(' ', $arrObjAssinaturaDTO[0]->getDthAberturaAtividade());
+                        $dataDocumento = $dataDocumento[0];
                     }
+
                     if(!$dataDocumento){
                         $dataDocumento = $objDocumentoDTO->getDtaGeracaoProtocolo();
                     }
@@ -363,7 +363,7 @@
 
                     $arr = null;
                     foreach ($arrObjRelProtocoloProtocoloLitigiosoDTO as $objRelProtocoloProtocoloLitigioso) {
-                        $DthDtaSobrestamento = split(' ', $objRelProtocoloProtocoloLitigioso->getDthDtaSobrestamento());
+                        $DthDtaSobrestamento = explode(' ', $objRelProtocoloProtocoloLitigioso->getDthDtaSobrestamento());
                         $arr[]               = array(
                             $objRelProtocoloProtocoloLitigioso->getStrProtocoloFormatadoProcedimento2()
                             , $objRelProtocoloProtocoloLitigioso->getDblIdProtocolo2()

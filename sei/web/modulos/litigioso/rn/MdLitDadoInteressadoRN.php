@@ -1,54 +1,61 @@
 <?
 /**
-* TRIBUNAL REGIONAL FEDERAL DA 4ª REGIÃO
-*
-* 20/04/2017 - criado por Ellyson de Jesus Silva
-*
-* Versão do Gerador de Código: 1.40.1
-*/
+ * TRIBUNAL REGIONAL FEDERAL DA 4 REGIO
+ *
+ * 20/04/2017 - criado por Ellyson de Jesus Silva
+ *
+ * Verso do Gerador de Cdigo: 1.40.1
+ */
 
-require_once dirname(__FILE__).'/../../../SEI.php';
+require_once dirname(__FILE__) . '/../../../SEI.php';
 
-class MdLitDadoInteressadoRN extends InfraRN {
+class MdLitDadoInteressadoRN extends InfraRN
+{
 
-  public function __construct(){
-    parent::__construct();
-  }
-
-  protected function inicializarObjInfraIBanco(){
-    return BancoSEI::getInstance();
-  }
-
-  private function validarNumIdMdLitControle(MdLitDadoInteressadoDTO $objMdLitDadoInteressadoDTO, InfraException $objInfraException){
-    if (InfraString::isBolVazia($objMdLitDadoInteressadoDTO->getNumIdMdLitControle())){
-      $objInfraException->adicionarValidacao('controle não informado.');
+    public function __construct()
+    {
+        parent::__construct();
     }
-  }
 
-  private function validarNumIdContato(MdLitDadoInteressadoDTO $objMdLitDadoInteressadoDTO, InfraException $objInfraException){
-    if (InfraString::isBolVazia($objMdLitDadoInteressadoDTO->getNumIdContato())){
-      $objInfraException->adicionarValidacao('contato não informado.');
+    protected function inicializarObjInfraIBanco()
+    {
+        return BancoSEI::getInstance();
     }
-  }
 
-  private function validarStrSinOutorgado(MdLitDadoInteressadoDTO $objMdLitDadoInteressadoDTO, InfraException $objInfraException){
-    if (InfraString::isBolVazia($objMdLitDadoInteressadoDTO->getStrSinOutorgado())){
-      $objInfraException->adicionarValidacao('Sinalizador de Outorgado não informado.');
-    }else{
-      if (!InfraUtil::isBolSinalizadorValido($objMdLitDadoInteressadoDTO->getStrSinOutorgado())){
-        $objInfraException->adicionarValidacao('Sinalizador de Outorgado inválido.');
-      }
+    private function validarNumIdMdLitControle(MdLitDadoInteressadoDTO $objMdLitDadoInteressadoDTO, InfraException $objInfraException)
+    {
+        if (InfraString::isBolVazia($objMdLitDadoInteressadoDTO->getNumIdMdLitControle())) {
+            $objInfraException->adicionarValidacao('controle no informado.');
+        }
     }
-  }
+
+    private function validarNumIdContato(MdLitDadoInteressadoDTO $objMdLitDadoInteressadoDTO, InfraException $objInfraException)
+    {
+        if (InfraString::isBolVazia($objMdLitDadoInteressadoDTO->getNumIdContato())) {
+            $objInfraException->adicionarValidacao('contato no informado.');
+        }
+    }
+
+    private function validarStrSinOutorgado(MdLitDadoInteressadoDTO $objMdLitDadoInteressadoDTO, InfraException $objInfraException)
+    {
+        if (InfraString::isBolVazia($objMdLitDadoInteressadoDTO->getStrSinOutorgado())) {
+            $objInfraException->adicionarValidacao('Sinalizador de Outorgado no informado.');
+        } else {
+            if (!InfraUtil::isBolSinalizadorValido($objMdLitDadoInteressadoDTO->getStrSinOutorgado())) {
+                $objInfraException->adicionarValidacao('Sinalizador de Outorgado invlido.');
+            }
+        }
+    }
 
     /**
      * @param MdLitDadoInteressadoDTO $objMdLitDadoInteressadoDTO
-     * @param InfraException $objInfraException,
-     * o numero do interessado não pode ser repetido e se tiver vinculo com o lançamento lança uma exçeção
+     * @param InfraException $objInfraException ,
+     * o numero do interessado no pode ser repetido e se tiver vinculo com o lanamento lana uma exeo
      */
-    private function validarExclusaoNumeroInteressado($arrObjMdLitDadoInteressadoDTO, InfraException $objInfraException){
+    private function validarExclusaoNumeroInteressado($arrObjMdLitDadoInteressadoDTO, InfraException $objInfraException)
+    {
 
-        foreach ($arrObjMdLitDadoInteressadoDTO as $objMdLitDadoInteressadoDTO){
+        foreach ($arrObjMdLitDadoInteressadoDTO as $objMdLitDadoInteressadoDTO) {
             $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
             $objMdLitLancamentoDTO->retTodos();
             $objMdLitLancamentoDTO->setStrNumeroInteressado($objMdLitDadoInteressadoDTO->getStrNumero());
@@ -57,15 +64,16 @@ class MdLitDadoInteressadoRN extends InfraRN {
             $objMdLitLancamentoRN = new MdLitLancamentoRN();
             $objMdLitLancamentoDTOContar = $objMdLitLancamentoRN->contar($objMdLitLancamentoDTO);
 
-            if($objMdLitLancamentoDTOContar){
-                $objInfraException->adicionarValidacao('O número '.$objMdLitDadoInteressadoDTO->getStrNumero().' está vinculado há uma multa.');
+            if ($objMdLitLancamentoDTOContar) {
+                $objInfraException->adicionarValidacao('O nmero ' . $objMdLitDadoInteressadoDTO->getStrNumero() . ' est vinculado h uma multa.');
             }
 
         }
     }
 
-    protected function cadastrarControlado(MdLitDadoInteressadoDTO $objMdLitDadoInteressadoDTO) {
-        try{
+    protected function cadastrarControlado(MdLitDadoInteressadoDTO $objMdLitDadoInteressadoDTO)
+    {
+        try {
 
             //Valida Permissao
             SessaoSEI::getInstance()->validarPermissao('md_lit_dado_interessado_cadastrar');
@@ -82,43 +90,44 @@ class MdLitDadoInteressadoRN extends InfraRN {
 
             return $ret;
 
-        }catch(Exception $e){
-            throw new InfraException('Erro cadastrando Número de interessado.',$e);
+        } catch (Exception $e) {
+            throw new InfraException('Erro cadastrando Nmero de interessado.', $e);
         }
     }
 
-  protected function alterarControlado(MdLitDadoInteressadoDTO $objMdLitDadoInteressadoDTO){
-    try {
+    protected function alterarControlado(MdLitDadoInteressadoDTO $objMdLitDadoInteressadoDTO)
+    {
+        try {
 
-      //Valida Permissao
-  	   SessaoSEI::getInstance()->validarPermissao('md_lit_dado_interessado_alterar');
+            //Valida Permissao
+            SessaoSEI::getInstance()->validarPermissao('md_lit_dado_interessado_alterar');
 
-      //Regras de Negocio
-      $objInfraException = new InfraException();
+            //Regras de Negocio
+            $objInfraException = new InfraException();
 
-      if ($objMdLitDadoInteressadoDTO->isSetNumIdMdLitControle()){
-        $this->validarNumIdMdLitControle($objMdLitDadoInteressadoDTO, $objInfraException);
-      }
-      if ($objMdLitDadoInteressadoDTO->isSetNumIdContato()){
-        $this->validarNumIdContato($objMdLitDadoInteressadoDTO, $objInfraException);
-      }
-      if(!isset($_SESSION['ignorarValidacaoOutorgado'])) {
-          if ($objMdLitDadoInteressadoDTO->isSetStrSinOutorgado()) {
-              $this->validarStrSinOutorgado($objMdLitDadoInteressadoDTO, $objInfraException);
-          }
-      }
+            if ($objMdLitDadoInteressadoDTO->isSetNumIdMdLitControle()) {
+                $this->validarNumIdMdLitControle($objMdLitDadoInteressadoDTO, $objInfraException);
+            }
+            if ($objMdLitDadoInteressadoDTO->isSetNumIdContato()) {
+                $this->validarNumIdContato($objMdLitDadoInteressadoDTO, $objInfraException);
+            }
+            if (!isset($_SESSION['ignorarValidacaoOutorgado'])) {
+                if ($objMdLitDadoInteressadoDTO->isSetStrSinOutorgado()) {
+                    $this->validarStrSinOutorgado($objMdLitDadoInteressadoDTO, $objInfraException);
+                }
+            }
 
-      $objInfraException->lancarValidacoes();
+            $objInfraException->lancarValidacoes();
 
-      $objMdLitDadoInteressadoBD = new MdLitDadoInteressadoBD($this->getObjInfraIBanco());
-      $objMdLitDadoInteressadoBD->alterar($objMdLitDadoInteressadoDTO);
+            $objMdLitDadoInteressadoBD = new MdLitDadoInteressadoBD($this->getObjInfraIBanco());
+            $objMdLitDadoInteressadoBD->alterar($objMdLitDadoInteressadoDTO);
 
-      //Auditoria
+            //Auditoria
 
-    }catch(Exception $e){
-      throw new InfraException('Erro alterando dado complementar do interessado.',$e);
+        } catch (Exception $e) {
+            throw new InfraException('Erro alterando dado complementar do interessado.', $e);
+        }
     }
-  }
 
     protected function excluirControlado($arrObjMdLitDadoInteressadoDTO){
         try {
@@ -178,9 +187,9 @@ class MdLitDadoInteressadoRN extends InfraRN {
                         //Excluir Numero Interessado
                         $objMdLitDadoInteressadoBD->excluir($itemObjMdLitNumeroInteressadoDTO);
 
-                        //Excluir Dado Interessado
-                        $objMdLitDadoInteressadoBD->excluir($arrObjMdLitDadoInteressadoDTO[$i]);
                     }
+                    //Excluir Dado Interessado
+                    $objMdLitDadoInteressadoBD->excluir($arrObjMdLitDadoInteressadoDTO[$i]);
                 }else {
                     $objMdLitDadoInteressadoBD->excluir($arrObjMdLitDadoInteressadoDTO[$i]);
                 }
@@ -194,79 +203,83 @@ class MdLitDadoInteressadoRN extends InfraRN {
     }
 
 
-    private function excluirRel($idMdLitDadoInteressado, $objDTO, $objRN){
-      $objDTO->retTodos(false);
-      $objDTO->setNumIdMdLitDadoInteressado($idMdLitDadoInteressado);
+    private function excluirRel($idMdLitDadoInteressado, $objDTO, $objRN)
+    {
+        $objDTO->retTodos(false);
+        $objDTO->setNumIdMdLitDadoInteressado($idMdLitDadoInteressado);
 
-      $arrObjDTO = $objRN->listar($objDTO);
-      $objRN->excluir($arrObjDTO);
-  }
-
-  protected function consultarConectado(MdLitDadoInteressadoDTO $objMdLitDadoInteressadoDTO){
-    try {
-
-      //Valida Permissao
-      SessaoSEI::getInstance()->validarPermissao('md_lit_dado_interessado_consultar');
-
-      //Regras de Negocio
-      //$objInfraException = new InfraException();
-
-      //$objInfraException->lancarValidacoes();
-
-      $objMdLitDadoInteressadoBD = new MdLitDadoInteressadoBD($this->getObjInfraIBanco());
-      $ret = $objMdLitDadoInteressadoBD->consultar($objMdLitDadoInteressadoDTO);
-
-      //Auditoria
-
-      return $ret;
-    }catch(Exception $e){
-      throw new InfraException('Erro consultando dado complementar do interessado.',$e);
+        $arrObjDTO = $objRN->listar($objDTO);
+        $objRN->excluir($arrObjDTO);
     }
-  }
 
-  protected function listarConectado(MdLitDadoInteressadoDTO $objMdLitDadoInteressadoDTO) {
-    try {
+    protected function consultarConectado(MdLitDadoInteressadoDTO $objMdLitDadoInteressadoDTO)
+    {
+        try {
 
-      //Valida Permissao
-      #SessaoSEI::getInstance()->validarPermissao('md_lit_dado_interessado_listar');
+            //Valida Permissao
+            SessaoSEI::getInstance()->validarPermissao('md_lit_dado_interessado_consultar');
 
-      //Regras de Negocio
-      //$objInfraException = new InfraException();
+            //Regras de Negocio
+            //$objInfraException = new InfraException();
 
-      //$objInfraException->lancarValidacoes();
+            //$objInfraException->lancarValidacoes();
 
-      $objMdLitDadoInteressadoBD = new MdLitDadoInteressadoBD($this->getObjInfraIBanco());
-      $ret = $objMdLitDadoInteressadoBD->listar($objMdLitDadoInteressadoDTO);
-      //Auditoria
+            $objMdLitDadoInteressadoBD = new MdLitDadoInteressadoBD($this->getObjInfraIBanco());
+            $ret = $objMdLitDadoInteressadoBD->consultar($objMdLitDadoInteressadoDTO);
 
-      return $ret;
+            //Auditoria
 
-    }catch(Exception $e){
-      throw new InfraException('Erro listando dados complementares dos interessados.',$e);
+            return $ret;
+        } catch (Exception $e) {
+            throw new InfraException('Erro consultando dado complementar do interessado.', $e);
+        }
     }
-  }
 
-  protected function contarConectado(MdLitDadoInteressadoDTO $objMdLitDadoInteressadoDTO){
-    try {
+    protected function listarConectado(MdLitDadoInteressadoDTO $objMdLitDadoInteressadoDTO)
+    {
+        try {
 
-      //Valida Permissao
-      SessaoSEI::getInstance()->validarPermissao('md_lit_dado_interessado_listar');
+            //Valida Permissao
+            #SessaoSEI::getInstance()->validarPermissao('md_lit_dado_interessado_listar');
 
-      //Regras de Negocio
-      //$objInfraException = new InfraException();
+            //Regras de Negocio
+            //$objInfraException = new InfraException();
 
-      //$objInfraException->lancarValidacoes();
+            //$objInfraException->lancarValidacoes();
 
-      $objMdLitDadoInteressadoBD = new MdLitDadoInteressadoBD($this->getObjInfraIBanco());
-      $ret = $objMdLitDadoInteressadoBD->contar($objMdLitDadoInteressadoDTO);
+            $objMdLitDadoInteressadoBD = new MdLitDadoInteressadoBD($this->getObjInfraIBanco());
+            $ret = $objMdLitDadoInteressadoBD->listar($objMdLitDadoInteressadoDTO);
+            //Auditoria
 
-      //Auditoria
+            return $ret;
 
-      return $ret;
-    }catch(Exception $e){
-      throw new InfraException('Erro contando dados complementares dos interessados.',$e);
+        } catch (Exception $e) {
+            throw new InfraException('Erro listando dados complementares dos interessados.', $e);
+        }
     }
-  }
+
+    protected function contarConectado(MdLitDadoInteressadoDTO $objMdLitDadoInteressadoDTO)
+    {
+        try {
+
+            //Valida Permissao
+            SessaoSEI::getInstance()->validarPermissao('md_lit_dado_interessado_listar');
+
+            //Regras de Negocio
+            //$objInfraException = new InfraException();
+
+            //$objInfraException->lancarValidacoes();
+
+            $objMdLitDadoInteressadoBD = new MdLitDadoInteressadoBD($this->getObjInfraIBanco());
+            $ret = $objMdLitDadoInteressadoBD->contar($objMdLitDadoInteressadoDTO);
+
+            //Auditoria
+
+            return $ret;
+        } catch (Exception $e) {
+            throw new InfraException('Erro contando dados complementares dos interessados.', $e);
+        }
+    }
 
     protected function salvarDadoInteressadoControlado($arrObjmdLitDadoInteressadoDTO)
     {
@@ -284,8 +297,8 @@ class MdLitDadoInteressadoRN extends InfraRN {
 
                 $objMdLitDadoInteressadoDTOConsulta = $this->consultar($objMdLitDadoInteressadoDTO);
 
-                //verifica se já existe registro cadastrado se não ele cadastra o registro
-                if(!$objMdLitDadoInteressadoDTOConsulta){
+                //verifica se j existe registro cadastrado se no ele cadastra o registro
+                if (!$objMdLitDadoInteressadoDTOConsulta) {
                     $objMdLitDadoInteressadoBD->cadastrar($objMdLitDadoInteressadoDTO);
                 }
             }
@@ -304,7 +317,7 @@ class MdLitDadoInteressadoRN extends InfraRN {
         $arrIdMdLitDadoInteressado = InfraArray::converterArrInfraDTO($arrObjMdLitDadoInteressadoDTO, 'IdMdLitDadoInteressado');
 //        $idMdLitDadoInteressado = $arrObjMdLitDadoInteressadoDTO[0]->get('IdMdLitDadoInteressado');
 
-        //excluindo o número interessado do processo
+        //excluindo o nmero interessado do processo
         $mdLitNumeroInteressadoRN = new MdLitNumeroInteressadoRN();
         $mdLitNumeroInteressadoDTO = new MdLitNumeroInteressadoDTO();
         $mdLitNumeroInteressadoDTO->retNumIdMdLitNumeroInteressado();
@@ -342,11 +355,11 @@ class MdLitDadoInteressadoRN extends InfraRN {
         $objMdLitDadoInteressadoDTO = new MdLitDadoInteressadoDTO();
         $objMdLitDadoInteressadoDTO->retTodos(false);
         $objMdLitDadoInteressadoDTO->setNumIdMdLitDadoInteressado($arrIdMdLitDadoInteressado, InfraDTO::$OPER_IN);
-        $objMdLitDadoInteressadoDTO->setNumIdMdLitControle($arrIdMdLitControle,InfraDTO::$OPER_IN);
+        $objMdLitDadoInteressadoDTO->setNumIdMdLitControle($arrIdMdLitControle, InfraDTO::$OPER_IN);
 
         $arrObjMdLitDadoInteressadoDTOConsulta = $this->listar($objMdLitDadoInteressadoDTO);
 
-        if(count($arrObjMdLitDadoInteressadoDTOConsulta)){
+        if (count($arrObjMdLitDadoInteressadoDTOConsulta)) {
             $this->excluir($arrObjMdLitDadoInteressadoDTOConsulta);
         }
     }
@@ -355,7 +368,8 @@ class MdLitDadoInteressadoRN extends InfraRN {
      * Remove o interessado e suas dependencias inclusive o interessado obrigatorio do processo para retornar o processo ao estagio inicial
      * @param $arrObjMdLitDadoInteressadoDTO
      */
-    protected function removerInteressadoLimparControleLitigiosoControlado($arrObjMdLitDadoInteressadoDTO){
+    protected function removerInteressadoLimparControleLitigiosoControlado($arrObjMdLitDadoInteressadoDTO)
+    {
         $this->removerInteressadoControlado($arrObjMdLitDadoInteressadoDTO, true);
     }
 
@@ -389,79 +403,81 @@ class MdLitDadoInteressadoRN extends InfraRN {
         $objMdLitDadoInteressadoDTO = $objMdLitDadoInteressadoRN->consultar($objMdLitDadoInteressadoDTO);
 
         if (!$objMdLitDadoInteressadoDTO) {
-            throw new InfraException('O Número de Complemento do Interessado não foi selecionado.');
+            throw new InfraException('O Nmero de Complemento do Interessado no foi selecionado.');
         }
 
         return $objMdLitDadoInteressadoDTO;
     }
 
 
-  protected function desativarControlado($arrObjMdLitDadoInteressadoDTO){
-    try {
+    protected function desativarControlado($arrObjMdLitDadoInteressadoDTO)
+    {
+        try {
 
-      //Regras de Negocio
-      //$objInfraException = new InfraException();
+            //Regras de Negocio
+            //$objInfraException = new InfraException();
 
-      //$objInfraException->lancarValidacoes();
+            //$objInfraException->lancarValidacoes();
 
-      $objMdLitDadoInteressadoBD = new MdLitDadoInteressadoBD($this->getObjInfraIBanco());
-      for($i=0;$i<count($arrObjMdLitDadoInteressadoDTO);$i++){
-        $objMdLitDadoInteressadoBD->desativar($arrObjMdLitDadoInteressadoDTO[$i]);
+            $objMdLitDadoInteressadoBD = new MdLitDadoInteressadoBD($this->getObjInfraIBanco());
+            for ($i = 0; $i < count($arrObjMdLitDadoInteressadoDTO); $i++) {
+                $objMdLitDadoInteressadoBD->desativar($arrObjMdLitDadoInteressadoDTO[$i]);
+            }
+
+            //Auditoria
+
+        } catch (Exception $e) {
+            throw new InfraException('Erro desativando dado complementar do interessado.', $e);
+        }
+    }
+    /*
+      protected function reativarControlado($arrObjMdLitDadoInteressadoDTO){
+        try {
+
+          //Valida Permissao
+          SessaoSEI::getInstance()->validarPermissao('md_lit_dado_interessado_reativar');
+
+          //Regras de Negocio
+          //$objInfraException = new InfraException();
+
+          //$objInfraException->lancarValidacoes();
+
+          $objMdLitDadoInteressadoBD = new MdLitDadoInteressadoBD($this->getObjInfraIBanco());
+          for($i=0;$i<count($arrObjMdLitDadoInteressadoDTO);$i++){
+            $objMdLitDadoInteressadoBD->reativar($arrObjMdLitDadoInteressadoDTO[$i]);
+          }
+
+          //Auditoria
+
+        }catch(Exception $e){
+          throw new InfraException('Erro reativando dado complementar do interessado.',$e);
+        }
       }
 
-      //Auditoria
+      protected function bloquearControlado(MdLitDadoInteressadoDTO $objMdLitDadoInteressadoDTO){
+        try {
 
-    }catch(Exception $e){
-      throw new InfraException('Erro desativando dado complementar do interessado.',$e);
-    }
-  }
-/*
-  protected function reativarControlado($arrObjMdLitDadoInteressadoDTO){
-    try {
+          //Valida Permissao
+          SessaoSEI::getInstance()->validarPermissao('md_lit_dado_interessado_consultar');
 
-      //Valida Permissao
-      SessaoSEI::getInstance()->validarPermissao('md_lit_dado_interessado_reativar');
+          //Regras de Negocio
+          //$objInfraException = new InfraException();
 
-      //Regras de Negocio
-      //$objInfraException = new InfraException();
+          //$objInfraException->lancarValidacoes();
 
-      //$objInfraException->lancarValidacoes();
+          $objMdLitDadoInteressadoBD = new MdLitDadoInteressadoBD($this->getObjInfraIBanco());
+          $ret = $objMdLitDadoInteressadoBD->bloquear($objMdLitDadoInteressadoDTO);
 
-      $objMdLitDadoInteressadoBD = new MdLitDadoInteressadoBD($this->getObjInfraIBanco());
-      for($i=0;$i<count($arrObjMdLitDadoInteressadoDTO);$i++){
-        $objMdLitDadoInteressadoBD->reativar($arrObjMdLitDadoInteressadoDTO[$i]);
+          //Auditoria
+
+          return $ret;
+        }catch(Exception $e){
+          throw new InfraException('Erro bloqueando dado complementar do interessado.',$e);
+        }
       }
 
-      //Auditoria
-
-    }catch(Exception $e){
-      throw new InfraException('Erro reativando dado complementar do interessado.',$e);
-    }
-  }
-
-  protected function bloquearControlado(MdLitDadoInteressadoDTO $objMdLitDadoInteressadoDTO){
-    try {
-
-      //Valida Permissao
-      SessaoSEI::getInstance()->validarPermissao('md_lit_dado_interessado_consultar');
-
-      //Regras de Negocio
-      //$objInfraException = new InfraException();
-
-      //$objInfraException->lancarValidacoes();
-
-      $objMdLitDadoInteressadoBD = new MdLitDadoInteressadoBD($this->getObjInfraIBanco());
-      $ret = $objMdLitDadoInteressadoBD->bloquear($objMdLitDadoInteressadoDTO);
-
-      //Auditoria
-
-      return $ret;
-    }catch(Exception $e){
-      throw new InfraException('Erro bloqueando dado complementar do interessado.',$e);
-    }
-  }
-
- */
+     */
 
 }
+
 ?>

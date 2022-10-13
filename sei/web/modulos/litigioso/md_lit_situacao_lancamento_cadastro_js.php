@@ -1,5 +1,4 @@
-
-<?if(0){?><script><?}?>
+<script type="text/javascript">
     function inicializar() {
         if ('<?=$_GET['acao']?>' == 'md_lit_situacao_lancamento_consultar') {
             infraDesabilitarCamposAreaDados();
@@ -11,7 +10,7 @@
             selectAll: false
         });
 
-        if(document.getElementById('txtEnderecoWsdl').value != ''){
+        if (document.getElementById('txtEnderecoWsdl').value != '') {
             validarWsdl();
         }
         // scrool estava ficando grande pois esta com os campos select como multiselect
@@ -27,8 +26,7 @@
         if (rdoIntegracao) {
             divIntegracao.style.display = 'block';
             divManual.style.display = 'none';
-        }
-        else {
+        } else {
             divIntegracao.style.display = 'none';
             divManual.style.display = 'block';
         }
@@ -96,18 +94,18 @@
             return false;
         }
 
-        if(document.getElementById('tableWebServiceSituacaoLancamento') == null || document.getElementById('tableWebServiceSituacaoLancamento') == null){
+        if (document.getElementById('tableWebServiceSituacaoLancamento') == null || document.getElementById('tableWebServiceSituacaoLancamento') == null) {
             alert('Favor mapear a integração.');
             document.getElementById('btnMapear').focus();
             return false;
         }
 
-        for(var i = 0; i < (document.getElementById('tableWebServiceSituacaoLancamento').rows.length-1); i++ ){
-            for(var j = 0; j < (document.getElementById('tableWebServiceSituacaoLancamento').rows.length-1); j++ ){
-                if(i==j) continue;
-                if(document.getElementById('codigo_'+i).innerText == document.getElementById('codigo_'+j).innerText ){
-                    var codigo = document.getElementById('codigo_'+j).innerText;
-                    alert('O código '+codigo+' está duplicado no resultado do web-service. Favor verifique o mapeamento novamente.');
+        for (var i = 0; i < (document.getElementById('tableWebServiceSituacaoLancamento').rows.length - 1); i++) {
+            for (var j = 0; j < (document.getElementById('tableWebServiceSituacaoLancamento').rows.length - 1); j++) {
+                if (i == j) continue;
+                if (document.getElementById('codigo_' + i).innerText == document.getElementById('codigo_' + j).innerText) {
+                    var codigo = document.getElementById('codigo_' + j).innerText;
+                    alert('O código ' + codigo + ' está duplicado no resultado do web-service. Favor verifique o mapeamento novamente.');
                     return false;
                 }
             }
@@ -117,12 +115,12 @@
 
 
     function validarWsdl() {
-        var consultar  = <?php echo $_GET['acao'] != 'md_lit_situacao_lancamento_consultar' ? 'true' : 'false'; ?>//;
+        var consultar = <?php echo $_GET['acao'] != 'md_lit_situacao_lancamento_consultar' ? 'true' : 'false'; ?>//;
         var enderecoWsdl = document.getElementById('txtEnderecoWsdl').value;
         var tipoWs = $('[name="tipoWs"]:checked').val();
         var versaoSoap = $('[name="versaoSoap"]').val();
-        if(consultar){
-             versaoSoap = $('[name="versaoSoap"]').not(':disabled').val();
+        if (consultar) {
+            versaoSoap = $('[name="versaoSoap"]').not(':disabled').val();
         }
 
         if (enderecoWsdl == '') {
@@ -130,7 +128,7 @@
             return false;
         }
 
-        if(tipoWs != 'SOAP' || versaoSoap == undefined){
+        if (tipoWs != 'SOAP' || versaoSoap == undefined) {
             alert('Paraaaaa validar este serviço informe o Tipo de Cliente WS como SOAP e sua Versão Soap');
             return false;
         }
@@ -142,7 +140,7 @@
             data: {
                 endereco_wsdl: enderecoWsdl, tipoWs: tipoWs, versaoSoap: versaoSoap
             },
-            beforeSend: function(){
+            beforeSend: function () {
                 infraExibirAviso(false);
             },
             success: function (result) {
@@ -155,7 +153,7 @@
                     opt.value = '';
                     opt.innerHTML = '';
                     select.appendChild(opt);
-                    var selectedValor = '<?= PaginaSEI::tratarHTML( $selOperacao );?>';
+                    var selectedValor = '<?= PaginaSEI::tratarHTML($selOperacao);?>';
 
                     $.each($(result).find('operacao'), function (key, value) {
                         var opt = document.createElement('option');
@@ -174,7 +172,6 @@
             },
             error: function (msgError) {
                 msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;
-                console.log(msgCommit);
             },
             complete: function (result) {
                 infraAvisoCancelar();
@@ -189,16 +186,16 @@
         var tipoWs = $('[name="tipoWs"]').val();
         var versaoSoap = $('[name="versaoSoap"]').val();
 
-        if(txtEnderecoWsdl == ''){
+        if (txtEnderecoWsdl == '') {
             alert('Informe o Endereço do WSDL');
             return;
         }
-        if( selOperacao == ''){
+        if (selOperacao == '') {
             alert('Informe a operação');
             return;
         }
 
-        var url = '<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_situacao_lancamento_integracao_mapear&acao_origem=' . $_GET['acao'].'&id_md_lit_situacao_lancamento_integracao='.$idMdLitServicoIntegracao); ?>';
+        var url = '<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_situacao_lancamento_integracao_mapear&acao_origem=' . $_GET['acao'] . '&id_md_lit_situacao_lancamento_integracao=' . $idMdLitServicoIntegracao); ?>';
         var windowFeatures = "location=1,status=1,resizable=1,scrollbars=1";
 
         var modalForm = document.createElement("form");
@@ -251,17 +248,18 @@
         }
 
     }
-    function apagarMapear(){
-        if(document.getElementById('tableParametroEntrada') != null || document.getElementById('tableParametroSaida') !=null){
+
+    function apagarMapear() {
+        if (document.getElementById('tableParametroEntrada') != null || document.getElementById('tableParametroSaida') != null) {
             document.getElementById('tableParametroEntrada').remove();
             document.getElementById('tableParametroSaida').remove();
         }
     }
 
-    function apagarOperacao(){
+    function apagarOperacao() {
         var select = document.getElementById('selOperacao');
         select.options.length = 0;
         document.getElementById('gridOperacao').style.display = "none";
         apagarMapear();
     }
-<?if(0){?></script><?}?>
+</script>

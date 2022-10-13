@@ -72,8 +72,8 @@ class MdLitServicoIntegracaoINT extends InfraINT {
                 $strResultadoParamSaida .= "<input type='hidden' name='hdnArrayDadosSaida[$i]' value='{$arrParametroSaida[$i]}' />";
                 $strResultadoParamSaida .= PaginaSEI::tratarHTML($arrParametroSaida[$i]);
                 $strResultadoParamSaida .= "</td>";
-                $strResultadoParamSaida .= "<td align='center'><select id='campoDestino_$idLinha' name='campoDestino[$arrParametroSaida[$i]]' onchange='mudarcampoDestino(this)' style='width: 80%;'>{$strItensSelCampoDestino}</select></td>";
-                $strResultadoParamSaida .= "<td align='center'><input type='radio'name='chaveUnicaDadosSaida' value='{$arrParametroSaida[$i]}' $checked id='chaveUnicaDadosSaida_{$idLinha}' $disable> </td>";
+                $strResultadoParamSaida .= "<td align='center'><select class='form-control' id='campoDestino_$idLinha' name='campoDestino[$arrParametroSaida[$i]]' onchange='mudarcampoDestino(this)' style='width: 80%;'>{$strItensSelCampoDestino}</select></td>";
+                $strResultadoParamSaida .= "<td align='center'><div class='infraRadioDiv'><input type='radio'name='chaveUnicaDadosSaida' value='{$arrParametroSaida[$i]}' $checked id='chaveUnicaDadosSaida_{$idLinha}' $disable class='infraRadioInput'><label class='infraRadioLabel' for='chaveUnicaDadosSaida_{$idLinha}'></div></label></td>";
 
                 $strResultadoParamSaida .= '</tr>' . "\n";
             }
@@ -98,7 +98,7 @@ class MdLitServicoIntegracaoINT extends InfraINT {
             $strSumarioTabela = 'Tabela de resultado do web-service de listar serviço';
             $strCaptionTabela = 'Serviços';
 
-            $strResultado .= '<table width="95%" id="tableWebServiceServico" class="infraTable" summary="' . $strSumarioTabela . '">' . "\n";
+            $strResultado .= '<table width="99%" id="tableWebServiceServico" class="infraTable" summary="' . $strSumarioTabela . '">' . "\n";
             $strResultado .= '<tr>';
 
             $strResultado .= '<th class="infraTh" width="5%">&nbsp;Código&nbsp;</th>' . "\n";

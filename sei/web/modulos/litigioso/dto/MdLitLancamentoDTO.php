@@ -88,6 +88,8 @@ class MdLitLancamentoDTO extends InfraDTO {
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IntegracaoIdMdLitFuncionalidade', 'id_md_lit_funcionalidade', 'md_lit_integracao');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'IntegracaoNome', 'nome', 'md_lit_integracao');
 
+
+
       //Get dados Situação
       $this->configurarFK('IdMdLitSituacaoLancamento', 'md_lit_situacao_lancamento', 'id_md_lit_situacao_lancamento',InfraDTO::$TIPO_FK_OPCIONAL);
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdMdLitSituacaoLancamentoMdLitSituacaoLancamento', 'id_md_lit_situacao_lancamento', 'md_lit_situacao_lancamento');
@@ -109,14 +111,14 @@ class MdLitLancamentoDTO extends InfraDTO {
 
 
 
-    public function getStrNomeTipoLancamentoComValor(){
+    public function getStrNomeTipoLancamentoComValor($index = null){
         $retorno = '';
         switch ($this->getStrTipoLancamento()){
             case MdLitLancamentoRN::$TIPO_LANCAMENTO_PRINCIPAL : $retorno = 'Principal (R$ '.InfraUtil::formatarDin(InfraUtil::prepararDbl($this->getDblVlrLancamento())).')';
                 break;
             case MdLitLancamentoRN::$TIPO_LANCAMENTO_PRINCIPAL_REDUCAO : $retorno = 'Principal - Redução (R$ '.InfraUtil::formatarDin(InfraUtil::prepararDbl($this->getDblVlrLancamento())).')';
                 break;
-            case MdLitLancamentoRN::$TIPO_LANCAMENTO_MAJORADO : $retorno = 'Majorado (R$ '.InfraUtil::formatarDin(InfraUtil::prepararDbl($this->getDblVlrLancamento())).')';
+            case MdLitLancamentoRN::$TIPO_LANCAMENTO_MAJORADO : $retorno = 'Majorado '.$index.' (R$ '.InfraUtil::formatarDin(InfraUtil::prepararDbl($this->getDblVlrLancamento())).')';
                 break;
         }
         return $retorno;

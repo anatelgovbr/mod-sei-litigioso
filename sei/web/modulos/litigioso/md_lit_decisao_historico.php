@@ -27,10 +27,10 @@ try {
         $strParametros .= '&arvore=' . $_GET['arvore'];
     }
 
-    $arrComandos        = array();
-    $idMdLitControle    = null;
-    $bolCadastro        = false;
-    $arrTabela          = array();
+    $arrComandos = array();
+    $idMdLitControle = null;
+    $bolCadastro = false;
+    $arrTabela = array();
 
     //colocando a pagina sem menu e titulo inicial
     PaginaSEI::getInstance()->setTipoPagina(InfraPagina::$TIPO_PAGINA_SIMPLES);
@@ -39,7 +39,7 @@ try {
             $strTitulo = 'Histórico Geral de Decisões';
 
             $arrComandos[] = '<button type="button" accesskey="I" name="sbmImprimir" value="Imprimir" onclick="window.print()" class="infraButton noprint"><span class="infraTeclaAtalho">I</span>mprimir</button>';
-            $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Fechar" onclick="window.close();" class="infraButton noprint"><span class="infraTeclaAtalho">F</span>echar</button>';
+            $arrComandos[] = '<button type="button" accesskey="C" id="btnFecharSelecao" value="Fechar" onclick="window.close();" class="infraButton noprint">Fe<span class="infraTeclaAtalho">c</span>har</button>';
             $idMdLitControle = $_GET['id_md_lit_controle'];
 
 
@@ -51,12 +51,12 @@ try {
             $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retStrConduta();
             $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setNumIdControleLitigioso($idMdLitControle);
 
-            $objRelDispositivoNormativoCondutaControleLitigiosoRN     = new MdLitRelDispositivoNormativoCondutaControleRN();
+            $objRelDispositivoNormativoCondutaControleLitigiosoRN = new MdLitRelDispositivoNormativoCondutaControleRN();
             $arrObjRelDispositivoNormativoCondutaControleLitigiosoDTO = $objRelDispositivoNormativoCondutaControleLitigiosoRN->listar($objRelDispositivoNormativoCondutaControleLitigiosoDTO);
             $arrObjMdLitDecisaoDTO = array();
 
-            if(count($arrObjRelDispositivoNormativoCondutaControleLitigiosoDTO)){
-                foreach ($arrObjRelDispositivoNormativoCondutaControleLitigiosoDTO as $objRelDispositivoNormativoCondutaControleLitigiosoDTO){
+            if (count($arrObjRelDispositivoNormativoCondutaControleLitigiosoDTO)) {
+                foreach ($arrObjRelDispositivoNormativoCondutaControleLitigiosoDTO as $objRelDispositivoNormativoCondutaControleLitigiosoDTO) {
                     $objMdLitDecisaoDTO = new MdLitDecisaoDTO();
                     $objMdLitDecisaoDTO->retNumIdMdLitDecisao();
                     $objMdLitDecisaoDTO->retStrProtocoloFormatadoDocumento();
@@ -90,15 +90,15 @@ try {
 }
 $strTbCadastroDecisao = '';
 $numRegistros = count($arrObjRelDispositivoNormativoCondutaControleLitigiosoDTO);
-if($numRegistros > 0){
+if ($numRegistros > 0) {
 
     $strCaptionTabela = 'Lista de Infrações selecionadas';
 
 
-    foreach ($arrObjRelDispositivoNormativoCondutaControleLitigiosoDTO as $idLinha =>$objRelDispositivoNormativoCondutaControleLitigiosoDTO){
-        $strTbCadastroDecisao .= '<table width="98%" id="tableDadosComplementarInteressado" class="infraTable" summary="' . $strCaptionTabela . '">' . "\n";
+    foreach ($arrObjRelDispositivoNormativoCondutaControleLitigiosoDTO as $idLinha => $objRelDispositivoNormativoCondutaControleLitigiosoDTO) {
+        $strTbCadastroDecisao .= '<table width="100%" id="tableDadosComplementarInteressado" class="infraTable" summary="' . $strCaptionTabela . '">' . "\n";
         $strTbCadastroDecisao .= '<tr class="infraTrEscura">';
-        $strTbCadastroDecisao .= '<th class="tabela-th" colspan="10">'.PaginaSEI::tratarHTML($objRelDispositivoNormativoCondutaControleLitigiosoDTO->getStrInfracao()).'</th>';
+        $strTbCadastroDecisao .= '<th class="tabela-th" colspan="10">' . PaginaSEI::tratarHTML($objRelDispositivoNormativoCondutaControleLitigiosoDTO->getStrInfracao()) . '</th>';
         $strTbCadastroDecisao .= '</tr>';
 
         $strTbCadastroDecisao .= '<tr>';
@@ -167,8 +167,8 @@ PaginaSEI::getInstance()->abrirStyle();
 ?>
 @media print{
 .noprint{
-    display:none;
-    }
+display:none;
+}
 }
 
 th.tabela-th{font-size: 1em;font-weight: bold;color: #fff;background-color: #909090;border-spacing: 0;padding: 10px;}
@@ -177,33 +177,33 @@ table.infraTable{margin-bottom: 10px;}
 PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->abrirJavaScript();
-if(0){?><script><?}?>
-    function inicializar(){
+if (0){
+?>
+<script><?}?>
+    function inicializar() {
 
     }
 
-    function OnSubmitForm(){
-        if(!validar())
+    function OnSubmitForm() {
+        if (!validar())
             return false;
 
     }
-<? if(0){?></script><?}?>
+    <? if (0){ ?></script><? } ?>
 <?
 PaginaSEI::getInstance()->fecharJavaScript();
 PaginaSEI::getInstance()->fecharHead();
 PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 
 ?>
-<form id="frmCadastroDecisao" method="post" onsubmit="return OnSubmitForm();" action="<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'] . '&id_md_lit_controle='.$_GET['id_md_lit_controle'] ) ?>">
-    <?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);?>
-    <?php PaginaSEI::getInstance()->abrirAreaDados(null); ?>
-
-        <div id="div-tabela-historico">
-        <?
-        echo $strTbCadastroDecisao;
-        ?>
+<form id="frmCadastroDecisao" method="post" onsubmit="return OnSubmitForm();"
+      action="<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'] . '&id_md_lit_controle=' . $_GET['id_md_lit_controle']) ?>">
+    <?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos); ?>
+    <div class="row linha">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <? echo $strTbCadastroDecisao; ?>
         </div>
-    <?php PaginaSEI::getInstance()->fecharAreaDados(); ?>
+    </div>
 </form>
 <?
 PaginaSEI::getInstance()->fecharBody();

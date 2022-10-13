@@ -132,7 +132,7 @@ function salvar(){
 function mudarcampoDestino(element){
     if(element.value != ''){
         var row = document.getElementById('tableParametroSaida').rows[element.parentNode.parentNode.rowIndex];
-        row.cells[2].children[0].disabled = false;
+        row.cells[2].children[0].children[0].disabled = false;
         for (var i = 0; i < document.getElementById('tableParametroSaida').rows.length; i++){
             if(i != 0 && i != element.parentNode.parentNode.rowIndex){
                 var select = document.getElementById('campoDestino_'+(i-1));
@@ -148,8 +148,8 @@ function mudarcampoDestino(element){
 
     }else{
         var row = document.getElementById('tableParametroSaida').rows[element.parentNode.parentNode.rowIndex];
-        row.cells[2].children[0].disabled = true;
-        row.cells[2].children[0].checked = false;
+        row.cells[2].children[0].children[0].disabled = true;
+        row.cells[2].children[0].children[0].checked = false;
     }
 }
 
@@ -171,15 +171,13 @@ PaginaSEI::getInstance()->abrirAreaDados('');
 ?>
 <div class="clear-margin-3"></div>
 <?php $strTolTipEnd = 'O Sistema correspondente ao WSDL indicado deve estar previamente cadastrado no menu Administração > Sistemas e com Serviço também cadastrado com os IPs pertinentes.' ?>
-<div class="grid grid_10">
-    <?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos); ?>
-    <div class="clear">&nbsp;</div>
+<?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos); ?>
+<div class="clear">&nbsp;</div>
 
-    <?
-    PaginaSEI::getInstance()->montarAreaTabela($arrMontarTabelaParamSaida['strResultado'], $arrMontarTabelaParamSaida['numRegistros']);
-    ?>
+<?
+PaginaSEI::getInstance()->montarAreaTabela($arrMontarTabelaParamSaida['strResultado'], $arrMontarTabelaParamSaida['numRegistros']);
+?>
 
-</div>
 
 <?php PaginaSEI::getInstance()->fecharAreaDados(); ?>
 <?php PaginaSEI::getInstance()->fecharBody(); ?>

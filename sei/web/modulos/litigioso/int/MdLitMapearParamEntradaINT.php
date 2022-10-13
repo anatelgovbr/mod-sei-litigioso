@@ -53,12 +53,12 @@ class MdLitMapearParamEntradaINT extends InfraINT {
           $strSumarioTabela = 'Tabela de configuração dos dados de entrada do web-service.';
           $strCaptionTabela = 'Dados de entrada';
 
-          $strResultadoParamEntrada .= '<table width="90%" id="tableParametroEntrada" class="infraTable" summary="' . $strSumarioTabela . '">' . "\n";
+          $strResultadoParamEntrada .= '<table width="100%" id="tableParametroEntrada" class="infraTable" summary="' . $strSumarioTabela . '">' . "\n";
           $strResultadoParamEntrada .= '<tr>';
 
-          $strResultadoParamEntrada .= '<th class="infraTh" width="20%">&nbsp;Dados de Entrada no Webservice&nbsp;</th>' . "\n";
-          $strResultadoParamEntrada .= '<th class="infraTh" width="20%">&nbsp;Campo de Origem no SEI&nbsp;</th>' . "\n";
-          $strResultadoParamEntrada .= '<th class="infraTh" width="5%">&nbsp;Chave Única da Integração&nbsp;</th>' . "\n";
+          $strResultadoParamEntrada .= '<th class="infraTh" width="30%" style="min-width: 261px">&nbsp;Dados de Entrada no Webservice&nbsp;</th>' . "\n";
+          $strResultadoParamEntrada .= '<th class="infraTh" width="50%" style="min-width: 402px">&nbsp;Campo de Origem no SEI&nbsp;</th>' . "\n";
+          $strResultadoParamEntrada .= '<th class="infraTh" width="15%">&nbsp;Chave Única da Integração&nbsp;</th>' . "\n";
           $strResultadoParamEntrada .= '</tr>' . "\n";
           $strCssTr = '';
           for ($i = 0; $i < $numRegistrosParametroEntrada; $i++) {
@@ -99,9 +99,9 @@ class MdLitMapearParamEntradaINT extends InfraINT {
               $strResultadoParamEntrada .= "<input type='hidden' name='hdnArrayDadosEntrada[$i]' value='{$arrParametroEntrada[$i]}' />";
               $strResultadoParamEntrada .= PaginaSEI::tratarHTML($arrParametroEntrada[$i]);
               $strResultadoParamEntrada .= "</td>";
-              $strResultadoParamEntrada .= "<td align='center'><select id='nomeFuncionalDadosEntrada_$i' class='infraSelect' name='nomeFuncionalDadosEntrada[$arrParametroEntrada[$i]]' onchange='mudarNomeFuncionalDadosEntrada(this), verificarCodigoReceita(this)' style='width: 80%;'>{$strItensSelNomeFuncional}</select>";
+              $strResultadoParamEntrada .= "<td align='center'><select id='nomeFuncionalDadosEntrada_$i' class='infraSelect form-control' name='nomeFuncionalDadosEntrada[$arrParametroEntrada[$i]]' onchange='mudarNomeFuncionalDadosEntrada(this), verificarCodigoReceita(this)' style='width: 80%;'>{$strItensSelNomeFuncional}</select>";
               $strResultadoParamEntrada.= $tabelaCodigoReceita."</td>";
-              $strResultadoParamEntrada .= "<td align='center'><input type='radio'name='chaveUnicaDadosEntrada' value='$arrParametroEntrada[$i]' id='chaveUnicaDadosEntrada_{$idLinha}' $disable $checked> </td>";
+              $strResultadoParamEntrada .= "<td align='center'><input type='radio' class='infraRadio' name='chaveUnicaDadosEntrada' value='$arrParametroEntrada[$i]' id='chaveUnicaDadosEntrada_{$idLinha}' $disable $checked> </td>";
 
               $strResultadoParamEntrada .= '</tr>' . "\n";
           }

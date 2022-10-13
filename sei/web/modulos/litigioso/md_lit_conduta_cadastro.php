@@ -1,186 +1,150 @@
 <?
-    /**
-     * ANATEL
-     *
-     * 15/02/2016 - criado por jaqueline.mendes@cast.com.br - CAST
-     *
-     */
+/**
+ * ANATEL
+ *
+ * 15/02/2016 - criado por jaqueline.mendes@cast.com.br - CAST
+ *
+ */
 
-    try {
-        require_once dirname(__FILE__) . '/../../SEI.php';
+try {
+    require_once dirname(__FILE__) . '/../../SEI.php';
 
-        session_start();
+    session_start();
 
-        SessaoSEI::getInstance()->validarLink();
+    SessaoSEI::getInstance()->validarLink();
 
-        PaginaSEI::getInstance()->verificarSelecao('md_lit_conduta_selecionar');
+    PaginaSEI::getInstance()->verificarSelecao('md_lit_conduta_selecionar');
 
-        SessaoSEI::getInstance()->validarPermissao($_GET['acao']);
+    SessaoSEI::getInstance()->validarPermissao($_GET['acao']);
 
-        $objCondutaLitigiosoDTO = new MdLitCondutaDTO();
+    $objCondutaLitigiosoDTO = new MdLitCondutaDTO();
 
-        $strDesabilitar = '';
+    $strDesabilitar = '';
 
-        $arrComandos = array();
+    $arrComandos = array();
 
-        switch ($_GET['acao']) {
-            case 'md_lit_conduta_cadastrar':
+    switch ($_GET['acao']) {
+        case 'md_lit_conduta_cadastrar':
 
-                $strTitulo = 'Nova Conduta';
+            $strTitulo = 'Nova Conduta';
 
-                $arrComandos[] = '<button type="submit" accesskey="S" name="sbmCadastrarCondutaLitigioso" id="sbmCadastrarCondutaLitigioso" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
-                $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&id_tipo_processo_litigioso=' . $_GET['id_tipo_processo_litigioso'] . '&acao_origem=' . $_GET['acao'])) . '\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
+            $arrComandos[] = '<button type="submit" accesskey="S" name="sbmCadastrarCondutaLitigioso" id="sbmCadastrarCondutaLitigioso" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
+            $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&id_tipo_processo_litigioso=' . $_GET['id_tipo_processo_litigioso'] . '&acao_origem=' . $_GET['acao'])) . '\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
 
-                $objCondutaLitigiosoDTO->setNumIdCondutaLitigioso(null);
-                $objCondutaLitigiosoDTO->setStrNome($_POST['txtNome']);
+            $objCondutaLitigiosoDTO->setNumIdCondutaLitigioso(null);
+            $objCondutaLitigiosoDTO->setStrNome($_POST['txtNome']);
 
-                if (isset($_POST['sbmCadastrarCondutaLitigioso'])) {
-                    try {
-                        $objCondutaLitigiosoRN  = new MdLitCondutaRN();
-                        $objCondutaLitigiosoDTO = $objCondutaLitigiosoRN->cadastrar($objCondutaLitigiosoDTO);
-                        PaginaSEI::getInstance()->adicionarMensagem('Os dados cadastrados foram salvos com sucesso.');
-                        header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?id_tipo_processo_litigioso=' . $_POST['hdnIdTipoControleLitigioso'] . '&acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'] . '&id_conduta_litigioso=' . $objCondutaLitigiosoDTO->getNumIdCondutaLitigioso() . PaginaSEI::getInstance()->montarAncora($objCondutaLitigiosoDTO->getNumIdCondutaLitigioso())));
-                        die;
-                    } catch (Exception $e) {
-                        PaginaSEI::getInstance()->processarExcecao($e);
-                    }
+            if (isset($_POST['sbmCadastrarCondutaLitigioso'])) {
+                try {
+                    $objCondutaLitigiosoRN = new MdLitCondutaRN();
+                    $objCondutaLitigiosoDTO = $objCondutaLitigiosoRN->cadastrar($objCondutaLitigiosoDTO);
+                    PaginaSEI::getInstance()->adicionarMensagem('Os dados cadastrados foram salvos com sucesso.');
+                    header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?id_tipo_processo_litigioso=' . $_POST['hdnIdTipoControleLitigioso'] . '&acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'] . '&id_conduta_litigioso=' . $objCondutaLitigiosoDTO->getNumIdCondutaLitigioso() . PaginaSEI::getInstance()->montarAncora($objCondutaLitigiosoDTO->getNumIdCondutaLitigioso())));
+                    die;
+                } catch (Exception $e) {
+                    PaginaSEI::getInstance()->processarExcecao($e);
                 }
-                break;
+            }
+            break;
 
-            case 'md_lit_conduta_alterar':
-                $strTitulo      = 'Alterar Conduta';
-                $arrComandos[]  = '<button type="submit" accesskey="S" name="sbmAlterarCondutaLitigioso" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
-                $strDesabilitar = 'disabled="disabled"';
+        case 'md_lit_conduta_alterar':
+            $strTitulo = 'Alterar Conduta';
+            $arrComandos[] = '<button type="submit" accesskey="S" name="sbmAlterarCondutaLitigioso" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
+            $strDesabilitar = 'disabled="disabled"';
 
-                if (isset($_GET['id_conduta_litigioso'])) {
+            if (isset($_GET['id_conduta_litigioso'])) {
 
-                    $objCondutaLitigiosoDTO->setNumIdCondutaLitigioso($_GET['id_conduta_litigioso']);
-                    $objCondutaLitigiosoDTO->retTodos();
-                    $objCondutaLitigiosoRN  = new MdLitCondutaRN();
-                    $objCondutaLitigiosoDTO = $objCondutaLitigiosoRN->consultar($objCondutaLitigiosoDTO);
-
-                    if ($objCondutaLitigiosoDTO == null) {
-                        throw new InfraException("Registro não encontrado.");
-                    }
-
-                } else {
-
-                    $objCondutaLitigiosoDTO->setNumIdCondutaLitigioso($_POST['hdnIdCondutaLitigioso']);
-                    $objCondutaLitigiosoDTO->setStrNome($_POST['txtNome']);
-
-                }
-
-                $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?id_tipo_processo_litigioso=' . $_GET['id_tipo_processo_litigioso'] . '&acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'] . PaginaSEI::getInstance()->montarAncora($objCondutaLitigiosoDTO->getNumIdCondutaLitigioso()))) . '\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
-
-                if (isset($_POST['sbmAlterarCondutaLitigioso'])) {
-                    try {
-                        $objCondutaLitigiosoRN = new MdLitCondutaRN();
-                        $objCondutaLitigiosoRN->alterar($objCondutaLitigiosoDTO);
-                        PaginaSEI::getInstance()->adicionarMensagem('Os dados foram alterados com sucesso.');
-                        header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?id_tipo_processo_litigioso=' . $_POST['hdnIdTipoControleLitigioso'] . '&acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'] . PaginaSEI::getInstance()->montarAncora($objCondutaLitigiosoDTO->getNumIdCondutaLitigioso())));
-                        die;
-                    } catch (Exception $e) {
-                        PaginaSEI::getInstance()->processarExcecao($e);
-                    }
-                }
-                break;
-
-            case 'md_lit_conduta_consultar':
-                $strTitulo     = 'Consultar Conduta';
-                $arrComandos[] = '<button type="button" accesskey="F" name="btnFechar" value="Fechar" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?id_tipo_processo_litigioso=' . $_GET['id_tipo_processo_litigioso'] . '&acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'] . PaginaSEI::getInstance()->montarAncora($_GET['id_conduta_litigioso']))) . '\';" class="infraButton"><span class="infraTeclaAtalho">F</span>echar</button>';
                 $objCondutaLitigiosoDTO->setNumIdCondutaLitigioso($_GET['id_conduta_litigioso']);
-                $objCondutaLitigiosoDTO->setBolExclusaoLogica(false);
                 $objCondutaLitigiosoDTO->retTodos();
-                $objCondutaLitigiosoRN  = new MdLitCondutaRN();
+                $objCondutaLitigiosoRN = new MdLitCondutaRN();
                 $objCondutaLitigiosoDTO = $objCondutaLitigiosoRN->consultar($objCondutaLitigiosoDTO);
-                if ($objCondutaLitigiosoDTO === null) {
+
+                if ($objCondutaLitigiosoDTO == null) {
                     throw new InfraException("Registro não encontrado.");
                 }
-                break;
 
-            default:
-                throw new InfraException("Ação '" . $_GET['acao'] . "' não reconhecida.");
-        }
+            } else {
 
+                $objCondutaLitigiosoDTO->setNumIdCondutaLitigioso($_POST['hdnIdCondutaLitigioso']);
+                $objCondutaLitigiosoDTO->setStrNome($_POST['txtNome']);
 
-    } catch (Exception $e) {
-        PaginaSEI::getInstance()->processarExcecao($e);
+            }
+
+            $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?id_tipo_processo_litigioso=' . $_GET['id_tipo_processo_litigioso'] . '&acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'] . PaginaSEI::getInstance()->montarAncora($objCondutaLitigiosoDTO->getNumIdCondutaLitigioso()))) . '\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
+
+            if (isset($_POST['sbmAlterarCondutaLitigioso'])) {
+                try {
+                    $objCondutaLitigiosoRN = new MdLitCondutaRN();
+                    $objCondutaLitigiosoRN->alterar($objCondutaLitigiosoDTO);
+                    PaginaSEI::getInstance()->adicionarMensagem('Os dados foram alterados com sucesso.');
+                    header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?id_tipo_processo_litigioso=' . $_POST['hdnIdTipoControleLitigioso'] . '&acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'] . PaginaSEI::getInstance()->montarAncora($objCondutaLitigiosoDTO->getNumIdCondutaLitigioso())));
+                    die;
+                } catch (Exception $e) {
+                    PaginaSEI::getInstance()->processarExcecao($e);
+                }
+            }
+            break;
+
+        case 'md_lit_conduta_consultar':
+            $strTitulo = 'Consultar Conduta';
+            $arrComandos[] = '<button type="button" accesskey="F" name="btnFechar" value="Fechar" onclick="location.href=\'' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?id_tipo_processo_litigioso=' . $_GET['id_tipo_processo_litigioso'] . '&acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'] . PaginaSEI::getInstance()->montarAncora($_GET['id_conduta_litigioso']))) . '\';" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
+            $objCondutaLitigiosoDTO->setNumIdCondutaLitigioso($_GET['id_conduta_litigioso']);
+            $objCondutaLitigiosoDTO->setBolExclusaoLogica(false);
+            $objCondutaLitigiosoDTO->retTodos();
+            $objCondutaLitigiosoRN = new MdLitCondutaRN();
+            $objCondutaLitigiosoDTO = $objCondutaLitigiosoRN->consultar($objCondutaLitigiosoDTO);
+            if ($objCondutaLitigiosoDTO === null) {
+                throw new InfraException("Registro não encontrado.");
+            }
+            break;
+
+        default:
+            throw new InfraException("Ação '" . $_GET['acao'] . "' não reconhecida.");
     }
 
-    PaginaSEI::getInstance()->montarDocType();
-    PaginaSEI::getInstance()->abrirHtml();
-    PaginaSEI::getInstance()->abrirHead();
-    PaginaSEI::getInstance()->montarMeta();
-    PaginaSEI::getInstance()->montarTitle(':: ' . PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo . ' ::');
-    PaginaSEI::getInstance()->montarStyle();
-    PaginaSEI::getInstance()->abrirStyle();
-?>
-#lblNome {position:absolute;left:0%;top:0%;width:50%;}
-#txtNome {position:absolute;left:0%;top:6%;width:50%;}
-#lblDescricao {position:absolute;left:0%;top:14%;width:50%;}
-#txtDescricao {position:absolute;left:0%;top:20%;width:75%;}
 
-<?
-    PaginaSEI::getInstance()->fecharStyle();
-    PaginaSEI::getInstance()->montarJavaScript();
-    PaginaSEI::getInstance()->abrirJavaScript();
-?>
+} catch (Exception $e) {
+    PaginaSEI::getInstance()->processarExcecao($e);
+}
 
-
-<?
-    PaginaSEI::getInstance()->fecharJavaScript();
-    PaginaSEI::getInstance()->fecharHead();
-    PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
+PaginaSEI::getInstance()->montarDocType();
+PaginaSEI::getInstance()->abrirHtml();
+PaginaSEI::getInstance()->abrirHead();
+PaginaSEI::getInstance()->montarMeta();
+PaginaSEI::getInstance()->montarTitle(':: ' . PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo . ' ::');
+PaginaSEI::getInstance()->montarStyle();
+PaginaSEI::getInstance()->abrirStyle();
+PaginaSEI::getInstance()->fecharStyle();
+PaginaSEI::getInstance()->montarJavaScript();
+PaginaSEI::getInstance()->abrirJavaScript();
+PaginaSEI::getInstance()->fecharJavaScript();
+PaginaSEI::getInstance()->fecharHead();
+PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 ?>
+<?php PaginaSEI::getInstance()->abrirAreaDados(); ?>
 <form id="frmCondutaCadastro" method="post" onsubmit="return OnSubmitForm();"
       action="<?= PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'])) ?>">
     <?
-        PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
-        PaginaSEI::getInstance()->abrirAreaDados('30em');
+    PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
     ?>
-    <label id="lblNome" for="txtNome" accesskey="f" class="infraLabelObrigatorio">Conduta:</label>
-    <input type="text" id="txtNome" name="txtNome" class="infraText"
-           value="<?= PaginaSEI::tratarHTML($objCondutaLitigiosoDTO->getStrNome()); ?>"
-           onkeypress="return infraMascaraTexto(this,event,500);" maxlength="500"
-           tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-8 col-xl-6">
+            <div class="form-group">
+                <label id="lblNome" for="txtNome" accesskey="f" class="infraLabelObrigatorio">Conduta:</label>
+                <input type="text" id="txtNome" name="txtNome" class="infraText form-control"
+                    value="<?= PaginaSEI::tratarHTML($objCondutaLitigiosoDTO->getStrNome()); ?>"
+                    onkeypress="return infraMascaraTexto(this,event,500);" maxlength="500"
+                    tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
 
-    <input type="hidden" id="hdnIdCondutaLitigioso" name="hdnIdCondutaLitigioso"
-           value="<?= $objCondutaLitigiosoDTO->getNumIdCondutaLitigioso(); ?>"/>
-    <?
-        PaginaSEI::getInstance()->fecharAreaDados();
-    ?>
+                <input type="hidden" id="hdnIdCondutaLitigioso" name="hdnIdCondutaLitigioso"
+                    value="<?= $objCondutaLitigiosoDTO->getNumIdCondutaLitigioso(); ?>"/>
+            </div>
+        </div>
+    </div>
 </form>
 <?
-    PaginaSEI::getInstance()->fecharBody();
-    PaginaSEI::getInstance()->fecharHtml();
+require_once("md_lit_conduta_cadastro_js.php");
+PaginaSEI::getInstance()->fecharBody();
+PaginaSEI::getInstance()->fecharHtml();
 ?>
 
-<script type="text/javascript">
-    function inicializar() {
-        if ('<?=$_GET['acao']?>' == 'md_lit_conduta_cadastrar') {
-            document.getElementById('txtNome').focus();
-        } else if ('<?=$_GET['acao']?>' == 'md_lit_conduta_consultar') {
-            infraDesabilitarCamposAreaDados();
-        } else {
-            document.getElementById('btnCancelar').focus();
-        }
-        infraEfeitoTabelas();
-    }
-
-    function validarCadastro() {
-        if (infraTrim(document.getElementById('txtNome').value) == '') {
-            alert('Informe a Conduta.');
-            document.getElementById('txtNome').focus();
-            return false;
-        }
-
-
-        return true;
-    }
-
-
-    function OnSubmitForm() {
-        return validarCadastro();
-    }
-
-</script>

@@ -75,37 +75,41 @@
 
             $objMdLitEspecieDecisaoRN = new MdLitEspecieDecisaoRN();
             $objMdLitEspecieDecisaoDTO = $objMdLitEspecieDecisaoRN->consultar($objMdLitEspecieDecisaoDTO);
-            $xml .= "<itens>";
+            if($objMdLitEspecieDecisaoDTO) {
+                $xml .= "<itens>";
 
-            $xml .= '<IdEspecieLitigioso>'.$objMdLitEspecieDecisaoDTO->getNumIdEspecieLitigioso()."</IdEspecieLitigioso>\n";
-            $xml .= '<Nome>'.$objMdLitEspecieDecisaoDTO->getStrNome()."</Nome>\n";
-            $xml .= '<SinGestaoMulta>'.$objMdLitEspecieDecisaoDTO->getStrSinGestaoMulta()."</SinGestaoMulta>\n";
-            $xml .= '<SinIndicacaoPrazo>'.$objMdLitEspecieDecisaoDTO->getStrSinIndicacaoPrazo()."</SinIndicacaoPrazo>\n";
-            $xml .= '<SinIndicacaoObrigacoes>'.$objMdLitEspecieDecisaoDTO->getStrSinIndicacaoObrigacoes()."</SinIndicacaoObrigacoes>\n";
-            $xml .= '<SinAtivo>'.$objMdLitEspecieDecisaoDTO->getStrSinIndicacaoObrigacoes()."</SinAtivo>\n";
-            $xml .= '<SinIndicacaoValor>'.$objMdLitEspecieDecisaoDTO->getStrSinIndicacaoValor()."</SinIndicacaoValor>\n";
+                $xml .= '<IdEspecieLitigioso>' . $objMdLitEspecieDecisaoDTO->getNumIdEspecieLitigioso() . "</IdEspecieLitigioso>\n";
+                $xml .= '<Nome>' . $objMdLitEspecieDecisaoDTO->getStrNome() . "</Nome>\n";
+                $xml .= '<SinGestaoMulta>' . $objMdLitEspecieDecisaoDTO->getStrSinGestaoMulta() . "</SinGestaoMulta>\n";
+                $xml .= '<SinIndicacaoPrazo>' . $objMdLitEspecieDecisaoDTO->getStrSinIndicacaoPrazo() . "</SinIndicacaoPrazo>\n";
+                $xml .= '<SinIndicacaoObrigacoes>' . $objMdLitEspecieDecisaoDTO->getStrSinIndicacaoObrigacoes() . "</SinIndicacaoObrigacoes>\n";
+                $xml .= '<SinAtivo>' . $objMdLitEspecieDecisaoDTO->getStrSinIndicacaoObrigacoes() . "</SinAtivo>\n";
+                $xml .= '<SinIndicacaoValor>'.$objMdLitEspecieDecisaoDTO->getStrSinIndicacaoValor()."</SinIndicacaoValor>\n";
 
-            if($objMdLitEspecieDecisaoDTO->getStrSinIndicacaoObrigacoes() == 'S'){
-                $objMdLitRelEspecieDecisaoObrigacaoDTO = new MdLitRelEspecieDecisaoObrigacaoDTO();
-                $objMdLitRelEspecieDecisaoObrigacaoDTO->retTodos(true);
-                $objMdLitRelEspecieDecisaoObrigacaoDTO->setNumIdEspecieDecisaoLitigioso($objMdLitEspecieDecisaoDTO->getNumIdEspecieLitigioso());
+                if ($objMdLitEspecieDecisaoDTO->getStrSinIndicacaoObrigacoes() == 'S') {
+                    $objMdLitRelEspecieDecisaoObrigacaoDTO = new MdLitRelEspecieDecisaoObrigacaoDTO();
+                    $objMdLitRelEspecieDecisaoObrigacaoDTO->retTodos(true);
+                    $objMdLitRelEspecieDecisaoObrigacaoDTO->setNumIdEspecieDecisaoLitigioso($objMdLitEspecieDecisaoDTO->getNumIdEspecieLitigioso());
 
-                $objMdLitRelEspecieDecisaoObrigacaoRN = new MdLitRelEspecieDecisaoObrigacaoRN();
-                $arrObjMdLitRelEspecieDecisaoObrigacaoDTO = $objMdLitRelEspecieDecisaoObrigacaoRN->listar($objMdLitRelEspecieDecisaoObrigacaoDTO);
+                    $objMdLitRelEspecieDecisaoObrigacaoRN = new MdLitRelEspecieDecisaoObrigacaoRN();
+                    $arrObjMdLitRelEspecieDecisaoObrigacaoDTO = $objMdLitRelEspecieDecisaoObrigacaoRN->listar($objMdLitRelEspecieDecisaoObrigacaoDTO);
 
-                if($arrObjMdLitRelEspecieDecisaoObrigacaoDTO){
-                    $xml .= "<ObrigacoesLista>";
-                    foreach ($arrObjMdLitRelEspecieDecisaoObrigacaoDTO as $objMdLitRelEspecieDecisaoObrigacaoDTO){
-                        $xml .= "<obrigacao>\n";
-                        $xml .= '<IdObrigacaoLitigioso>'.$objMdLitRelEspecieDecisaoObrigacaoDTO->getNumIdObrigacaoLitigioso()."</IdObrigacaoLitigioso>\n";
-                        $xml .= '<NomeObrigacao>'.$objMdLitRelEspecieDecisaoObrigacaoDTO->getStrNomeObrigacao()."</NomeObrigacao>\n";
-                        $xml .= "</obrigacao>\n";
+                    if ($arrObjMdLitRelEspecieDecisaoObrigacaoDTO) {
+                        $xml .= "<ObrigacoesLista>";
+                        foreach ($arrObjMdLitRelEspecieDecisaoObrigacaoDTO as $objMdLitRelEspecieDecisaoObrigacaoDTO) {
+                            $xml .= "<obrigacao>\n";
+                            $xml .= '<IdObrigacaoLitigioso>' . $objMdLitRelEspecieDecisaoObrigacaoDTO->getNumIdObrigacaoLitigioso() . "</IdObrigacaoLitigioso>\n";
+                            $xml .= '<NomeObrigacao>' . $objMdLitRelEspecieDecisaoObrigacaoDTO->getStrNomeObrigacao() . "</NomeObrigacao>\n";
+                            $xml .= "</obrigacao>\n";
 
+                        }
+                        $xml .= "</ObrigacoesLista>\n";
                     }
-                    $xml .= "</ObrigacoesLista>\n";
                 }
+                $xml .= "</itens>";
+            } else {
+                $xml .= "<vazio></vazio>";
             }
-            $xml .= "</itens>";
             return $xml;
         }
 
