@@ -78,12 +78,11 @@ class MdLitAtualizadorSipRN extends InfraRN
             if (!(BancoSip::getInstance() instanceof InfraMySql) &&
                 !(BancoSip::getInstance() instanceof InfraSqlServer) &&
                 !(BancoSip::getInstance() instanceof InfraOracle)) {
-
                 $this->finalizar('BANCO DE DADOS NÃO SUPORTADO: ' . get_parent_class(BancoSip::getInstance()), true);
             }
 
             //testando versao do framework
-            $numVersaoInfraRequerida = '1.600.0';
+            $numVersaoInfraRequerida = '1.603.5';
             $versaoInfraFormatada = (int)str_replace('.', '', VERSAO_INFRA);
             $versaoInfraReqFormatada = (int)str_replace('.', '', $numVersaoInfraRequerida);
 
