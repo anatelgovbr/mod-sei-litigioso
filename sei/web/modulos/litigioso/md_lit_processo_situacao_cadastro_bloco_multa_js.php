@@ -217,6 +217,7 @@
                     //Se não existe Crédito Lançado
                     if (sinExibeCancelamento == 'S' && creditoLancado != '0.00' && isCancelar == '0' && (hdnSinSuspenso == 'N' || hdnSinSuspensoLancamento == 'N')) {
                         document.getElementById('btnCancelarLancamento').style.display = '';
+                        document.getElementById('hdnCreditosProcesso').value = document.getElementById('selCreditosProcesso').value;
                         document.getElementById('btnCancelarLancamentoAtivo').value = 'S';
                     }
 
@@ -447,7 +448,6 @@
             680,
             280);
     }
-
 
     function abrirModalVincularLancamento(element) {
         var url = element.getAttribute('data-url');
