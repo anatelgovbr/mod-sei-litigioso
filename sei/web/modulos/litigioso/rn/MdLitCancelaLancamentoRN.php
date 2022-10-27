@@ -319,7 +319,7 @@ class MdLitCancelaLancamentoRN extends InfraRN {
     }
 
     private function _montarParametroEntradaCancelamentoCredito($objMdLitIntegracaoDTO, $post){
-        $idLancamento = $post['selCreditosProcesso'];
+        $idLancamento = $post['selCreditosProcesso'] ? $post['selCreditosProcesso'] : $post['hdnCreditosProcesso'];
         $objMdLitLancamentoRN = new MdLitLancamentoRN();
         $montarParametroEntrada = array();
         $objMdLitLancamentoDTO = $objMdLitLancamentoRN->retornaObjLancamento($idLancamento);
