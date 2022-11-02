@@ -294,7 +294,6 @@
         }
     }
 
-
     function changePrescricao(el, chamadaAlt) {
         var objTxtInt = document.getElementById('txtDtIntercorrente');
         var objTxtQuinq = document.getElementById('txtDtQuinquenal');
@@ -463,7 +462,6 @@
 
     }
 
-
     function addSituacao() {
 
         var tpInclusao = isAlterarSit && !isAlterarRegNovo ? 'A' : 'N';
@@ -621,10 +619,10 @@
             }
 
             replicarDataParaFieldsetGestaoMulta();
-
+            removerBotaoExcluirTela();
+            adicionarExcluirGrid()
         }
     }
-
 
     function replicarDataParaFieldsetGestaoMulta() {
         var isConclusiva = $.trim(document.getElementById('hdnStrSituacao').value) == 'Conclusiva';
@@ -828,7 +826,7 @@
     function validarOrdemExclusao(ordemEx) {
         var ordemMaior = objTabelaDinamicaSituacao.verificaOrdemMaior();
 
-        if (ordemMaior != ordemEx) {
+        if (Number.isInteger(ordemEx) && ordemMaior != ordemEx) {
             alert('A exclusão das Situações devem obdecer as ordens parametrizadas na Administração.');
             return false;
         }
@@ -995,7 +993,6 @@
             return null;
         };
 
-
         objTabelaDinamicaSituacao.alterar = function (arr) {
             limparCamposRelacionados();
 
@@ -1074,8 +1071,53 @@
             document.getElementById('hdnIdDocumentoAlterado').value = arr[24];
 
         }
-        document.getElementById('txtNumeroSei').focus();
 
+        objTabelaDinamicaSituacao.removerLinhaGrid = function () {
+            var tbTabelaDinamicaSit = document.getElementById('tbSituacao');
+
+            var tpInclusao = tbTabelaDinamicaSit.rows[1].cells[1].innerText;
+            objTabelaDinamicaSituacao.removerLinha(1);
+
+            if (tpInclusao == 'N') {
+                adicionarExcluirGrid()
+            }
+        }
+
+        document.getElementById('txtNumeroSei').focus();
+        removerBotaoExcluirTela();
+        adicionarExcluirGrid()
+
+    }
+
+    function removerBotaoExcluirTela()
+    {
+        var tbTabelaDinamicaSit = document.getElementById('tbSituacao');
+
+        for (var i = 1; i < tbTabelaDinamicaSit.rows.length; i++) {
+            var icone = tbTabelaDinamicaSit.rows[i].cells[29].querySelector("[title='Remover Item']");
+            icone.parentNode.removeChild(icone);
+        }
+    }
+
+    function adicionarExcluirGrid()
+    {
+        var hdnStrIsGestor = document.getElementById('hdnIsGestor').value;
+        var hdnOpenProcesso = document.getElementById('hdnOpenProcesso').value;
+        var hdnIsExcluirSituacao = '<?= $isExcluirSituacao ? 1 : 0 ?>';
+        var excluir = hdnStrIsGestor == '1' && hdnOpenProcesso != '1' && hdnIsExcluirSituacao == '1' ? true : false;
+
+        if (excluir) {
+            var tbTabelaDinamicaSit = document.getElementById('tbSituacao');
+            const image = document.createElement("img");
+            image.src = "/infra_css/svg/remover.svg";
+            image.title= "Remover Item";
+            image.className= "infraImg";
+            image.onclick = function() {
+                objTabelaDinamicaSituacao.removerLinhaGrid(1);
+            };
+
+            tbTabelaDinamicaSit.rows[1].cells[29].appendChild(image);
+        }
     }
 
     function controlarExibicaoCorretaSelFases(isAlteracao) {
