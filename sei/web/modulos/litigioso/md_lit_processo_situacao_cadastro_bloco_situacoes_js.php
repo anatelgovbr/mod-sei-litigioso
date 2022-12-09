@@ -1095,7 +1095,9 @@
 
         for (var i = 1; i < tbTabelaDinamicaSit.rows.length; i++) {
             var icone = tbTabelaDinamicaSit.rows[i].cells[29].querySelector("[title='Remover Item']");
-            icone.parentNode.removeChild(icone);
+            if(icone){
+                icone.parentNode.removeChild(icone);
+            }
         }
     }
 
