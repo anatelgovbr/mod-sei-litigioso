@@ -79,7 +79,7 @@ class MdLitProcessoSituacaoINT extends InfraINT {
                                   inner join md_lit_decisao d on d.id_md_lit_processo_situacao = ps.id_md_lit_processo_situacao
                                   inner join md_lit_rel_decis_lancament dl on dl.id_md_lit_decisao = d.id_md_lit_decisao
                                   inner join md_lit_lancamento l on l.id_procedimento = ps.id_procedimento
-                            where ps.id_md_lit_processo_situacao <>  " . (int)$data['id_processo_situacao'] . "
+                            where ps.id_md_lit_processo_situacao <  " . (int)$data['id_processo_situacao'] . "
                             and ps.id_procedimento = " . (int)$data['id_procedimento'] . "
                         )");
 
@@ -126,7 +126,7 @@ class MdLitProcessoSituacaoINT extends InfraINT {
             inner join md_lit_decisao d on d.id_md_lit_processo_situacao = ps.id_md_lit_processo_situacao
             where ps.id_md_lit_processo_situacao = " . (int)$data['id_processo_situacao'] . "
             and d.sin_ativo = 'S' -- decisoes ativas
-            and (d.valor_ressarcimento is not null
+            and (d.valor is not null
                 or d.multa is not null
                 or d.id_md_lit_especie_decisao is not null
                 or d.id_md_lit_tipo_decisao is not null
@@ -215,6 +215,232 @@ class MdLitProcessoSituacaoINT extends InfraINT {
 
     return $xml;
 
+  }
+
+  public static function montarSelectDocumento($idProcedimento)
+  {
+
+      $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+      $arrObjMdLitProcessoSituacaoDTO = new MdLitProcessoSituacaoDTO();
+      $arrObjMdLitProcessoSituacaoDTO->setDblIdProcedimento($idProcedimento);
+      $arrObjMdLitProcessoSituacaoDTO->setStrSinDecisoriaSit('S');
+      $arrObjMdLitProcessoSituacaoDTO->retNumIdMdLitProcessoSituacao();
+      $arrObjMdLitProcessoSituacaoDTO->retDtaData();
+      $arrObjMdLitProcessoSituacaoDTO->retStrProtocoloFormatadoDocumento();
+      $arrObjMdLitProcessoSituacaoDTO->retStrNomeSituacao();
+      $arrObjMdLitProcessoSituacaoDTO->retStrNomeFase();
+      $arrObjMdLitProcessoSituacaoDTO->retStrNomeSerie();
+
+      $arrObjMdLitProcessoSituacao = $objMdLitProcessoSituacaoRN->listar($arrObjMdLitProcessoSituacaoDTO);
+
+      $strRet = "<option value=''></option>";
+      foreach($arrObjMdLitProcessoSituacao as $objMdLitProcessoSituacao){
+          $strRet .= "<option value='{$objMdLitProcessoSituacao->getNumIdMdLitProcessoSituacao()}'>";
+          $strRet .= "{$objMdLitProcessoSituacao->getStrProtocoloFormatadoDocumento()} {$objMdLitProcessoSituacao->getStrNomeSerie()}";
+          $strRet .= " - {$objMdLitProcessoSituacao->getStrNomeSituacao()} ";
+          $strRet .= "({$objMdLitProcessoSituacao->getStrNomeFase()})</option>";
+      }
+
+      return $strRet;
+  }
+
+    public static function recuperarDataSituacao($idSituacao)
+    {
+        if (empty($idSituacao)){
+            return '';
+        }
+        $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+        $objMdLitProcessoSituacaoDTO = new MdLitProcessoSituacaoDTO();
+        $objMdLitProcessoSituacaoDTO->setNumIdMdLitProcessoSituacao($idSituacao);
+        $objMdLitProcessoSituacaoDTO->retDtaData();
+
+        $objMdLitProcessoSituacao = $objMdLitProcessoSituacaoRN->consultar($objMdLitProcessoSituacaoDTO);
+        return $objMdLitProcessoSituacao->getDtaData();
+    }
+    public static function recuperarLancamentoVinculadoSituacao($idSituacao)
+    {
+      $xml = '';
+
+      $objMdLitLancamentoRN = new MdLitLancamentoRN();
+      $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+      $objMdLitLancamentoDTO->setNumIdSituacaoDecisao($idSituacao);
+      $objMdLitLancamentoDTO->retNumIdMdLitLancamento();
+      $objMdLitLancamentoDTO->retDtaDecisao();
+      $objMdLitLancamento = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
+
+      if ($objMdLitLancamento) {
+        $idLancamento = $objMdLitLancamento->getNumIdMdLitLancamento();
+        $dtaLancamento = $objMdLitLancamento->getDtaDecisao();
+        $xml .= "<idLancamento>".$idLancamento ."</idLancamento>\n";
+        $xml .= "<dtaDecisao>$dtaLancamento</dtaDecisao>\n";
+      }
+
+      return $xml;
+    }
+
+    public static function recuperarLancamentoVinculadoSituacaoIntimacao($idSituacao)
+    {
+      $xml = '';
+
+      $objMdLitLancamentoRN = new MdLitLancamentoRN();
+      $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+      $objMdLitLancamentoDTO->setNumIdSituacaoIntimacao($idSituacao);
+      $objMdLitLancamentoDTO->retNumIdMdLitLancamento();
+      $objMdLitLancamentoDTO->retDtaIntimacao();
+      $objMdLitLancamento = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
+
+      if ($objMdLitLancamento) {
+        $idLancamento = $objMdLitLancamento->getNumIdMdLitLancamento();
+        $dtaLancamento = $objMdLitLancamento->getDtaIntimacao();
+        $xml .= "<idLancamento>".$idLancamento ."</idLancamento>\n";
+        $xml .= "<dtaIntimacao>$dtaLancamento</dtaIntimacao>\n";
+      }
+
+      return $xml;
+    }
+
+    public static function recuperarLancamentoVinculadoSituacaoIntimacaoRecurso($idSituacao)
+        {
+          $xml = '';
+
+          $objMdLitLancamentoRN = new MdLitLancamentoRN();
+          $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+          $objMdLitLancamentoDTO->setNumIdSituacaoIntimacao($idSituacao);
+          $objMdLitLancamentoDTO->retNumIdMdLitLancamento();
+          $objMdLitLancamentoDTO->retDtaIntimacao();
+          $objMdLitLancamento = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
+
+          if ($objMdLitLancamento) {
+            $idLancamento = $objMdLitLancamento->getNumIdMdLitLancamento();
+            $xml .= "<idLancamento>".$idLancamento ."</idLancamento>\n";
+          }
+
+          return $xml;
+        }
+
+    public static function recuperarLancamentoVinculadoSituacaoRecurso($idSituacao)
+    {
+      $xml = '';
+
+      $objMdLitLancamentoRN = new MdLitLancamentoRN();
+      $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+      $objMdLitLancamentoDTO->setNumIdSituacaoRecurso($idSituacao);
+      $objMdLitLancamentoDTO->retNumIdMdLitLancamento();
+      $objMdLitLancamentoDTO->retDtaApresentacaoRecurso();
+      $objMdLitLancamento = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
+
+      if ($objMdLitLancamento) {
+        $idLancamento = $objMdLitLancamento->getNumIdMdLitLancamento();
+        $dtaLancamento = $objMdLitLancamento->getDtaApresentacaoRecurso();
+        $xml .= "<idLancamento>".$idLancamento ."</idLancamento>\n";
+        $xml .= "<dtaRecurso>$dtaLancamento</dtaRecurso>\n";
+      }
+
+      return $xml;
+    }
+
+
+    public static function recuperarLancamentoSemDataIntimacao($idProcedimento)
+    {
+        $xml = '';
+
+        $objMdLitLancamentoRN = new MdLitLancamentoRN();
+        $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+        $objMdLitLancamentoDTO->setDblIdProcedimento($idProcedimento);
+        $objMdLitLancamentoDTO->setOrdNumIdMdLitLancamento(InfraDTO::$TIPO_ORDENACAO_DESC);
+        $objMdLitLancamentoDTO->setNumMaxRegistrosRetorno(1);
+        $objMdLitLancamentoDTO->retNumIdMdLitLancamento();
+        $objMdLitLancamentoDTO->retDtaIntimacao();
+        $objMdLitLancamento = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
+
+        if ($objMdLitLancamento && empty($objMdLitLancamento->getDtaIntimacao())) {
+          $idLancamento = $objMdLitLancamento->getNumIdMdLitLancamento();
+          $xml .= "<idLancamento>".$idLancamento ."</idLancamento>\n";
+        }
+
+        return $xml;
+    }
+
+    public static function recuperarLancamentoSemDataRecurso($idProcedimento)
+    {
+        $xml = '';
+
+        $objMdLitLancamentoRN = new MdLitLancamentoRN();
+        $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+        $objMdLitLancamentoDTO->setDblIdProcedimento($idProcedimento);
+        $objMdLitLancamentoDTO->setOrdNumIdMdLitLancamento(InfraDTO::$TIPO_ORDENACAO_DESC);
+        $objMdLitLancamentoDTO->setNumMaxRegistrosRetorno(1);
+        $objMdLitLancamentoDTO->retNumIdMdLitLancamento();
+        $objMdLitLancamentoDTO->retDtaApresentacaoRecurso();
+
+        $objMdLitLancamento = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
+
+        if ($objMdLitLancamento && empty($objMdLitLancamento->getDtaApresentacaoRecurso())) {
+          $idLancamento = $objMdLitLancamento->getNumIdMdLitLancamento();
+          $xml .= "<idLancamento>".$idLancamento ."</idLancamento>\n";
+        }
+
+        return $xml;
+    }
+
+  public static function verificarPrimeiraIntimacao($idProcedimento, $idSituacao, $novaDataSituacao)
+  {
+    $xml = '';
+
+    $MdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+    $objMdLitProcessoSituacaoDTOPrimeiraIntimacao = $MdLitProcessoSituacaoRN->consultarPrimeiraIntimacao($idProcedimento);
+
+    if($objMdLitProcessoSituacaoDTOPrimeiraIntimacao->getNumIdMdLitProcessoSituacao() == $idSituacao){
+        $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+        $objMdLitSituacaoDTO->retTodos(false);
+        $objMdLitSituacaoDTO->setStrSinDefesa('S');
+        $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitProcessoSituacaoDTOPrimeiraIntimacao->getNumIdMdLitTipoControle());
+        $objMdLitSituacaoDTO->setNumMaxRegistrosRetorno(1);
+
+        $objMdLitSituacaoRN = new MdLitSituacaoRN();
+        $objMdLitSituacaoDTO = $objMdLitSituacaoRN->consultar($objMdLitSituacaoDTO);
+
+        if ($objMdLitSituacaoDTO && $objMdLitSituacaoDTO->getNumPrazo())
+           $novadata = InfraData::calcularData($objMdLitSituacaoDTO->getNumPrazo(), InfraData::$UNIDADE_DIAS, InfraData::$SENTIDO_ADIANTE, $novaDataSituacao);
+
+      $xml .= "<novaData>".$novadata ."</novaData>\n";
+    }
+
+    return $xml;
+  }
+
+  public static function verificarRelacaoLancamento($idProcedimento, $idSituacao, $tipoSituacao)
+  {
+      $xml = '';
+
+      $objMdLitLancamentoRN = new MdLitLancamentoRN();
+      $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+      $objMdLitLancamentoDTO->setDblIdProcedimento($idProcedimento);
+      $objMdLitLancamentoDTO->setOrdNumIdMdLitLancamento(InfraDTO::$TIPO_ORDENACAO_DESC);
+      $objMdLitLancamentoDTO->setNumMaxRegistrosRetorno(1);
+      $objMdLitLancamentoDTO->retNumIdMdLitLancamento();
+
+      switch ($tipoSituacao) {
+
+        case 'Intimação':
+          $objMdLitLancamentoDTO->setNumIdSituacaoIntimacao($idSituacao);
+          break;
+
+        case 'Decisória':
+          $objMdLitLancamentoDTO->setNumIdSituacaoDecisao($idSituacao);
+          break;
+
+        case 'Recursal':
+          $objMdLitLancamentoDTO->setNumIdSituacaoRecurso($idSituacao);
+          break;
+
+      }
+
+      $objMdLitLancamento = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
+      $idLancamento = $objMdLitLancamento ? $objMdLitLancamento->getNumIdMdLitLancamento() : null;
+      $xml .= "<idLancamento>".$idLancamento ."</idLancamento>\n";
+
+      return $xml;
   }
 }
 ?>

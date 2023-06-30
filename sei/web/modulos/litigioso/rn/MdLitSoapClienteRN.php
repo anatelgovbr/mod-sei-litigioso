@@ -15,7 +15,7 @@ class MdLitSoapClienteRN extends nusoap_client{
 	protected $wsdl;
     protected $soapVersion = SOAP_1_2;
 	protected $options;
-	
+
 	function __construct($endpoint,$wsdl = false,$proxyhost = false,$proxyport = false,$proxyusername = false, $proxypassword = false, $timeout = 0, $response_timeout = 30, $portName = ''){
         ini_set('default_socket_timeout', 6000);
         ini_set("soap.wsdl_cache_enabled", "0");
@@ -85,7 +85,7 @@ class MdLitSoapClienteRN extends nusoap_client{
             $returnType = $nameOperations;
         } else {
             if (!$operations) {
-                throw new InfraException('Nome da operação não existe ou não encontrada para essa versão SOAP.');
+                throw new InfraException('Nome da operao no existe ou no encontrada para essa verso SOAP.');
             }
 
             $nameType = $this->getEntidadePorUrlWSDL($operations['input']['parts']['parameters']);
@@ -164,9 +164,28 @@ class MdLitSoapClienteRN extends nusoap_client{
         if(!$nameType)
             $nameType       = key($operations['output']['parts']);
 
-        $returnType     = $this->getEntidadePorUrlWSDL($complexTypes[$nameType]['elements']['return']['type']);
-        if($complexTypes[$returnType]['elements']){
-            $outputArr = $this->pegarElemento($complexTypes[$returnType]);
+
+        $returnType     = $this->getEntidadePorUrlWSDL($complexTypes[$nameType]['elements']['name']);
+
+        if(!$returnType) {
+            $returnType       = key($complexTypes[$nameType]['elements']);
+            $returnType     = $this->getEntidadePorUrlWSDL($complexTypes[$nameType]['elements'][$returnType]["type"]);
+        }
+
+        if ($complexTypes[$returnType]['elements']) {
+            foreach ($complexTypes[$returnType]['elements'] as $chave => $elementos) {
+                $arrTypes = explode('/:', $elementos['type']);
+                $type = end($arrTypes);
+                $filho = null;
+                if(key_exists($type, $complexTypes)){
+                    $filho = $complexTypes[$type];
+                    foreach ($filho['elements'] as $filhoChave => $filhoValor){
+                        $outputArr[$returnType][$chave][$filhoChave] = $filhoValor['name'];
+                    }
+                } else {
+                    $outputArr[$returnType][$chave] = $elementos['name'];
+                }
+            }
         }
         return $outputArr;
     }
@@ -184,11 +203,10 @@ class MdLitSoapClienteRN extends nusoap_client{
 
         if($complexTypes['elements']){
             foreach ($complexTypes['elements'] as $nome => $elementArr){
-                $outputArr[] = $nome;
+                $outputArr[$complexTypes["name"]][$nome] = $nome;
             }
-            sort($outputArr);
+            //sort($outputArr);
         }
-
         return $outputArr;
     }//SMA
 
@@ -449,8 +467,7 @@ class MdLitSoapClienteRN extends nusoap_client{
             if($err){
                 throw new InfraException($err);
             }
-
-            $this->soap_defencoding = 'ISO-8859-1';
+            $this->soap_defencoding = 'UTF-8';
             $this->decode_utf8 = false;
             if($nomeArrPrincipal){
                 $montarParametroEntrada = array($nomeArrPrincipal => $montarParametroEntrada);
@@ -464,7 +481,6 @@ class MdLitSoapClienteRN extends nusoap_client{
 
             $this->persistentConnection = false;
             $arrResultado = $this->call($strOperacaoWsdl, $montarParametroEntrada);
-
             $err = $this->getError();
 
             if($err){

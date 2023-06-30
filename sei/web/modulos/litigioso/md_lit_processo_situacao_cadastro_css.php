@@ -115,6 +115,9 @@
     #divHouveConstituicao .infraCheckboxDiv {
         margin-left: 0;
     }
+    .campoDisable{
+        background-color: #e9ecef;
+    }
 </style>
 
 

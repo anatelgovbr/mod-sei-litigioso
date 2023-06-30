@@ -444,7 +444,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                                onkeypress="return infraMascara(this, event,'##/##/####')" class="infraText form-control"
                                value="<?= PaginaSEI::tratarHTML($filtroDataCorte); ?>"
                                tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
-                        <img src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() . '/calendario.svg'.Icone::VERSAO ?>"
+                        <img src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() . '/calendario.svg?'.Icone::VERSAO ?>"
                              id="imgCalDthCorte" title="Selecionar Data/Hora Inicial" alt="Selecionar Data de Corte"
                              class="infraImg"
                              onclick="infraCalendario('txtDtCorte',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>

@@ -21,8 +21,7 @@ class MdLitNomeFuncionalINT extends InfraINT {
 
         $objMdlitNomeFuncionalRN = new MdLitNomeFuncionalRN();
         $arrObjMdLitNomeFuncionalDTO = $objMdlitNomeFuncionalRN->listar($objMdLitNomeFuncionalDTO);
-
-    return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $arrObjMdLitNomeFuncionalDTO, 'IdMdLitNomeFuncional', 'Nome');
+        return $arrObjMdLitNomeFuncionalDTO;
   }
 }
 ?>

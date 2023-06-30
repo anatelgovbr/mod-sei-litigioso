@@ -444,14 +444,14 @@ class MdLitLancamentoRN extends InfraRN {
 
             $arrTbVincularLancamento['selNumeroInteressado'] = $post['selNumeroInteressado'];
             $arrTbVincularLancamento['hdnIdProcedimento'] = $post['hdnIdProcedimento'];
-            $arrTbVincularLancamento['txtDtIntimacaoAplMulta'] = $post['txtDtIntimacaoAplMulta'];
-            $arrTbVincularLancamento['txtDtDecursoPrazoRecurso'] = $post['txtDtDecursoPrazoRecurso'];
-            $arrTbVincularLancamento['txtDtDecursoPrazo'] = $post['txtDtDecursoPrazo'];
+            $arrTbVincularLancamento['hdnDtIntimacaoAplMulta'] = $post['hdnDtIntimacaoAplMulta'];
+            $arrTbVincularLancamento['hdnDtDecursoPrazoRecurso'] = $post['hdnDtDecursoPrazoRecurso'];
+            $arrTbVincularLancamento['txtDtDecursoPrazo'] = $post['hdnDtDecursoPrazo'];
             $arrTbVincularLancamento['hdnDtDecursoPrazo'] = $post['hdnDtDecursoPrazo'];
             $objMdLitLancamentoDTO = $this->vincularLancamento($arrTbVincularLancamento);
             return $objMdLitLancamentoDTO;
         }
-        
+
         switch ($post['hdnIdMdLitFuncionalidade']) {
             case MdLitIntegracaoRN::$ARRECADACAO_LANCAMENTO_CREDITO:
                 $objMdLitLancamento = $this->_realizarLancamentoCredito($post);
@@ -484,14 +484,19 @@ class MdLitLancamentoRN extends InfraRN {
                 break;
         }
 
+        $idLancamento = $post['selCreditosProcesso'] ?: $post['hdnCreditosProcesso'];
+        if($idLancamento){
+          $this->atualizarDadosLancamento($post);
+        }
+
         if($post['hdnIdMdLitFuncionalidade'] == ''){
           
-            $this->alterarData($post['selCreditosProcesso'], $post['txtDtIntimacaoAplMulta'], $post['txtDtDecursoPrazoRecurso']);
+            $this->alterarData($idLancamento, $post['hdnDtIntimacaoAplMulta'], $post['hdnDtDecursoPrazoRecurso']);
 
             //se houver alteração da Data da Intimação da Decisão de Aplicação da Multa e NÃO seja a situacao de intimação posterior a decisao
             if(!$post['hdnIntimacaoPosDecisao'] && isset($post['hdnDtaIntimacaoDecisaoMulta'])){
                 foreach ($post['hdnDtaIntimacaoDecisaoMulta'] as $key => $value) {
-                    if($key != $post['selCreditosProcesso']) {
+                    if($key != $idLancamento) {
                         $this->alterarData($key, $value);
                     }
                 }
@@ -541,6 +546,57 @@ class MdLitLancamentoRN extends InfraRN {
         }
     }
 
+    private function atualizarDadosLancamento($post)
+    {
+        $objMdLitLancamentoDTO  = new MdLitLancamentoDTO();
+        $objMdLitLancamentoRN   = new MdLitLancamentoRN();
+
+        $objMdLitLancamentoDTO->retTodos(false);
+        $objMdLitLancamentoDTO->retDblCpfInteressado();
+        $objMdLitLancamentoDTO->retDblCnpjInteressado();
+        $objMdLitLancamentoDTO->retNumIdSituacaoDecisao();
+        $objMdLitLancamentoDTO->retDtaIntimacao();
+        $objMdLitLancamentoDTO->retNumIdSituacaoIntimacao();
+        $objMdLitLancamentoDTO->setNumIdMdLitLancamento($post['selCreditosProcesso'] ?: $post['hdnCreditosProcesso']);
+
+        $objMdLitLancamentoDTO = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
+
+        if($objMdLitLancamentoDTO) {
+            $objMdLitLancamentoDTO->setDtaDecursoPrazoRecurso($post['hdnDtDecursoPrazoRecurso']);
+            $objMdLitLancamentoDTO->setDtaDecisao($post['hdnDecisaoAplicacaoMulta']);
+            $objMdLitLancamentoDTO->setNumIdMdLitSituacaoDecisaoDefin($post['selDocumento']);
+            $objMdLitLancamentoDTO->setDtaDecisaoDefinitiva($post['hdnDtDecisaoDefinitiva']);
+            $objMdLitLancamentoDTO->setDtaApresentacaoRecurso($post['hdnDtApresentacaoRecurso'] ?: null);
+            $objMdLitLancamentoDTO->setDtaIntimacao($post['hdnDtIntimacaoAplMulta']);
+
+            // se houver alteração na data do decurso do prazo para defeza deve alterar em todos lancamentos
+            if($objMdLitLancamentoDTO->getDtaPrazoDefesa() != $post['hdnDtDecursoPrazo']){
+              $objMdLitLancamentoDTO->setDtaPrazoDefesa($post['hdnDtDecursoPrazo']);
+              $this->atualizarDataDecursoDefesaTodosLancamentos($objMdLitLancamentoDTO->getDblIdProcedimento(), $post['hdnDtDecursoPrazo'], $post['hdnCreditosProcesso']);
+            }
+
+            // Atualizar id da intimacão que gerou data da intimação
+            if ($post['hdnDtIntimacaoAplMulta'] && empty($objMdLitLancamentoDTO->getNumIdSituacaoIntimacao())) {
+                $objMdLitLancamentoDTO->setNumIdSituacaoIntimacao($post['id_situacao']);
+            }
+
+            $objMdLitLancamentoRN->alterar($objMdLitLancamentoDTO);
+        }
+    }
+
+    private function atualizarDataDecursoDefesaTodosLancamentos($idProcedimento, $novaData, $lancamentoSelecionado){
+        $objMdLitLancamentoRN = new MdLitLancamentoRN();
+        $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+        $objMdLitLancamentoDTO->setDblIdProcedimento($idProcedimento);
+        $objMdLitLancamentoDTO->setNumIdMdLitLancamento(array($lancamentoSelecionado) , InfraDTO::$OPER_NOT_IN);
+        $objMdLitLancamentoDTO->retTodos();
+
+        $arrObjMdLitLancamento = $objMdLitLancamentoRN->listar($objMdLitLancamentoDTO);
+        foreach ($arrObjMdLitLancamento as $objMdLitLancamento) {
+          $objMdLitLancamento->setDtaPrazoDefesa($novaData);
+          $objMdLitLancamentoRN->alterar($objMdLitLancamento);
+        }
+    }
 
     private function alterarData($idMdLitLancamento, $dtIntimacaoAplMulta, $dtDtDecursoPrazoRecurso = null){
         $bolSalvarLancamento = false;
@@ -576,6 +632,8 @@ class MdLitLancamentoRN extends InfraRN {
         $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
         $objMdLitLancamentoDTO->setNumIdMdLitLancamento($idLancamento);
         $objMdLitLancamentoDTO->retTodos();
+        $objMdLitLancamentoDTO->retDblCpfInteressado();
+        $objMdLitLancamentoDTO->retDblCnpjInteressado();
         $objMdLitLancamentoDTO->setNumMaxRegistrosRetorno(1);
 
         $objMdLitLancamentoDTO = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
@@ -607,20 +665,36 @@ class MdLitLancamentoRN extends InfraRN {
 
     private function _realizarLancamentoCredito($post){
         $objInfraException      = new InfraException();
-        $objMdLitLancamentoNovo = new MdLitLancamentoDTO();
         $objMdLitIntegracaoRN   = new MdLitIntegracaoRN();
-      
+        $objMdLitLancamentoNovo = new MdLitLancamentoDTO();
+
+        // necessario para validações futuras
+        $objMdLitLancamentoNovo->setStrNumeroInteressado(null);
+        $objMdLitLancamentoNovo->setNumIdMdLitNumeroInteressado(null);
+
+        // caso não tenha dados complementares é cadastrado no lancamento do id_numero_interessado
+        $objMdLitNumeroInteressadoRN = new MdLitNumeroInteressadoRN();
+        $objMdLitNumeroInteressadoDTO = new MdLitNumeroInteressadoDTO();
+        $objMdLitNumeroInteressadoDTO->setNumIdMdLitDadoInteressado($post['selInteressado']);
+        $objMdLitNumeroInteressadoDTO->setNumMaxRegistrosRetorno(1);
+        $objMdLitNumeroInteressadoDTO->retNumIdMdLitNumeroInteressado();
+        $objMdLitNumeroInteressadoDTO = $objMdLitNumeroInteressadoRN->consultar($objMdLitNumeroInteressadoDTO);
+        $objMdLitLancamentoNovo->setNumIdMdLitNumeroInteressado($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado());
+
         $objMdLitIntegracaoDTO  = $objMdLitIntegracaoRN->retornarObjIntegracaoDTOPorFuncionalidade($post['hdnIdMdLitFuncionalidade']);
         $objMdLitSoapClienteRN  = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(),'wsdl');
         $objMdLitSoapClienteRN->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
         $objInfraException      = $this->realizarValidacoesGerais($objMdLitIntegracaoDTO, $post, $objInfraException);
+
+        // cadastra id da situação decisoria que gerou o lancamento
+        $objMdLitLancamentoNovo->setNumIdSituacaoDecisao($post['id_situacao']);
 
         $montarParametroEntrada = $this->_montarParametroEntradaLancamentoCredito($objMdLitIntegracaoDTO, $post, $objMdLitLancamentoNovo);
 
         $arrResultado = $objMdLitSoapClienteRN->enviarDadosSigecLancamento($objMdLitIntegracaoDTO, $montarParametroEntrada, MdLitMapearParamEntradaRN::$PARAM_PRINCIPAL_SIGEC_LANCAMENTO);
 
         if($arrResultado) {
-            $objMdLitLancamentoNovo = $this->_montarParametroSaidaLancamentoCredito($objMdLitLancamentoNovo, $arrResultado, $post['hdnIdMdLitFuncionalidade']);
+            $objMdLitLancamentoNovo = $this->_montarParametroSaidaLancamentoCredito($objMdLitLancamentoNovo, $arrResultado, $post['hdnIdMdLitFuncionalidade'],$post['hdnIdTipoControle']);
             $this->_prepararObjLancamentoInclusao($objMdLitLancamentoNovo, $post);
 
             return $objMdLitLancamentoNovo;
@@ -653,8 +727,8 @@ class MdLitLancamentoRN extends InfraRN {
         $objMdLitLancamentoDTO->setNumIdUsuario(SessaoSEI::getInstance()->getNumIdUsuario());
         $objMdLitLancamentoDTO->setDthInclusao(InfraData::getStrDataHoraAtual());
         $objMdLitLancamentoDTO->setStrTipoLancamento(count($arrObjMdLitLancamentoDTO) > 0? self::$TIPO_LANCAMENTO_MAJORADO:self::$TIPO_LANCAMENTO_PRINCIPAL);
-        $objMdLitLancamentoDTO->setDtaIntimacao($arrTbVincularLancamento['txtDtIntimacaoAplMulta']);
-        $objMdLitLancamentoDTO->setDtaDecursoPrazoRecurso($arrTbVincularLancamento['txtDtDecursoPrazoRecurso']);
+        $objMdLitLancamentoDTO->setDtaIntimacao($arrTbVincularLancamento['hdnDtIntimacaoAplMulta']);
+        $objMdLitLancamentoDTO->setDtaDecursoPrazoRecurso($arrTbVincularLancamento['hdnDtDecursoPrazoRecurso']);
         $objMdLitLancamentoDTO->setDtaPrazoDefesa($arrTbVincularLancamento['txtDtDecursoPrazo']);
         $objMdLitLancamentoDTO->setStrSinRenunciaRecorrer('N');
         //$objMdLitLancamentoDTO->setDtaPrazoDefesa($arrTbVincularLancamento['hdnDtDecursoPrazo']);
@@ -666,36 +740,39 @@ class MdLitLancamentoRN extends InfraRN {
 
     }
 
-    private function realizarRetificarCredito($post){
-        $objInfraException      = new InfraException();
-        $objMdLitLancamentoDTO  = new MdLitLancamentoDTO();
-        $objMdLitIntegracaoRN   = new MdLitIntegracaoRN();
-        $objMdLitLancamentoRN   = new MdLitLancamentoRN();
+    public function realizarRetificarCredito($post){
+        if ( $post['selCreditosProcesso'] || $post['hdnCreditosProcesso'] ) {
+            $objInfraException = new InfraException();
+            $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+            $objMdLitIntegracaoRN = new MdLitIntegracaoRN();
+            $objMdLitLancamentoRN = new MdLitLancamentoRN();
 
-        $objMdLitIntegracaoDTO  = $objMdLitIntegracaoRN->retornarObjIntegracaoDTOPorFuncionalidade($post['hdnIdMdLitFuncionalidade']);
-        $objMdLitSoapClienteRN  = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(),'wsdl');
-        $objMdLitSoapClienteRN->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
-        $objInfraException      = $this->realizarValidacoesGerais($objMdLitIntegracaoDTO, $post, $objInfraException);
+            $objMdLitIntegracaoDTO = $objMdLitIntegracaoRN->retornarObjIntegracaoDTOPorFuncionalidade($post['hdnIdMdLitFuncionalidade']);
+            $objMdLitSoapClienteRN = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(), 'wsdl');
+            $objMdLitSoapClienteRN->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
+            $objInfraException = $this->realizarValidacoesGerais($objMdLitIntegracaoDTO, $post, $objInfraException);
 
-        $objMdLitLancamentoDTO->retTodos(false);
-        $objMdLitLancamentoDTO->setNumIdMdLitLancamento($post['selCreditosProcesso'] ? $post['selCreditosProcesso'] : $post['hdnCreditosProcesso']);
+            $objMdLitLancamentoDTO->retTodos(false);
+            $objMdLitLancamentoDTO->retDblCpfInteressado();
+            $objMdLitLancamentoDTO->retDblCnpjInteressado();
+            $objMdLitLancamentoDTO->retNumIdSituacaoDecisao();
+            $objMdLitLancamentoDTO->retDtaIntimacao();
+            $objMdLitLancamentoDTO->retNumIdSituacaoIntimacao();
+            $objMdLitLancamentoDTO->setNumIdMdLitLancamento($post['selCreditosProcesso'] ? $post['selCreditosProcesso'] : $post['hdnCreditosProcesso']);
 
-        $objMdLitLancamentoDTO = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
+            $objMdLitLancamentoDTO = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
 
-        $montarParametroEntrada = $this->montarParametroEntradaRetificarCredito($objMdLitIntegracaoDTO, $post, $objMdLitLancamentoDTO);
+            $montarParametroEntrada = $this->montarParametroEntradaRetificarCredito($objMdLitIntegracaoDTO, $post, $objMdLitLancamentoDTO);
 
-        $arrResultado = $objMdLitSoapClienteRN->enviarDadosSigecLancamento($objMdLitIntegracaoDTO, $montarParametroEntrada, MdLitMapearParamEntradaRN::$PARAM_PRINCIPAL_SIGEC_RETIF_LANCAMENTO);
+            $arrResultado = $objMdLitSoapClienteRN->enviarDadosSigecLancamento($objMdLitIntegracaoDTO, $montarParametroEntrada, MdLitMapearParamEntradaRN::$PARAM_PRINCIPAL_SIGEC_RETIF_LANCAMENTO);
 
+            if ($arrResultado) {
+              $this->montarParametroSaidaRetificarCredito($objMdLitLancamentoDTO, $arrResultado, $post['hdnIdMdLitFuncionalidade']);
 
-        if($arrResultado) {
-            $this->montarParametroSaidaRetificarCredito($objMdLitLancamentoDTO, $arrResultado, $post['hdnIdMdLitFuncionalidade']);
-            $objMdLitLancamentoDTO->setDtaDecursoPrazoRecurso($post['txtDtDecursoPrazoRecurso']);
-            $objMdLitLancamentoRN->alterar($objMdLitLancamentoDTO);
-
-
-            return $objMdLitLancamentoDTO;
+              $objMdLitLancamentoRN->alterar($objMdLitLancamentoDTO);
+              return $objMdLitLancamentoDTO;
+            }
         }
-
     }
 
     private function _prepararObjLancamentoInclusao($objMdLitLancamentoNovo, $post)
@@ -725,10 +802,10 @@ class MdLitLancamentoRN extends InfraRN {
         $objMdLitLancamentoNovo->setDthInclusao(InfraData::getStrDataHoraAtual());
         $objMdLitLancamentoNovo->setNumIdMdLitSituacaoLancamento(null);
         $objMdLitLancamentoNovo->setStrTipoLancamento(count($arrObjMdLitLancamentoDTO) > 0? self::$TIPO_LANCAMENTO_MAJORADO:self::$TIPO_LANCAMENTO_PRINCIPAL);
-        $objMdLitLancamentoNovo->setDtaDecisao($post['txtDecisaoAplicacaoMulta'] ? $post['txtDecisaoAplicacaoMulta'] : InfraData::getStrDataAtual());
-        $objMdLitLancamentoNovo->setDtaIntimacao($post['txtDtIntimacaoAplMulta']);
-        $objMdLitLancamentoNovo->setDtaDecursoPrazoRecurso($post['txtDtDecursoPrazoRecurso']);
-        $objMdLitLancamentoNovo->setDtaPrazoDefesa($post['txtDtDecursoPrazo']);
+        $objMdLitLancamentoNovo->setDtaDecisao($post['hdnDecisaoAplicacaoMulta'] ? $post['hdnDecisaoAplicacaoMulta'] : InfraData::getStrDataAtual());
+        $objMdLitLancamentoNovo->setDtaIntimacao($post['hdnDtIntimacaoAplMulta']);
+        $objMdLitLancamentoNovo->setDtaDecursoPrazoRecurso($post['hdnDtDecursoPrazoRecurso']);
+        $objMdLitLancamentoNovo->setDtaPrazoDefesa($post['hdnDtDecursoPrazo']);
         $objMdLitLancamentoNovo->setStrSinRenunciaRecorrer('N');
         $objMdLitLancamentoNovo->setStrSinConstituicaoDefinitiva('N');
         //$objMdLitLancamentoNovo->setDtaPrazoDefesa($post['hdnDtDecursoPrazo']);
@@ -773,28 +850,31 @@ class MdLitLancamentoRN extends InfraRN {
                     break;
 
                 case MdLitMapearParamEntradaRN::$ID_PARAM_LANCAMENTO_CREDITO['DTA_APLICACAO_SANCAO']:
-                    $txtDecisaoAplicacaoMulta = empty($post['txtDecisaoAplicacaoMulta'])? InfraData::getStrDataAtual():$post['txtDecisaoAplicacaoMulta'];
-                    $dtDecisaoAplicacaoMulta = trim($txtDecisaoAplicacaoMulta);
+
+                    $hdnDecisaoAplicacaoMulta = empty($post['hdnDecisaoAplicacaoMulta'])? InfraData::getStrDataAtual():$post['hdnDecisaoAplicacaoMulta'];
+                    $dtDecisaoAplicacaoMulta = trim($hdnDecisaoAplicacaoMulta);
                     $arrData = explode('/', $dtDecisaoAplicacaoMulta );
                     $dtDecisaoAplicacaoMulta = $arrData[2].'-'.$arrData[1].'-'.$arrData[0]; //formato aaaa-mm-dd
                     $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $dtDecisaoAplicacaoMulta;
                     break;
 
                 case MdLitMapearParamEntradaRN::$ID_PARAM_LANCAMENTO_CREDITO['NUMERO_INTERESSADO']:
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $this->retornaCpfCnpjInteressado($post['selInteressado']);
+                    if ($this->retornarExigeDadosComplementares($post['hdnIdTipoControle']) == 'S') {
+                        $objMdLitNumeroInteressadoRN = new MdLitNumeroInteressadoRN();
+                        $objMdLitNumeroInteressadoDTO = $objMdLitNumeroInteressadoRN->retornaObjNumeroInteressado($post['selNumeroInteressado']);
 
-                    $objMdLitNumeroInteressadoRN = new MdLitNumeroInteressadoRN();
-                    $objMdLitNumeroInteressadoDTO = $objMdLitNumeroInteressadoRN->retornaObjNumeroInteressado($post['selNumeroInteressado']);
+                        if(!$objMdLitNumeroInteressadoDTO)
+                            throw new InfraException('Selecione o Numero do interessado.');
 
-                    if(!$objMdLitNumeroInteressadoDTO)
-                        throw new InfraException('Selecione o Numero do interessado.');
+                        //se o numero de complemento do interessado não estiver vazio e o sin_outorga estiver como N(ão)
+                        if(!$objMdLitNumeroInteressadoDTO->getStrNumero()){
+                            $objMdLitNumeroInteressadoDTO = $objMdLitNumeroInteressadoRN->gerarNumeroComplementar($objMdLitNumeroInteressadoDTO);
+                        }
 
-                    //se o numero de complemento do interessado não estiver vazio e o sin_outorga estiver como N(ão)
-                    if(!$objMdLitNumeroInteressadoDTO->getStrNumero()){
-                        $objMdLitNumeroInteressadoDTO = $objMdLitNumeroInteressadoRN->gerarNumeroComplementar($objMdLitNumeroInteressadoDTO);
+                        $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitNumeroInteressadoDTO->getStrNumero();
+                        $objMdLitLancamentoNovo->setNumIdMdLitNumeroInteressado($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado());
                     }
-
-                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitNumeroInteressadoDTO->getStrNumero();
-                    $objMdLitLancamentoNovo->setNumIdMdLitNumeroInteressado($objMdLitNumeroInteressadoDTO->getNumIdMdLitNumeroInteressado());
                     break;
 
                 case MdLitMapearParamEntradaRN::$ID_PARAM_LANCAMENTO_CREDITO['VALOR_RECEITA']:
@@ -856,10 +936,47 @@ class MdLitLancamentoRN extends InfraRN {
                         }
                     }
                     break;
-            }
 
+                case MdLitMapearParamEntradaRN::$ID_PARAM_LANCAMENTO_CREDITO['DOCUMENTO_APLICACAO_DA_MULTA']:
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $this->retornaProtocoloFormatadoDocumentoPorSituacao($post['id_situacao']);
+                    break;
+            }
         }
         return $montarParametroEntrada;
+    }
+
+
+    private function retornaProtocoloFormatadoDocumentoPorSituacao($idSituacao)
+    {
+      $objMdLitProcessoSituacaoDTO = new MdLitProcessoSituacaoDTO();
+      $objMdLitProcessoSituacaoDTO->setNumIdMdLitProcessoSituacao($idSituacao);
+      $objMdLitProcessoSituacaoDTO->retNumIdMdLitProcessoSituacao();
+      $objMdLitProcessoSituacaoDTO->retStrProtocoloFormatadoDocumento();
+      $objMdLitProcessoSituacaoDTO->setStrSinDecisoriaSit('S');
+
+      $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+      $objMdLitProcessoSituacao = $objMdLitProcessoSituacaoRN->consultar($objMdLitProcessoSituacaoDTO);
+
+      return $objMdLitProcessoSituacao->getStrProtocoloFormatadoDocumento();
+    }
+
+    private function retornaCpfCnpjInteressado($idInteressado)
+    {
+        $objMdLitDadoInteressadoDTO = new MdLitDadoInteressadoDTO();
+        $objMdLitDadoInteressadoDTO->retDblCpf();
+        $objMdLitDadoInteressadoDTO->retDblCnpj();
+        $objMdLitDadoInteressadoDTO->setNumIdMdLitDadoInteressado($idInteressado);
+        $objMdLitDadoInteressadoDTO->setNumMaxRegistrosRetorno(1);
+
+        $objMdLitDadoInteressadoRN = new MdLitDadoInteressadoRN();
+        $objMdLitDadoInteressadoDTO = $objMdLitDadoInteressadoRN->consultar($objMdLitDadoInteressadoDTO);
+        $retorno = $objMdLitDadoInteressadoDTO->getDblCnpj();
+
+        if (!$objMdLitDadoInteressadoDTO->getDblCnpj()){
+            $retorno = $objMdLitDadoInteressadoDTO->getDblCpf();
+        }
+
+        return $retorno;
     }
 
 
@@ -880,12 +997,15 @@ class MdLitLancamentoRN extends InfraRN {
                     break;
 
                 case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['DTA_APLICACAO_SANCAO']:
-                    $dtDecisaoAplicacaoMulta = trim($post['txtDecisaoAplicacaoMulta']);
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = null;
+                    if($post['hdnDecisaoAplicacaoMulta']){
+                        $dtDecisaoAplicacaoMulta = trim($post['hdnDecisaoAplicacaoMulta']);
+                        $objMdLitLancamentoDTO->setDtaDecisao($dtDecisaoAplicacaoMulta);
+                        $arrData = explode('/', $dtDecisaoAplicacaoMulta );
+                        $dtDecisaoAplicacaoMulta = $arrData[2].'-'.$arrData[1].'-'.$arrData[0]; //formato aaaa-mm-dd
+                        $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $dtDecisaoAplicacaoMulta;
+                    }
 
-                    $objMdLitLancamentoDTO->setDtaDecisao($dtDecisaoAplicacaoMulta);
-                    $arrData = explode('/', $dtDecisaoAplicacaoMulta );
-                    $dtDecisaoAplicacaoMulta = $arrData[2].'-'.$arrData[1].'-'.$arrData[0]; //formato aaaa-mm-dd
-                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $dtDecisaoAplicacaoMulta;
                     break;
 
                 case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['NUMERO_INTERESSADO']:
@@ -922,53 +1042,111 @@ class MdLitLancamentoRN extends InfraRN {
                     $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = self::$SISTEMA_ORIGEM;
                     break;
 
-                case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['RENUNCIA_RECURSO']:
-                    $sinReducaoRenuncia = isset($post['chkReducaoRenuncia'])? 'S': 'N';
-
-                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $sinReducaoRenuncia;
-                    $objMdLitLancamentoDTO->setStrSinRenunciaRecorrer($sinReducaoRenuncia);
-
-                    break;
-
                 case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['SEQUENCIAL']:
                     $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitLancamentoDTO->getStrSequencial();
                     break;
 
-                case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['DTA_CONSTITUICAO']:
-                    $sinHouveConstituicao = isset($post['chkHouveConstituicao'])? 'S': 'N';
-                    $objMdLitLancamentoDTO->setStrSinConstituicaoDefinitiva($sinHouveConstituicao);
+                case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['CNPJ_CPF']:
+                    $val = $objMdLitLancamentoDTO->getDblCpfInteressado() ? $objMdLitLancamentoDTO->getDblCpfInteressado() : $objMdLitLancamentoDTO->getDblCnpjInteressado();
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $val;
+                    break;
 
-                    if(isset($post['txtDtConstituicao']) && !empty($post['txtDtConstituicao']) && isset($post['chkHouveConstituicao'])){
-                        $objMdLitLancamentoDTO->setDtaConstituicaoDefinitiva($post['txtDtConstituicao']);
-                        $objMdLitLancamentoDTO->setDtaIntimacaoDefinitiva($post['txtDtIntimacaoConstituicao']);
-                        $arrData = explode('/', $objMdLitLancamentoDTO->getDtaConstituicaoDefinitiva() );
-                        $dtConstituica = $arrData[2].'-'.$arrData[1].'-'.$arrData[0];//formato aaaa-mm-dd
-                        $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $dtConstituica;
-                    }else{
-                        $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = null;
+                case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['DOC_DECISAO_APL_MULTA']:
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $this->retornaProtocoloFormatadoDocumentoPorSituacao($objMdLitLancamentoDTO->getNumIdSituacaoDecisao());
+                    break;
+
+                case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['DTA_INT_DECISAO_APL_MULTA']:
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = null;
+                    if($post['hdnDtIntimacaoAplMulta']){
+                        $arrData = explode('/', $post['hdnDtIntimacaoAplMulta']);
+                        $data = $arrData[2].'-'.$arrData[1].'-'.$arrData[0];//formato aaaa-mm-dd
+                        $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $data;
                     }
                     break;
+
+                case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['DTA_DECURSO_PRAZO_RECURSO']:
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = null;
+                    if($post['hdnDtDecursoPrazoRecurso']){
+                        $arrData = explode('/', $post['hdnDtDecursoPrazoRecurso']);
+                        $data = $arrData[2].'-'.$arrData[1].'-'.$arrData[0];//formato aaaa-mm-dd
+                        $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $data;
+                    }
+                    break;
+
+                case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['DTA_APRESENTACAO_RECURSO']:
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = null;
+                    if($post['hdnDtApresentacaoRecurso']){
+                        $arrData = explode('/', $post['hdnDtApresentacaoRecurso']);
+                        $data = $arrData[2].'-'.$arrData[1].'-'.$arrData[0];//formato aaaa-mm-dd
+                        $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $data;
+                    }
+                    break;
+
+                case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['DTA_DECISAO_DEFINITIVA']:
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = null;
+                    if($post['hdnDtDecisaoDefinitiva']){
+                        $arrData = explode('/', $post['hdnDtDecisaoDefinitiva']);
+                        $data = $arrData[2].'-'.$arrData[1].'-'.$arrData[0];//formato aaaa-mm-dd
+                        $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $data;
+                    }
+                    break;
+
+                case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['DTA_CONSTITUICAO']:
+                  $sinHouveConstituicao = isset($post['chkHouveConstituicao'])? 'S': 'N';
+                  $objMdLitLancamentoDTO->setStrSinConstituicaoDefinitiva($sinHouveConstituicao);
+
+                  if(isset($post['txtDtConstituicao']) && !empty($post['txtDtConstituicao']) && isset($post['chkHouveConstituicao'])){
+                    $objMdLitLancamentoDTO->setDtaConstituicaoDefinitiva($post['txtDtConstituicao']);
+                    $arrData = explode('/', $objMdLitLancamentoDTO->getDtaConstituicaoDefinitiva() );
+                    $dtConstituica = $arrData[2].'-'.$arrData[1].'-'.$arrData[0];//formato aaaa-mm-dd
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $dtConstituica;
+                  }else{
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = null;
+                  }
+                  break;
+
                 case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['DTA_INTIMACAO_DEFINITIVA']:
+                  $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = null;
+                  if($post['txtDtIntimacaoConstituicao']){
                     $objMdLitLancamentoDTO->setDtaIntimacaoDefinitiva($post['txtDtIntimacaoConstituicao']);
                     $dtIntimacaoDefinitiva = implode('-', array_reverse(  explode('/', $objMdLitLancamentoDTO->getDtaIntimacaoDefinitiva() ) ));
                     $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $dtIntimacaoDefinitiva;
-                    break;
+                  }
+                  break;
+
+                case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['RENUNCIA_RECURSO']:
+                  $sinReducaoRenuncia = isset($post['chkReducaoRenuncia'])? 'S': 'N';
+
+                  $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $sinReducaoRenuncia;
+                  $objMdLitLancamentoDTO->setStrSinRenunciaRecorrer($sinReducaoRenuncia);
+                  break;
+
+                case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['DOC_DECISAO_DEFINITIVA']:
+                  $sinHouveConstituicao = isset($post['chkHouveConstituicao'])? 'S': 'N';
+                  $objMdLitLancamentoDTO->setStrSinConstituicaoDefinitiva($sinHouveConstituicao);
+
+                  if(isset($post['txtDtConstituicao']) && !empty($post['txtDtConstituicao']) && isset($post['chkHouveConstituicao'])){
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $this->retornaProtocoloFormatadoDocumentoPorSituacao($post['selDocumento']);
+                  }else{
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = null;
+                  }
+                  break;
             }
 
         }
 
         //a Data do Decurso do Prazo para Defesa nao será enviado para o web-service de arrecadação é o preenchimento não e obrigatório
-        $dtDecursoPrazo = trim($post['txtDtDecursoPrazo']);
+        $dtDecursoPrazo = trim($post['hdnDtDecursoPrazo']);
         if($dtDecursoPrazo)
             $objMdLitLancamentoDTO->setDtaPrazoDefesa($dtDecursoPrazo);
 
         //a Data da Intimação da Decisão de Aplicação da Multa nao será enviado para o web-service de arrecadação é o preenchimento não e obrigatório
-        $dtIntimacaoAplMulta = trim($post['txtDtIntimacaoAplMulta']);
+        $dtIntimacaoAplMulta = trim($post['hdnDtIntimacaoAplMulta']);
         if($dtIntimacaoAplMulta)
             $objMdLitLancamentoDTO->setDtaIntimacao($dtIntimacaoAplMulta);
 
         //a Data da Decurso do prazo de recurso nao será enviado para o web-service de arrecadação é o preenchimento não e obrigatório
-        $dtDecursoPrazoRecurso = trim($post['txtDtDecursoPrazoRecurso']);
+        $dtDecursoPrazoRecurso = trim($post['hdnDtDecursoPrazoRecurso']);
         if($dtDecursoPrazoRecurso)
             $objMdLitLancamentoDTO->setDtaDecursoPrazoRecurso($dtDecursoPrazoRecurso);
 
@@ -1029,7 +1207,7 @@ class MdLitLancamentoRN extends InfraRN {
         return $numProcesso;
     }
 
-    private function _montarParametroSaidaLancamentoCredito(MdLitLancamentoDTO $objMdLitLancamento, $arrResultado, $idMdLitFuncionalidade){
+    private function _montarParametroSaidaLancamentoCredito(MdLitLancamentoDTO $objMdLitLancamento, $arrResultado, $idMdLitFuncionalidade, $IdTipoControle){
         if($idMdLitFuncionalidade == MdLitIntegracaoRN::$ARRECADACAO_LANCAMENTO_CREDITO){
             $objMdLitIntegracaoDTO = new MdLitIntegracaoDTO();
             $objMdLitIntegracaoDTO->retTodos(true);
@@ -1060,12 +1238,25 @@ class MdLitLancamentoRN extends InfraRN {
                         break;
 
                     case MdLitMapearParamSaidaRN::$ID_PARAM_LANCAMENTO_CREDITO['NUMERO_INTERESSADO']:
-                        $objMdLitLancamento->setStrNumeroInteressado($arrResultado['return'][$objMdLitMapearParamSaidaDTO->getStrCampo()]);
+                        if ($this->retornarExigeDadosComplementares($IdTipoControle) == 'S') {
+                            $objMdLitLancamento->setStrNumeroInteressado($arrResultado['return'][$objMdLitMapearParamSaidaDTO->getStrCampo()]);
+                        }
                         break;
                 }
             }
             return $objMdLitLancamento;
         }
+    }
+
+    public function retornarExigeDadosComplementares($IdTipoControle)
+    {
+        $objMdLitTipoControleRN = new MdLitTipoControleRN();
+        $objMdLitTipoControleDTO = new MdLitTipoControleDTO();
+        $objMdLitTipoControleDTO->setNumIdTipoControleLitigioso($IdTipoControle);
+        $objMdLitTipoControleDTO->retStrSinParamModalComplInteressado();
+        $objMdLitTipoControle = $objMdLitTipoControleRN->consultar($objMdLitTipoControleDTO);
+
+        return $objMdLitTipoControle->getStrSinParamModalComplInteressado();
     }
 
     public function retornaObjLancAlteracaoConsultaLanc($post)

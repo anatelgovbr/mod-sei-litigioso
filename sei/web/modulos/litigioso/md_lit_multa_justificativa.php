@@ -126,14 +126,19 @@ if(0){?><script><?}?>
         if(!validar())
             return false;
 
-        window.opener.document.getElementById('hdnJustificativaLancamento').value = document.getElementById('txtJustificativaLancamento').value;
-        window.opener.document.getElementById('hdnIdMdLitFuncionalidade').value = document.getElementById('hdnIdMdLitFuncionalidade').value;
-        window.opener.document.getElementById('sbmCadastrarSituacao').click();
-        window.close();
+        window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnJustificativaLancamento').value = document.getElementById('txtJustificativaLancamento').value;
+        window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnIdMdLitFuncionalidade').value = document.getElementById('hdnIdMdLitFuncionalidade').value;
+        window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('sbmCadastrarSituacao').click();
+        $(window.top.document).find('div[id^=divInfraSparklingModalClose]').click();
 
         return false;
 
     }
+    $(document).ready(function() {
+        $('#btnFechar').click(function() {
+            $(window.top.document).find('div[id^=divInfraSparklingModalClose]').click();
+        });
+    });
     <? if(0){?></script><?}?>
 <?
 PaginaSEI::getInstance()->fecharJavaScript();

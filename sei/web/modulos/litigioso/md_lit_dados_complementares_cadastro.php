@@ -34,7 +34,7 @@ try {
             $strTitulo = 'Dados Complementares do Interessado';
 
             $arrComandos[] = '<button type="button" accesskey="S" name="sbmCadastrarDadosInteressado" value="Salvar" onclick="OnSubmitForm()" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
-            $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="window.close();" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
+            $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="$(window.top.document).find(\'div[id^=divInfraSparklingModalClose]\').click();" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
 
 
             $objMdLitParametrizarInteressadoDTO = new MdLitParametrizarInteressadoDTO();
@@ -846,6 +846,9 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                         <input type="hidden" id="hdnListaDadosComplementaresConsultasNaoOutorgado"
                                name="hdnListaDadosComplementaresConsultasNaoOutorgado"
                                value="<?= $_POST['hdnListaDadosComplementaresConsultasNaoOutorgado'] ?>"/>
+                               <input type="hidden" id="hdnEntidadeOutorgadaSalvo"
+                               name="hdnEntidadeOutorgadaSalvo"
+                               value="<?= $objMdLitParametrizarInteressadoDTO->getStrSinExibe() ?>"/>
 
                         <? PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos); ?>
 

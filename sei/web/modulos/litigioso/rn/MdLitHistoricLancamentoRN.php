@@ -536,6 +536,14 @@ class MdLitHistoricLancamentoRN extends InfraRN {
     $objMdLitHistLancDTO->setStrSinSuspenso($objMdLitLancamentoDTO->getStrSinSuspenso());
     $objMdLitHistLancDTO->setNumIdMdLitNumeroInteressado($objMdLitLancamentoDTO->getNumIdMdLitNumeroInteressado());
 
+    if ($objMdLitLancamentoDTO->isSetNumIdMdLitSituacaoDecisaoDefin()){
+        $objMdLitHistLancDTO->setNumIdMdLitSituacaoDecisaoDefin($objMdLitLancamentoDTO->getNumIdMdLitSituacaoDecisaoDefin());
+    }
+
+    if ($objMdLitLancamentoDTO->isSetDtaDecisaoDefinitiva()){
+        $objMdLitHistLancDTO->setDtaDecisaoDefinitiva($objMdLitLancamentoDTO->getDtaDecisaoDefinitiva());
+    }
+
     if($objMdLitLancamentoDTO->isSetNumIdMdLitIntegracao()){
         $objMdLitHistLancDTO->setNumIdMdLitIntegracao($objMdLitLancamentoDTO->getNumIdMdLitIntegracao());
     }
@@ -563,6 +571,22 @@ class MdLitHistoricLancamentoRN extends InfraRN {
 
     if($objMdLitLancamentoDTO->isSetDtaConstituicaoDefinitiva()){
       $objMdLitHistLancDTO->setDtaConstituicaoDefinitiva($objMdLitLancamentoDTO->getDtaConstituicaoDefinitiva());
+    }
+
+    if($objMdLitLancamentoDTO->isSetDtaApresentacaoRecurso()){
+        $objMdLitHistLancDTO->setDtaApresentacaoRecurso($objMdLitLancamentoDTO->getDtaApresentacaoRecurso());
+    }
+
+    if($objMdLitLancamentoDTO->isSetNumIdSituacaoDecisao()){
+        $objMdLitHistLancDTO->setNumIdSituacaoDecisao($objMdLitLancamentoDTO->getNumIdSituacaoDecisao());
+    }
+
+    if($objMdLitLancamentoDTO->isSetNumIdSituacaoIntimacao()){
+      $objMdLitHistLancDTO->setNumIdSituacaoIntimacao($objMdLitLancamentoDTO->getNumIdSituacaoIntimacao());
+    }
+
+    if($objMdLitLancamentoDTO->isSetNumIdSituacaoDecisao()){
+      $objMdLitHistLancDTO->setNumIdSituacaoDecisao($objMdLitLancamentoDTO->getNumIdSituacaoDecisao());
     }
 
     return $objMdLitHistLancDTO;

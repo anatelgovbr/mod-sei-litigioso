@@ -686,6 +686,22 @@
                         $objMdLitNumeroInteressadoRN = new MdLitNumeroInteressadoRN();
                         $objMdLitNumeroInteressadoRN->cadastrar($arrDadosInteressados);
 
+                    } else {
+                        $objMdLitNumeroInteressadoBD = new MdLitNumeroInteressadoBD($this->getObjInfraIBanco());
+                        foreach ($arrIdContatoAtivo as $idContatoAtivo){
+                            $objMdLitDadoInteressadoDTO = new MdLitDadoInteressadoDTO();
+                            $objMdLitDadoInteressadoDTO->retTodos(false);
+                            $objMdLitDadoInteressadoDTO->setNumIdContato($idContatoAtivo);
+                            $objMdLitDadoInteressadoDTO->setNumIdMdLitControle($objControleLitigiosoDTO->getNumIdControleLitigioso());
+                            $objMdLitDadoInteressadoDTO->setNumMaxRegistrosRetorno(1);
+                            $objMdLitDadoInteressadoDTO = $objMdLitDadoInteressadoRN->consultar($objMdLitDadoInteressadoDTO);
+
+                            //populando o objeto
+                            $objMdLitNumeroInteressadoDTO = new MdLitNumeroInteressadoDTO();
+                            $objMdLitNumeroInteressadoDTO->setNumIdMdLitDadoInteressado($objMdLitDadoInteressadoDTO->getNumIdMdLitDadoInteressado());
+
+                            $objMdLitNumeroInteressadoBD->cadastrar($objMdLitNumeroInteressadoDTO);
+                        }
                     }
 
                     // Excluir dado interessado

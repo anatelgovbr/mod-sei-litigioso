@@ -24,18 +24,57 @@ class MdLitSituacaoLancamIntINT extends InfraINT {
         return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $arrObjMdLitSituacaoLancamIntDTO, 'IdMdLitSituacaoLancamInt', 'NomeIntegracao');
     }
 
-    public static function montarSelectCampoDestino($codigoSelect = '')
+    public static function montarSelectCampoDestino($arrParametroSaida, $objMdLitSituacaoLancamIntDTO, $itemSei)
     {
-        $arrDados =[
-            'Código' => MdLitSituacaoLancamIntRN::$CODIGO,
-            'Descrição' => MdLitSituacaoLancamIntRN::$DESCRICAO];
-        $str = '<option  value=""> </option>';;
-        foreach($arrDados as  $key => $dado){
-            $selected = $codigoSelect == $dado ? 'selected=selected' : '';
-            $str .= '<option '.$selected.' value="'.$dado.'"> '.$key.' </option>';
+        $chaveUnica = false;
+        $str = '<option  value=""> </option>';
+        foreach ($arrParametroSaida as $key=>$arrayParam) {
+            if(is_array($arrayParam)) {
+                ksort($arrayParam);
+                foreach ($arrayParam as $chave => $item) {
+                    $codigoSelect = "";
+                    if($objMdLitSituacaoLancamIntDTO) {
+                        if(MdLitServicoIntegracaoRN::$CODIGO == $itemSei)
+                            $codigoSelect = $objMdLitSituacaoLancamIntDTO->getStrMapeamentoCodigo();
+                        elseif(MdLitServicoIntegracaoRN::$DESCRICAO == $itemSei)
+                            $codigoSelect = $objMdLitSituacaoLancamIntDTO->getStrMapeamentoDescricao();
+
+                        if($objMdLitSituacaoLancamIntDTO->getStrChaveUnica() == $codigoSelect) {
+                            $chaveUnica = true;
+                        }
+                    }
+                    if(is_array($item)){
+                        foreach($item as $chaveItem => $valor) {
+                            $chaveFormatada = $key . " - " . $chave . " - " . $chaveItem;
+                            $value = $chave . " - " . $chaveItem;
+                            $selected = $codigoSelect == $value ? 'selected=selected' : '';
+                            $str .= '<option '.$selected.' value="'.$value.'"> '.$chaveFormatada.' </option>';
+                        }
+                    } else {
+                        $chaveFormatada = $key . " - " . $item;
+                        $value = $item;
+                        $selected = $codigoSelect == $value ? 'selected=selected' : '';
+                        $str .= '<option '.$selected.' value="'.$value.'"> '.$chaveFormatada.' </option>';
+                    }
+                }
+            } else {
+                $codigoSelect = "";
+                if($objMdLitSituacaoLancamIntDTO) {
+                    if(MdLitServicoIntegracaoRN::$CODIGO == $itemSei)
+                        $codigoSelect = $objMdLitSituacaoLancamIntDTO->getStrMapeamentoCodigo();
+                    elseif(MdLitServicoIntegracaoRN::$DESCRICAO == $itemSei)
+                        $codigoSelect = $objMdLitSituacaoLancamIntDTO->getStrMapeamentoDescricao();
+
+                    if($objMdLitSituacaoLancamIntDTO->getStrChaveUnica() == $codigoSelect) {
+                        $chaveUnica = true;
+                    }
+                }
+                $selected = $codigoSelect == $arrayParam ? 'selected=selected' : '';
+                $str .= '<option '.$selected.' value="'.$arrayParam.'"> '.$arrayParam.' </option>';
+            }
         }
 
-        return $str;
+        return array('select' => $str,'chaveUnica'=> $chaveUnica );
     }
 
     public static function montarTabelaParamSaida(MdLitSoapClienteRN $objMdLitSoapClienteRN, $operacao, $objMdLitSituacaoLancamIntDTO = null){
@@ -52,37 +91,35 @@ class MdLitSituacaoLancamIntINT extends InfraINT {
 
             $strResultadoParamSaida .= '<table width="100%" id="tableParametroSaida" class="infraTable" summary="' . $strSumarioTabela . '">' . "\n";
             $strResultadoParamSaida .= '<tr>';
-
-            $strResultadoParamSaida .= '<th class="infraTh" width="10%">&nbsp;Dados de saída&nbsp;</th>' . "\n";
-            $strResultadoParamSaida .= '<th class="infraTh" width="30%">&nbsp;Campo de destino no SEI&nbsp;</th>' . "\n";
-            $strResultadoParamSaida .= '<th class="infraTh" width="5%">&nbsp;Chave única da integração&nbsp;</th>' . "\n";
+            $strResultadoParamSaida .= '<th class="infraTh" width="40%">&nbsp;Campo de destino no SEI&nbsp;</th>' . "\n";
+            $strResultadoParamSaida .= '<th class="infraTh" width="50%">&nbsp;Dados de saída&nbsp;</th>' . "\n";
+            $strResultadoParamSaida .= '<th class="infraTh" width="10%">&nbsp;Chave única da integração&nbsp;</th>' . "\n";
             $strResultadoParamSaida .= '</tr>' . "\n";
             $strCssTr = '';
 
-            for ($i = 0; $i < $numRegistrosParametroSaida; $i++) {
-                $selected = null;
-                if($objMdLitSituacaoLancamIntDTO){
-                    if($objMdLitSituacaoLancamIntDTO->getStrMapeamentoCodigo() == $arrParametroSaida[$i])
-                        $selected = MdLitSituacaoLancamIntRN::$CODIGO;
-                    elseif($objMdLitSituacaoLancamIntDTO->getStrMapeamentoDescricao() == $arrParametroSaida[$i])
-                        $selected = MdLitSituacaoLancamIntRN::$DESCRICAO;
-                }
-                $strItensSelCampoDestino = MdLitSituacaoLancamIntINT::montarSelectCampoDestino($selected);
+            $arrDados =[
+                'Código' => MdLitSituacaoLancamIntRN::$CODIGO,
+                'Descrição' => MdLitSituacaoLancamIntRN::$DESCRICAO];
+
+            $i = 0;
+            foreach ($arrDados as $key => $dado) {
+                $strItensSelCampoDestino = MdLitSituacaoLancamIntINT::montarSelectCampoDestino($arrParametroSaida, $objMdLitSituacaoLancamIntDTO, $dado);
                 $idLinha = $i;
 
                 $strCssTr = '<tr id="paramSaidaTable_' . $idLinha . '" class="infraTrClara">';
-                $checked = $objMdLitSituacaoLancamIntDTO ?($arrParametroSaida[$i] == $objMdLitSituacaoLancamIntDTO->getStrChaveUnica() ? 'checked="checked"' : '' ): '';
+                $checked = $strItensSelCampoDestino['chaveUnica'] ? 'checked="checked"' : '';
                 $disable = $checked == ''? 'disabled="disabled"': '';
 
                 $strResultadoParamSaida .= $strCssTr;
                 $strResultadoParamSaida .= "<td id='campo_$idLinha>";
-                $strResultadoParamSaida .= "<input type='hidden' name='hdnArrayDadosSaida[$i]' value='{$arrParametroSaida[$i]}' />";
-                $strResultadoParamSaida .= PaginaSEI::tratarHTML($arrParametroSaida[$i]);
+                $strResultadoParamSaida .= "<input type='hidden' name='hdnArrayDadosSaida[$i]' value='{$arrParametroSaida[$dado]}' />";
+                $strResultadoParamSaida .= $key;
                 $strResultadoParamSaida .= "</td>";
-                $strResultadoParamSaida .= "<td align='center'><select  class='form-control' id='campoDestino_$idLinha' name='campoDestino[$arrParametroSaida[$i]]' onchange='mudarcampoDestino(this)'>{$strItensSelCampoDestino}</select></td>";
-                $strResultadoParamSaida .= "<td align='center'><div class='infraRadioDiv'><input type='radio'name='chaveUnicaDadosSaida' value='{$arrParametroSaida[$i]}' $checked id='chaveUnicaDadosSaida_{$idLinha}' $disable class='infraRadioInput'><label class='infraRadioLabel' for='chaveUnicaDadosSaida_{$idLinha}'></div></label></td>";
+                $strResultadoParamSaida .= "<td align='center'><select  class='form-control' id='campoDestino_$idLinha' name='campoDestino[$dado]' onchange='mudarcampoDestino(this)'>{$strItensSelCampoDestino['select']}</select></td>";
+                $strResultadoParamSaida .= "<td align='center'><div class='infraRadioDiv'><input type='radio'name='chaveUnicaDadosSaida' value='{$key}' $checked id='chaveUnicaDadosSaida_{$idLinha}' $disable class='infraRadioInput'><label class='infraRadioLabel' for='chaveUnicaDadosSaida_{$idLinha}'></div></label></td>";
 
                 $strResultadoParamSaida .= '</tr>' . "\n";
+                $i++;
             }
             $strResultadoParamSaida .= '</table>';
         }
@@ -151,7 +188,7 @@ class MdLitSituacaoLancamIntINT extends InfraINT {
 
                 // descricao
                 $strResultado .= "<td id='descricao_$idLinha'>";
-                $strResultado .= $objMdLitSituacaoLancamIntDTO->isSetStrMapeamentoDescricao() ? (PaginaSEI::tratarHTML($arrResultadoWebService[$i][$objMdLitSituacaoLancamIntDTO->getStrMapeamentoDescricao()])): '';
+                $strResultado .= $objMdLitSituacaoLancamIntDTO->isSetStrMapeamentoDescricao() ? (PaginaSEI::tratarHTML(utf8_decode($arrResultadoWebService[$i][$objMdLitSituacaoLancamIntDTO->getStrMapeamentoDescricao()]))): '';
                 $strResultado .= "</td>";
 
                 $codigo = trim($arrResultadoWebService[$i][$objMdLitSituacaoLancamIntDTO->getStrChaveUnica()]);

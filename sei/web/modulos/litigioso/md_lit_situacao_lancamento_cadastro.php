@@ -410,7 +410,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                                     <a id="btAjuda" <?= PaginaSEI::montarTitleTooltip($strToolTipLblMan, 'Ajuda') ?>
                                         tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                                         <img border="0"
-                                                src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg?<?= Icone::VERSAO ?>"
+                                                src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg<?= Icone::VERSAO ?>"
                                                 class="infraImgModulo"/>
                                     </a>
                                 </label>
@@ -480,13 +480,13 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     </div>
                 </div>
             </div>
-            <div class="row" id="gridOperacao" style="display: none">
+            <div class="row" id="gridOperacao">
                 <div class="col-sm-12 col-md-12 col-lg-10 col-xl-9">
                     <label class="infraLabelObrigatorio" id="lbloperacao" for="txtOperacao">Operação:
                         <a id="btAjuda" <?= PaginaSEI::montarTitleTooltip($strToolTipEnd, 'Ajuda') ?>
                             tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                             <img border="0"
-                                    src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg?<?= Icone::VERSAO ?>"
+                                    src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg<?= Icone::VERSAO ?>"
                                     class="infraImgModulo"/>
                         </a>
                     </label>

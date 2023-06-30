@@ -70,7 +70,7 @@
             </div>
             <!--  Créditos do Processo -->
             <div class="row" style="display: none;" id="divCreditoProcesso">
-                <div class="col-sm-12 col-md-4 col-lg-3 col-xl-2">
+                <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
                     <label id="lblCreditoProcesso" name="lblCreditoProcesso"> Créditos do Processo: </label>
                     <select class="infraSelect form-control" id="selCreditosProcesso" name="selCreditosProcesso"
                             onchange="mudarCreditosProcesso(this)">
@@ -188,152 +188,186 @@
                     <!--Data do Decurso do Prazo para Defesa -->
                     <div id="divDataGestaoMulta">
                         <div class="row linha">
-                            <div class="col-sm-12 col-md-12 col-lg-9 col-xl-8">
+                            <div class="col-sm-12 col-md-12 col-lg-10 col-xl-10">
                                 <div class="form-group">
-                                    <label class="infraLabelObrigatorio" id="lblDtDecursoPrazo" name="lblDtDecursoPrazo"
+                                    <label class="infraLabelOpcional" id="lblDtDecursoPrazo" name="lblDtDecursoPrazo"
                                         for="txtDtDecursoPrazo">Data do Decurso do Prazo para Defesa:</label>
+                                    <a style="margin-left: 5px;; margin-top: 6px;"
+                                       id="btAjudaDtDecursoPrazo" <?= PaginaSEI::montarTitleTooltip('A  Data do Decurso do Prazo para Defesa é calculada automaticamente a partir da Data da Intimação da Instauração, em quantidade de dias previamente definida na Parametrização de Situações.', 'Ajuda') ?>
+                                       tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                        <img id="imgAjudaDtDecursoPrazo" border="0"
+                                             src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
+                                             class="infraImg imgAjudaCtrlProcLit"/>
+                                    </a>
                                     <div class="input-group mb-3">
-                                        <input class="campoData infraText" onchange="verificarMudancaMulta();"
+                                        <input class="campoData infraText campoDisable" onchange="verificarMudancaMulta();"
                                             type="text"
                                             id="txtDtDecursoPrazo"
                                             name="txtDtDecursoPrazo"
                                             onkeypress="return infraMascara(this, event, '##/##/####');"
                                             value="<?= $dataDecursoPrazoDefesa ?>"
-                                            data-valor-antigo="<?= $dataDecursoPrazoDefesa ?>"/>
-                                        <img src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/calendario.svg?<?= Icone::VERSAO ?>"
-                                            title="Selecionar Data do Decurso do Prazo para Defesa"
-                                            alt="Selecionar Data do Decurso do Prazo para Defesa"
-                                            class="infraImg"
-                                            onclick="infraCalendario('txtDtDecursoPrazo',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>
-
-                                        <a style="margin-left: 5px;; margin-top: 6px;"
-                                        id="btAjudaDtDecursoPrazo" <?= PaginaSEI::montarTitleTooltip('A Data do Decurso do Prazo para Defesa é calculada automaticamente a partir da Data da Intimação da Instauração, em quantidade de dias previamente definida na Parametrização de Situações.  \n \n O sistema faz uma sugestão automática que deve ser conferida e ajustada se for o caso.', 'Ajuda') ?>
-                                        tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
-                                            <img id="imgAjudaDtDecursoPrazo" border="0"
-                                                src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
-                                                class="infraImg imgAjudaCtrlProcLit"/>
-                                        </a>
+                                            data-valor-antigo="<?= $dataDecursoPrazoDefesa ?>"
+                                            disabled/>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                         <!--Data da Decisão de Aplicação de Multa -->
                         <div class="row">
-                            <div class="col-sm-12 col-md-12 col-lg-9 col-xl-8">
+                            <div class="col-sm-12 col-md-12 col-lg-10 col-xl-10">
                                 <div class="form-group">
-                                    <label class="infraLabelObrigatorio" id="lblDtDecisaoAplicacaoMulta"
+                                    <label class="infraLabelOpcional" id="lblDocumentoAplicacaoMulta"
+                                           name="lblDocumentoAplicacaoMulta" for="txtDocumentoAplicacaoMulta">Documento da Decisão de Aplicação da Multa:</label>
+                                    <a style="margin-left: 5px;; margin-top: 6px;"
+                                       id="btAjudaDocumentoAplicacaoMulta" <?= PaginaSEI::montarTitleTooltip('Este campo informa o número SEI do Documento da Decisão de Aplicação da Multa, e deve se referir sempre à primeira decisão de mérito válida do Processo.', 'Ajuda') ?>
+                                       tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                        <img id="imgAjudaDtDecisaoAplicacaoMulta" border="0"
+                                             src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
+                                             class="infraImg imgAjudaCtrlProcLit"/>
+                                    </a>
+                                    <div class="input-group mb-3">
+                                        <input class="campoData infraText campoDisable"
+                                               type="text" id="txtSituacaoDocOrigem" name="txtSituacaoDocOrigem"
+                                               value="" disabled />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Data da Decisão de Aplicação de Multa -->
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 col-lg-10 col-xl-10">
+                                <div class="form-group">
+                                    <label class="infraLabelOpcional" id="lblDtDecisaoAplicacaoMulta"
                                         name="lblDtDecisaoAplicacaoMulta" for="txtDecisaoAplicacaoMulta">Data da Decisão
                                         de
                                         Aplicação da Multa:</label>
+                                    <a style="margin-left: 5px;; margin-top: 6px;"
+                                       id="btAjudaDtDecisaoAplicacaoMulta" <?= PaginaSEI::montarTitleTooltip('A Data da Decisão de Aplicação da Multa corresponde a Data de Assinatura do Documento Decisório.', 'Ajuda') ?>
+                                       tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                        <img id="imgAjudaDtDecisaoAplicacaoMulta" border="0"
+                                             src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
+                                             class="infraImg imgAjudaCtrlProcLit"/>
+                                    </a>
                                     <div class="input-group mb-3">
                                         <input onchange="verificarMudancaMulta();return validarFormatoData(this)"
-                                            class="campoData infraText"
+                                            class="campoData infraText campoDisable"
                                             type="text" id="txtDecisaoAplicacaoMulta" name="txtDecisaoAplicacaoMulta"
                                             onkeypress="return infraMascara(this, event, '##/##/####');"
-                                            value="<?= $dataDecisaoAplicacaoMulta ?>"/>
-                                        <img src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/calendario.svg?<?= Icone::VERSAO ?>"
-                                            title="Selecionar Data da Decisão de Aplicação da Multa"
-                                            alt="Selecionar Data da Decisão de Aplicação da Multa"
-                                            class="infraImg"
-                                            onclick="infraCalendario('txtDecisaoAplicacaoMulta',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>
-                                        <a style="margin-left: 5px;; margin-top: 6px;"
-                                        id="btAjudaDtDecisaoAplicacaoMulta" <?= PaginaSEI::montarTitleTooltip('Deve informar a data correspondente à primeira Situação Decisória que aplicou Multa. \n \n O sistema faz uma sugestão automática que deve ser conferida e ajustada se for o caso.', 'Ajuda') ?>
-                                        tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
-                                            <img id="imgAjudaDtDecisaoAplicacaoMulta" border="0"
-                                                src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
-                                                class="infraImg imgAjudaCtrlProcLit"/>
-                                        </a>
+                                            value="<?= $dataDecisaoAplicacaoMulta ?>" disabled
+                                            campo-mapea-param-entrada="<?= in_array('dataAplicacaoSancao', $arrCampoMapeaParamEntrada) ? 'S' : 'N' ?>"/>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <!--Data da Intimação da Decisão de Aplicação de Multa -->
                         <div class="row">
-                            <div class="col-sm-12 col-md-12 col-lg-9 col-xl-8">
+                            <div class="col-sm-12 col-md-12 col-lg-10 col-xl-10">
                                 <div class="form-group">
                                     <label class="infraLabelOpcional" id="lblDtIntimacaoAplMulta"
                                         name="lblDtIntimacaoAplMulta"
                                         for="txtDtIntimacaoAplMulta">Data da Intimação da Decisão de Aplicação da
                                         Multa:</label>
+                                    <a style="margin-left: 5px;; margin-top: 6px;"
+                                       id="btAjudaDtIntimacaoAplMulta" <?= PaginaSEI::montarTitleTooltip('Corresponde à data da Intimação da Decisão de aplicação de Multa e exigirá a Retificação de Lançamento se este campo estiver integrado com o sistema de arrecadação. \n \n O sistema faz uma sugestão automática que deve ser conferida e ajustada,  se for o caso, a partir da Lista de Situações, na coluna Ações, por meio do botão Alterar Item.', 'Ajuda') ?>
+                                       tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                        <img id="imgAjudaDtIntimacaoAplMulta" border="0"
+                                             src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
+                                             class="infraImg imgAjudaCtrlProcLit"/>
+                                    </a>
                                     <div class="input-group mb-3" id="divDtaIntimacaoAplMulta">
-                                        <input onchange="armazenarDataIntimacaoMulta(this); verificarMudancaMulta(); calcularDecursoPrazoRecurso(); return validarFormatoData(this);"
-                                            class="campoData infraText" type="text"
+                                        <input onchange="armazenarDataIntimacaoMulta(this); verificarMudancaMulta(); return validarFormatoData(this);"
+                                            class="campoData infraText campoDisable" type="text"
                                             id="txtDtIntimacaoAplMulta"
                                             name="txtDtIntimacaoAplMulta"
-                                            onkeypress="return infraMascara(this, event, '##/##/####');" value=""/>
-                                        <img src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/calendario.svg?<?= Icone::VERSAO ?>"
-                                            title="Selecionar Data da Intimação da Decisão de Aplicação da Multa"
-                                            alt="Selecionar Data da Intimação da Decisão de Aplicação da Multa"
-                                            class="infraImg"
-                                            onclick="infraCalendario('txtDtIntimacaoAplMulta',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>
-                                        <a style="margin-left: 5px;; margin-top: 6px;"
-                                        id="btAjudaDtIntimacaoAplMulta" <?= PaginaSEI::montarTitleTooltip('Deve informar a data correspondente à Intimação da Situação Decisória que aplicou a Multa. Esta data não é de informação obrigatória no início, mas passa a ser obrigatória ao marcar a Situação de Intimação correspondente à Decisão, inclusive exigindo Retificação de Lançamento se este campo estiver integrado com o sistema de arrecadação. \n \n O sistema faz uma sugestão automática que deve ser conferida e ajustada se for o caso.', 'Ajuda') ?>
-                                        tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
-                                            <img id="imgAjudaDtIntimacaoAplMulta" border="0"
-                                                src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
-                                                class="infraImg imgAjudaCtrlProcLit"/>
-                                        </a>
+                                            onkeypress="return infraMascara(this, event, '##/##/####');" value="" disabled
+                                            campo-mapea-param-entrada="<?= in_array('dataNotificacaoInicial', $arrCampoMapeaParamEntrada) ? 'S' : 'N' ?>"/>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <!--Data do Decurso do Prazo para Recurso -->
                         <div class="row" id="divDtaDecursoPrazoRecurso">
-                            <div class="col-sm-12 col-md-12 col-lg-9 col-xl-8">
+                            <div class="col-sm-12 col-md-12 col-lg-10 col-xl-10">
                                 <div class="form-group">
                                     <label class="infraLabelOpcional" id="lblDtDecursoPrazoRecurso"
                                         name="lblDtDecursoPrazoRecurso"
                                         for="txtDtDecursoPrazoRecurso">Data do Decurso do Prazo para Recurso:</label>
+                                    <a style="margin-left: 5px;; margin-top: 6px;"
+                                       id="btAjudaDtDecursoPrazoRecurso" <?= PaginaSEI::montarTitleTooltip('A Data do Decurso do Prazo para Recurso é calculada automaticamente, a contar da Data da Intimação da Decisão de Aplicação da Multa correspondente, em quantidade de dias previamente definida na Parametrização de Situações, e exigirá a Retificação de Lançamento se este campo estiver integrado com o sistema de arrecadação.', 'Ajuda') ?>
+                                       tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                        <img id="imgAjudaDtDecursoPrazoRecurso" border="0"
+                                             src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
+                                             class="infraImg imgAjudaCtrlProcLit"/>
+                                    </a>
                                     <div class="input-group mb-3">
-                                        <input onchange="return validarFormatoData(this);"
-                                            class="campoData infraText"
+                                        <input onchange="return validarFormatoData(this);verificarMudancaMulta();"
+                                            class="campoData infraText campoDisable"
                                             type="text"
                                             id="txtDtDecursoPrazoRecurso" name="txtDtDecursoPrazoRecurso"
-                                            onkeypress="return infraMascara(this, event, '##/##/####');" value=""/>
-                                        <img src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/calendario.svg?<?= Icone::VERSAO ?>"
-                                            title="Selecionar Data do Decurso do Prazo para Recurso"
-                                            alt="Selecionar Data do Decurso do Prazo para Recurso"
-                                            class="infraImg"
-                                            onclick="infraCalendario('txtDtDecursoPrazoRecurso',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>
-                                        <a style="margin-left: 5px;; margin-top: 6px;"
-                                        id="btAjudaDtDecursoPrazoRecurso" <?= PaginaSEI::montarTitleTooltip('Deve informar a data referente ao Decurso do Prazo para Recurso, a contar da Data da Intimação da Decisão de Aplicação da Multa correspondente. Esta data não é de informação obrigatória no início, mas passa a ser obrigatória ao marcar a Situação de Intimação correspondente à Decisão, inclusive exigindo Retificação de Lançamento se este campo estiver integrado com o sistema de arrecadação.\n \n O sistema faz uma sugestão automática que deve ser conferida e ajustada se for o caso.', 'Ajuda') ?>
-                                        tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
-                                            <img id="imgAjudaDtDecursoPrazoRecurso" border="0"
-                                                src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
-                                                class="infraImg imgAjudaCtrlProcLit"/>
-                                        </a>
+                                            onkeypress="return infraMascara(this, event, '##/##/####');" value=""
+                                            campo-mapea-param-entrada="<?= in_array('dataDecursoPrazoRecursoImpugnacao', $arrCampoMapeaParamEntrada) ? 'S' : 'N' ?>" disabled/>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <!--Data de Vencimento -->
                         <div class="row">
-                            <div class="col-sm-12 col-md-12 col-lg-9 col-xl-8">
+                            <div class="col-sm-12 col-md-12 col-lg-10 col-xl-10">
                                 <div class="form-group">
                                     <label class="infraLabelObrigatorio" id="lblDtVencimento" name="lblDtVencimento"
                                         for="txtDtVencimento">Data de Vencimento:</label>
+                                    <a style="margin-left: 5px;; margin-top: 6px;"
+                                       id="btAjudaDtVencimento" <?= PaginaSEI::montarTitleTooltip('A Data de Vencimento para o pagamento da Multa deve ser informada neste campo. \n \n O sistema faz uma sugestão automática a partir do que foi sugerido para o campo de Data da Decisão de Aplicação da Multa acrescido de 40 dias, mas que deve ser conferida e ajustada se for o caso.', 'Ajuda') ?>
+                                       tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                        <img id="imgAjudaDtVencimento" border="0"
+                                             src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
+                                             class="infraImg imgAjudaCtrlProcLit"/>
+                                    </a>
                                     <div class="input-group mb-3">
-                                        <input onchange="verificarMudancaMulta();return validarFormatoData(this);"
+                                        <input onchange="verificarMudancaMulta(); return validarFormatoData(this);"
                                             class="campoData infraText"
                                             type="text" id="txtDtVencimento" name="txtDtVencimento"
                                             onkeypress="return infraMascara(this, event, '##/##/####');"
-                                            value="<?= $dataVencimento ?>"/>
+                                            value="<?= $dataVencimento ?>"
+                                            campo-mapea-param-entrada="<?= in_array('dataVencimento', $arrCampoMapeaParamEntrada) ? 'S' : 'N' ?>"/>
                                         <img src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/calendario.svg?<?= Icone::VERSAO ?>"
                                             title="Selecionar Data de Vencimento" alt="Selecionar Data de Vencimento"
                                             class="infraImg"
                                             onclick="infraCalendario('txtDtVencimento',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>
-
-                                        <a style="margin-left: 5px;; margin-top: 6px;"
-                                        id="btAjudaDtVencimento" <?= PaginaSEI::montarTitleTooltip('Deve ser informada a Data de Vencimento para o pagamento da Multa. \n \n O sistema faz uma sugestão automática a partir do que foi sugerido para o campo de Data da Decisão de Aplicação da Multa acrescido de 40 dias, mas que deve ser conferida e ajustada se for o caso.', 'Ajuda') ?>
-                                        tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
-                                            <img id="imgAjudaDtVencimento" border="0"
-                                                src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
-                                                class="infraImg imgAjudaCtrlProcLit"/>
-                                        </a>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        <!--Data de Apresentação do Recurso -->
+                        <div class="row" id="apresentacao-recurso" style="<?= $dtaApresentacaoRecurso ? '' : 'display: none' ?> ">
+                            <div class="col-sm-12 col-md-12 col-lg-10 col-xl-10">
+                                <div class="form-group">
+                                    <label class="infraLabelOpcional" id="lblDtApresentacaoRecurso"
+                                           name="lblDtApresentacaoRecurso" for="txtDtApresentacaoRecurso">Data de Apresentação do Recurso:</label>
+                                    <a style="margin-left: 5px;; margin-top: 6px;"
+                                       id="btAjudaDtIntConstDef" <?= PaginaSEI::montarTitleTooltip('A Data de Apresentação do Recurso é a data do protocolo do Documento no Órgão e exigirá a Retificação de Lançamento se este campo estiver integrado com o sistema de arrecadação. \n \n A alteração desta data é possível a partir da Lista de Situações, na coluna Ações, por meio do botão Alterar Item.', 'Ajuda') ?>
+                                       tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                        <img id="imgAjudaDtIntConstDef" border="0"
+                                             src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
+                                             class="infraImg imgAjudaCtrlProcLit"/>
+                                    </a>
+                                    <div class="input-group mb-3">
+                                        <input onchange="verificarMudancaMulta()"
+                                               class="campoData infraText campoDisable"
+                                               type="text"
+                                               id="txtDtApresentacaoRecurso"
+                                               name="txtDtApresentacaoRecurso"
+                                               onkeypress="return infraMascara(this, event, '##/##/####');"
+                                               value="" disabled
+                                               campo-mapea-param-entrada="<?= in_array('dataApresRecursoImpugnacao', $arrCampoMapeaParamEntrada) ? 'S' : 'N' ?>"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!--Interessado -->
                         <div class="row">
                             <div class="col-sm-12 col-md-11 col-lg-9 col-xl-8">
@@ -348,19 +382,22 @@
                             </div>
                         </div>
                         <!--Numero do interessado -->
-                        <div class="row" id="div-numero">
-                            <div class="col-sm-12 col-md-11 col-lg-9 col-xl-8">
-                                <div class="form-group">
-                                    <label class="infraLabelObrigatorio" id="lbNumeroInteressado"
-                                        name="lblNumeroInteressado"
-                                        for="txtDtVencimento">Número de Complemento do Interessado:</label>
-                                    <select class="infraSelect form-control" name="selNumeroInteressado"
-                                            id="selNumeroInteressado"
-                                            data-id-dado-interessado="<?= $objMdLitLancamentoDTO ? $objMdLitLancamentoDTO->getNumIdMdLitNumeroInteressado() : '' ?>" <?= $objMdLitLancamentoDTO ? 'disabled="disabled"' : '' ?>>
-                                    </select>
+                            <div class="row" id="div-numero">
+                                <div class="col-sm-12 col-md-11 col-lg-9 col-xl-8" style="<?php echo $objMdLitTipoControleDTO->getStrSinParamModalComplInteressado() == 'N' ? 'display:none' : ''; ?>">
+                                    <div class="form-group">
+                                        <label class="infraLabelObrigatorio" id="lbNumeroInteressado"
+                                            name="lblNumeroInteressado"
+                                            for="txtDtVencimento">Número de Complemento do Interessado:</label>
+                                        <select onchange="verificarMudancaMulta()"
+                                                class="infraSelect form-control"
+                                                name="selNumeroInteressado"
+                                                id="selNumeroInteressado"
+                                                data-id-dado-interessado="<?= $objMdLitLancamentoDTO ? $objMdLitLancamentoDTO->getNumIdMdLitNumeroInteressado() : '' ?>" <?= $objMdLitLancamentoDTO ? 'disabled="disabled"' : '' ?>
+                                                campo-mapea-param-entrada="<?= in_array('fistel', $arrCampoMapeaParamEntrada) ? 'S' : 'N' ?>"/>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
                     </div>
                 </div>
                 <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
@@ -384,40 +421,99 @@
                                 </div>
                             </div>
                         </div>
+                        <!--Documento Aplicação Sanção -->
+                        <div class="row nao-tem-constituicao">
+                            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                <div class="form-group">
+                                    <label class="infraLabelObrigatorio" id="lblDocumento" name="lblDocumento"
+                                           for="txtDocumento">Documento da Decisão Definitiva:</label>
+                                    <a style="margin-left: 5px;; margin-top: 6px;"
+                                       id="btAjudaDtIntConstDef" <?= PaginaSEI::montarTitleTooltip('Neste campo deve ser selecionado o documento referente à Decisão Definitiva de Aplicação da Multa.', 'Ajuda') ?>
+                                       tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                        <img id="imgAjudaDtIntConstDef" border="0"
+                                             src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
+                                             class="infraImg imgAjudaCtrlProcLit"/>
+                                    </a>
+                                    <select class="infraSelect form-control" name="selDocumento"
+                                            id="selDocumento" <?= $objMdLitLancamentoDTO ? 'disabled="disabled"' : '' ?>
+                                            onchange="atualizarDataDecisaoDefinitiva()"
+                                            campo-mapea-param-entrada="<?= in_array('numDocOrigem', $arrCampoMapeaParamEntrada) ? 'S' : 'N' ?>">
+                                        <?= $strComboDocumento ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Data da Decisão Definitiva -->
+                        <div class="row nao-tem-constituicao">
+                            <div class="col-sm-12 col-md-12 col-lg-10 col-xl-10">
+                                <div class="form-group">
+                                    <label class="infraLabelOpcional" id="lblDtDecisaoDefinitiva"
+                                           name="lblDtDecisaoDefinitiva" for="txtDtDecisaoDefinitiva">Data da
+                                        Decisão Definitiva:</label>
+                                    <a style="margin-left: 5px;; margin-top: 6px;"
+                                       id="btAjudaDtIntConstDef" <?= PaginaSEI::montarTitleTooltip('A Data da Decisão Definitiva é a data informada no cadastro da Situação referente à Decisão Definitiva de Aplicação da Multa. \n \n É importante conferir se o campo Data da Decisão Definitiva informa a data correta antes de constituir definitivamente o crédito. Caso seja necessário, a alteração desta data é possível a partir da Lista de Situações, na coluna Ações, por meio do botão Alterar Item. Essa alteração exigirá a Retificação de Lançamento se este campo estiver integrado com o sistema de arrecadação.', 'Ajuda') ?>
+                                       tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                        <img id="imgAjudaDtIntConstDef" border="0"
+                                             src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
+                                             class="infraImg imgAjudaCtrlProcLit"/>
+                                    </a>
+                                    <div class="input-group mb-3">
+                                        <input onchange="verificarMudancaMulta()"
+                                               class="campoData infraText campoDisable"
+                                               type="text" id="txtDtDecisaoDefinitiva"
+                                               name="txtDtDecisaoDefinitiva"
+                                               onkeypress="return infraMascara(this, event, '##/##/####');"
+                                               value="<?= $dtaDecisaoDefinitiva ?>" disabled
+                                               campo-mapea-param-entrada="<?= in_array('dataDecisaoDefinitiva', $arrCampoMapeaParamEntrada) ? 'S' : 'N' ?>"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <!--Data da Constituição -->
                         <div class="row tem-constituicao" id="divtxtDtConstituicao" style="display: none">
-                            <div class="col-sm-12 col-md-12 col-lg-9 col-xl-8">
+                            <div class="col-sm-12 col-md-12 col-lg-10 col-xl-10">
                                 <div class="form-group">
                                     <label class="infraLabelObrigatorio" id="lblDtConstituicao" name="lblDtConstituicao"
                                         for="txtDtConstituicao">Data da Constituição Definitiva:</label>
+                                    <a style="margin-left: 5px;; margin-top: 6px;"
+                                       id="btAjudaDtConstDef" <?= PaginaSEI::montarTitleTooltip('Deve informar a data correspondente à Constituição Definitiva, que refere-se ao dia seguinte à finalização do prazo de 30 dias concedido para pagamento após a intimação da decisão definitiva. \n \n O sistema faz uma sugestão automática que deve ser conferida e ajustada se for o caso.', 'Ajuda') ?>
+                                       tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                        <img id="btAjudaDtConstDef" border="0"
+                                             src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
+                                             class="infraImg imgAjudaCtrlProcLit"/>
+                                    </a>
                                     <div class="input-group mb-3">
-                                        <input class="campoData infraText type="text" id="txtDtConstituicao"
-                                            name="txtDtConstituicao"
-                                            onkeypress="return infraMascara(this, event, '##/##/####');"
-                                            value="<?= $dtaConstituicaoDefinitiva ?>"/>
+                                        <input onchange="verificarMudancaMulta()"
+                                               class="campoData infraText"
+                                               type="text" id="txtDtConstituicao"
+                                               name="txtDtConstituicao"
+                                               onkeypress="return infraMascara(this, event, '##/##/####');"
+                                               value="<?= $dtaConstituicaoDefinitiva ?>"
+                                               campo-mapea-param-entrada="<?= in_array('dataConstituicao', $arrCampoMapeaParamEntrada) ? 'S' : 'N' ?>"/>
                                         <img src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/calendario.svg?<?= Icone::VERSAO ?>"
                                             title="Selecionar Data da Constituição Definitiva"
                                             alt="Selecionar Data da Constituição Definitiva"
                                             class="infraImg"
                                             onclick="infraCalendario('txtDtConstituicao',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>
-                                        <a style="margin-left: 5px;; margin-top: 6px;"
-                                        id="btAjudaDtConstDef" <?= PaginaSEI::montarTitleTooltip('Deve informar a data correspondente à Constituição Definitiva, que refere-se ao dia seguinte à finalização do prazo de 30 dias concedido para pagamento após a intimação da decisão final ou da sua publicação oficial. \n \n O sistema faz uma sugestão automática que deve ser conferida e ajustada se for o caso.', 'Ajuda') ?>
-                                        tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
-                                            <img id="btAjudaDtConstDef" border="0"
-                                                src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
-                                                class="infraImg imgAjudaCtrlProcLit"/>
-                                        </a>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <!--Data da Intimação da Constituição -->
                         <div class="row nao-tem-constituicao">
-                            <div class="col-sm-12 col-md-12 col-lg-9 col-xl-8">
+                            <div class="col-sm-12 col-md-12 col-lg-10 col-xl-10">
                                 <div class="form-group">
                                     <label class="infraLabelObrigatorio" id="lblDtIntimacaoConstituicao"
                                         name="lblDtIntimacaoConstituicao" for="txtDtIntimacaoConstituicao">Data da Intimação da
                                         Decisão Definitiva:</label>
+                                    <a style="margin-left: 5px;; margin-top: 6px;"
+                                       id="btAjudaDtIntConstDef" <?= PaginaSEI::montarTitleTooltip('Corresponde à data da Intimação da Decisão Definitiva de aplicação de Multa. \n \n Caso seja necessário alterar essa data, será exigida nova Constituição Definitiva ou a Retificação de Lançamento, se este campo estiver integrado com o sistema de arrecadação.', 'Ajuda') ?>
+                                       tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                        <img id="imgAjudaDtIntConstDef" border="0"
+                                             src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
+                                             class="infraImg imgAjudaCtrlProcLit"/>
+                                    </a>
                                     <div class="input-group mb-3">
                                         <input type="text" id="txtDtIntimacaoConstituicao"
                                             name="txtDtIntimacaoConstituicao"
@@ -431,13 +527,6 @@
                                             alt="Selecionar Data da Intimação da Constituição Definitiva"
                                             class="infraImg"
                                             onclick="infraCalendario('txtDtIntimacaoConstituicao',this,false,'<?= InfraData::getStrDataAtual() ?>');"/>
-                                        <a style="margin-left: 5px;; margin-top: 6px;"
-                                        id="btAjudaDtIntConstDef" <?= PaginaSEI::montarTitleTooltip('Corresponde à Data do Trânsito em Julgado indicada na Situação Conclusiva, que é replicada automaticamente para este campo. \n \n Somente em casos excepcionais, como trânsito em julgado em última instância, esta data da intimação poderá ser distinta da Data do Trânsito em Julgado.', 'Ajuda') ?>
-                                        tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
-                                            <img id="imgAjudaDtIntConstDef" border="0"
-                                                src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
-                                                class="infraImg imgAjudaCtrlProcLit"/>
-                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -448,11 +537,12 @@
                                 <div class="form-group">
                                     <br>
                                     <input type="checkbox" name="chkReducaoRenuncia" id="chkReducaoRenuncia" value="S" class="infraCheckbox"
-                                        onchange="verificarMudancaMulta()">
+                                        onchange="verificarMudancaMulta()"
+                                        campo-mapea-param-entrada="<?= in_array('desconto', $arrCampoMapeaParamEntrada) ? 'S' : 'N' ?>"/>
                                     <label class="infraLabelOpcional" id="lblReducaoRenuncia" name="lblReducaoRenuncia"
                                         for="chkReducaoRenuncia">Desconto decorrente da renúncia ao direito de recorrer</label>
                                     <a style="margin-left: 5px;; margin-top: 6px;"
-                                    id="btAjudaHouveConstituicao" <?= PaginaSEI::montarTitleTooltip('Esta opção deve ser marcada somente se o Interessado apresentou formalmente e tenha sido aceito pedido de Renúncia ao Direito de Recorrer, obtendo dessa forma a redução no valor da Multa, conforme regulamentação.\n \n Após a Constituição Definitiva ser realizada, apenas o Gestor do Controle Litigioso poderá efetivar correções materiais.', 'Ajuda') ?>
+                                    id="btAjudaHouveConstituicao" <?= PaginaSEI::montarTitleTooltip('Esta opção deve ser marcada somente se o Interessado apresentou formalmente e tenha sido aceito pedido de Renúncia ao Direito de Recorrer, obtendo dessa forma a redução no valor da Multa, conforme regulamentação. \n \n Após a Constituição Definitiva ser realizada, apenas o Gestor do Controle Litigioso poderá efetivar correções materiais.', 'Ajuda') ?>
                                     tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                                         <img id="imgAjudaHouveConstituicao" border="0"
                                             src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
@@ -486,8 +576,7 @@
 <input type="hidden" name="hdnVlDtUltimoPagamento" id="hdnVlDtUltimoPagamento" value=""/>
 <input type="hidden" name="hdnVlSaldoDevAtualizado" id="hdnVlSaldoDevAtualizado" value=""/>
 <input type="hidden" name="hdnVlCredConstituidoDef" id="hdnVlCredConstituidoDef" value=""/>
-<input type="hidden" name="hdnDtDecursoPrazo" id="hdnDtDecursoPrazo"
-       value="<?= $dataDecursoPrazoDefesa ?>"/>
+<input type="hidden" name="hdnDtDecursoPrazo" id="hdnDtDecursoPrazo" value="<?= $dataDecursoPrazoDefesa ?>"/>
 <input type="hidden" name="hdnTbVincularLancamento" id="hdnTbVincularLancamento" value=""/>
 <input type="hidden" name="hdnStrUltimaSituacao" id="hdnStrUltimaSituacao" value="<?= trim($strUltimaSituacao); ?>"/>
 <input type="hidden" name="hdnStrNomeUltimaSituacao" id="hdnStrNomeUltimaSituacao" value="<?= trim($strNomeUltimaSituacao); ?>"/>
@@ -517,5 +606,13 @@
 <input type="hidden" name="hdnSuspRazRecurso" id="hdnSuspRazRecurso" value=""/>
 <input type="hidden" name="btnCancelarLancamentoAtivo" id="btnCancelarLancamentoAtivo" value=""/>
 
-<!-- Hidden para retificar lan?amento-->
+<!-- Hidden para retificar lancamento-->
 <input type="hidden" name="hdnCreditosProcesso" id="hdnCreditosProcesso" value=""/>
+<input type="hidden" name="hdnDtDecisaoDefinitiva" id="hdnDtDecisaoDefinitiva" value=""/>
+<input type="hidden" name="hdnDtApresentacaoRecurso" id="hdnDtApresentacaoRecurso" value=""/>
+<input type="hidden" name="hdnDecisaoAplicacaoMulta" id="hdnDecisaoAplicacaoMulta" value=""/>
+<input type="hidden" name="hdnDtIntimacaoAplMulta" id="hdnDtIntimacaoAplMulta" value=""/>
+<input type="hidden" name="hdnIdSituacaoDecisao" id="hdnIdSituacaoDecisao" value=""/>
+<input type="hidden" name="hdnIdSituacaoIntimacao" id="hdnIdSituacaoIntimacao" value=""/>
+<input type="hidden" name="hdnIdSituacaoRecurso" id="hdnIdSituacaoRecurso" value=""/>
+<input type="hidden" name="hdnDtDecursoPrazoRecurso" id="hdnDtDecursoPrazoRecurso" value=""/>

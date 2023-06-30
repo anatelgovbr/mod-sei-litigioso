@@ -31,7 +31,10 @@ class MdLitRecursoLancamentoRN extends InfraRN {
         $objInfraException      = $objMdLitLancamentoRN->realizarValidacoesGerais($objMdLitIntegracaoDTO, $post, $objInfraException);
 
         $objMdLitLancamentoDTO->retTodos(false);
-        $objMdLitLancamentoDTO->setNumIdMdLitLancamento($post['selCreditosProcesso']);
+        $objMdLitLancamentoDTO->retDblCpfInteressado();
+        $objMdLitLancamentoDTO->retDblCnpjInteressado();
+
+      $objMdLitLancamentoDTO->setNumIdMdLitLancamento($post['selCreditosProcesso'] ? $post['selCreditosProcesso'] : $post['hdnCreditosProcesso']);
 
         $objMdLitLancamentoDTO = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
 
@@ -88,6 +91,18 @@ class MdLitRecursoLancamentoRN extends InfraRN {
                     $dtaProcesso = $arrData[2].'-'.$arrData[1].'-'.$arrData[0];//formato aaaa-mm-dd
                     $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $dtaProcesso;
                     break;
+
+                case MdLitMapearParamEntradaRN::$ID_PARAM_SUSPENDER_LANCAMENTO['CNPJ_CPF']:
+                    $val = $objMdLitLancamentoDTO->getDblCpfInteressado() ? $objMdLitLancamentoDTO->getDblCpfInteressado() : $objMdLitLancamentoDTO->getDblCnpjInteressado();
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $val;
+                    break;
+
+                case MdLitMapearParamEntradaRN::$ID_PARAM_SUSPENDER_LANCAMENTO['DTA_APRESENTACAO_RECURSO']:
+                    $arrData = explode('/', $objMdLitLancamentoDTO->getDtaApresentacaoRecurso() );
+                    $data = $arrData[2].'-'.$arrData[1].'-'.$arrData[0];//formato aaaa-mm-dd
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $data;
+                    break;
+
             }
 
         }
@@ -107,7 +122,10 @@ class MdLitRecursoLancamentoRN extends InfraRN {
         $objInfraException      = $objMdLitLancamentoRN->realizarValidacoesGerais($objMdLitIntegracaoDTO, $post, $objInfraException);
 
         $objMdLitLancamentoDTO->retTodos(false);
-        $objMdLitLancamentoDTO->setNumIdMdLitLancamento($post['selCreditosProcesso']);
+        $objMdLitLancamentoDTO->retDblCpfInteressado();
+        $objMdLitLancamentoDTO->retDblCnpjInteressado();
+
+      $objMdLitLancamentoDTO->setNumIdMdLitLancamento($post['selCreditosProcesso'] ? $post['selCreditosProcesso'] : $post['hdnCreditosProcesso']);
 
         $objMdLitLancamentoDTO = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
 
@@ -142,6 +160,11 @@ class MdLitRecursoLancamentoRN extends InfraRN {
                 case MdLitMapearParamEntradaRN::$ID_PARAM_CANCELAR_RECURSO['SISTEMA_ORIGEM']:
                     $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = MdLitLancamentoRN::$SISTEMA_ORIGEM;
                     break;
+
+                case MdLitMapearParamEntradaRN::$ID_PARAM_CANCELAR_RECURSO['CNPJ_CPF']:
+                    $val = $objMdLitLancamentoDTO->getDblCpfInteressado() ? $objMdLitLancamentoDTO->getDblCpfInteressado() : $objMdLitLancamentoDTO->getDblCnpjInteressado();
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $val;
+                    break;
             }
 
         }
@@ -162,7 +185,10 @@ class MdLitRecursoLancamentoRN extends InfraRN {
         $objMdLitSoapClienteRN->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
 
         $objMdLitLancamentoDTO->retTodos(false);
-        $objMdLitLancamentoDTO->setNumIdMdLitLancamento($post['selCreditosProcesso']);
+        $objMdLitLancamentoDTO->retDblCpfInteressado();
+        $objMdLitLancamentoDTO->retDblCnpjInteressado();
+
+      $objMdLitLancamentoDTO->setNumIdMdLitLancamento($post['selCreditosProcesso'] ? $post['selCreditosProcesso'] : $post['hdnCreditosProcesso']);
 
         $objMdLitLancamentoDTO = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
 
@@ -210,6 +236,11 @@ class MdLitRecursoLancamentoRN extends InfraRN {
 
                 case MdLitMapearParamEntradaRN::$ID_PARAM_DENEGAR_RECURSO['USUARIO_INCLUSAO']:
                     $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = SessaoSEI::getInstance()->getStrSiglaUsuario();
+                    break;
+
+                case MdLitMapearParamEntradaRN::$ID_PARAM_DENEGAR_RECURSO['CNPJ_CPF']:
+                    $val = $objMdLitLancamentoDTO->getDblCpfInteressado() ? $objMdLitLancamentoDTO->getDblCpfInteressado() : $objMdLitLancamentoDTO->getDblCnpjInteressado();
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $val;
                     break;
             }
 

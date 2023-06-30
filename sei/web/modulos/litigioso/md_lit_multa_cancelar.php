@@ -74,7 +74,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 <form id="frmCadastroCancelarLancamento" method="post" onsubmit="return OnSubmitForm();" action="<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'] .'&id_procedimento='.$_GET['id_procedimento'] ) ?>">
     <?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);?>
     <?php PaginaSEI::getInstance()->abrirAreaDados(null); ?>
-    
+
         <div class="row mb-3">
             <div class="col-sm-10 col-md-9 col-lg-8">
                 <label class="infraLabelObrigatorio"> Motivo do Cancelamento: </label>
@@ -87,9 +87,9 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         <div class="row">
             <div class="col-12">
                 <label class="infraLabelObrigatorio" > Justificativa do Cancelamento: </label>
-                <textarea rows="8" onkeypress="return infraLimitarTexto(this,event,250);" 
+                <textarea rows="8" onkeypress="return infraLimitarTexto(this,event,250);"
                         maxlength="250" class="form-control"
-                        name="txtJustificativaCancelamento" 
+                        name="txtJustificativaCancelamento"
                         id="txtJustificativaCancelamento"></textarea>
             </div>
         </div>
@@ -124,15 +124,20 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         }
         var optionsSelMotivo = document.getElementById('selMotivoCancelar').options;
 
-        window.opener.document.getElementById('hdnIdMotivoCancelamento').value      = document.getElementById('selMotivoCancelar').value;
-        window.opener.document.getElementById('hdnJustificativaCancelamento').value = document.getElementById('txtJustificativaCancelamento').value;
-        window.opener.document.getElementById('hdnIdMdLitFuncionalidade').value     = document.getElementById('hdnIdMdLitFuncionalidade').value;
-        window.opener.document.getElementById('hdnTxtMotivoCancelamento').value     = optionsSelMotivo[optionsSelMotivo.selectedIndex].text;
-        window.opener.document.getElementById('sbmCadastrarSituacao').click();
-        window.close();
+        window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnIdMotivoCancelamento').value      = document.getElementById('selMotivoCancelar').value;
+        window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnJustificativaCancelamento').value = document.getElementById('txtJustificativaCancelamento').value;
+        window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnIdMdLitFuncionalidade').value     = document.getElementById('hdnIdMdLitFuncionalidade').value;
+        window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnTxtMotivoCancelamento').value     = optionsSelMotivo[optionsSelMotivo.selectedIndex].text;
+        window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('sbmCadastrarSituacao').click();
+        $(window.top.document).find('div[id^=divInfraSparklingModalClose]').click();
 
         return false;
     }
+    $(document).ready(function() {
+        $('#btnFechar').click(function() {
+            $(window.top.document).find('div[id^=divInfraSparklingModalClose]').click();
+        });
+    });
 </script>
 
 <?

@@ -293,7 +293,7 @@ try {
             if ($_GET['acao'] != 'md_lit_tipo_controle_selecionar') {
 
                 //link para parametrizar dados complementares do interessado
-                if (empty($arrObjTipoControleLitigiosoDTO[$i]->getStrSinParamModalComplInteressado())) {
+                if ($arrObjTipoControleLitigiosoDTO[$i]->getStrSinParamModalComplInteressado() != "S") {
                     $strResultado .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_parametrizar_interessado_cadastrar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_tipo_processo_litigioso=' . $arrObjTipoControleLitigiosoDTO[$i]->getNumIdTipoControleLitigioso())) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/litigioso/imagens/svg/cog_vazia.svg?'.Icone::VERSAO.'" title="Parametrizar Dados Complementares - ' . $siglaTipoControle . '" alt="Parametrizar Dados Complementares - ' . $siglaTipoControle . '" class="infraImgGrid" /></a>&nbsp;';
                 } else {
                     $strResultado .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_parametrizar_interessado_cadastrar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_tipo_processo_litigioso=' . $arrObjTipoControleLitigiosoDTO[$i]->getNumIdTipoControleLitigioso())) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/litigioso/imagens/svg/icone_parametrizar.svg?'.Icone::VERSAO.'" title="Parametrizar Dados Complementares - ' . $siglaTipoControle . '" alt="Parametrizar Dados Complementares - ' . $siglaTipoControle . '" class="infraImgGrid" /></a>&nbsp;';

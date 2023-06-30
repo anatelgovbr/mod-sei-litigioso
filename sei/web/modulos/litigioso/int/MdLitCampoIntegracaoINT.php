@@ -18,7 +18,7 @@ class MdLitCampoIntegracaoINT extends InfraINT
         $objMdLitCampoIntegracaoRN     = new MdLitCampoIntegracaoRN();
         $arrObjMdLitCampoIntegracaoDTO = $objMdLitCampoIntegracaoRN->listar($objMdLitCampoIntegracaoDTO);
 
-        return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $arrObjMdLitCampoIntegracaoDTO, 'IdMdLitCampoIntegracao', 'NomeCampo');
+        return $arrObjMdLitCampoIntegracaoDTO;
 
 
     }

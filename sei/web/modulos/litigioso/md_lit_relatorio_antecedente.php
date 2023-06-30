@@ -409,7 +409,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo , $inicializar);
                                        class="infraText form-control"
                                        value="<?= PaginaSEI::tratarHTML($filtroDataCorte); ?>"
                                        tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
-                                <img src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() . '/calendario.svg?'.Icone::VERSAO ?>"
+                                <img src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() . '/calendario.svg' ?>"
                                      id="imgCalDthCorte"
                                      title="Selecionar Data/Hora Inicial" alt="Selecionar Data de Corte"
                                      class="infraImg"

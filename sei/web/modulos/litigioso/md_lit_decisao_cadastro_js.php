@@ -9,7 +9,7 @@
 
         var isMudanca = "<?= $bolHouveMudanca ?>";
         var valueNovo = '<?=$arrTabela?>';
-        var obj = window.opener.document.getElementById('hdnTbDecisao');
+        var obj = window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnTbDecisao');
         var arrayRetorno = processarItemListas(valueNovo);
         var situacaoParcial = false;
 
@@ -42,14 +42,14 @@
 
         }
 
-        window.opener.objTabelaDinamicaDecisao.recarregar();
-        window.opener.document.getElementById('tbDecisao').parentNode.style.display = '';
-        if(typeof window.opener.carregarDependenciaMulta != 'undefined'){
-            window.opener.removerOptionVazio(window.opener.document.getElementById('selCreditosProcesso'));
-            window.opener.consultarExtratoMulta();
+        window.top.document.getElementById("ifrVisualizacao").contentWindow.objTabelaDinamicaDecisao.recarregar();
+        window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('tbDecisao').parentNode.style.display = '';
+        if(typeof window.top.document.getElementById("ifrVisualizacao").contentWindow.carregarDependenciaMulta != 'undefined'){
+            window.top.document.getElementById("ifrVisualizacao").contentWindow.removerOptionVazio(window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('selCreditosProcesso'));
+            window.top.document.getElementById("ifrVisualizacao").contentWindow.consultarExtratoMulta();
         }
 
-        window.close();
+        $(window.top.document).find('div[id^=divInfraSparklingModalClose]').click();;
 
 
 
@@ -57,21 +57,21 @@
 
         <?}?>
 
-        $('#hdnTbDecisaoAntigo').val(window.opener.document.getElementById('hdnTbDecisao').value);
+        $('#hdnTbDecisaoAntigo').val(window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnTbDecisao').value);
         $("select.infraSelect.multipleSelect").multipleSelect({
             filter: false,
             minimumCountSelected: 1,
             selectAll: false,
         }).parent('div').hide();
 
-        hdnTbDecisao = window.opener.document.getElementById('hdnTbDecisao');
+        hdnTbDecisao = window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnTbDecisao');
         if(hdnTbDecisao.value != ''){
             montaResultado();
         }
 
         //@todo melhorar condição, se a situação for nova msm se a ultima situação cadastrada for decisoria irá desabilitidar o cadastro
         // ou se não for a ultima situação cadastrada decisoria e a situação nova não for decisorio irá desabilitar tudo
-        if( window.opener.document.getElementById('hdnIsGestor').value == 0 && (verificarSituacaoDecisaoNovo() && document.getElementById('hdnIdUltimaSituacaoDecisoria').value != '' || (document.getElementById('hdnIdUltimaSituacaoDecisoria').value == '' && (window.opener.document.getElementById('hdnErroSituacao').value == 1 || !window.opener.isTpSitDecisoria)))){
+        if( window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnIsGestor').value == 0 && (verificarSituacaoDecisaoNovo() && document.getElementById('hdnIdUltimaSituacaoDecisoria').value != '' || (document.getElementById('hdnIdUltimaSituacaoDecisoria').value == '' && (window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnErroSituacao').value == 1 || !window.top.document.getElementById("ifrVisualizacao").contentWindow.isTpSitDecisoria)))){
             document.getElementById('sbmCadastrarDecisao').style.display = 'none';
             infraDesabilitarCamposDiv(document.getElementById('divInfraAreaGlobal'));
         }
@@ -185,9 +185,9 @@
 
 
     function verificarSituacaoDecisaoNovo(){
-        var arrSituacaoItens = window.opener.objTabelaDinamicaSituacao.obterItens();
+        var arrSituacaoItens = window.top.document.getElementById("ifrVisualizacao").contentWindow.objTabelaDinamicaSituacao.obterItens();
 
-        if(!window.opener.isUltimaSituacaoDecisoria()){
+        if(!window.top.document.getElementById("ifrVisualizacao").contentWindow.isUltimaSituacaoDecisoria()){
             return false;
         }
 
@@ -201,13 +201,12 @@
     }
 
     function montaResultado(){
-        var arrItens = window.opener.objTabelaDinamicaDecisao.obterItens();
-        console.log(arrItens);
+        var arrItens = window.top.document.getElementById("ifrVisualizacao").contentWindow.objTabelaDinamicaDecisao.obterItens();
         if(arrItens.length > 0){
             var idAnterior = 0;
             var isSituacaoDecisaoNovo = verificarSituacaoDecisaoNovo();
-            if(window.opener.document.getElementById('hdnVlOriginalMultas').value == ''){
-                window.opener.document.getElementById('hdnVlOriginalMultas').value = hdnTbDecisao.value;
+            if(window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnVlOriginalMultas').value == ''){
+                window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnVlOriginalMultas').value = hdnTbDecisao.value;
             }
 
             for(var i = 0; i < arrItens.length; i++ ){
@@ -216,7 +215,6 @@
                     var table = document.getElementById('tableDadosComplementarInteressado');
                     if(arrItens[i][1] == table.rows[j].children[0].getElementsByTagName('input')[0].value){
                         if(idAnterior == arrItens[i][1]){
-
                             j = incluirLinha(table.rows[j].children[0].children[2]);
                             //combo tipo decisao
                             var selectTipoDecisao = table.rows[j].children[0].children[0]
@@ -670,7 +668,6 @@
                 var prazo           = table.rows[i].cells[5].childNodes[0];
                 var cadastroParcial = table.rows[i].cells[5].childNodes[6];
             }
-
             if(table.rows[i].cells.length == 8 && !chkNacional.checked && !chkUF.checked){
                 infracaoParcial = true;
             }else if(table.rows[i].cells.length == 8 && chkUF.checked && (selUF.value == '' || selUF.value == 'null')){
@@ -711,7 +708,6 @@
             var arrPosicao = idTr.split('_');
             posicao = arrPosicao[1];
             rowspan = $('#CadastroDecisaoTable_' + posicao + ' > td#td-infracao' + posicao).prop('rowspan');
-            console.log("Rowspan: " + rowspan);
             if(rowspan > 1){
                 if(digito == 0){
                     digito = 2;
@@ -735,11 +731,9 @@
 
 
     function OnSubmitForm(){
-
         if(!validar())
             return false;
-
-    }
+        }
 
     function changeLocalidades(element, isUf){
         var elementSelectUF = document.getElementById(element.getAttribute('data-id-select-uf'));
@@ -770,6 +764,10 @@
         }
         return arrayRetorno;
     }
-
+    $(document).ready(function() {
+        $('#btnCancelar').click(function() {
+            $(window.top.document).find('div[id^=divInfraSparklingModalClose]').click();
+        });
+    });
 
     <? if(0){?></script><?}?>

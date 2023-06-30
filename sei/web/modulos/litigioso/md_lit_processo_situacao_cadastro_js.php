@@ -47,7 +47,7 @@
         //exibe o aviso pois o web-service pode deixar a requisição lenta
         document.getElementById('txtDtConstituicao').disabled = false;
         document.getElementById('chkHouveConstituicao').disabled = false;
-        document.getElementById('chkReducaoRenuncia').disabled = false;
+        document.getElementById('chkReducaoRenuncia').disabled =  habilitarDescontoDecorrente();
         infraExibirAviso(false);
         return true;
     }

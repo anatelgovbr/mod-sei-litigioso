@@ -80,7 +80,7 @@ class MdLitIntegracaoINT extends InfraINT {
     public static function montarTabelaCodigoReceita($idMdLitMapearParamEntrada = null)
     {
 
-        $xml                     = ' ';
+        $xml = '';
         $objMdLitTipoControleDTO = new MdLitTipoControleDTO();
         $objMdLitTipoControleDTO->setStrSinAtivo('S');
         if ($idMdLitMapearParamEntrada != null) {
@@ -89,13 +89,11 @@ class MdLitIntegracaoINT extends InfraINT {
         }else{
             $objMdLitTipoControleDTO->retTodos();
         }
-
         $objMdLitTipoControleRN     = new MdLitTipoControleRN();
         $arrObjMdLitTipoControleDTO = $objMdLitTipoControleRN->listar($objMdLitTipoControleDTO);
 
-
         if (!empty($arrObjMdLitTipoControleDTO)) {
-            $xml = '<div style="padding-top: 2px; padding-bottom: 2px; width: 80%">';
+            $xml = '<div style="padding-top: 2px; padding-bottom: 2px; width: 100%">';
             $xml .= '<table width="100%" align="center" class="infraTable table-striped">';
             $xml .= '<tr>';
             $xml .= '<th style="display: none;">ID</th>';
@@ -123,7 +121,6 @@ class MdLitIntegracaoINT extends InfraINT {
 
             $xml .= '</table></div>';
         }
-
         return $xml;
 
     }

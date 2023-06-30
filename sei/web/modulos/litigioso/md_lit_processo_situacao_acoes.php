@@ -111,6 +111,28 @@ switch($_GET['acao']) {
         //Preencher Grid Situação
         $arrGridSitu = $objMdLitProcessoSituacaoRN->retornaDadosSituacoesCadastradas(array($idProcedimento, $idTpControle));
 
+        // ---VERIFICAÇÕES DA ULTIMA SITUAÇÃO---
+          $objUltimaSituacaoIntimacaoDecisao = end($arrGridSitu);
+          $objPenultimaSituacaoIntimacaoDecisao = $arrGridSitu[count($arrGridSitu) -2];
+
+          // verificação para saber se é uma intimação de decisão para resetar campo caso seja excluido a situação
+          $ultimaSituacaoIntimacaoDecisao = 'false';
+          if($objPenultimaSituacaoIntimacaoDecisao[17] == ' (Decisória)' && $objUltimaSituacaoIntimacaoDecisao[17] == ' (Intimação)'){
+              $ultimaSituacaoIntimacaoDecisao = 'true';
+          }
+
+          // verificação se é da Fase: Recursal Situação: Apresentação de Recurso (Recursal)
+          $ultimaSituacaoRecursalApresentacaoRecurso = 'false';
+          if($objUltimaSituacaoIntimacaoDecisao[17] == ' (Recursal)' && $objPenultimaSituacaoIntimacaoDecisao[17] == ' (Intimação)'){
+            $ultimaSituacaoRecursalApresentacaoRecurso = 'true';
+          }
+
+          // verificação se é da Fase: Recursal Situação: Apresentação de Recurso (Recursal)
+          $ultimaSituacaoConclusiva = 'false';
+          if($objUltimaSituacaoIntimacaoDecisao[17] == ' (Conclusiva)'){
+            $ultimaSituacaoConclusiva = 'true';
+          }
+
         //Data da última situação conclusiva cadastrada
         $dtUltimaSitConclusiva = $objMdLitProcessoSituacaoRN->buscarDtSituacaoConclusiva($idProcedimento);
         $dtaConstituicaoDefinitiva = $dtUltimaSitConclusiva;
@@ -219,6 +241,20 @@ switch($_GET['acao']) {
             $isVincularLancamento = true;
         }
 
+        // Buscar quantidade de infrações cadastrado no processo
+        $objControleLitigiosoDTO = new MdLitControleDTO();
+        $objControleLitigiosoDTO->retNumIdControleLitigioso();
+        $objControleLitigiosoDTO->setDblIdProcedimento($_GET['id_procedimento']);
+        $objControleLitigiosoRN  = new MdLitControleRN();
+        $objControleLitigiosoDTO = $objControleLitigiosoRN->consultar($objControleLitigiosoDTO);
+
+        $objRelDispositivoNormativoCondutaControleLitigiosoDTO = new MdLitRelDispositivoNormativoCondutaControleDTO();
+        $objRelDispositivoNormativoCondutaControleLitigiosoDTO->retNumIdDispositivoNormativoNormaCondutaControle();
+        $objRelDispositivoNormativoCondutaControleLitigiosoDTO->setNumIdControleLitigioso($objControleLitigiosoDTO->getNumIdControleLitigioso());
+
+        $objRelDispositivoNormativoCondutaControleLitigiosoRN     = new MdLitRelDispositivoNormativoCondutaControleRN();
+        $arrObjRelDispositivoNormativoCondutaControleLitigiosoDTO = $objRelDispositivoNormativoCondutaControleLitigiosoRN->listar($objRelDispositivoNormativoCondutaControleLitigiosoDTO);
+
         try {
 //            $existeSuspencao = false;
 //            foreach($arrComboCreditoProcesso['todosIdsLancamento'] as $itemLancamento){
@@ -240,6 +276,8 @@ switch($_GET['acao']) {
         $numIdMdLitNumeroInteressado = $objMdLitLancamentoDTO ? $objMdLitLancamentoDTO->getNumIdMdLitNumeroInteressado(): null;
         $strComboInteressado = MdLitDadoInteressadoINT::montarSelectIdContato('null', '&nbsp;', '', $objMdLitControleDTO->getNumIdControleLitigioso(), $numIdMdLitNumeroInteressado);
 
+        //combo Documento da Decisão de Aplicação da Multa definitiva
+        $strComboDocumento = MdLitProcessoSituacaoINT::montarSelectDocumento($idProcedimento);
 
 
         //recuperar a ultima decisao
@@ -247,12 +285,14 @@ switch($_GET['acao']) {
         $objMdLitProcessoSituacaoDecisoriaDTO = $objMdLitProcessoSituacaoRN->buscarUltimaSituacaoDecisoria($idProcedimento);
 
         if($objMdLitLancamentoDTO){
-            $dataDecisaoAplicacaoMulta  = $objMdLitLancamentoDTO->getDtaDecisao();
-            $dataVencimento             = $objMdLitLancamentoDTO->getDtaVencimento();
-            $dataDecursoPrazoDefesa     = $objMdLitLancamentoDTO->getDtaPrazoDefesa();
+            $dataDecisaoAplicacaoMulta   = $objMdLitLancamentoDTO->getDtaDecisao();
+            $dataVencimento              = $objMdLitLancamentoDTO->getDtaVencimento();
+            $dataDecursoPrazoDefesa      = $objMdLitLancamentoDTO->getDtaPrazoDefesa();
 
-            $dtaConstituicaoDefinitiva  = $objMdLitLancamentoDTO->getDtaConstituicaoDefinitiva();
-            $dtaIntimacaoDefinitiva     = $objMdLitLancamentoDTO->getDtaIntimacaoDefinitiva();
+            $dtaConstituicaoDefinitiva   = $objMdLitLancamentoDTO->getDtaConstituicaoDefinitiva();
+            $dtaIntimacaoDefinitiva      = $objMdLitLancamentoDTO->getDtaIntimacaoDefinitiva();
+            $dtaDecisaoDefinitiva        = $objMdLitLancamentoDTO->getDtaDecisaoDefinitiva();
+            $dtaApresentacaoRecurso      = $objMdLitLancamentoDTO->getDtaApresentacaoRecurso();
 
         }elseif($objMdLitProcessoSituacaoDecisoriaDTO) {
             $dataDecisaoAplicacaoMulta = $objMdLitProcessoSituacaoDecisoriaDTO->getDtaData();

@@ -118,6 +118,35 @@
         limparCamposRelacionadosSituacao();
     }
 
+    function valitarPermissaoAlteracao(arr) {
+        var isValid = true;
+        if (document.getElementById('selCreditosProcesso').disabled == true){
+            var tipo_situacao = arr[17].trim().replace(/\(|\)/g, '');
+            $.ajax({
+                type: "POST",
+                url: "<?=SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_verificar_ligacao_lancamento') ?>",
+                dataType: "xml",
+                async: false,
+                data: {
+                    id_procedimento: $('#hdnIdProcedimento').val(),
+                    id_processo_situacao: arr[0],
+                    tipo_situacao: tipo_situacao
+                },
+                success: function (result) {
+                    var idLancamento = $(result).find('idLancamento').text();
+                    if (idLancamento && document.getElementById('selCreditosProcesso').value != idLancamento) {
+                        alert('Existem alterações no lançamento selecionado que impede alterações nessa situação. É necessário salvar as alterações atuais para depois alterar a situação desejada.');
+                        isValid = false;
+                    }
+                },
+                error: function (msgError) {
+                    msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;
+                }
+            });
+        }
+        return !isValid;
+    }
+
     function limparFaseSituacao() {
         var selFases = document.getElementById('selFases');
         selFases.value = '';
@@ -208,6 +237,10 @@
 
                 isTpSitDecisoria = tipoSituacao == 'Decisoria' ? true : false;
                 isTpSitLivre = tipoSituacao == 'Livre' ? true : false;
+
+                if (isTpSitDecisoria) {
+                    document.getElementById("txtDtTipoSituacao").disabled = true;
+                }
 
                 prepararCamposRecursal(tipoSituacao);
                 if (erro == '1') {
@@ -439,12 +472,14 @@
             }
         }
 
-        var hdnSinSuspenso = document.getElementById('hdnSinSuspenso').value;
-        var hdnSinConclusiva = document.getElementById('hdnSinConslusiva').value;
+        if (document.getElementById('hdnSinSuspenso') && document.getElementById('hdnSinConslusiva')) {
+            var hdnSinSuspenso = document.getElementById('hdnSinSuspenso').value;
+            var hdnSinConclusiva = document.getElementById('hdnSinConslusiva').value;
 
-        if(hdnSinSuspenso == 'S' && hdnSinConclusiva == 'S'){
-            alert('A situação Formalização do Trânsito em Julgado Administrativo (Conclusiva) não pode ser incluída, pois está relacionada a uma Suspensão de Lançamento em Razão de Recurso. \n\nAntes de incluir esta Situação deve primeiro Cancelar ou Denegar o Recurso.');
-            return false;
+            if(hdnSinSuspenso == 'S' && hdnSinConclusiva == 'S'){
+                alert('A situação Formalização do Trânsito em Julgado Administrativo (Conclusiva) não pode ser incluída, pois está relacionada a uma Suspensão de Lançamento em Razão de Recurso. \n\nAntes de incluir esta Situação deve primeiro Cancelar ou Denegar o Recurso.');
+                return false;
+            }
         }
 
         return true;
@@ -465,6 +500,19 @@
     function addSituacao() {
 
         var tpInclusao = isAlterarSit && !isAlterarRegNovo ? 'A' : 'N';
+
+        // NAO PERMITE QUE SEJA INCLUIDO UMA SITUACAO CASTO TENHA UMA PENDENCIA DE RETIFICACAO NA GESTAO DE MULTA
+        if (!isAlterarRegNovo && tpInclusao == 'N' && document.getElementById('btnRetificarLancamento').style.display != 'none'){
+            alert('Não é possível adicionar uma situação com pendências de retificação na gestão de multa.');
+            return;
+        }
+
+        //Caso a seja a intimação posterior a decisao que aplicou a multa armazena o valor
+        var paramsAjax = {
+            idSituacao: document.getElementById('selSituacoes').value,
+            idProcedimento: document.getElementById("hdnIdProcedimento").value,
+            idTpControle: document.getElementById('hdnIdTipoControle').value
+        };
 
         if (validoCamposObrigatoriosSituacao()) {
 
@@ -522,6 +570,19 @@
             var addBranco;
             var nomeUsuario = document.getElementById('hdnNomeUsuario').value;
 
+            // Preencher data de apresentação do Recurso
+            var idSituacaoSelecionada = document.getElementById('selSituacoes').value;
+
+            if("<?= $idLancamentoSelecionado ?>"){
+                var idLancamento = "<?= $idLancamentoSelecionado ?>";
+
+                // caso seja alteração
+                var idProcessoSituacao = null;
+                if (idAlteracao) {
+                    idProcessoSituacao = idAlteracao;
+                }
+
+            }
 
             var arrLinha = [
                 idTabela,
@@ -617,10 +678,64 @@
             if (adicionouSit && isTpSitRecursal && !document.getElementById('chkReducaoRenuncia').checked && document.getElementById('hdnSinSuspenso').value == 'N') {
                 document.getElementById('btnSuspenderLancamento').style.display = '';
             }
+            switch (tpInclusao){
+                case 'A':
+                    var tipoSituacao = arrLinha[17];
+                    switch (tipoSituacao){
+                        case 'Decisória':
+                            verificarAlteracoesGestaoMultaDecisao(idTabela, document.getElementById("txtDtTipoSituacao").value);
+                            break;
+                        case 'Intimação':
+                            verificarAlteracoesGestaoMultaIntimacao(idTabela, document.getElementById("txtDtTipoSituacao").value);
+                            verificarAlteracoesGestaoMultaIntimacaoDataDecursoPrazoDefesa(arrLinha);
+                            break;
+                        case 'Recursal':
+                            verificarAlteracoesGestaoMultaRecurso(idTabela, document.getElementById("txtDtTipoSituacao").value);
+                            break;
+                    }
+                    break
+                case 'N':
+                    verificarAlteracoesGestaoMultaNovo(arrLinha);
+                    verificarInclusaoRecursoData();
+                    break
+            }
 
             replicarDataParaFieldsetGestaoMulta();
             removerBotaoExcluirTela();
             adicionarExcluirGrid()
+        }
+    }
+
+    function verificarInclusaoRecursoData() {
+        if (document.getElementById('fieldsetMulta') != null) {
+            if (isTpSitRecursal && document.getElementById('hdnErroSituacao').value == 0) {
+                var idProcedimento = document.getElementById('hdnIdProcedimento').value;
+                $.ajax({
+                    type: "POST",
+                    url: "<?=SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_verificar_lancamento_para_recurso') ?>",
+                    dataType: "xml",
+                    async: false,
+                    data: {'idProcedimento': idProcedimento},
+                    success: function (data) {
+                        if ($(data).find('idLancamento').text()) {
+                            document.getElementById('selCreditosProcesso').value = $(data).find('idLancamento').text();
+                            document.getElementById('hdnCreditosProcesso').value = $(data).find('idLancamento').text();
+                            consultarExtratoMulta();
+                            document.getElementById('selCreditosProcesso').setAttribute('disabled', 'disabled');
+                            document.getElementById('apresentacao-recurso').style.display = '';
+                            document.getElementById('txtDtApresentacaoRecurso').value = document.getElementById('txtDtTipoSituacao').value;
+                            document.getElementById('hdnDtApresentacaoRecurso').value = document.getElementById('txtDtTipoSituacao').value;
+                            verificarMudancaMulta();
+                        }
+                    },
+                    error: function (msgError) {
+                        msgCommit = "Erro ao processar verificação.";
+                    },
+                    complete: function (result) {
+                        infraAvisoCancelar();
+                    }
+                });
+            }
         }
     }
 
@@ -634,13 +749,6 @@
         if (isConclusiva && isVisibleFieldMulta) {
             var valorDt = document.getElementById('txtDtTipoSituacao').value;
             document.getElementById('txtDtConstituicao').value = valorDt;
-            if (document.getElementById('txtDtConstituicao').getAttribute('data-valor-antigo') != 'N' && document.getElementById('txtDtConstituicao').getAttribute('data-valor-antigo') != '') {
-                if (document.getElementById('txtDtConstituicao').value != document.getElementById('txtDtConstituicao').getAttribute('data-valor-antigo')) {
-                    document.getElementById('btnRetificarLancamento').style.display = '';
-                } else {
-                    document.getElementById('btnRetificarLancamento').style.display = 'none';
-                }
-            }
             document.getElementById('hdnDtSituacaoConclusiva').value = valorDt;
         }
 
@@ -871,7 +979,7 @@
         montarIconeRemover();
 
         objTabelaDinamicaSituacao.remover = function (arr) {
-            var possuiDecisao = document.getElementById('hdnProcessoSitIsDecisao') == '1' ? true : false;
+            var possuiDecisao = document.getElementById('hdnProcessoSitIsDecisao').value == '1' ? true : false;
             var isRecursal = $('#hdnStrUltimaSituacao').val() == '(Recursal)' ? true : false;
             var strNomeUltimaSituacao = $('#hdnStrNomeUltimaSituacao').val();
             var existeSuspensao = document.getElementById('hdnExisteSuspensao').value;
@@ -994,6 +1102,11 @@
         };
 
         objTabelaDinamicaSituacao.alterar = function (arr) {
+
+            if (valitarPermissaoAlteracao(arr)){
+                return;
+            }
+
             limparCamposRelacionados();
 
             if (isAlterarSit) {
@@ -1060,6 +1173,7 @@
 
             //Setta a data do documento salva anteriormente
             document.getElementById('txtDtTipoSituacao').value = arr[11];
+            verificarBloqueioCampoDataDecisao();
 
             //Guarda o campo Ordem
             document.getElementById('hdnOrdemAtual').value = arr[20];
@@ -1089,20 +1203,44 @@
 
     }
 
-    function removerBotaoExcluirTela()
-    {
-        var tbTabelaDinamicaSit = document.getElementById('tbSituacao');
+    function verificarBloqueioCampoDataDecisao() {
+        var paramsAjax = {
+            idSituacao: document.getElementById('selSituacoes').value,
+            idProcedimento: document.getElementById("hdnIdProcedimento").value,
+            idTpControle: document.getElementById('hdnIdTipoControle').value
+        };
 
-        for (var i = 1; i < tbTabelaDinamicaSit.rows.length; i++) {
-            var icone = tbTabelaDinamicaSit.rows[i].cells[29].querySelector("[title='Remover Item']");
-            if(icone){
-                icone.parentNode.removeChild(icone);
+        $.ajax({
+            url: '<?=$strUrlAjaxChangeSituacao?>',
+            type: 'POST',
+            dataType: 'XML',
+            data: paramsAjax,
+            async: false,
+            success: function (r) {
+                var tipoSituacao = $.trim($(r).find('TipoSituacao').text());
+                isTpSitDecisoria = tipoSituacao == 'Decisoria' ? true : false;
+                if (isTpSitDecisoria) {
+                    document.getElementById("txtDtTipoSituacao").disabled = true;
+                }
+            }
+        })
+    }
+
+    function removerBotaoExcluirTela() {
+
+        var hdnStrIsGestor = document.getElementById('hdnIsGestor').value;
+        if (hdnStrIsGestor == '1' ? true : false) {
+            var tbTabelaDinamicaSit = document.getElementById('tbSituacao');
+            for (var i = 1; i < tbTabelaDinamicaSit.rows.length; i++) {
+                var icone = tbTabelaDinamicaSit.rows[i].cells[30].querySelector("[title='Remover Item']");
+                if(icone){
+                    icone.parentNode.removeChild(icone);
+                }
             }
         }
     }
 
-    function adicionarExcluirGrid()
-    {
+    function adicionarExcluirGrid() {
         var hdnStrIsGestor = document.getElementById('hdnIsGestor').value;
         var hdnOpenProcesso = document.getElementById('hdnOpenProcesso').value;
         var hdnIsExcluirSituacao = '<?= $isExcluirSituacao ? 1 : 0 ?>';
@@ -1115,11 +1253,77 @@
             image.title= "Remover Item";
             image.className= "infraImg";
             image.onclick = function() {
+                var idSituacao = tbTabelaDinamicaSit.rows[1].cells[0].textContent;
                 objTabelaDinamicaSituacao.removerLinhaGrid(1);
+                acoesConjungadasBotaoExcluirSituacao(idSituacao);
             };
 
-            tbTabelaDinamicaSit.rows[1].cells[29].appendChild(image);
+            tbTabelaDinamicaSit.rows[1].cells[30].appendChild(image);
         }
+    }
+
+    // ações que são acionadas quando é excluída uma situação
+    function acoesConjungadasBotaoExcluirSituacao(idSituacao){
+
+        if (<?= $ultimaSituacaoIntimacaoDecisao?>) {
+            $.ajax({
+                type: "POST",
+                url: "<?=SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_verificar_alteracao_dt_intimacao_recurso') ?>",
+                dataType: "xml",
+                async: false,
+                data: {'idSituacao': idSituacao},
+                success: function (data) {
+                    if ($(data).find('idLancamento').text()) {
+                        document.getElementById('hdnCreditosProcesso').value = $(data).find('idLancamento').text();
+                        document.getElementById('selCreditosProcesso').value = $(data).find('idLancamento').text();
+                        document.getElementById('selCreditosProcesso').setAttribute('disabled', 'disabled');
+                        document.getElementById('txtDtIntimacaoAplMulta').value = '';
+                        document.getElementById('hdnDtIntimacaoAplMulta').value = '';
+                        document.getElementById('txtDtDecursoPrazoRecurso').value = '';
+                        document.getElementById('hdnDtDecursoPrazoRecurso').value = '';
+                        verificarMudancaMulta();
+                    }
+                },
+                error: function (msgError) {
+                    msgCommit = "Erro ao processar verificação.";
+                },
+                complete: function (result) {
+                    infraAvisoCancelar();
+                }
+            });
+        }
+
+        if (<?= $ultimaSituacaoRecursalApresentacaoRecurso?>) {
+            document.getElementById('txtDtApresentacaoRecurso').value = '';
+            document.getElementById('hdnDtApresentacaoRecurso').value = '';
+            document.getElementById('apresentacao-recurso').style.display = 'none';
+            verificarMudancaMulta();
+        }
+
+        if (<?= $ultimaSituacaoConclusiva?>) {
+            document.getElementById('hdnCreditosProcesso').value = document.getElementById('selCreditosProcesso').value;
+            document.getElementById('selCreditosProcesso').setAttribute('disabled', 'disabled');
+            document.getElementById('chkHouveConstituicao').checked  = false;
+            document.getElementById('chkReducaoRenuncia').checked  = false;
+            document.getElementById('chkHouveConstituicao').value = 'N';
+            document.getElementById('selDocumento').value = '';
+            document.getElementById('txtDtDecisaoDefinitiva').value = '';
+            document.getElementById('hdnDtDecisaoDefinitiva').value = '';
+            document.getElementById('txtDtConstituicao').value = '';
+            document.getElementById('txtDtIntimacaoConstituicao').value = '';
+
+            //desaparecer todos os campos do houve constituição
+            var elements = document.getElementsByClassName('tem-constituicao');
+            var iLen = elements.length;
+            while (iLen > 0) {
+                elements[iLen - 1].className = elements[iLen - 1].className.replace('tem-constituicao', 'nao-tem-constituicao');
+                elements = document.getElementsByClassName('tem-constituicao');
+                iLen = elements.length;
+            }
+            document.getElementById('divtxtDtConstituicao').style.display = 'none';
+            verificarMudancaMulta();
+        }
+
     }
 
     function controlarExibicaoCorretaSelFases(isAlteracao) {
@@ -1193,7 +1397,6 @@
         document.getElementById(idSelected).innerHTML = htmlOption;
         document.getElementById(idSelected).disabled = true;
     }
-
 
     function abrirModalDtIntercorrente() {
         infraAbrirJanelaModal('<?=$strLinkModalDtIntercorrente?>', 900, 400, 'location=0,status=1,resizable=1,scrollbars=1');

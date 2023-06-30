@@ -28,6 +28,7 @@ class MdLitServicoIntegracaoINT extends InfraINT {
         $versaoSoap = $_POST['versaoSoap'] ?: $objMdLitServicoIntegracaoDTO->getStrVersaoSoap();
         $objMdLitSoapClienteRN->setSoapVersion($versaoSoap);
         $arrParametroSaida = $objMdLitSoapClienteRN->getParamsOutput($operacao);
+
         $strResultadoParamSaida = '';
 
 
@@ -39,43 +40,40 @@ class MdLitServicoIntegracaoINT extends InfraINT {
 
             $strResultadoParamSaida .= '<table width="100%" id="tableParametroSaida" class="infraTable" summary="' . $strSumarioTabela . '">' . "\n";
             $strResultadoParamSaida .= '<tr>';
+            $strResultadoParamSaida .= '<th class="infraTh" width="40%">&nbsp;Campo de destino no SEI&nbsp;</th>' . "\n";
+            $strResultadoParamSaida .= '<th class="infraTh" width="50%">&nbsp;Dados de saída&nbsp;</th>' . "\n";
 
-            $strResultadoParamSaida .= '<th class="infraTh" width="10%">&nbsp;Dados de saída&nbsp;</th>' . "\n";
-            $strResultadoParamSaida .= '<th class="infraTh" width="30%">&nbsp;Campo de destino no SEI&nbsp;</th>' . "\n";
-            $strResultadoParamSaida .= '<th class="infraTh" width="5%">&nbsp;Chave única da integração&nbsp;</th>' . "\n";
+            $strResultadoParamSaida .= '<th class="infraTh" width="10%">&nbsp;Chave única da integração&nbsp;</th>' . "\n";
             $strResultadoParamSaida .= '</tr>' . "\n";
             $strCssTr = '';
 
-            for ($i = 0; $i < $numRegistrosParametroSaida; $i++) {
-                $selected = null;
-                if($objMdLitServicoIntegracaoDTO){
-                    if($objMdLitServicoIntegracaoDTO->getStrMapeamentoCodigo() == $arrParametroSaida[$i])
-                        $selected = MdLitServicoIntegracaoRN::$CODIGO;
-                    elseif($objMdLitServicoIntegracaoDTO->getStrMapeamentoSigla() == $arrParametroSaida[$i])
-                        $selected = MdLitServicoIntegracaoRN::$SIGLA;
-                    elseif($objMdLitServicoIntegracaoDTO->getStrMapeamentoDescricao() == $arrParametroSaida[$i])
-                        $selected = MdLitServicoIntegracaoRN::$DESCRICAO;
-                    elseif($objMdLitServicoIntegracaoDTO->getStrMapeamentoSituacao() == $arrParametroSaida[$i])
-                        $selected = MdLitServicoIntegracaoRN::$SITUACAO;
-                    elseif($objMdLitServicoIntegracaoDTO->getStrMapeamentoSituacao() == $arrParametroSaida[$i])
-                        $selected = MdLitServicoIntegracaoRN::$SITUACAO;
-                }
-                $strItensSelCampoDestino = MdLitServicoINT::montarSelectCampoDestino($selected);
+            $arrDados =[
+                'Código' => MdLitServicoIntegracaoRN::$CODIGO,
+                'Descrição' => MdLitServicoIntegracaoRN::$DESCRICAO,
+                'Sigla' => MdLitServicoIntegracaoRN::$SIGLA,
+                'Situação' => MdLitServicoIntegracaoRN::$SITUACAO];
+
+            $i = 0;
+            foreach ($arrDados as $key => $dado) {
+                $strItensSelCampoDestino = MdLitServicoINT::montarSelectCampoDestino($arrParametroSaida, $objMdLitServicoIntegracaoDTO, $dado);
                 $idLinha = $i;
 
                 $strCssTr = '<tr id="paramSaidaTable_' . $idLinha . '" class="infraTrClara">';
-                $checked = $objMdLitServicoIntegracaoDTO ?($arrParametroSaida[$i] == $objMdLitServicoIntegracaoDTO->getStrChaveUnica() ? 'checked="checked"' : '' ): '';
+
+                $checked = $strItensSelCampoDestino['chaveUnica'] ? 'checked="checked"' : '';
                 $disable = $checked == ''? 'disabled="disabled"': '';
+
 
                 $strResultadoParamSaida .= $strCssTr;
                 $strResultadoParamSaida .= "<td id='campo_$idLinha>";
-                $strResultadoParamSaida .= "<input type='hidden' name='hdnArrayDadosSaida[$i]' value='{$arrParametroSaida[$i]}' />";
-                $strResultadoParamSaida .= PaginaSEI::tratarHTML($arrParametroSaida[$i]);
+                $strResultadoParamSaida .= "<input type='hidden' name='hdnArrayDadosSaida[$dado]' value='{$key}' />";
+                $strResultadoParamSaida .= $key;
                 $strResultadoParamSaida .= "</td>";
-                $strResultadoParamSaida .= "<td align='center'><select class='form-control' id='campoDestino_$idLinha' name='campoDestino[$arrParametroSaida[$i]]' onchange='mudarcampoDestino(this)' style='width: 80%;'>{$strItensSelCampoDestino}</select></td>";
-                $strResultadoParamSaida .= "<td align='center'><div class='infraRadioDiv'><input type='radio'name='chaveUnicaDadosSaida' value='{$arrParametroSaida[$i]}' $checked id='chaveUnicaDadosSaida_{$idLinha}' $disable class='infraRadioInput'><label class='infraRadioLabel' for='chaveUnicaDadosSaida_{$idLinha}'></div></label></td>";
+                $strResultadoParamSaida .= "<td align='center'><select class='form-control' id='campoDestino_$idLinha' name='campoDestino[$dado]' onchange='mudarcampoDestino(this)' style='width: 80%;'>{$strItensSelCampoDestino['select']}</select></td>";
+                $strResultadoParamSaida .= "<td align='center'><div class='infraRadioDiv'><input type='radio'name='chaveUnicaDadosSaida' value='{$key}' $checked id='chaveUnicaDadosSaida_{$idLinha}' $disable class='infraRadioInput'><label class='infraRadioLabel' for='chaveUnicaDadosSaida_{$idLinha}'></div></label></td>";
 
                 $strResultadoParamSaida .= '</tr>' . "\n";
+                $i++;
             }
             $strResultadoParamSaida .= '</table>';
         }

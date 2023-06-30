@@ -46,7 +46,7 @@ try {
             $strTitulo = 'Vincular Lançamento Pré Existente';
             $txtJustificativaPadrao = 'Vincular Lançamento Pré Existente com base no Processo nº ';
 
-            $arrComandos[] = '<button type="button" accesskey="C" name="btnFechar" id="btnFechar" value="Fechar" onclick="window.close();" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
+            $arrComandos[] = '<button type="button" accesskey="C" name="btnFechar" id="btnFechar" value="Fechar" onclick=$(window.top.document).find(\'div[id^=divInfraSparklingModalClose]\').click();" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
 
             if(isset($_POST['sbmValidar'])){
                 $numIdentificacaoLancamento = $_POST['txtIdentificacaoLancamento'];
@@ -87,50 +87,50 @@ try {
                     $dtaDecisaoMulta = $_POST['hdnDecisaoAplicacaoMulta'];
 
                     if ($objMdLitLancamentoDTO) {
-                        $strResultado .= '<table width="99%" id="tbLancamento" class="infraTable" summary="Lançamento">';
+                        $strResultado .= '<table width="100%" id="tbLancamento" class="infraTable" summary="Lançamento">';
                         $strResultado .= '<caption class="infraCaption">';
                         //                    $strResultado .= PaginaSEI::getInstance()->gerarCaptionTabela('Lançamento', 1);
                         $strResultado .= '</caption>';
                         $strResultado .= '<tr>';
 
-                        $strResultado .= '<th class="infraTh" width="13%">';
+                        $strResultado .= '<th class="infraTh" width="7%">';
                         $strResultado .= 'Boleto';
                         $strResultado .= '</th>';
 
-                        $strResultado .= '<th class="infraTh" width="15%">';
-                        $strResultado .= 'Código da Receita';
+                        $strResultado .= '<th class="infraTh" width="8%">';
+                        $strResultado .= 'Código Receita';
                         $strResultado .= '</th>';
 
-                        $strResultado .= '<th class="infraTh" width="15%">';
-                        $strResultado .= 'Data de Vencimento';
+                        $strResultado .= '<th class="infraTh" width="9%">';
+                        $strResultado .= 'Vencimento';
                         $strResultado .= '</th>';
 
-                        $strResultado .= '<th class="infraTh" width="15%">';
-                        $strResultado .= 'Total de Multa Aplicada';
+                        $strResultado .= '<th class="infraTh" width="10%">';
+                        $strResultado .= 'Multa Aplicada';
                         $strResultado .= '</th>';
 
-                        $strResultado .= '<th class="infraTh" width="15%">';
-                        $strResultado .= 'Valor do Desconto';
+                        $strResultado .= '<th class="infraTh" width="8%">';
+                        $strResultado .= 'Desconto';
                         $strResultado .= '</th>';
 
-                        $strResultado .= '<th class="infraTh" width="15%">';
-                        $strResultado .= 'Valor Arrecadado';
+                        $strResultado .= '<th class="infraTh" width="10%">';
+                        $strResultado .= 'Arrecadado';
                         $strResultado .= '</th>';
 
-                        $strResultado .= '<th class="infraTh" width="15%">';
+                        $strResultado .= '<th class="infraTh" width="14%">';
                         $strResultado .= 'Saldo Devedor Atualizado';
                         $strResultado .= '</th>';
 
-                        $strResultado .= '<th class="infraTh" width="15%">';
-                        $strResultado .= 'Data da Decisão de Aplicação da Multa';
+                        $strResultado .= '<th class="infraTh" width="13%">';
+                        $strResultado .= 'Data Decisão Aplicação da Multa';
                         $strResultado .= '</th>';
 
-                        $strResultado .= '<th class="infraTh" width="15%" >';
+                        $strResultado .= '<th class="infraTh" width="8%" >';
                         $strResultado .= 'Situação';
                         $strResultado .= '</th>';
 
-                        $strResultado .= '<th class="infraTh" width="15%">';
-                        $strResultado .= 'Data da Constituição Definitiva';
+                        $strResultado .= '<th class="infraTh" width="12%">';
+                        $strResultado .= 'Data Constituição Definitiva';
                         $strResultado .= '</th>';
 
                         $strResultado .= '<th class="infraTh" style="display: none">';
@@ -255,9 +255,9 @@ PaginaSEI::getInstance()->abrirJavaScript();
 if(0){?><script><?}?>
     function inicializar(){
         recuperarNumeroComplementar();
-        document.getElementById('hdnDecisaoAplicacaoMulta').value = window.opener.document.getElementById('txtDecisaoAplicacaoMulta').value;
-        document.getElementById('hdnVlTotalMulta').value = window.opener.document.getElementById('hdnVlTotalMulta').value;
-        document.getElementById('hdnDtVencimento').value = window.opener.document.getElementById('txtDtVencimento').value;
+        document.getElementById('hdnDecisaoAplicacaoMulta').value = window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('txtDecisaoAplicacaoMulta').value;
+        document.getElementById('hdnVlTotalMulta').value = window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnVlTotalMulta').value;
+        document.getElementById('hdnDtVencimento').value = window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('txtDtVencimento').value;
         var bolValorDiferente = false;
 
         <?php if($objMdLitLancamentoDTO && $objMdLitLancamentoDTO->isSetDblVlrLancamento()){ ?>
@@ -265,14 +265,14 @@ if(0){?><script><?}?>
             bolValorDiferente = valor != document.getElementById('hdnVlTotalMulta').value;
         <?php } ?>
 
-        if( window.opener.document.getElementById('selCreditosProcesso').options.length > 1 && bolValorDiferente){
+        if( window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('selCreditosProcesso').options.length > 1 && bolValorDiferente){
             document.getElementById('sbmConfirmar').remove();
             alert('Não foi possível realizar a vinculação do lançamento pré existente em razão de divergência entre o valor retornado do Sistema de Arrecadação e o constante nas decisões deste processo (que possui múltiplas multas indicadas).\n' +
                 '\n\n' +
                 'Antes, ajustes os valores de multas constantes nas decisões para que fiquem em conformidade com o lançamento a ser vinculado.');
             return;
         }
-        if(window.opener.objTabelaDinamicaDecisao.obterItens().length > 1 && bolValorDiferente){
+        if(window.top.document.getElementById("ifrVisualizacao").contentWindow.objTabelaDinamicaDecisao.obterItens().length > 1 && bolValorDiferente){
             document.getElementById('sbmConfirmar').remove();
             alert('Não foi possível realizar a vinculação do lançamento pré existente em razão de divergência entre o valor retornado do Sistema de Arrecadação e o constante nas decisões deste processo (que possui múltiplas multas indicadas).\n' +
                 '\n\n' +
@@ -291,7 +291,7 @@ if(0){?><script><?}?>
     }
 
     function recuperarNumeroComplementar(){
-        var selectNumeroInteressado = window.opener.document.getElementById('selNumeroInteressado');
+        var selectNumeroInteressado = window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('selNumeroInteressado');
 
         for(var i = 0; i <= selectNumeroInteressado.options.length; i++){
             if(selectNumeroInteressado.options[i].selected){
@@ -307,12 +307,6 @@ if(0){?><script><?}?>
         if(!validar())
             return false;
 
-        // window.opener.document.getElementById('hdnJustificativaLancamento').value = document.getElementById('txtJustificativaLancamento').value;
-        // window.opener.document.getElementById('hdnIdMdLitFuncionalidade').value = document.getElementById('hdnIdMdLitFuncionalidade').value;
-        // window.opener.document.getElementById('sbmCadastrarSituacao').click();
-        // window.close();
-        // return false;
-
     }
 
     function confirmarVinculacao(){debugger;
@@ -324,11 +318,16 @@ if(0){?><script><?}?>
         objTabelaLancamento = new infraTabelaDinamica('tbLancamento', 'hdntbLancamento', false, false);
         objTabelaLancamento.atualizaHdn();
 
-        window.opener.document.getElementById('hdnTbVincularLancamento').value = objTabelaLancamento.hdn.value;
-        window.opener.document.getElementById('sbmCadastrarSituacao').click();
-        window.close();
+        window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnTbVincularLancamento').value = objTabelaLancamento.hdn.value;
+        window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('sbmCadastrarSituacao').click();
+        $(window.top.document).find('div[id^=divInfraSparklingModalClose]').click();
         return false;
     }
+    $(document).ready(function() {
+        $('#btnFechar').click(function() {
+            $(window.top.document).find('div[id^=divInfraSparklingModalClose]').click();
+        });
+    });
     <? if(0){?></script><?}?>
 <?
 PaginaSEI::getInstance()->fecharJavaScript();
@@ -337,8 +336,8 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 
 ?>
 <form id="frmCadastroJustificativaLancamento" method="post" onsubmit="return OnSubmitForm();" action="<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'] . '&id_md_lit_funcionalidade='.$_GET['id_md_lit_funcionalidade'].'&id_procedimento='.$_GET['id_procedimento'] ) ?>">
-    <?php 
-        PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos); 
+    <?php
+        PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
         PaginaSEI::getInstance()->abrirAreaDados(null);
     ?>
 
@@ -353,7 +352,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         <div class="col-sm-12 col-md-6 col-lg-6">
             <div class="form-group">
                 <label class="infraLabelObrigatorio"> Número de Complemento do Interessado: </label>
-                <input tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" type="text" name="txtNumeroComplementar" 
+                <input tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" type="text" name="txtNumeroComplementar"
                     id="txtNumeroComplementar" class="infraText form-control" title="" disabled="disabled">
             </div>
         </div>
@@ -366,8 +365,8 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
             </div>
         </div>
 
-        <div class="col-sm-12 col-md-2 col-lg-2 align-self-center pt-1">            
-                <button tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" type="submit" accesskey="V" 
+        <div class="col-sm-12 col-md-2 col-lg-2 align-self-center pt-1">
+                <button tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" type="submit" accesskey="V"
                         name="sbmValidar" id="sbmValidar" value="Validar" class="infraButton">
                     <span class="infraTeclaAtalho">V</span>alidar
                 </button>
@@ -380,17 +379,18 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
     if( $strResultado && !$objMdLitLancamentoDTOExiste )
     {
         PaginaSEI::getInstance()->montarAreaTabela($strResultado, 1);
-        if( 
-            ($objMdLitLancamentoDTO->isSetDtaDecisao() && InfraData::compararDatas($objMdLitLancamentoDTO->getDtaDecisao(), $dtaDecisaoMulta) != 0) || 
-            InfraData::compararDatas($objMdLitLancamentoDTO->getDtaVencimento(), $dtaVencimentoMulta) != 0 || 
+        if(
+            ($objMdLitLancamentoDTO->isSetDtaDecisao() && InfraData::compararDatas($objMdLitLancamentoDTO->getDtaDecisao(), $dtaDecisaoMulta) != 0) ||
+            InfraData::compararDatas($objMdLitLancamentoDTO->getDtaVencimento(), $dtaVencimentoMulta) != 0 ||
             InfraUtil::formatarDin(InfraUtil::prepararDbl($objMdLitLancamentoDTO->getDblVlrLancamento()),2) != $vlTotalMulta
         ){
     ?>
+    <br>
             <div class="row">
                 <div class="col-12">
                     <div class="input-group">
                         <input type="checkbox" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" name="chkSinCienteVincular" id="chkSinVincularLancamento" class="infraCheckbox form-check-input"" value="S" >
-                    
+
                         <div class="input-group-append ml-1">
                             <label for="chkSinVincularLancamento" class="infraLabelOpcional">
                                 Ciente que as informações abaixo pertencentes ao lançamento serão sobrescritas no SEI, conforme as informações apresentadas na tabela acima.<br>
@@ -401,13 +401,13 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 </div>
             </div>
 
-            <?php 
+            <?php
                 if( $objMdLitLancamentoDTO->isSetDtaDecisao() && InfraData::compararDatas($objMdLitLancamentoDTO->getDtaDecisao(), $dtaDecisaoMulta) != 0 )
                 {
-            ?>    
+            ?>
                     <div class="row mt-2">
                         <div class="col-12">
-                            <label class="infraLabelObrigatorio">Data da Constituição Definitiva:</label> 
+                            <label class="infraLabelObrigatorio">Data da Constituição Definitiva:</label>
                             <label><?= !empty($objMdLitLancamentoDTO ) ? $objMdLitLancamentoDTO->getDtaConstituicaoDefinitiva() : null ?></label>
                         </div>
                     </div>
@@ -419,7 +419,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
             ?>
                     <div class="row mt-2">
                         <div class="col-12">
-                            <label class="infraLabelObrigatorio">Data da Decisão de Aplicação da Multa:</label> 
+                            <label class="infraLabelObrigatorio">Data da Decisão de Aplicação da Multa:</label>
                             <label> <?= $dtaDecisaoMulta ?></label>
                         </div>
                     </div>
@@ -431,7 +431,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
             ?>
                    <div class="row mt-2">
                         <div class="col-12">
-                            <label class="infraLabelObrigatorio">Data de Vencimento:</label> 
+                            <label class="infraLabelObrigatorio">Data de Vencimento:</label>
                             <label> <?= $dtaVencimentoMulta ?></label>
                         </div>
                     </div>
@@ -443,24 +443,24 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
             ?>
                     <div class="row">
                         <div class="col-12">
-                            <label class="infraLabelObrigatorio">Valor Total:</label> 
+                            <label class="infraLabelObrigatorio">Valor Total:</label>
                             <label> R$ <?= $vlTotalMulta ?></label>
                         </div>
                     </div>
     <?php
                 }
         }
-    ?>   
-
-        <div class="row mt-2">
-            <div class="col-2">
+    ?>
+    <br>
+        <div class="row">
+            <div class="col-12 text-center">
                 <button tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" type="submit" name="sbmConfirmar" id="sbmConfirmar" onclick="return confirmarVinculacao()" value="Confirmar" class="infraButton">
                     Confirmar Vinculação
                 </button>
             </div>
         </div>
 
-    <?php 
+    <?php
     }
     elseif( $objMdLitLancamentoDTOExiste )
     {
@@ -479,7 +479,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 
 </form>
 
-<?php  
+<?php
 PaginaSEI::getInstance()->fecharBody();
 PaginaSEI::getInstance()->fecharHtml();
 ?>

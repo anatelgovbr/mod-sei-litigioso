@@ -228,18 +228,18 @@ class MdLitConsultarLancamentoRN extends InfraRN
         foreach ($objMdLitIntegracaoDTO->getArrObjMdLitMapearParamEntradaDTO() as $objMdLitMapearParamEntradaDTO) {
             switch ($objMdLitMapearParamEntradaDTO->getNumIdMdLitCampoIntegracao()) {
                 case MdLitMapearParamEntradaRN::$ID_PARAM_CONSULTAR_LANCAMENTO['NUMERO_INTERESSADO']:
-                    if(array_key_exists('numInteressado',$dadosEntrada)){
-                        $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $dadosEntrada['numInteressado'];
-                        break;
-                    }
+                        if(array_key_exists('numInteressado',$dadosEntrada)){
+                            $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $dadosEntrada['numInteressado'];
+                            break;
+                        }
 
-                    if(empty($dadosEntrada['hdnNumInteressado'])){
-                        $objMdLitDadosInteressadoRN = new MdLitDadoInteressadoRN();
-                        $objMdLitDadoInteressadoDTO = $objMdLitDadosInteressadoRN->retornaObjDadoInteressadoPorNumeroInteressado($dadosEntrada);
-                        $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitDadoInteressadoDTO->getStrNumero();
-                    }else{
-                        $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $dadosEntrada['hdnNumInteressado'];
-                    }
+                        if(empty($dadosEntrada['hdnNumInteressado'])){
+                            $objMdLitDadosInteressadoRN = new MdLitDadoInteressadoRN();
+                            $objMdLitDadoInteressadoDTO = $objMdLitDadosInteressadoRN->retornaObjDadoInteressadoPorNumeroInteressado($dadosEntrada);
+                            $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitDadoInteressadoDTO->getStrNumero();
+                        }else{
+                            $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $dadosEntrada['hdnNumInteressado'];
+                        }
                     break;
 
                 case MdLitMapearParamEntradaRN::$ID_PARAM_CONSULTAR_LANCAMENTO['SEQUENCIAL']:
@@ -269,6 +269,10 @@ class MdLitConsultarLancamentoRN extends InfraRN
                     }
                     $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $renunciaRecurso;
                     break;
+
+                case MdLitMapearParamEntradaRN::$ID_PARAM_CONSULTAR_LANCAMENTO['CNPJ/CPF']:
+                    $val = $objMdLitLancamentoDTO->getDblCpfInteressado() ? $objMdLitLancamentoDTO->getDblCpfInteressado() : $objMdLitLancamentoDTO->getDblCnpjInteressado();
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $val;
             }
         }
 

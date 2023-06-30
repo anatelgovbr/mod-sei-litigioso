@@ -26,7 +26,7 @@ switch ($_GET['acao']) {
             if($_GET['id_md_lit_situacao_lancamento_integracao']){
                 $objMdLitSituacaoLancamIntDTO = new MdLitSituacaoLancamIntDTO();
                 $objMdLitSituacaoLancamIntDTO->retTodos();
-                $objMdLitSituacaoLancamIntDTO->setNumIdMdLitSituacaoLancamento($_GET['id_md_lit_situacao_lancamento_integracao']);
+                $objMdLitSituacaoLancamIntDTO->setNumIdMdLitSituacaoLancamInt($_GET['id_md_lit_situacao_lancamento_integracao']);
 
                 $objMdLitSituacaoLancamIntRN = new MdLitSituacaoLancamIntRN();
                 $objMdLitSituacaoLancamIntDTO = $objMdLitSituacaoLancamIntRN->consultar($objMdLitSituacaoLancamIntDTO);
@@ -109,8 +109,8 @@ function salvar(){
         if(selectCampo.value != ''){
             var rdChaveUnica = document.getElementById('chaveUnicaDadosSaida_'+i);
             jsonArr.push({
-                name: selectCampo.name.match(/\[(.*)\]/).pop(),
-                value:selectCampo.value,
+                name: selectCampo.value,
+                value:selectCampo.name.match(/\[(.*)\]/).pop(),
                 chaveUnica:rdChaveUnica.checked
             });
 

@@ -37,7 +37,7 @@ switch ($_GET['acao']) {
                 $objMdLitServicoIntegracaoRN = new MdLitServicoIntegracaoRN();
                 $objMdLitServicoIntegracaoDTO = $objMdLitServicoIntegracaoRN->consultar($objMdLitServicoIntegracaoDTO);
             }
-
+ 
             $arrMontarTabelaParamSaida = MdLitServicoIntegracaoINT::montarTabelaParamSaida($objMdLitSoapClientRN, $_POST['txtOperacao'], $objMdLitServicoIntegracaoDTO );
         }catch (Exception $e) {
             PaginaSEI::getInstance()->processarExcecao($e);
@@ -104,24 +104,26 @@ function validarCadastro(){
     return true;
 }
 function salvar(){
-
     ret = validarCadastro();
     if(!ret)
         return ret;
 
     var jsonArr = [];
+    
     for (var i = 0; i < document.getElementById('tableParametroSaida').rows.length -1; i++){
         var selectCampo = document.getElementById('campoDestino_'+(i));
+        
         if(selectCampo.value != ''){
             var rdChaveUnica = document.getElementById('chaveUnicaDadosSaida_'+i);
             jsonArr.push({
-                name: selectCampo.name.match(/\[(.*)\]/).pop(),
-                value:selectCampo.value,
+                name: selectCampo.value,
+                value:selectCampo.name.match(/\[(.*)\]/).pop(),
                 chaveUnica:rdChaveUnica.checked
             });
 
         }
     }
+
     window.opener.hdnMapeamentoJson.value = JSON.stringify(jsonArr);
     window.opener.hdnSalvarServico.remove();
     window.opener.frmServicoCadastro.submit();

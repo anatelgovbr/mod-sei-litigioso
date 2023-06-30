@@ -911,7 +911,38 @@ class MdLitProcessoSituacaoRN extends InfraRN
                 $urlLink = $this->_retornaLinkDocFormatado($objDTO->getStrProtocoloFormatadoDocumento(), $objDTO->getDblIdProcedimento(), $objDTO->getDblIdDocumento(), $objDTO->getStrNomeSerie(), $objDTO->getStrNumeroDocumento(), true , $mostrarMensagemRecursal);
                 $sinDepositoExtrajudicial = $objDTO->getStrSinDepositoExtrajudicial();
 
-                $arrGrid[] = array($objDTO->getNumIdMdLitProcessoSituacao(), 'B', $objDTO->getDblIdProcedimento(), $objDTO->getNumIdMdLitFase(), $objDTO->getNumIdMdLitSituacao(), $objDTO->getNumIdUsuario(), $objDTO->getNumIdUnidade(), $dtIntercor, $dtQuinq, $linkDocFormt, $objDTO->getStrNomeSerie(), $objDTO->getDtaData(), $objDTO->getStrNomeFase(), $nomeSit, $dth, $nomeUsuario, $nomeUnidade, $tipoSituacao, $valorDep, $dtDep, $objDTO->getNumIdMdLitProcessoSituacao(), $ordem, $rdAlteraPresc, $labelSituacao, $objDTO->getDblIdDocumento(), $isInstauracao, $objDTO->getStrProtocoloFormatadoDocumento(), $urlLink, $sinDepositoExtrajudicial);
+                $arrGrid[] = array(
+                  $objDTO->getNumIdMdLitProcessoSituacao(),
+                  'B',
+                  $objDTO->getDblIdProcedimento(),
+                  $objDTO->getNumIdMdLitFase(),
+                  $objDTO->getNumIdMdLitSituacao(),
+                  $objDTO->getNumIdUsuario(),
+                  $objDTO->getNumIdUnidade(),
+                  $dtIntercor,
+                  $dtQuinq,
+                  $linkDocFormt,
+                  $objDTO->getStrNomeSerie(),
+                  $objDTO->getDtaData(),
+                  $objDTO->getStrNomeFase(),
+                  $nomeSit,
+                  $dth,
+                  $nomeUsuario,
+                  $nomeUnidade,
+                  $tipoSituacao,
+                  $valorDep,
+                  $dtDep,
+                  $objDTO->getNumIdMdLitProcessoSituacao(),
+                  $ordem,
+                  $rdAlteraPresc,
+                  $labelSituacao,
+                  $objDTO->getDblIdDocumento(),
+                  $isInstauracao,
+                  $objDTO->getStrProtocoloFormatadoDocumento(),
+                  $urlLink,
+                  $sinDepositoExtrajudicial,
+                  $objDTO->getStrSinRecursalSit()
+                );
             }
         }
 
@@ -988,6 +1019,7 @@ class MdLitProcessoSituacaoRN extends InfraRN
         $objMdLitProcessoSitDTO->retStrSinAlteraPrescricao();
         $objMdLitProcessoSitDTO->retStrNumeroDocumento();
         $objMdLitProcessoSitDTO->retStrSinDepositoExtrajudicial();
+        $objMdLitProcessoSitDTO->retStrSinRecursalSit();
     }
 
     protected function verificaDadosSitAtualSitAnteriorConectado($arrParams)
@@ -1167,13 +1199,23 @@ class MdLitProcessoSituacaoRN extends InfraRN
 
     protected function processarCadastrarControlado($post)
     {
+        $arrSituacao = PaginaSEI::getInstance()->getArrItensTabelaDinamica($post['hdnTbSituacoes']);
+
+        $dadosSituacaoRecurso = [
+            'idLancamento'             => $post['hdnCreditosProcesso'] ? $post['hdnCreditosProcesso'] : null,
+            'hdnDtApresentacaoRecurso' => $post['hdnDtApresentacaoRecurso'] ? $post['hdnDtApresentacaoRecurso'] : null,
+            'hdnDtIntimacaoAplMulta'   => $post['hdnDtIntimacaoAplMulta'] ? $post['hdnDtIntimacaoAplMulta'] : null
+        ];
+
+        // aqui
+        $arrIdSituacao = $this->_prepararCadastroAlteracaoSituacao($arrSituacao, $dadosSituacaoRecurso, $post);
+
         //web-service com o sistema de faturamento
         $objMdLitLancamentoRN = new MdLitLancamentoRN();
-        $objMdLitLancamentoDTO = $objMdLitLancamentoRN->prepararLancamento($post);
 
-        $arrSituacao = PaginaSEI::getInstance()->getArrItensTabelaDinamica($post['hdnTbSituacoes']);
-        $arrIdSituacao = $this->_prepararCadastroAlteracaoSituacao($arrSituacao);
-        //$id_md_lit_processo_situacao = $this->cadastrar($arrSituacao);
+        $idUltimaSituacao = intval(end($arrSituacao)[0]);
+        $post['id_situacao'] =  !empty($arrIdSituacao) ? end($arrIdSituacao) : $idUltimaSituacao;
+        $objMdLitLancamentoDTO = $objMdLitLancamentoRN->prepararLancamento($post);
 
         //se nao for esclusao da situacao deve alterar/cadastrar
         if ($this->isEsclusaoSituacao) {
@@ -1208,7 +1250,7 @@ class MdLitProcessoSituacaoRN extends InfraRN
 
     }
 
-    private function _controlarExclusaoSituacoes($idProcedimento, $arrSituacao)
+    private function _controlarExclusaoSituacoes($idProcedimento, $arrSituacao, $post)
     {
         $idsExcluidos = array();
         $objMdLitProceSitDTO = new MdLitProcessoSituacaoDTO();
@@ -1230,13 +1272,114 @@ class MdLitProcessoSituacaoRN extends InfraRN
             $idsExcluidos = array_diff($idsSalvosBd, $idsTabelaAtual);
 
             if (count($idsExcluidos) > 0) {
-                $this->_preparaRetificarLancamentoTransitoJulgado($idsExcluidos);
-                $this->_prepararExclusao($idsExcluidos);
+              $this->limparIdsIntimacao($idsExcluidos);
+              $this->limparIdsRecurso($idsExcluidos);
+              $this->_limparDadosLancamentoConclusao($idsExcluidos, $post);
+              $this->_preparaRetificarLancamentoTransitoJulgado($idsExcluidos);
+              $this->_prepararExclusao($idsExcluidos);
+              $this->_limparDataRecrusoNoLancamento($idsExcluidos);
             }
         }
 
         return $idsExcluidos;
     }
+
+    private function limparIdsIntimacao($idsExcluidos)
+    {
+        $objMdLitLancamentoRN = new MdLitLancamentoRN();
+        $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+        $objMdLitLancamentoDTO->setNumIdSituacaoIntimacao($idsExcluidos, InfraDTO::$OPER_IN);
+        $objMdLitLancamentoDTO->setNumMaxRegistrosRetorno(1);
+        $objMdLitLancamentoDTO->retTodos();
+        $arrObjMdLitLancamento = $objMdLitLancamentoRN->listar($objMdLitLancamentoDTO);
+
+        foreach ($arrObjMdLitLancamento as $objMdLitLancamento){
+          $objMdLitLancamento->setNumIdSituacaoIntimacao(null);
+          $objMdLitLancamentoRN->alterar($objMdLitLancamento);
+        }
+    }
+
+    private function limparIdsRecurso($idsExcluidos)
+    {
+      $objMdLitLancamentoRN = new MdLitLancamentoRN();
+      $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+      $objMdLitLancamentoDTO->setNumIdSituacaoRecurso($idsExcluidos, InfraDTO::$OPER_IN);
+      $objMdLitLancamentoDTO->setNumMaxRegistrosRetorno(1);
+      $objMdLitLancamentoDTO->retTodos();
+      $arrObjMdLitLancamento = $objMdLitLancamentoRN->listar($objMdLitLancamentoDTO);
+
+      foreach ($arrObjMdLitLancamento as $objMdLitLancamento){
+        $objMdLitLancamento->setNumIdSituacaoRecurso(null);
+        $objMdLitLancamentoRN->alterar($objMdLitLancamento);
+      }
+    }
+
+    private function _limparDataRecrusoNoLancamento($idsExcluidos)
+    {
+        $objMdLitLancamentoRN = new MdLitLancamentoRN();
+        $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+        $objMdLitLancamentoDTO->setNumIdSituacaoRecurso($idsExcluidos, InfraDTO::$OPER_IN);
+        $objMdLitLancamentoDTO->setNumMaxRegistrosRetorno(1);
+        $objMdLitLancamentoDTO->retTodos();
+        $objMdLitLancamento = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
+        if ($objMdLitLancamento) {
+            $objMdLitLancamento->setNumIdSituacaoRecurso(null);
+            $objMdLitLancamento->setDtaApresentacaoRecurso(null);
+            $objMdLitLancamentoRN->alterar($objMdLitLancamento);
+        }
+    }
+
+    private function _limparDadosLancamentoConclusao($idsExcluidos, $post)
+    {
+        foreach ($idsExcluidos as $idExcluido) {
+            $objMdLitProceSitDTO = new MdLitProcessoSituacaoDTO();
+            $objMdLitProceSitDTO->setNumIdMdLitProcessoSituacao($idExcluido);
+            $objMdLitProceSitDTO->setStrSinConclusivaSit("S");
+            $objMdLitProceSitDTO->retDblIdProcedimento();
+            $objMdLitProceSitDTO->retStrSinConclusivaSit();
+            $objMdLitProceSit = $this->consultar($objMdLitProceSitDTO);
+
+            if($objMdLitProceSit) {
+                $objMdLitLancamentoRN = new MdLitLancamentoRN();
+                $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+                $objMdLitLancamentoDTO->setDblIdProcedimento($objMdLitProceSit->getDblIdProcedimento());
+                $objMdLitLancamentoDTO->setNumIdMdLitLancamento(array($post['hdnCreditosProcesso']) , InfraDTO::$OPER_NOT_IN);
+                $objMdLitLancamentoDTO->retTodos();
+
+                $arrObjMdLitLancamento = $objMdLitLancamentoRN->listar($objMdLitLancamentoDTO);
+                foreach ($arrObjMdLitLancamento as $objMdLitLancamento) {
+                    $postNovo['hdnIdMdLitFuncionalidade'] = MdLitIntegracaoRN::$ARRECADACAO_RETIFICAR_LANCAMENTO;
+                    $postNovo['hdnVlCreditoNaoLancado'] = $objMdLitLancamento->getDblVlrLancamento();
+                    $postNovo['selCreditosProcesso'] = $objMdLitLancamento->getNumIdMdLitLancamento();
+                    $postNovo['txtDtVencimento'] = $objMdLitLancamento->getDtaVencimento();
+                    $postNovo['hdnDecisaoAplicacaoMulta'] = $objMdLitLancamento->getDtaDecisao();
+                    $postNovo['hdnVlTotalMulta'] = $objMdLitLancamento->getDblVlrLancamento();
+                    $postNovo['hdnJustificativaLancamento'] = "Multa retificada por cancelamento da situação de TRÂNSITO EM JULGADO";
+                    $postNovo['hdnIdProcedimento'] = $objMdLitLancamento->getDblIdProcedimento();
+                    $postNovo['hdnDtIntimacaoAplMulta'] =  $objMdLitLancamento->getDtaIntimacao();
+                    $postNovo['hdnDtDecursoPrazoRecurso'] = $objMdLitLancamento->getDtaDecursoPrazoRecurso();
+                    $postNovo['hdnDtApresentacaoRecurso'] = $objMdLitLancamento->getDtaApresentacaoRecurso();
+                    $postNovo['hdnDtDecisaoDefinitiva'] = null;
+                    $postNovo['chkHouveConstituicao'] = null;
+                    $postNovo['txtDtConstituicao'] = null;
+                    $postNovo['txtDtIntimacaoConstituicao'] = null;
+                    $postNovo['chkReducaoRenuncia'] = null;
+
+                    $objMdLitLancamento->setStrSinConstituicaoDefinitiva('N');
+                    $objMdLitLancamento->setDtaConstituicaoDefinitiva(null);
+                    $objMdLitLancamento->setDtaDecisaoDefinitiva(null);
+                    $objMdLitLancamento->setDtaConstituicaoDefinitiva(null);
+                    $objMdLitLancamento->setDtaIntimacaoDefinitiva(null);
+                    $objMdLitLancamento->setStrSinRenunciaRecorrer('N');
+                    $objMdLitLancamentoRN->alterar($objMdLitLancamento);
+
+                    $objMdLitLancamentoRN->realizarRetificarCredito($postNovo);
+                }
+            }
+            return true;
+        }
+    }
+
 
     private function _preparaRetificarLancamentoTransitoJulgado($idsExcluidos)
     {
@@ -1253,7 +1396,7 @@ class MdLitProcessoSituacaoRN extends InfraRN
                 $arrProcessoSit = $this->consultar($objMdLitProceSitDTO);
                 $idSituacao = $arrProcessoSit->getNumIdMdLitSituacao();
 
-                if ($idSituacao == self::$SITUACAO_TRANSITO_EM_JULGADO) {
+                if ($idSituacao == self::$SITUACAO_TRANSITO_EM_JULGADO && ($post['selCreditosProcesso'] || $post['hdnCreditosProcesso'])) {
                     $post['hdnJustificativaLancamento'] = 'Multa retificada por cancelamento da situação de TRÂNSITO EM JULGADO';
                     $post['hdnIdMdLitFuncionalidade'] = MdLitIntegracaoRN::$ARRECADACAO_RETIFICAR_LANCAMENTO;
                     $post['txtDtIntimacaoConstituicao'] = null;
@@ -1262,7 +1405,7 @@ class MdLitProcessoSituacaoRN extends InfraRN
                     unset($post['chkReducaoRenuncia']);
                     $objMdLitLancamentoRN->prepararLancamento($post);
 
-                    $objMdLitLancamentoDTO->setNumIdMdLitLancamento($post['selCreditosProcesso']);
+                    $objMdLitLancamentoDTO->setNumIdMdLitLancamento($post['selCreditosProcesso'] ?: $post['hdnCreditosProcesso']);
                     $objMdLitLancamentoDTO->retTodos();
                     $objMdLitLancamentoAlterarDTO = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
 
@@ -1287,10 +1430,10 @@ class MdLitProcessoSituacaoRN extends InfraRN
     }
 
 //_prepararInsercaoSituacao
-    private function _prepararCadastroAlteracaoSituacao($arrSituacao)
+    private function _prepararCadastroAlteracaoSituacao($arrSituacao, $dadosSituacaoRecurso, $post)
     {
         $idProcedimento = $_POST['hdnIdProcedimento'];
-        $arrIdsExcluidos = $this->_controlarExclusaoSituacoes($idProcedimento, $arrSituacao);
+        $arrIdsExcluidos = $this->_controlarExclusaoSituacoes($idProcedimento, $arrSituacao, $post);
 
         $arrIdSituacao = array();
         if (count($arrSituacao) > 0) {
@@ -1301,9 +1444,11 @@ class MdLitProcessoSituacaoRN extends InfraRN
 
                 if ($isInsercao) {
                     $objMdLitProcessoSitDTO = $this->_realizaInsercaoSituacao($arrDados);
+                    $this->atualizarDataLancamento($objMdLitProcessoSitDTO->getNumIdMdLitProcessoSituacao(), $dadosSituacaoRecurso);
                     $arrIdSituacaoCadastro[] = $objMdLitProcessoSitDTO->getNumIdMdLitProcessoSituacao();
                 } elseif ($isAlteracao) {
-                    $objMdLitProcessoSitDTO = $this->_realizaAlteracaoSituacao($arrDados);
+                    $this->_realizaAlteracaoSituacao($arrDados);
+                    $this->atualizarDataLancamento($arrDados[0], $dadosSituacaoRecurso);
                 } elseif ($arrIdsExcluidos) {
                     $this->isEsclusaoSituacao = true;
                 }
@@ -1356,6 +1501,18 @@ class MdLitProcessoSituacaoRN extends InfraRN
         $objMdLitProcessoSitDTO->setDtaQuinquenal($dtaQuinquenal);
         $objMdLitProcessoSitDTO->setStrSinAtivo('S');
         $objMdLitProcessoSitDTO->setStrSinAlteraPrescricao($sinPrescricao);
+
+        //Alterar data da decisao do lancamento caso exista
+        $objMdLitLancamentoRN = new MdLitLancamentoRN();
+        $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+        $objMdLitLancamentoDTO->setNumIdMdLitSituacaoDecisaoDefin($arrDados[0]);
+        $objMdLitLancamentoDTO->retTodos();
+
+        $objMdLitLancamento = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
+        if($objMdLitLancamento){
+            $objMdLitLancamento->setDtaDecisaoDefinitiva($arrDados[11]);
+            $objMdLitLancamentoRN->alterar($objMdLitLancamento);
+        }
 
         $this->alterar($objMdLitProcessoSitDTO);
 
@@ -1440,6 +1597,29 @@ class MdLitProcessoSituacaoRN extends InfraRN
         $this->cadastrar($objMdLitProcessoSitDTO);
 
         return $objMdLitProcessoSitDTO;
+    }
+
+    protected function atualizarDataLancamento($IdMdLitProcessoSituacao, $dadosSituacaoRecurso)
+    {
+        $objMdLitLancamentoRN = new MdLitLancamentoRN();
+        $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+        $objMdLitLancamentoDTO->setNumIdMdLitLancamento($dadosSituacaoRecurso['idLancamento']);
+        $objMdLitLancamentoDTO->retTodos();
+        $objMdLitLancamento = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
+
+        if(
+            $dadosSituacaoRecurso['hdnDtApresentacaoRecurso'] &&
+            $objMdLitLancamento &&
+            (
+                (empty($objMdLitLancamento->getNumIdSituacaoRecurso()) && empty($objMdLitLancamento->getDtaApresentacaoRecurso()) ||
+                $IdMdLitProcessoSituacao == $objMdLitLancamento->getNumIdSituacaoRecurso()
+                )
+            )
+        ){
+            $objMdLitLancamento->setNumIdSituacaoRecurso($IdMdLitProcessoSituacao);
+            $objMdLitLancamento->setDtaApresentacaoRecurso($dadosSituacaoRecurso['hdnDtApresentacaoRecurso']);
+            $objMdLitLancamentoRN->alterar($objMdLitLancamento);
+        }
     }
 
     //Se não existe instauração ainda, as datas intercorrente e quinquenal são settadas como null
@@ -1900,7 +2080,7 @@ class MdLitProcessoSituacaoRN extends InfraRN
 
         $strLink = SessaoSEI::getInstance()->assinarLink($link);
 
-        $imgIcone = "modulos/litigioso/imagens/svg/cadastro_situacao.svg?11";
+        $imgIcone = "modulos/litigioso/imagens/svg/cadastro_situacao.svg?".Icone::VERSAO;
         $title = $idDocumento ? "Controle Litigioso - Cadastro de Situações" : 'Controle Litigioso - Consulta de Situações';
 
         $strBotao = '<a href="' . $strLink . '"class="botaoSEI">';
@@ -1931,7 +2111,7 @@ class MdLitProcessoSituacaoRN extends InfraRN
 
     public function montarIconeProcesso($arrObjProcedimentoAPI)
     {
-        $imgIcone = "modulos/litigioso/imagens/svg/balanca_azul_menor.svg?11";
+        $imgIcone = "modulos/litigioso/imagens/svg/balanca_azul_menor.svg?".Icone::VERSAO;
 
         foreach ($arrObjProcedimentoAPI as $objProcedimentoAPI) {
             $titulo = 'Controle Litigioso: ';

@@ -1,7 +1,6 @@
 <script type="text/javascript">
     function abrirModalCadastarDecisao() {
-        infraAbrirJanela('<?= $urlCadastrarDecisao ?>',
-            'CadastrarDecisao',
+        infraAbrirJanelaModal('<?= $urlCadastrarDecisao ?>',
             1200,
             600);
     }
@@ -42,6 +41,17 @@
             alert('cadastre ao menos uma Infração na modal de Cadastro de Decisões!');
             return false;
         }
+
+        if (document.getElementById('fieldsetDecisao').style.display != 'none' && !verificarDecisaoPendenteCadastro()) {
+            alert('É necessário cadastrar as decisões de todas infrações antes de salvar.');
+            return false;
+        }
+
+        if (!verificarPreenchimentoDecisaoIncompleto()) {
+            alert('É necessário completar o preenchimento das decisões antes de salvar.');
+            return false;
+        }
+
         return true;
     }
 
@@ -54,6 +64,59 @@
             }
         }
         return false;
+    }
+
+    function verificarDecisaoPendenteCadastro() {
+        var arrDecisao = objTabelaDinamicaDecisao.obterItens();
+        var arrIdInfracoesDecisao = [];
+
+        for (var i = 0; i < arrDecisao.length; i++) {
+            if (!arrIdInfracoesDecisao.includes(arrDecisao[i][1])) {
+                arrIdInfracoesDecisao.push(arrDecisao[i][1])
+            }
+        }
+        var countIdInfracoesDecisoes = arrIdInfracoesDecisao.length;
+        var countIdInfracoesProcesso = '<?= count($arrObjRelDispositivoNormativoCondutaControleLitigiosoDTO) ?>'
+        if (countIdInfracoesDecisoes != countIdInfracoesProcesso) {
+            return false;
+        }
+        return true;
+    }
+
+    function verificarPreenchimentoDecisaoIncompleto(){
+
+        var valueNovo = document.getElementById('hdnTbDecisao').value;
+        var arrayRetorno = processarItemListas(valueNovo);
+        var situacaoParcial = false;
+
+        for(linhas = 0; linhas < arrayRetorno.length; linhas++){
+            if(arrayRetorno[linhas][18] == 'S'){
+                situacaoParcial = true;
+            }
+        }
+
+        var arrObjTabelaSituacao = objTabelaDinamicaSituacao.obterItens();
+        var tipoRegistro = arrObjTabelaSituacao[objTabelaDinamicaSituacao.obterItens().length - 1][1];
+
+        if(situacaoParcial && tipoRegistro == 'N') {
+            return false;
+        }
+        return true;
+    }
+
+    function processarItemListas(linhaString){
+        var linhas = linhaString.split("¥");
+        var arrayRetorno = [];
+        for (linha = 0; linha < linhas.length; linha++) {
+            var itens = linhas[linha].split("±");
+            var arrayParcial = [];
+            for (item = 0; item < itens.length; item++){
+                arrayParcial.push(itens[item]);
+
+            }
+            arrayRetorno.push(arrayParcial);
+        }
+        return arrayRetorno;
     }
 
     function abrirModalReincidenciaEspecífica() {

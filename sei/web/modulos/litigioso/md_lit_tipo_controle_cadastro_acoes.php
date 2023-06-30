@@ -167,12 +167,13 @@
         	$objUsuarioDTO = new UsuarioDTO();
         	$objUsuarioDTO->retNumIdUsuario();
         	$objUsuarioDTO->retStrNome();
-        	 
+        	$objUsuarioDTO->retStrSigla();
+
         	$objUsuarioDTO->setNumIdUsuario($arrGestores[$x]->getNumIdUsuario());
         	$objUsuarioDTO = $objUsuarioRN->consultarRN0489( $objUsuarioDTO );
 
         	if( $objUsuarioDTO != null && is_object( $objUsuarioDTO ) ) {
-        	  $strItensSelGestores .= "<option value='" . $objUsuarioDTO->getNumIdUsuario() .  "'>" . $objUsuarioDTO->getStrNome() . "</option>";
+        	  $strItensSelGestores .= "<option value='" . $objUsuarioDTO->getNumIdUsuario() .  "'>" . $objUsuarioDTO->getStrNome() .' (' .$objUsuarioDTO->getStrSigla().')'."</option>";
         	}
         }
 

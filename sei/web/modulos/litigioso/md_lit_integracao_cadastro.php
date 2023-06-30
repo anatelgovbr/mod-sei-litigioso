@@ -71,19 +71,19 @@ switch ($_GET['acao']) {
                 $objMdLitIntegracaoRN = new MdLitIntegracaoRN();
 
                 if (isset($_POST['nomeFuncionalDadosEntrada']) && !empty($_POST['nomeFuncionalDadosEntrada'])) {
-                    foreach ($_POST['nomeFuncionalDadosEntrada'] as $campo => $idMdLitNomeFuncional) {
-                        if ($idMdLitNomeFuncional != 'null' && $idMdLitNomeFuncional != null) {
+                    foreach ($_POST['nomeFuncionalDadosEntrada'] as $idMdLitNomeFuncional => $campo) {
+                        if ($campo != 'null' && $campo != null) {
                             $objMdLitMapearParamEntradaDTO = new MdLitMapearParamEntradaDTO();
 
                             if ($_POST['selFuncionalidade'] == 1) {
                                 $objMdLitMapearParamEntradaDTO->setNumIdMdLitNomeFuncional($idMdLitNomeFuncional);
                                 $objMdLitMapearParamEntradaDTO->setStrCampo($campo);
-                                $objMdLitMapearParamEntradaDTO->setStrChaveUnica($campo == $_POST['chaveUnicaDadosEntrada'] ? 'S' : 'N');
+                                $objMdLitMapearParamEntradaDTO->setStrChaveUnica($idMdLitNomeFuncional == $_POST['chaveUnicaDadosEntrada'] ? 'S' : 'N');
 
                             } else if ($_POST['selFuncionalidade'] == 2 && $idMdLitNomeFuncional == 5) {
                                 $objMdLitMapearParamEntradaDTO->setNumIdMdLitCampoIntegracao($idMdLitNomeFuncional);
                                 $objMdLitMapearParamEntradaDTO->setStrCampo($campo);
-                                $objMdLitMapearParamEntradaDTO->setStrChaveUnica($campo == $_POST['chaveUnicaDadosEntrada'] ? 'S' : 'N');
+                                $objMdLitMapearParamEntradaDTO->setStrChaveUnica($idMdLitNomeFuncional == $_POST['chaveUnicaDadosEntrada'] ? 'S' : 'N');
                                 //Selecionou Código da Receita
                                 if (isset($_POST['tpControle']) && !empty($_POST['tpControle'])) {
                                     $arrObjMdLitMapeaParamValorDTO = array();
@@ -98,7 +98,7 @@ switch ($_GET['acao']) {
                             } else {
                                 $objMdLitMapearParamEntradaDTO->setNumIdMdLitCampoIntegracao($idMdLitNomeFuncional);
                                 $objMdLitMapearParamEntradaDTO->setStrCampo($campo);
-                                $objMdLitMapearParamEntradaDTO->setStrChaveUnica($campo == $_POST['chaveUnicaDadosEntrada'] ? 'S' : 'N');
+                                $objMdLitMapearParamEntradaDTO->setStrChaveUnica($idMdLitNomeFuncional == $_POST['chaveUnicaDadosEntrada'] ? 'S' : 'N');
                             }
 
                             $arrObjMdLitMapearParamEntradaDTO[] = $objMdLitMapearParamEntradaDTO;
@@ -107,18 +107,18 @@ switch ($_GET['acao']) {
                 }
 
                 if (isset($_POST['nomeFuncionalDadosSaida']) && !empty($_POST['nomeFuncionalDadosSaida'])) {
-                    foreach ($_POST['nomeFuncionalDadosSaida'] as $campo => $idMdLitNomeFuncional) {
-                        if ($idMdLitNomeFuncional != 'null' && $idMdLitNomeFuncional != null) {
+                    foreach ($_POST['nomeFuncionalDadosSaida'] as $idMdLitNomeFuncional => $campo) {
+                        if ($campo != 'null' && $campo != null) {
                             $objMdLitMapearParamSaidaDTO = new MdLitMapearParamSaidaDTO();
 
                             if ($_POST['selFuncionalidade'] == 1) {
                                 $objMdLitMapearParamSaidaDTO->setNumIdMdLitNomeFuncional($idMdLitNomeFuncional);
                                 $objMdLitMapearParamSaidaDTO->setStrCampo($campo);
-                                $objMdLitMapearParamSaidaDTO->setStrChaveUnica($campo == $_POST['chaveUnicaDadosSaida'] ? 'S' : 'N');
+                                $objMdLitMapearParamSaidaDTO->setStrChaveUnica($idMdLitNomeFuncional == $_POST['chaveUnicaDadosSaida'] ? 'S' : 'N');
                             } else {
                                 $objMdLitMapearParamSaidaDTO->setNumIdMdLitCampoIntegracao($idMdLitNomeFuncional);
                                 $objMdLitMapearParamSaidaDTO->setStrCampo($campo);
-                                $objMdLitMapearParamSaidaDTO->setStrChaveUnica($campo == $_POST['chaveUnicaDadosSaida'] ? 'S' : 'N');
+                                $objMdLitMapearParamSaidaDTO->setStrChaveUnica($idMdLitNomeFuncional == $_POST['chaveUnicaDadosSaida'] ? 'S' : 'N');
                             }
 
                             $arrObjMdLitMapearParamSaidaDTO[] = $objMdLitMapearParamSaidaDTO;
@@ -191,18 +191,17 @@ switch ($_GET['acao']) {
                 $objMdLitIntegracaoRN = new MdLitIntegracaoRN();
 
                 if (isset($_POST['nomeFuncionalDadosEntrada']) && !empty($_POST['nomeFuncionalDadosEntrada'])) {
-                    foreach ($_POST['nomeFuncionalDadosEntrada'] as $campo => $idMdLitNomeFuncional) {
-                        if ($idMdLitNomeFuncional != 'null' && $idMdLitNomeFuncional != null) {
+                    foreach ($_POST['nomeFuncionalDadosEntrada'] as $idMdLitNomeFuncional => $campo) {
+                        if ($campo != 'null' && $campo != null) {
                             $objMdLitMapearParamEntradaDTO = new MdLitMapearParamEntradaDTO();
-
                             if ($_POST['selFuncionalidade'] == 1) {
                                 $objMdLitMapearParamEntradaDTO->setNumIdMdLitNomeFuncional($idMdLitNomeFuncional);
                                 $objMdLitMapearParamEntradaDTO->setStrCampo($campo);
-                                $objMdLitMapearParamEntradaDTO->setStrChaveUnica($campo == $_POST['chaveUnicaDadosEntrada'] ? 'S' : 'N');
+                                $objMdLitMapearParamEntradaDTO->setStrChaveUnica($idMdLitNomeFuncional == $_POST['chaveUnicaDadosEntrada'] ? 'S' : 'N');
                             } else if ($_POST['selFuncionalidade'] == 2 && $idMdLitNomeFuncional == 5) {
                                 $objMdLitMapearParamEntradaDTO->setNumIdMdLitCampoIntegracao($idMdLitNomeFuncional);
                                 $objMdLitMapearParamEntradaDTO->setStrCampo($campo);
-                                $objMdLitMapearParamEntradaDTO->setStrChaveUnica($campo == $_POST['chaveUnicaDadosEntrada'] ? 'S' : 'N');
+                                $objMdLitMapearParamEntradaDTO->setStrChaveUnica($idMdLitNomeFuncional == $_POST['chaveUnicaDadosEntrada'] ? 'S' : 'N');
                                 //Selecionou Código da Receita
                                 if (isset($_POST['tpControle']) && !empty($_POST['tpControle'])) {
                                     $arrObjMdLitMapeaParamValorDTO = array();
@@ -218,7 +217,7 @@ switch ($_GET['acao']) {
                             } else {
                                 $objMdLitMapearParamEntradaDTO->setNumIdMdLitCampoIntegracao($idMdLitNomeFuncional);
                                 $objMdLitMapearParamEntradaDTO->setStrCampo($campo);
-                                $objMdLitMapearParamEntradaDTO->setStrChaveUnica($campo == $_POST['chaveUnicaDadosEntrada'] ? 'S' : 'N');
+                                $objMdLitMapearParamEntradaDTO->setStrChaveUnica($idMdLitNomeFuncional == $_POST['chaveUnicaDadosEntrada'] ? 'S' : 'N');
                             }
 
                             $arrObjMdLitMapearParamEntradaDTO[] = $objMdLitMapearParamEntradaDTO;
@@ -229,18 +228,17 @@ switch ($_GET['acao']) {
                 }
 
                 if (isset($_POST['nomeFuncionalDadosSaida']) && !empty($_POST['nomeFuncionalDadosSaida'])) {
-                    foreach ($_POST['nomeFuncionalDadosSaida'] as $campo => $idMdLitNomeFuncional) {
-                        if ($idMdLitNomeFuncional != 'null' && $idMdLitNomeFuncional != null) {
+                    foreach ($_POST['nomeFuncionalDadosSaida'] as $idMdLitNomeFuncional => $campo) {
+                        if ($campo != 'null' && $campo != null) {
                             $objMdLitMapearParamSaidaDTO = new MdLitMapearParamSaidaDTO();
-
                             if ($_POST['selFuncionalidade'] == 1) {
                                 $objMdLitMapearParamSaidaDTO->setNumIdMdLitNomeFuncional($idMdLitNomeFuncional);
                                 $objMdLitMapearParamSaidaDTO->setStrCampo($campo);
-                                $objMdLitMapearParamSaidaDTO->setStrChaveUnica($campo == $_POST['chaveUnicaDadosSaida'] ? 'S' : 'N');
+                                $objMdLitMapearParamSaidaDTO->setStrChaveUnica($idMdLitNomeFuncional == $_POST['chaveUnicaDadosSaida'] ? 'S' : 'N');
                             } else {
                                 $objMdLitMapearParamSaidaDTO->setNumIdMdLitCampoIntegracao($idMdLitNomeFuncional);
                                 $objMdLitMapearParamSaidaDTO->setStrCampo($campo);
-                                $objMdLitMapearParamSaidaDTO->setStrChaveUnica($campo == $_POST['chaveUnicaDadosSaida'] ? 'S' : 'N');
+                                $objMdLitMapearParamSaidaDTO->setStrChaveUnica($idMdLitNomeFuncional == $_POST['chaveUnicaDadosSaida'] ? 'S' : 'N');
                             }
 
                             $arrObjMdLitMapearParamSaidaDTO[] = $objMdLitMapearParamSaidaDTO;

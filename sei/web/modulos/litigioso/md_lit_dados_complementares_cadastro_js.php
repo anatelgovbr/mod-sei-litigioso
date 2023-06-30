@@ -82,7 +82,8 @@
 
         //pegar do fieldset do interessado na tela de controle litigioso
         var idContato = document.getElementById('hdnIdContato').value;
-        var hdnTbDadoInteressado = eval('window.opener.hdnTbDadoInteressado_'+idContato);
+        var hdnTbDadoInteressado = eval('window.top.document.getElementById("ifrVisualizacao").contentWindow.hdnTbDadoInteressado_'+idContato);
+        console.log(hdnTbDadoInteressado);
         if(typeof hdnTbDadoInteressado != 'undefined'){
             document.getElementById('hdnListaDadosComplementares').value = hdnTbDadoInteressado.value;
             if(hdnTbDadoInteressado.getAttribute('outorgado') == 'S'){
@@ -273,7 +274,7 @@
         }
         validarNumeroVazio();
         var idContato = document.getElementById('hdnIdContato').value;
-        var hdnTbDadoInteressado = eval('window.opener.hdnTbDadoInteressado_'+idContato);
+        var hdnTbDadoInteressado = eval('window.top.document.getElementById("ifrVisualizacao").contentWindow.hdnTbDadoInteressado_'+idContato);
         var checkedOutorgado = document.getElementById('optOutorgadaSim').checked? 'S':'N';
 
         if(typeof hdnTbDadoInteressado == 'undefined'){
@@ -283,15 +284,15 @@
             hdnTbDadoInteressado.setAttribute("id", "hdnTbDadoInteressado_"+idContato);
             hdnTbDadoInteressado.setAttribute("value", objTblDadosComplementares.hdn.value);
             hdnTbDadoInteressado.setAttribute("outorgado", checkedOutorgado);
-            window.opener.divInteressados.appendChild(hdnTbDadoInteressado);
+            window.top.document.getElementById("ifrVisualizacao").contentWindow.divInteressados.appendChild(hdnTbDadoInteressado);
 
-            window.close();
+            $(window.top.document).find('div[id^=divInfraSparklingModalClose]').click();
             return false;
         }
 
         hdnTbDadoInteressado.setAttribute("outorgado", checkedOutorgado);
         hdnTbDadoInteressado.value = objTblDadosComplementares.hdn.value;
-        window.close();
+        $(window.top.document).find('div[id^=divInfraSparklingModalClose]').click();
         return false;
     }
     function validarCadastro(formulario) {
@@ -320,11 +321,17 @@
             document.getElementById('naoOutorgada').style.display = "none";
             objLupaServicosNaoOutorga.limpar();
             document.getElementById('dvTblDadosComplementares').style.display = "none";
+            if($("#hdnEntidadeOutorgadaSalvo").val() == 'S'){
+                consultarCadastro();
+            }
         }else{
             document.getElementById('outorgada').style.display = "none";
             document.getElementById('naoOutorgada').style.display = "block";
             objTblDadosComplementares.limpar();
             document.getElementById('dvTblDadosComplementares').style.display = "none";
+            if($("#hdnEntidadeOutorgadaSalvo").val() == 'N'){
+                consultarCadastro();
+            }
         }
 
     }
@@ -782,4 +789,9 @@
             document.getElementById('txtNumero').value = '';
         }
     }
+    $(document).ready(function() {
+        $('#btnFechar').click(function() {
+            $(window.top.document).find('div[id^=divInfraSparklingModalClose]').click();
+        });
+    });
 </script>

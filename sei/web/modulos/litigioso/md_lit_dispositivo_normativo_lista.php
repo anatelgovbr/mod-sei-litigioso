@@ -476,8 +476,8 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                         </select>
                     </div>
                 </div>
-            </div>
         <?php } ?>
+        </div>
         <input type="hidden" id="selICCondutas" name="selICCondutas" value="<?= $_POST['selICCondutas'] ?>">
         <input type="submit" style="visibility: hidden;"/>
         <?php if ($showCombo) { ?>
@@ -495,14 +495,10 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 </div>
             </div>
         <?php } ?>
-        <div class="row">
-            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                <?
-                PaginaSEI::getInstance()->montarAreaTabela($strResultado, $numRegistros);
-                PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos);
-                ?>
-            </div>
-        </div>
+        <?
+        PaginaSEI::getInstance()->montarAreaTabela($strResultado, $numRegistros);
+        PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos);
+        ?>
     </form>
 
 <?

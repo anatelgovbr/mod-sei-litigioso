@@ -35,6 +35,24 @@ class MdLitMapearParamEntradaINT extends InfraINT {
   public static function montarTabelaParamEntrada($objMdLitSoapClienteRN, $idMdLitFuncionalidade, $operacao, $idMdLitIntegracao = null){
       $objMdLitMapearParamEntradaDTO    = new MdLitMapearParamEntradaDTO();
       $arrParametroEntrada              = $objMdLitSoapClienteRN->getParamsInput($operacao);
+
+        foreach ($arrParametroEntrada as $indice=>$valor) {
+            if(is_array($valor)) {
+                ksort($valor);
+                foreach ($valor as $chave => $item) {
+                    if(is_array($item)){
+                        foreach($item as $chaveItem => $value) {
+                            $parametroEntradaCorreto[$chaveItem] = $indice . " - " . $chave . " - " . $chaveItem;
+                        }
+                    } else {
+                        $parametroEntradaCorreto[$chave] = $indice." - ".$item;
+                    }
+                }
+            } else {
+                $parametroEntradaCorreto[$valor] = $valor;
+            }
+        }
+
       $strResultadoParamEntrada         = '';
       $arrObjMdLitMapearParamEntradaDTO = array();
 
@@ -48,63 +66,92 @@ class MdLitMapearParamEntradaINT extends InfraINT {
           $arrObjMdLitMapearParamEntradaDTO = $objMdLitMapearParamEntradaRN->listar($objMdLitMapearParamEntradaDTO);
       }
 
-      $numRegistrosParametroEntrada = count($arrParametroEntrada);
-      if($numRegistrosParametroEntrada > 0){
-          $strSumarioTabela = 'Tabela de configuração dos dados de entrada do web-service.';
-          $strCaptionTabela = 'Dados de entrada';
+        $numRegistrosParametroEntrada = count($arrParametroEntrada);
+        if($numRegistrosParametroEntrada > 0){
+            $strSumarioTabela = 'Tabela de configuração dos dados de entrada do web-service.';
+            $strCaptionTabela = 'Dados de entrada';
 
-          $strResultadoParamEntrada .= '<table width="100%" id="tableParametroEntrada" class="infraTable" summary="' . $strSumarioTabela . '">' . "\n";
-          $strResultadoParamEntrada .= '<tr>';
+            $strResultadoParamEntrada .= '<table width="100%" id="tableParametroEntrada" class="infraTable" summary="' . $strSumarioTabela . '">' . "\n";
+            $strResultadoParamEntrada .= '<tr>';
+            $strResultadoParamEntrada .= '<th class="infraTh" width="35%" style="min-width: 402px">&nbsp;Campo de Origem no SEI&nbsp;</th>' . "\n";
+            $strResultadoParamEntrada .= '<th class="infraTh" width="45%" style="min-width: 261px">&nbsp;Dados de Entrada no Webservice&nbsp;</th>' . "\n";
 
-          $strResultadoParamEntrada .= '<th class="infraTh" width="30%" style="min-width: 261px">&nbsp;Dados de Entrada no Webservice&nbsp;</th>' . "\n";
-          $strResultadoParamEntrada .= '<th class="infraTh" width="50%" style="min-width: 402px">&nbsp;Campo de Origem no SEI&nbsp;</th>' . "\n";
-          $strResultadoParamEntrada .= '<th class="infraTh" width="15%">&nbsp;Chave Única da Integração&nbsp;</th>' . "\n";
-          $strResultadoParamEntrada .= '</tr>' . "\n";
-          $strCssTr = '';
-          for ($i = 0; $i < $numRegistrosParametroEntrada; $i++) {
-              if($idMdLitFuncionalidade == 1) {
-                  $strItensSelNomeFuncional = MdLitNomeFuncionalINT::montarSelectNome('null', '&nbsp;', null);
-              }else{
-                  $strItensSelNomeFuncional = MdLitCampoIntegracaoINT::montarSelectCampoIntergracao('null', '&nbsp;', $idMdLitFuncionalidade, 'E');
-              }
+            $strResultadoParamEntrada .= '<th class="infraTh" width="15%">&nbsp;Chave Única da Integração&nbsp;</th>' . "\n";
+            $strResultadoParamEntrada .= '</tr>' . "\n";
+            $strCssTr = '';
+            if($idMdLitFuncionalidade == 1) {
+                $strItensSelNomeFuncional = MdLitNomeFuncionalINT::montarSelectNome('null', '&nbsp;', null);
+            }else{
+                $strItensSelNomeFuncional = MdLitCampoIntegracaoINT::montarSelectCampoIntergracao('null', '&nbsp;', $idMdLitFuncionalidade, 'E');
+            }
+            $i = 0;
+            foreach ($strItensSelNomeFuncional as $campoOrigemEntrada) {
+                $tabelaCodigoReceita = '';
+                $entradaParametroSalvo = null;
+                $chaveUnica = null;
+                $campoOrigemEntradaIdMdLitId = null;
+                $campoOrigemEntradaIdMdLitCampo = null;
+                if($idMdLitFuncionalidade == 1) {
+                    $campoOrigemEntradaIdMdLitId = $campoOrigemEntrada->get("IdMdLitNomeFuncional");
+                    $campoOrigemEntradaIdMdLitCampo = $campoOrigemEntrada->get("Nome");
 
-              $idLinha = $i;
+                } else {
+                    $campoOrigemEntradaIdMdLitId = $campoOrigemEntrada->get("IdMdLitCampoIntegracao");
+                    $campoOrigemEntradaIdMdLitCampo = $campoOrigemEntrada->get("NomeCampo");
+                }
 
-              $strCssTr = '<tr id="paramEntradaTable_' . $idLinha . '" class="infraTrClara">';
-              $disable = 'disabled="disabled"';
-              $checked = '';
-              $tabelaCodigoReceita = '';
+                foreach($arrObjMdLitMapearParamEntradaDTO as $parametrosSalvos) {
+                    $parametrosSalvosIdMdLitId = null;
 
-              if(count($arrObjMdLitMapearParamEntradaDTO)> 0){
-                  for ($j = 0; $j < count($arrObjMdLitMapearParamEntradaDTO); $j++){
-                      if($arrObjMdLitMapearParamEntradaDTO[$j]->getStrCampo() == $arrParametroEntrada[$i] ){
-                          $disable = '';
-                          if($idMdLitFuncionalidade == 1){
-                            $strItensSelNomeFuncional = MdLitNomeFuncionalINT::montarSelectNome('null','&nbsp;',$arrObjMdLitMapearParamEntradaDTO[$j]->getNumIdMdLitNomeFuncional());
-                          }else{
-                              $strItensSelNomeFuncional = MdLitCampoIntegracaoINT::montarSelectCampoIntergracao('null', '&nbsp;', $idMdLitFuncionalidade, 'E', $arrObjMdLitMapearParamEntradaDTO[$j]->getNumIdMdLitCampoIntegracao());
-                          }
-                          $checked = $arrObjMdLitMapearParamEntradaDTO[$j]->getStrChaveUnica() == 'S'?'checked="checked"': '';
+                    if($idMdLitFuncionalidade == 1) {
+                        $parametrosSalvosIdMdLitId = $parametrosSalvos->get("IdMdLitNomeFuncional");
+                    } else {
+                        $parametrosSalvosIdMdLitId = $parametrosSalvos->get("IdMdLitCampoIntegracao");
+                    }
+                    if($parametrosSalvosIdMdLitId) {
+                        if($parametrosSalvosIdMdLitId == $campoOrigemEntradaIdMdLitId) {
+                            $entradaParametroSalvo = $parametrosSalvos->get("Campo");
+                            if(($campoOrigemEntradaIdMdLitId == 5) && ($campoOrigemEntradaIdMdLitCampo == "Código da Receita")) {
+                                $tabelaCodigoReceita = MdLitIntegracaoINT::montarTabelaCodigoReceita($parametrosSalvos->get("IdMdLitMapearParamEntrada"));
+                            }
+                        }
+                    }
+                    if($parametrosSalvos->get('ChaveUnica') == "S") {
+                        $chaveUnica = $parametrosSalvosIdMdLitId;
+                    }
+                }
 
-                          if($arrObjMdLitMapearParamEntradaDTO[$j]->getNumIdMdLitCampoIntegracao() == 5){
-                              $tabelaCodigoReceita = MdLitIntegracaoINT::montarTabelaCodigoReceita($arrObjMdLitMapearParamEntradaDTO[$j]->getNumIdMdLitMapearParamEntrada());
-                          }
+                $itensSelectParamEntrada = MdLitCampoIntegracaoINT::montarSelectArray('null','&nbsp;', $entradaParametroSalvo, $parametroEntradaCorreto);
+                $strCssTr = '<tr id="paramEntradaTable_' . $i . '" class="infraTrClara">';
 
-                      }
-                  }
-              }
+                if($campoOrigemEntradaIdMdLitId == $chaveUnica) {
+                    $checked = 'checked="checked"';
+                } else {
+                    $checked = '';
+                }
+                if($entradaParametroSalvo == null) {
+                    $disable = 'disabled="disabled"';
+                } else {
+                    $disable = '';
+                }
 
-              $strResultadoParamEntrada .= $strCssTr;
-              $strResultadoParamEntrada .= "<td id='campo_$idLinha>";
-              $strResultadoParamEntrada .= "<input type='hidden' name='hdnArrayDadosEntrada[$i]' value='{$arrParametroEntrada[$i]}' />";
-              $strResultadoParamEntrada .= PaginaSEI::tratarHTML($arrParametroEntrada[$i]);
-              $strResultadoParamEntrada .= "</td>";
-              $strResultadoParamEntrada .= "<td align='center'><select id='nomeFuncionalDadosEntrada_$i' class='infraSelect form-control' name='nomeFuncionalDadosEntrada[$arrParametroEntrada[$i]]' onchange='mudarNomeFuncionalDadosEntrada(this), verificarCodigoReceita(this)' style='width: 80%;'>{$strItensSelNomeFuncional}</select>";
-              $strResultadoParamEntrada.= $tabelaCodigoReceita."</td>";
-              $strResultadoParamEntrada .= "<td align='center'><input type='radio' class='infraRadio' name='chaveUnicaDadosEntrada' value='$arrParametroEntrada[$i]' id='chaveUnicaDadosEntrada_{$idLinha}' $disable $checked> </td>";
+                $class = '';
+                if(in_array($campoOrigemEntrada->getNumIdMdLitCampoIntegracao(), MdLitMapearParamEntradaRN::$ID_PARAM_LANCAMENTO_CREDITO_CAMPOS_OBRIGRATORIOS)){
+                    $class = '" class="font-weight-bold"';
+                }
 
-              $strResultadoParamEntrada .= '</tr>' . "\n";
-          }
+                $strResultadoParamEntrada .= $strCssTr;
+                $strResultadoParamEntrada .= "<td id='campo_".$i."'>";
+                $strResultadoParamEntrada .= "<input type='hidden' name='hdnArrayDadosEntrada[".$i."]' value='{$arrParametroEntrada[$campoOrigemEntradaIdMdLitId]}' />";
+                $strResultadoParamEntrada .= "<label ".$class.">".PaginaSEI::tratarHTML($campoOrigemEntradaIdMdLitCampo)."</label>";
+                $strResultadoParamEntrada.= $tabelaCodigoReceita."</td>";
+                $strResultadoParamEntrada .= "<td align='center'><select id='nomeFuncionalDadosEntrada_".$i."' class='infraSelect form-control' name='nomeFuncionalDadosEntrada[".$campoOrigemEntradaIdMdLitId."]' onchange='mudarNomeFuncionalDadosEntrada(this), verificarCodigoReceita(this)' style='width: 80%;'>{$itensSelectParamEntrada}</select>";
+                $strResultadoParamEntrada .= "</td>";
+                $strResultadoParamEntrada .= "<td align='center'><input type='radio' class='infraRadio' name='chaveUnicaDadosEntrada' id='chaveUnicaDadosEntrada_".$i."' value='".$campoOrigemEntradaIdMdLitId."' $disable $checked> </td>";
+
+                $strResultadoParamEntrada .= '</tr>' . "\n";
+                $i++;
+            }
           $strResultadoParamEntrada .= '</table>';
       }
 

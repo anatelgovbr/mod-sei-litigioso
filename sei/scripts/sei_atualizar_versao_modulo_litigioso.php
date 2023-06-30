@@ -5,10 +5,10 @@ class MdLitAtualizadorSeiRN extends InfraRN
 {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '2.0.0';
+    private $versaoAtualDesteModulo = '2.1.0';
     private $nomeDesteModulo = 'MÓDULO DE CONTROLE LITIGIOSO';
     private $nomeParametroModulo = 'VERSAO_MODULO_LITIGIOSO';
-    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4', '1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '2.0.0');
+    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4', '1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '2.0.0', '2.1.0');
 
     public function __construct()
     {
@@ -68,6 +68,7 @@ class MdLitAtualizadorSeiRN extends InfraRN
 
     protected function atualizarVersaoConectado()
     {
+
         try {
             $this->inicializar('INICIANDO A INSTALAÇÃO/ATUALIZAÇÃO DO ' . $this->nomeDesteModulo . ' NO SEI VERSÃO ' . SEI_VERSAO);
 
@@ -79,7 +80,7 @@ class MdLitAtualizadorSeiRN extends InfraRN
             }
 
             //testando versao do framework
-            $numVersaoInfraRequerida = '1.603.5';
+            $numVersaoInfraRequerida = '1.612.3';
             $versaoInfraFormatada = (int)str_replace('.', '', VERSAO_INFRA);
             $versaoInfraReqFormatada = (int)str_replace('.', '', $numVersaoInfraRequerida);
 
@@ -133,6 +134,8 @@ class MdLitAtualizadorSeiRN extends InfraRN
                     $this->instalarv1100();
                 case '1.10.0':
                     $this->instalarv200();
+                case '2.0.0':
+                    $this->instalarv210();
                     break;
 
                 default:
@@ -2056,12 +2059,12 @@ class MdLitAtualizadorSeiRN extends InfraRN
     protected function instalarv180()
     {
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.8.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
-		
+
         $objInfraMetaBD = new InfraMetaBD(BancoSEI::getInstance());
         $objInfraMetaBD->setBolValidarIdentificador(true);
 
         $arrTabelas = array('md_lit_adm_modalidad_outor', 'md_lit_adm_tipo_outor', 'md_lit_assoc_disp_normat', 'md_lit_campo_integracao', 'md_lit_cancela_lancamento', 'md_lit_conduta', 'md_lit_controle', 'md_lit_dado_interessado', 'md_lit_decisao', 'md_lit_disp_normat', 'md_lit_especie_decisao', 'md_lit_fase', 'md_lit_funcionalidade', 'md_lit_historic_lancamento', 'md_lit_integracao', 'md_lit_lancamento', 'md_lit_mapea_param_entrada', 'md_lit_mapea_param_saida', 'md_lit_mapea_param_valor', 'md_lit_motivo', 'md_lit_nome_funcional', 'md_lit_numero_interessado', 'md_lit_obrigacao', 'md_lit_param_interessado', 'md_lit_processo_situacao', 'md_lit_reinciden_anteceden', 'md_lit_rel_controle_motivo', 'md_lit_rel_decis_lancament', 'md_lit_rel_decisao_uf', 'md_lit_rel_dis_nor_con_ctr', 'md_lit_rel_disp_norm_conduta', 'md_lit_rel_disp_norm_revogado', 'md_lit_rel_disp_norm_tipo_ctrl', 'md_lit_rel_esp_decisao_obr', 'md_lit_rel_num_inter_modali', 'md_lit_rel_num_inter_servico', 'md_lit_rel_num_inter_tp_outor', 'md_lit_rel_protoco_protoco', 'md_lit_rel_sit_serie', 'md_lit_rel_tipo_ctrl_tipo_dec', 'md_lit_rel_tp_control_moti', 'md_lit_rel_tp_controle_proced', 'md_lit_rel_tp_controle_unid', 'md_lit_rel_tp_controle_usu', 'md_lit_rel_tp_ctrl_proc_sobres', 'md_lit_rel_tp_dec_rein_ante', 'md_lit_rel_tp_especie_dec', 'md_lit_servico', 'md_lit_servico_integracao', 'md_lit_situacao', 'md_lit_situacao_lancam_int', 'md_lit_situacao_lancamento', 'md_lit_tipo_controle', 'md_lit_tipo_decisao');
-        
+
 		$this->fixIndices($objInfraMetaBD, $arrTabelas);
 
         $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
@@ -2134,7 +2137,37 @@ class MdLitAtualizadorSeiRN extends InfraRN
             $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'dta_decurso_prazo_recurso', $objInfraMetaBD->tipoDataHora(), 'NULL');
 
             $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
-            $objMdLitLancamentoDTO->retTodos();
+
+            $objMdLitLancamentoDTO->retNumIdMdLitLancamento();
+            $objMdLitLancamentoDTO->retNumIdMdLitSituacaoLancamento();
+            $objMdLitLancamentoDTO->retStrTipoLancamento();
+            $objMdLitLancamentoDTO->retStrSequencial();
+            $objMdLitLancamentoDTO->retDtaDecisao();
+            $objMdLitLancamentoDTO->retDtaIntimacao();
+            $objMdLitLancamentoDTO->retDtaDecursoPrazoRecurso();
+            $objMdLitLancamentoDTO->retDtaVencimento();
+            $objMdLitLancamentoDTO->retDtaPrazoDefesa();
+            $objMdLitLancamentoDTO->retDtaUltimoPagamento();
+            $objMdLitLancamentoDTO->retDblVlrLancamento();
+            $objMdLitLancamentoDTO->retDblVlrDesconto();
+            $objMdLitLancamentoDTO->retDblVlrPago();
+            $objMdLitLancamentoDTO->retDblVlrSaldoDevedor();
+            $objMdLitLancamentoDTO->retDthInclusao();
+            $objMdLitLancamentoDTO->retStrLinkBoleto();
+            $objMdLitLancamentoDTO->retStrNumeroInteressado();
+            $objMdLitLancamentoDTO->retStrSinConstituicaoDefinitiva();
+            $objMdLitLancamentoDTO->retStrSinRenunciaRecorrer();
+            $objMdLitLancamentoDTO->retDtaIntimacaoDefinitiva();
+            $objMdLitLancamentoDTO->retDtaConstituicaoDefinitiva();
+            $objMdLitLancamentoDTO->retStrJustificativa();
+            $objMdLitLancamentoDTO->retNumIdUsuario();
+            $objMdLitLancamentoDTO->retNumIdUnidade();
+            $objMdLitLancamentoDTO->retStrCodigoReceita();
+            $objMdLitLancamentoDTO->retDblIdProcedimento();
+            $objMdLitLancamentoDTO->retStrSinSuspenso();
+            $objMdLitLancamentoDTO->retNumIdMdLitIntegracao();
+            $objMdLitLancamentoDTO->retNumIdMdLitNumeroInteressado();
+
             $objMdLitLancamentoRN = new MdLitLancamentoRN();
             $arrObjMdLitLancamentoDTO = $objMdLitLancamentoRN->listar($objMdLitLancamentoDTO);
             if ($objMdLitLancamentoDTO) {
@@ -2236,17 +2269,247 @@ class MdLitAtualizadorSeiRN extends InfraRN
 
         $objInfraMetaBD = new InfraMetaBD(BancoSEI::getInstance());
         $objInfraMetaBD->setBolValidarIdentificador(true);
-		
+
         $arrTabelas = array('md_lit_adm_modalidad_outor', 'md_lit_adm_tipo_outor', 'md_lit_assoc_disp_normat', 'md_lit_campo_integracao', 'md_lit_cancela_lancamento', 'md_lit_conduta', 'md_lit_controle', 'md_lit_dado_interessado', 'md_lit_decisao', 'md_lit_disp_normat', 'md_lit_especie_decisao', 'md_lit_fase', 'md_lit_funcionalidade', 'md_lit_historic_lancamento', 'md_lit_integracao', 'md_lit_lancamento', 'md_lit_mapea_param_entrada', 'md_lit_mapea_param_saida', 'md_lit_mapea_param_valor', 'md_lit_motivo', 'md_lit_nome_funcional', 'md_lit_numero_interessado', 'md_lit_obrigacao', 'md_lit_param_interessado', 'md_lit_processo_situacao', 'md_lit_reinciden_anteceden', 'md_lit_rel_controle_motivo', 'md_lit_rel_decis_lancament', 'md_lit_rel_decisao_uf', 'md_lit_rel_dis_nor_con_ctr', 'md_lit_rel_disp_norm_conduta', 'md_lit_rel_disp_norm_revogado', 'md_lit_rel_disp_norm_tipo_ctrl', 'md_lit_rel_esp_decisao_obr', 'md_lit_rel_num_inter_modali', 'md_lit_rel_num_inter_servico', 'md_lit_rel_num_inter_tp_outor', 'md_lit_rel_protoco_protoco', 'md_lit_rel_sit_serie', 'md_lit_rel_tipo_ctrl_tipo_dec', 'md_lit_rel_tp_control_moti', 'md_lit_rel_tp_controle_proced', 'md_lit_rel_tp_controle_unid', 'md_lit_rel_tp_controle_usu', 'md_lit_rel_tp_ctrl_proc_sobres', 'md_lit_rel_tp_dec_rein_ante', 'md_lit_rel_tp_especie_dec', 'md_lit_servico', 'md_lit_servico_integracao', 'md_lit_situacao', 'md_lit_situacao_lancam_int', 'md_lit_situacao_lancamento', 'md_lit_tipo_controle', 'md_lit_tipo_decisao');
-        
+
 		$this->fixIndices($objInfraMetaBD, $arrTabelas);
 
         $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
         BancoSEI::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'2.0.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
 
         $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 2.0.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SEI');
-    
+
 	}
+
+    protected function instalarv210()
+    {
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 2.1.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
+
+        $objInfraMetaBD = new InfraMetaBD(BancoSEI::getInstance());
+        $objInfraMetaBD->setBolValidarIdentificador(true);
+
+        $arrDados = array(
+
+            #Arrecadação Consulta Lançamento
+            //Entrada
+            array('idMdLitCampoIntegracao' => 87, 'idMdLitFuncionalidade' => 3, 'nomeCampo' => 'CNPJ/CPF', 'staParametro' => 'E'),
+            //Saída
+            array('idMdLitCampoIntegracao' => 88, 'idMdLitFuncionalidade' => 3, 'nomeCampo' => 'CNPJ/CPF', 'staParametro' => 'S'),
+
+            #Arrecadação Cancelar Lançamento
+            //Entrada
+            array('idMdLitCampoIntegracao' => 89, 'idMdLitFuncionalidade' => 4, 'nomeCampo' => 'CNPJ/CPF', 'staParametro' => 'E'),
+            //Saída
+            array('idMdLitCampoIntegracao' => 90, 'idMdLitFuncionalidade' => 4, 'nomeCampo' => 'CNPJ/CPF', 'staParametro' => 'S'),
+
+            #Arrecadação Retificar Lançamento
+            //Entrada
+            array('idMdLitCampoIntegracao' => 91, 'idMdLitFuncionalidade' => 5, 'nomeCampo' => 'CNPJ/CPF', 'staParametro' => 'E'),
+            array('idMdLitCampoIntegracao' => 101, 'idMdLitFuncionalidade' => 5, 'nomeCampo' => 'Data da Intimação da Decisão de Aplicação da Multa', 'staParametro' => 'E'),
+            array('idMdLitCampoIntegracao' => 102, 'idMdLitFuncionalidade' => 5, 'nomeCampo' => 'Data do Decurso do Prazo para Recurso', 'staParametro' => 'E'),
+            array('idMdLitCampoIntegracao' => 103, 'idMdLitFuncionalidade' => 5, 'nomeCampo' => 'Data de Apresentação do Recurso', 'staParametro' => 'E'),
+            array('idMdLitCampoIntegracao' => 104, 'idMdLitFuncionalidade' => 5, 'nomeCampo' => 'Data da Decisão Definitiva', 'staParametro' => 'E'),
+            array('idMdLitCampoIntegracao' => 105, 'idMdLitFuncionalidade' => 5, 'nomeCampo' => 'Documento Decisão Definitiva', 'staParametro' => 'E'),
+            //Saída
+            array('idMdLitCampoIntegracao' => 92, 'idMdLitFuncionalidade' => 5, 'nomeCampo' => 'CNPJ/CPF', 'staParametro' => 'S'),
+
+            #Arrecadação Suspender Lançamento
+            //Entrada
+            array('idMdLitCampoIntegracao' => 93, 'idMdLitFuncionalidade' => 6, 'nomeCampo' => 'CNPJ/CPF', 'staParametro' => 'E'),
+            array('idMdLitCampoIntegracao' => 106, 'idMdLitFuncionalidade' => 6, 'nomeCampo' => 'Data de Apresentação do Recurso', 'staParametro' => 'E'),
+            //Saída
+            array('idMdLitCampoIntegracao' => 94, 'idMdLitFuncionalidade' => 6, 'nomeCampo' => 'CNPJ/CPF', 'staParametro' => 'S'),
+
+            #Arrecadação Denegar Lançamento
+            //Entrada
+            array('idMdLitCampoIntegracao' => 95, 'idMdLitFuncionalidade' => 7, 'nomeCampo' => 'CNPJ/CPF', 'staParametro' => 'E'),
+            //Saída
+            array('idMdLitCampoIntegracao' => 96, 'idMdLitFuncionalidade' => 7, 'nomeCampo' => 'CNPJ/CPF', 'staParametro' => 'S'),
+
+            #Arrecadação Cancelar Lançamento
+            //Entrada
+            array('idMdLitCampoIntegracao' => 97, 'idMdLitFuncionalidade' => 8, 'nomeCampo' => 'CNPJ/CPF', 'staParametro' => 'E'),
+            //Saída
+            array('idMdLitCampoIntegracao' => 98, 'idMdLitFuncionalidade' => 8, 'nomeCampo' => 'CNPJ/CPF', 'staParametro' => 'S'),
+
+            #Arrecadação Lançamento de Crédito
+            //Entrada
+            array('idMdLitCampoIntegracao' => 100, 'idMdLitFuncionalidade' => 2, 'nomeCampo' => 'Documento Aplicação da Multa', 'staParametro' => 'E'),
+            //Saída
+            array('idMdLitCampoIntegracao' => 99, 'idMdLitFuncionalidade' => 2, 'nomeCampo' => 'CNPJ/CPF', 'staParametro' => 'S'),
+
+        );
+
+        $objMdLitCampoIntegracaoRN = new MdLitCampoIntegracaoRN();
+        foreach ($arrDados as $dados) {
+            $objMdLitCampoIntegracaoDTO = new MdLitCampoIntegracaoDTO();
+            $objMdLitCampoIntegracaoDTO->setNumIdMdLitCampoIntegracao($dados['idMdLitCampoIntegracao']);
+            $objMdLitCampoIntegracaoDTO->setNumIdMdLitFuncionalidade($dados['idMdLitFuncionalidade']);
+            $objMdLitCampoIntegracaoDTO->setStrNomeCampo($dados['nomeCampo']);
+            $objMdLitCampoIntegracaoDTO->setStrStaParametro($dados['staParametro']);
+            $objMdLitCampoIntegracaoRN->cadastrar($objMdLitCampoIntegracaoDTO);
+        }
+
+        BancoSEI::getInstance()->executarSql('UPDATE md_lit_campo_integracao SET nome_campo = \'Data da Constituição Definitiva\' WHERE nome_campo = \'Data Constituição Definitiva\'');
+        BancoSEI::getInstance()->executarSql('UPDATE md_lit_campo_integracao SET nome_campo = \'Data da Decisão de Aplicação da Multa\' WHERE nome_campo = \'Data de Aplicação da Sanção\'');
+        BancoSEI::getInstance()->executarSql('UPDATE md_lit_campo_integracao SET nome_campo = \'Data da Decisão de Aplicação da Multa\' WHERE nome_campo = \'Data de aplicação da Sanção\'');
+        BancoSEI::getInstance()->executarSql('UPDATE md_lit_campo_integracao SET nome_campo = \'Data do último Pagamento\' WHERE nome_campo = \'Data do Último Pagamento\'');
+        BancoSEI::getInstance()->executarSql('UPDATE md_lit_campo_integracao SET nome_campo = \'Justificativa do Lançamento\' WHERE nome_campo = \'Justificativa Lançamento\'');
+        BancoSEI::getInstance()->executarSql('UPDATE md_lit_campo_integracao SET nome_campo = \'Link para Boleto\' WHERE nome_campo = \'Link Boleto\'');
+        BancoSEI::getInstance()->executarSql('UPDATE md_lit_campo_integracao SET nome_campo = \'Identificação do Lançamento\' WHERE nome_campo = \'Sequencial\'');
+        BancoSEI::getInstance()->executarSql('UPDATE md_lit_campo_integracao SET nome_campo = \'Total de Multa Aplicada\' WHERE nome_campo = \'Valor Total\'');
+        BancoSEI::getInstance()->executarSql('UPDATE md_lit_campo_integracao SET nome_campo = \'Saldo Devedor Atualizado\' WHERE nome_campo = \'Valor Atualizado\'');
+        BancoSEI::getInstance()->executarSql('UPDATE md_lit_campo_integracao SET nome_campo = \'Total de Multa Aplicada\' WHERE nome_campo = \'Valor da Receita Inicial\'');
+        BancoSEI::getInstance()->executarSql('UPDATE md_lit_campo_integracao SET nome_campo = \'Valor Total Arrecadado\' WHERE nome_campo = \'Valor Total do Pagamento\'');
+        BancoSEI::getInstance()->executarSql('UPDATE md_lit_campo_integracao SET nome_campo = \'Renúncia ao direito de recorrer\' WHERE nome_campo = \'Renúncia de Recurso\'');
+
+        $this->logar('Adicionando campos para documento no lançamento e data da decisão definitiva');
+        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'id_md_lit_sit_dec_def', $objInfraMetaBD->tipoNumero(), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'dta_decisao_definitiva', $objInfraMetaBD->tipoDataHora(), 'NULL');
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk7_md_lit_lancamento', 'md_lit_lancamento', array('id_md_lit_sit_dec_def'), 'md_lit_processo_situacao', array('id_md_lit_processo_situacao'));
+
+        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'id_md_lit_sit_dec_def', $objInfraMetaBD->tipoNumero(), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'dta_decisao_definitiva', $objInfraMetaBD->tipoDataHora(), 'NULL');
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk8_md_lit_historic_lancamento', 'md_lit_historic_lancamento', array('id_md_lit_sit_dec_def'), 'md_lit_processo_situacao', array('id_md_lit_processo_situacao'));
+
+        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'dta_apresentacao_recurso', $objInfraMetaBD->tipoDataHora(), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'dta_apresentacao_recurso', $objInfraMetaBD->tipoDataHora(), 'NULL');
+
+        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'id_situacao_decisao', $objInfraMetaBD->tipoNumero(), 'NULL');
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk8_md_lit_lancamento', 'md_lit_lancamento', array('id_situacao_decisao'), 'md_lit_processo_situacao', array('id_md_lit_processo_situacao'));
+        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'id_situacao_decisao', $objInfraMetaBD->tipoNumero(), 'NULL');
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk9_md_lit_historic_lanc', 'md_lit_historic_lancamento', array('id_situacao_decisao'), 'md_lit_processo_situacao', array('id_md_lit_processo_situacao'));
+
+        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'id_situacao_intimacao', $objInfraMetaBD->tipoNumero(), 'NULL');
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk9_md_lit_lancamento', 'md_lit_lancamento', array('id_situacao_intimacao'), 'md_lit_processo_situacao', array('id_md_lit_processo_situacao'));
+        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'id_situacao_intimacao', $objInfraMetaBD->tipoNumero(), 'NULL');
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk10_md_lit_historic_lanc', 'md_lit_historic_lancamento', array('id_situacao_intimacao'), 'md_lit_processo_situacao', array('id_md_lit_processo_situacao'));
+
+        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'id_situacao_recurso', $objInfraMetaBD->tipoNumero(), 'NULL');
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk10_md_lit_lancamento', 'md_lit_lancamento', array('id_situacao_recurso'), 'md_lit_processo_situacao', array('id_md_lit_processo_situacao'));
+        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'id_situacao_recurso', $objInfraMetaBD->tipoNumero(), 'NULL');
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk11_md_lit_hist_lancamento', 'md_lit_historic_lancamento', array('id_situacao_recurso'), 'md_lit_processo_situacao', array('id_md_lit_processo_situacao'));
+
+        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'num_doc_decisao_multa', $objInfraMetaBD->tipoTextoVariavel(50), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'num_doc_decisao_multa', $objInfraMetaBD->tipoTextoVariavel(50), 'NULL');
+
+        $this->logar('Fim Adicionar campos para documento no lançamento e data da decisão definitiva');
+
+        $this->popularSituacaoDocumentoDecisao();
+        $this->popularIdSituacaoIntimacao();
+        $this->popularIdSituacaoRecurso();
+
+        $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+        BancoSEI::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'2.1.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+
+        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 2.1.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SEI');
+
+    }
+
+    protected function popularSituacaoDocumentoDecisao()
+    {
+        $this->logar('Popular Situação Documento de Decisao');
+        $mdLitProcessoSituacaoINT = new MdLitProcessoSituacaoINT();
+        $objMdLitLancamentoRN = new MdLitLancamentoRN();
+        $mdLitSituacaoDto = new MdLitProcessoSituacaoDTO();
+        $mdLitSituacaoDto->retNumIdMdLitProcessoSituacao();
+        $mdLitSituacaoDto->retDblIdProcedimento();
+        $mdLitSituacaoDto->setStrSinDecisoriaSit('S');
+        $mdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+        $arrObjMdLitProcessoSituacao = $mdLitProcessoSituacaoRN->listar($mdLitSituacaoDto);
+
+        foreach ($arrObjMdLitProcessoSituacao as $objMdLitProcessoSituacao) {
+          $dados['id_processo_situacao'] = $objMdLitProcessoSituacao->getNumIdMdLitProcessoSituacao();
+          $dados['id_procedimento'] = $objMdLitProcessoSituacao->getDblIdProcedimento();
+          $arrLancamentos = $mdLitProcessoSituacaoINT->verificarDependenciasSituacaoComLancamentos($dados);
+
+          foreach ($arrLancamentos as $lancamento) {
+            $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+            $objMdLitLancamentoDTO->setNumIdMdLitLancamento($lancamento->getNumIdMdLitLancamento());
+            $objMdLitLancamentoDTO->retTodos();
+            $objMdLitLancamento = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
+              $objMdLitLancamento->setNumIdSituacaoDecisao($objMdLitProcessoSituacao->getNumIdMdLitProcessoSituacao());
+              $objMdLitLancamentoRN->alterar($objMdLitLancamento);
+          }
+        }
+
+      $this->logar('Fim Popular Situação Documento de Decisao');
+    }
+
+    protected function popularIdSituacaoIntimacao()
+    {
+      $this->logar('Popular id da Situação Intimacao');
+      $objMdLitLancamentoRN = new MdLitLancamentoRN();
+      $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+      $objMdLitLancamentoDTO->retTodos();
+      $arrObjMdLitLancamento = $objMdLitLancamentoRN->listar($objMdLitLancamentoDTO);
+
+      foreach ($arrObjMdLitLancamento as $objMdLitLancamento) {
+
+        $mdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+        $mdLitSituacaoDTO = new MdLitProcessoSituacaoDTO();
+        $mdLitSituacaoDTO->retNumIdMdLitProcessoSituacao();
+        $mdLitSituacaoDTO->retStrProtocoloFormatadoDocumento();
+        $mdLitSituacaoDTO->retStrSinIntimacaoSit();
+        $mdLitSituacaoDTO->setDblIdProcedimento($objMdLitLancamento->getDblIdProcedimento());
+        $arrObjMdLitProcessoSituacao = $mdLitProcessoSituacaoRN->listar($mdLitSituacaoDTO);
+
+        $idSituacaoPosteriorDecisao = null;
+        foreach ($arrObjMdLitProcessoSituacao as $objMdLitProcessoSituacao) {
+          if (
+            !$idSituacaoPosteriorDecisao &&
+            $objMdLitLancamento->getNumIdSituacaoDecisao() < $objMdLitProcessoSituacao->getNumIdMdLitProcessoSituacao() &&
+            $objMdLitProcessoSituacao->getStrSinIntimacaoSit() == 'S'
+          ) {
+            $idSituacaoPosteriorDecisao = $objMdLitProcessoSituacao->getNumIdMdLitProcessoSituacao();
+          }
+        }
+
+        $objMdLitLancamento->setNumIdSituacaoIntimacao($idSituacaoPosteriorDecisao);
+        $objMdLitLancamentoRN->alterar($objMdLitLancamento);
+      }
+
+      $this->logar('Popular id da Situação Intimacao');
+    }
+
+    protected function popularIdSituacaoRecurso()
+    {
+      $this->logar('Popular id da Situação Recurso');
+      $objMdLitLancamentoRN = new MdLitLancamentoRN();
+      $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+      $objMdLitLancamentoDTO->setNumIdMdLitLancamento(520);
+      $objMdLitLancamentoDTO->retTodos();
+      $arrObjMdLitLancamento = $objMdLitLancamentoRN->listar($objMdLitLancamentoDTO);
+
+      foreach ($arrObjMdLitLancamento as $objMdLitLancamento) {
+
+        if ($objMdLitLancamento->getDtaApresentacaoRecurso()) {
+          $mdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+          $mdLitSituacaoDTO = new MdLitProcessoSituacaoDTO();
+          $mdLitSituacaoDTO->retNumIdMdLitProcessoSituacao();
+          $mdLitSituacaoDTO->retStrProtocoloFormatadoDocumento();
+          $mdLitSituacaoDTO->retStrSinRecursalSit();
+          $mdLitSituacaoDTO->setDblIdProcedimento($objMdLitLancamento->getDblIdProcedimento());
+          $arrObjMdLitProcessoSituacao = $mdLitProcessoSituacaoRN->listar($mdLitSituacaoDTO);
+
+          $idSituacaoRecurso = null;
+          foreach ($arrObjMdLitProcessoSituacao as $objMdLitProcessoSituacao) {
+            if (
+              !$idSituacaoRecurso &&
+              $objMdLitLancamento->getNumIdSituacaoDecisao() < $objMdLitProcessoSituacao->getNumIdMdLitProcessoSituacao() &&
+              $objMdLitProcessoSituacao->getStrSinRecursalSit() == 'S'
+            ) {
+              $idSituacaoRecurso = $objMdLitProcessoSituacao->getNumIdMdLitProcessoSituacao();
+            }
+          }
+        }
+
+        $objMdLitLancamento->setNumIdSituacaoRecurso($idSituacaoRecurso);
+        $objMdLitLancamentoRN->alterar($objMdLitLancamento);
+      }
+
+      $this->logar('Popular id da Situação Recurso');
+    }
 
     protected function fixIndices(InfraMetaBD $objInfraMetaBD, $arrTabelas)
     {

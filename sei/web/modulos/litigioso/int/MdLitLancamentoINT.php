@@ -66,6 +66,8 @@ class MdLitLancamentoINT extends InfraINT {
       $valorTotaMulta = 0;
       $sinExibeCancelamento = 'N';
       $sinSuspenso = 'N';
+      $idDadoInteressado = null;
+      $idNumeroInteressado = null;
 
       $objMdLitLancamentoRN = new MdLitLancamentoRN();
 
@@ -113,10 +115,13 @@ class MdLitLancamentoINT extends InfraINT {
           $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
           $objMdLitLancamentoDTO->retTodos(false);
           $objMdLitLancamentoDTO->retStrCorSituacao();
+          $objMdLitLancamentoDTO->retNumIdMdLitDadoInteressadoMdLitNumero();
           $objMdLitLancamentoDTO->setDblIdProcedimento($idProcedimento);
           $objMdLitLancamentoDTO->setNumIdMdLitLancamento($idmdLitLancamento);
 
           $objMdLitLancamentoDTO = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
+          $idNumeroInteressado = $objMdLitLancamentoDTO->getNumIdMdLitNumeroInteressado();
+          $idDadoInteressado = $objMdLitLancamentoDTO->getNumIdMdLitDadoInteressadoMdLitNumero();
 
           //Verificar se tem decisão para esse lançamento
           $temDecisaoLancamento = 'N';
@@ -194,6 +199,15 @@ class MdLitLancamentoINT extends InfraINT {
           $sinExibeCancelamento = 'S';
       }
 
+      $idSituacaoDecisao = $idmdLitLancamento ? $objMdLitLancamentoDTO->getNumIdSituacaoDecisao() : null;
+      $idSituacaoIntimacao = $idmdLitLancamento ? $objMdLitLancamentoDTO->getNumIdSituacaoIntimacao() : null;
+      $idSituacaoRecurso = $idmdLitLancamento ? $objMdLitLancamentoDTO->getNumIdSituacaoRecurso() : null;
+      $dtApresentacaoRecurso = $idmdLitLancamento ? $objMdLitLancamentoDTO->getDtaApresentacaoRecurso() : null;
+      $dtDecisaoDefinitiva = $idmdLitLancamento ? $objMdLitLancamentoDTO->getDtaDecisaoDefinitiva() : null;
+      $dtPrazoDefesa = $idmdLitLancamento ? $objMdLitLancamentoDTO->getDtaPrazoDefesa() : null;
+      $selDocumento = $idmdLitLancamento ? $objMdLitLancamentoDTO->getNumIdMdLitSituacaoDecisaoDefin() : null;
+      $txtSituacaoDocOrigem = $idmdLitLancamento ? (new MdLitLancamentoINT())->montarNomeSituacaoDocOrigem($objMdLitLancamentoDTO->getNumIdSituacaoDecisao()) : null;
+
       $xml .= "<dados>\n";
       $xml .= "<isCancelar>".$isCancelar ."</isCancelar>\n";
       $xml .= "<multaAplicada>".InfraUtil::formatarDin($multaAplicada)."</multaAplicada>\n";
@@ -223,9 +237,38 @@ class MdLitLancamentoINT extends InfraINT {
       $xml .= "<sinExisteMajoracao>$sinExisteMajoracao</sinExisteMajoracao>\n";
       $xml .= "<sinSuspenso>$sinSuspenso</sinSuspenso>\n";
       $xml .= "<sinTemDecisaoLancamento>$temDecisaoLancamento</sinTemDecisaoLancamento>\n";
+      $xml .= "<idInteressado>$idDadoInteressado</idInteressado>\n";
+      $xml .= "<idNumeroInteressado>$idNumeroInteressado</idNumeroInteressado>\n";
+      $xml .= "<idSituacaoDecisao>$idSituacaoDecisao</idSituacaoDecisao>\n";
+      $xml .= "<idSituacaoIntimacao>$idSituacaoIntimacao</idSituacaoIntimacao>\n";
+      $xml .= "<idSituacaoRecurso>$idSituacaoRecurso</idSituacaoRecurso>\n";
+      $xml .= "<dtApresentacaoRecurso>$dtApresentacaoRecurso</dtApresentacaoRecurso>\n";
+      $xml .= "<dtDecisaoDefinitiva>$dtDecisaoDefinitiva</dtDecisaoDefinitiva>\n";
+      $xml .= "<dtPrazoDefesa>$dtPrazoDefesa</dtPrazoDefesa>\n";
+      $xml .= "<selDocumento>$selDocumento</selDocumento>\n";
+      $xml .= "<txtSituacaoDocOrigem>$txtSituacaoDocOrigem</txtSituacaoDocOrigem>\n";
       $xml .= "</dados>";
 
       return $xml;
+  }
+
+  public static function montarNomeSituacaoDocOrigem($idSituacao){
+      $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+      $arrObjMdLitProcessoSituacaoDTO = new MdLitProcessoSituacaoDTO();
+      $arrObjMdLitProcessoSituacaoDTO->setNumIdMdLitProcessoSituacao($idSituacao);
+      $arrObjMdLitProcessoSituacaoDTO->setStrSinDecisoriaSit('S');
+      $arrObjMdLitProcessoSituacaoDTO->retStrProtocoloFormatadoDocumento();
+      $arrObjMdLitProcessoSituacaoDTO->retStrNomeSerie();
+      $arrObjMdLitProcessoSituacaoDTO->retStrNomeSituacao();
+      $arrObjMdLitProcessoSituacaoDTO->retStrNomeFase();
+
+      $objMdLitProcessoSituacao = $objMdLitProcessoSituacaoRN->consultar($arrObjMdLitProcessoSituacaoDTO);
+
+      $strRet = "{$objMdLitProcessoSituacao->getStrProtocoloFormatadoDocumento()} {$objMdLitProcessoSituacao->getStrNomeSerie()}";
+      $strRet .= " - {$objMdLitProcessoSituacao->getStrNomeSituacao()} ";
+      $strRet .= "({$objMdLitProcessoSituacao->getStrNomeFase()})";
+
+      return $strRet;
   }
 
   public static function montarSelectCreditosProcesso($numIdProcedimento, $strValorItemSelecionado = null){

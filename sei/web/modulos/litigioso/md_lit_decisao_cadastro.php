@@ -211,7 +211,7 @@ PaginaSEI::getInstance()->fecharHead();
 PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 
 ?>
-    <form id="frmCadastroDecisao" method="post" onsubmit="return OnSubmitForm();"
+    <form id="frmCadastroDecisao" method="post" onsubmit="OnSubmitForm();"
           action="<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'] . '&id_md_lit_controle=' . $_GET['id_md_lit_controle'] . '&id_procedimento=' . $_GET['id_procedimento']) ?>">
         <?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos); ?>
         <?php PaginaSEI::getInstance()->abrirAreaDados(null); ?>

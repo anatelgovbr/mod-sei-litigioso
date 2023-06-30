@@ -319,7 +319,7 @@ class MdLitCancelaLancamentoRN extends InfraRN {
     }
 
     private function _montarParametroEntradaCancelamentoCredito($objMdLitIntegracaoDTO, $post){
-        $idLancamento = $post['selCreditosProcesso'] ? $post['selCreditosProcesso'] : $post['hdnCreditosProcesso'];
+        $idLancamento = $post['hdnCreditosProcesso'];
         $objMdLitLancamentoRN = new MdLitLancamentoRN();
         $montarParametroEntrada = array();
         $objMdLitLancamentoDTO = $objMdLitLancamentoRN->retornaObjLancamento($idLancamento);
@@ -354,6 +354,10 @@ class MdLitCancelaLancamentoRN extends InfraRN {
 
                 case MdLitMapearParamEntradaRN::$ID_PARAM_CANCELAR_LANCAMENTO['SISTEMA_ORIGEM']:
                     $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = MdLitLancamentoRN::$SISTEMA_ORIGEM;
+                    break;
+                case MdLitMapearParamEntradaRN::$ID_PARAM_CANCELAR_LANCAMENTO['CNPJ_CPF']:
+                    $val = $objMdLitLancamentoDTO->getDblCpfInteressado() ? $objMdLitLancamentoDTO->getDblCpfInteressado() : $objMdLitLancamentoDTO->getDblCnpjInteressado();
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $val;
                     break;
             }
         }

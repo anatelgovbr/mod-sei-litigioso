@@ -11,27 +11,69 @@
     class MdLitServicoINT extends InfraINT
     {
 
-        public static function montarSelectCampoDestino($codigoSelect = '')
+        public static function montarSelectCampoDestino($arrParametroSaida, $objMdLitServicoIntegracaoDTO, $itemSei)
         {
-            $arrDados =[
-                'Código' => MdLitServicoIntegracaoRN::$CODIGO,
-                'Descrição' => MdLitServicoIntegracaoRN::$DESCRICAO,
-                'Sigla' => MdLitServicoIntegracaoRN::$SIGLA,
-                'Situação' => MdLitServicoIntegracaoRN::$SITUACAO];
-            $str = '<option  value=""> </option>';;
-            foreach($arrDados as  $key => $dado){
-                $selected = $codigoSelect == $dado ? 'selected=selected' : '';
-                $str .= '<option '.$selected.' value="'.$dado.'"> '.$key.' </option>';
-            }
+            $chaveUnica = false;
+            $str = '<option  value=""> </option>';
+            foreach ($arrParametroSaida as $key=>$arrayParam) {
+                if(is_array($arrayParam)) {
+                    ksort($arrayParam);
+                    foreach ($arrayParam as $chave => $item) {
+                        $codigoSelect = "";
+                        if($objMdLitServicoIntegracaoDTO) {
+                            if(MdLitServicoIntegracaoRN::$CODIGO == $itemSei)
+                                $codigoSelect = $objMdLitServicoIntegracaoDTO->getStrMapeamentoCodigo();
+                            elseif(MdLitServicoIntegracaoRN::$SIGLA == $itemSei)
+                                $codigoSelect = $objMdLitServicoIntegracaoDTO->getStrMapeamentoSigla();
+                            elseif(MdLitServicoIntegracaoRN::$DESCRICAO == $itemSei)
+                                $codigoSelect = $objMdLitServicoIntegracaoDTO->getStrMapeamentoDescricao();
+                            elseif(MdLitServicoIntegracaoRN::$SITUACAO == $itemSei)
+                                $codigoSelect = $objMdLitServicoIntegracaoDTO->getStrMapeamentoSituacao();
 
-            return $str;
+                            if($objMdLitServicoIntegracaoDTO->getStrChaveUnica() == $codigoSelect) {
+                                $chaveUnica = true;
+                            }
+                        }
+                        if(is_array($item)){
+                            foreach($item as $chaveItem => $value) {
+                                $chaveFormatada = $key . " - " . $chave . " - " . $chaveItem;
+                                $value = $chave . " - " . $chaveItem;
+                            }
+                        } else {
+                            $chaveFormatada = $key . " - " . $item;
+                            $value = $item;
+                        }
+                        $selected = $codigoSelect == $chaveFormatada ? 'selected=selected' : '';
+                        $str .= '<option '.$selected.' value="'.$value.'"> '.$chaveFormatada.' </option>';
+                    }
+                } else {
+                    $codigoSelect = "";
+                    if($objMdLitServicoIntegracaoDTO) {
+                        if(MdLitServicoIntegracaoRN::$CODIGO == $itemSei)
+                            $codigoSelect = $objMdLitServicoIntegracaoDTO->getStrMapeamentoCodigo();
+                        elseif(MdLitServicoIntegracaoRN::$SIGLA == $itemSei)
+                            $codigoSelect = $objMdLitServicoIntegracaoDTO->getStrMapeamentoSigla();
+                        elseif(MdLitServicoIntegracaoRN::$DESCRICAO == $itemSei)
+                            $codigoSelect = $objMdLitServicoIntegracaoDTO->getStrMapeamentoDescricao();
+                        elseif(MdLitServicoIntegracaoRN::$SITUACAO == $itemSei)
+                            $codigoSelect = $objMdLitServicoIntegracaoDTO->getStrMapeamentoSituacao();
+
+                        if($objMdLitServicoIntegracaoDTO->getStrChaveUnica() == $codigoSelect) {
+                            $chaveUnica = true;
+                        }
+                    }
+                    $selected = $codigoSelect == $arrayParam ? 'selected=selected' : '';
+                    $str .= '<option '.$selected.' value="'.$arrayParam.'"> '.$arrayParam.' </option>';
+                }
+            }
+            return array('select' => $str,'chaveUnica'=> $chaveUnica );
         }
 
-        
+
         public static function montarRadioMapCampos($id, $checked = false)
         {
             $strChecked = $checked ? 'checked = checked' : '';
-            
+
             $html = '<input '.$strChecked.' type="radio" name="'.$id.'" id="'.$id.'">';
 
             return $html;

@@ -20,17 +20,18 @@ class MdLitMapearParamEntradaRN extends InfraRN {
     public static $PARAM_PRINCIPAL_FILTROS  = 'filtro';
 
     public static $ID_PARAM_LANCAMENTO_CREDITO = array(
-        'COD_RECEITA'               => 5,
-        'DTA_VENCIMENTO'            => 3,
-        'DTA_APLICACAO_SANCAO'      => 2,
-        'NUMERO_INTERESSADO'        => 1,
-        'VALOR_RECEITA'             => 4,
-        'JUSTIFICATIVA_LANCAMENTO'  => 7,
-        'NUM_PROCESSO'              => 6,
-        'USUARIO_INCLUSAO'          => 8,
-        'SISTEMA_ORIGEM'            => 9,
-        'VALIDAR_MAJORACAO'         => 10,
-        'CNPJ_CPF'                  => 78
+        'COD_RECEITA'                  => 5,
+        'DTA_VENCIMENTO'               => 3,
+        'DTA_APLICACAO_SANCAO'         => 2,
+        'NUMERO_INTERESSADO'           => 1,
+        'VALOR_RECEITA'                => 4,
+        'JUSTIFICATIVA_LANCAMENTO'     => 7,
+        'NUM_PROCESSO'                 => 6,
+        'USUARIO_INCLUSAO'             => 8,
+        'SISTEMA_ORIGEM'               => 9,
+        'VALIDAR_MAJORACAO'            => 10,
+        'CNPJ_CPF'                     => 78,
+        'DOCUMENTO_APLICACAO_DA_MULTA' =>100
     );
 
     public static $ID_PARAM_CANCELAR_LANCAMENTO = array(
@@ -40,13 +41,15 @@ class MdLitMapearParamEntradaRN extends InfraRN {
         'NUM_PROCESSO'              => 29,
         'JUSTIFICATIVA_CANCELAMENTO'=> 30,
         'USUARIO_INCLUSAO'          => 31,
-        'SISTEMA_ORIGEM'            => 32
+        'SISTEMA_ORIGEM'            => 32,
+        'CNPJ_CPF'                  => 89
     );
 
     public static $ID_PARAM_CONSULTAR_LANCAMENTO = array(
         'NUMERO_INTERESSADO' => 15,
         'SEQUENCIAL' => 16,
-        'RENUNCIA_RECURSO' => 17
+        'RENUNCIA_RECURSO' => 17,
+        'CNPJ/CPF' => 87
     );
 
     public static $ID_PARAM_RETIFICAR_LANCAMENTO = array(
@@ -62,7 +65,14 @@ class MdLitMapearParamEntradaRN extends InfraRN {
         'SISTEMA_ORIGEM'            => 45,
         'RENUNCIA_RECURSO'          => 46,
         'SEQUENCIAL'                => 47,
-        'DTA_INTIMACAO_DEFINITIVA'  => 86
+        'DTA_INTIMACAO_DEFINITIVA'  => 86,
+        'CNPJ_CPF'                  => 91,
+        'DOC_DECISAO_APL_MULTA'     => 101,
+        'DTA_INT_DECISAO_APL_MULTA' => 102,
+        'DTA_DECURSO_PRAZO_RECURSO' => 103,
+        'DTA_APRESENTACAO_RECURSO'  => 104,
+        'DTA_DECISAO_DEFINITIVA'    => 105,
+        'DOC_DECISAO_DEFINITIVA'    => 106
     );
 
     public static $ID_PARAM_SUSPENDER_LANCAMENTO = array(
@@ -71,7 +81,9 @@ class MdLitMapearParamEntradaRN extends InfraRN {
         'OBSERVACAO'                => 54,
         'USUARIO_INCLUSAO'          => 55,
         'SISTEMA_ORIGEM'            => 56,
-        'DTA_PROCESSO'              => 57
+        'DTA_PROCESSO'              => 57,
+        'CNPJ_CPF'                  => 93,
+        'DTA_APRESENTACAO_RECURSO'  => 106
     );
 
     public static $ID_PARAM_DENEGAR_RECURSO = array(
@@ -80,15 +92,28 @@ class MdLitMapearParamEntradaRN extends InfraRN {
         'DATA_DENEGACAO'            => 62,
         'OBSERVACAO'                => 63,
         'SISTEMA_ORIGEM'            => 64,
-        'USUARIO_INCLUSAO'          => 65
+        'USUARIO_INCLUSAO'          => 65,
+        'CNPJ_CPF'                  => 95
     );
 
     public static $ID_PARAM_CANCELAR_RECURSO = array(
         'NUMERO_INTERESSADO'        => 68,
         'SEQUENCIAL'                => 69,
         'OBSERVACAO'                => 70,
-        'SISTEMA_ORIGEM'            => 71
+        'SISTEMA_ORIGEM'            => 71,
+        'CNPJ_CPF'                  => 97
     );
+
+  public static $ID_PARAM_LANCAMENTO_CREDITO_CAMPOS_OBRIGRATORIOS = array(
+      'NUMERO_INTERESSADO'           => 1,
+      'DTA_APLICACAO_SANCAO'         => 2,
+      'DTA_VENCIMENTO'               => 3,
+      'VALOR_RECEITA'                => 4,
+      'NUM_PROCESSO'                 => 6,
+      'CNPJ_CPF'                     => 78,
+      'LINK_BOLETO'                     => 11,
+      'SEQUENCIAL'                     => 12
+  );
 
     public static $ID_PARAM_GERAR_NUMERO_NAO_OUTORGADA = array(
         'SISTEMA_ORIGEM' => 76

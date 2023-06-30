@@ -164,10 +164,8 @@
                         select.appendChild(opt);
                     });
 
-                    document.getElementById('gridOperacao').style.display = "block";
                 } else {
                     alert($(result).find('msg').text());
-                    document.getElementById('gridOperacao').style.display = "none";
                 }
             },
             error: function (msgError) {
@@ -195,7 +193,7 @@
             return;
         }
 
-        var url = '<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_situacao_lancamento_integracao_mapear&acao_origem=' . $_GET['acao'] . '&id_md_lit_situacao_lancamento_integracao=' . $idMdLitServicoIntegracao); ?>';
+        var url = '<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_situacao_lancamento_integracao_mapear&acao_origem=' . $_GET['acao'] . '&id_md_lit_situacao_lancamento_integracao=' . $idMdLitSituacaoIntegracao); ?>';
         var windowFeatures = "location=1,status=1,resizable=1,scrollbars=1";
 
         var modalForm = document.createElement("form");
@@ -259,7 +257,7 @@
     function apagarOperacao() {
         var select = document.getElementById('selOperacao');
         select.options.length = 0;
-        document.getElementById('gridOperacao').style.display = "none";
         apagarMapear();
     }
 </script>
+

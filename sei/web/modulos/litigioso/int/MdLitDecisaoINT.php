@@ -367,7 +367,7 @@ class MdLitDecisaoINT extends InfraINT
         return self::somarDiaUtil(1, $dataInicial);
     }
 
-    public static function calcularDataDecursoPrazoRecurso($idProcedimento, $idTipoControle, $strDtBase)
+    public static function calcularDataDecursoPrazoRecurso($idProcedimento, $idTipoControle, $strDtBase, $idSituacao)
     {
         $data = '';
         $objMdLitProcessoSituacaoDTO = new MdLitProcessoSituacaoDTO();
@@ -375,6 +375,11 @@ class MdLitDecisaoINT extends InfraINT
         $objMdLitProcessoSituacaoDTO->setDblIdProcedimento($idProcedimento);
         $objMdLitProcessoSituacaoDTO->setNumIdMdLitTipoControle($idTipoControle);
         $objMdLitProcessoSituacaoDTO->setOrdNumIdMdLitSituacao(InfraDTO::$TIPO_ORDENACAO_DESC);
+
+        // se for uma alteração da situação busca o prazo de recurso da situação correta
+        if($idSituacao){
+          $objMdLitProcessoSituacaoDTO->setNumIdMdLitProcessoSituacao($idSituacao, InfraDTO::$OPER_MENOR_IGUAL);
+        }
 
         $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
         $objMdLitProcessoSituacaoDTO = current($objMdLitProcessoSituacaoRN->listar($objMdLitProcessoSituacaoDTO));

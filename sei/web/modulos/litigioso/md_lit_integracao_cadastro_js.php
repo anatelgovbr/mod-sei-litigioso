@@ -72,7 +72,9 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             var valoresDadosEntrada = [];
             $('[name^="nomeFuncionalDadosEntrada"]').each(function (key, value) {
                 if (value.value != 'null') {
-                    valoresDadosEntrada.push(value.value)
+                    var idMdLitCampoIntegracao = value.name.split("[");
+                    idMdLitCampoIntegracao = idMdLitCampoIntegracao[1].split("]");
+                    valoresDadosEntrada.push(idMdLitCampoIntegracao[0]);
                 }
             });
 
@@ -80,7 +82,10 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             var valoresDadosSaida = [];
             $('[name^="nomeFuncionalDadosSaida"]').each(function (key, value) {
                 if (value.value != 'null') {
-                    valoresDadosSaida.push(value.value)
+                    var idMdLitCampoIntegracao = value.name.split("[");
+                    idMdLitCampoIntegracao = idMdLitCampoIntegracao[1].split("]");
+                    valoresDadosSaida.push(idMdLitCampoIntegracao[0]);
+
                 }
             });
 
@@ -113,7 +118,9 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             var valoresDadosEntrada = [];
             $('[name^="nomeFuncionalDadosEntrada"]').each(function (key, value) {
                 if (value.value != 'null') {
-                    valoresDadosEntrada.push(value.value)
+                    var idMdLitCampoIntegracao = value.name.split("[");
+                    idMdLitCampoIntegracao = idMdLitCampoIntegracao[1].split("]");
+                    valoresDadosEntrada.push(idMdLitCampoIntegracao[0]);
                 }
             });
 
@@ -121,8 +128,8 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             if (!infraInArray(28, valoresDadosEntrada)) {
                 msgEntrada += "- Motivo de Cancelamento\n";
             }
-            if (!infraInArray(26, valoresDadosEntrada)) {
-                msgEntrada += "- Número de Complemento do Interessado\n";
+            if (!infraInArray(26, valoresDadosEntrada) && !infraInArray(89, valoresDadosEntrada)) {
+                msgEntrada += "- Número de Complemento do Interessado ou CNPJ/CPF\n";
             }
             if (!infraInArray(27, valoresDadosEntrada)) {
                 msgEntrada += "- Sequencial\n";
@@ -132,13 +139,15 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             var valoresDadosSaida = [];
             $('[name^="nomeFuncionalDadosSaida"]').each(function (key, value) {
                 if (value.value != 'null') {
-                    valoresDadosSaida.push(value.value)
+                    var idMdLitCampoIntegracao = value.name.split("[");
+                    idMdLitCampoIntegracao = idMdLitCampoIntegracao[1].split("]");
+                    valoresDadosSaida.push(idMdLitCampoIntegracao[0]);
                 }
             });
 
             var msgSaida = '';
-            if (!infraInArray(33, valoresDadosSaida)) {
-                msgSaida += "- Número de Complemento do Interessado\n";
+            if (!infraInArray(33, valoresDadosSaida) && !infraInArray(90, valoresDadosSaida)) {
+                msgSaida += "- Número de Complemento do Interessado ou CNPJ/CPF\n";
             }
             if (!infraInArray(34, valoresDadosSaida)) {
                 msgSaida += "- Sequencial\n";
@@ -176,13 +185,15 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             var valoresDadosEntrada = [];
             $('[name^="nomeFuncionalDadosEntrada"]').each(function (key, value) {
                 if (value.value != 'null') {
-                    valoresDadosEntrada.push(value.value)
+                    var idMdLitCampoIntegracao = value.name.split("[");
+                    idMdLitCampoIntegracao = idMdLitCampoIntegracao[1].split("]");
+                    valoresDadosEntrada.push(idMdLitCampoIntegracao[0]);
                 }
             });
 
             var msgEntrada = '';
-            if (!infraInArray(68, valoresDadosEntrada)) {
-                msgEntrada += "- Número de Complemento do Interessado\n";
+            if (!infraInArray(68, valoresDadosEntrada) && !infraInArray(97, valoresDadosEntrada)) {
+                msgEntrada += "- Número de Complemento do Interessado ou CNPJ/CPF\n";
             }
             if (!infraInArray(70, valoresDadosEntrada)) {
                 msgEntrada += "- Observação\n";
@@ -195,13 +206,15 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             var valoresDadosSaida = [];
             $('[name^="nomeFuncionalDadosSaida"]').each(function (key, value) {
                 if (value.value != 'null') {
-                    valoresDadosSaida.push(value.value)
+                    var idMdLitCampoIntegracao = value.name.split("[");
+                    idMdLitCampoIntegracao = idMdLitCampoIntegracao[1].split("]");
+                    valoresDadosSaida.push(idMdLitCampoIntegracao[0]);
                 }
             });
 
             var msgSaida = '';
-            if (!infraInArray(72, valoresDadosSaida)) {
-                msgSaida += "- Número de Complemento do Interessado\n";
+            if (!infraInArray(72, valoresDadosSaida) && !infraInArray(98, valoresDadosSaida)) {
+                msgSaida += "- Número de Complemento do Interessado ou CNPJ/CPF\n";
             }
             if (!infraInArray(73, valoresDadosSaida)) {
                 msgSaida += "- Sequencial\n";
@@ -239,7 +252,9 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             var valoresDadosEntrada = [];
             $('[name^="nomeFuncionalDadosEntrada"]').each(function (key, value) {
                 if (value.value != 'null') {
-                    valoresDadosEntrada.push(value.value)
+                    var idMdLitCampoIntegracao = value.name.split("[");
+                    idMdLitCampoIntegracao = idMdLitCampoIntegracao[1].split("]");
+                    valoresDadosEntrada.push(idMdLitCampoIntegracao[0]);
                 }
             });
 
@@ -247,8 +262,8 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             if (!infraInArray(62, valoresDadosEntrada)) {
                 msgEntrada += "- Data Denegação\n";
             }
-            if (!infraInArray(60, valoresDadosEntrada)) {
-                msgEntrada += "- Número de Complemento do Interessado\n";
+            if (!infraInArray(60, valoresDadosEntrada) && !infraInArray(95, valoresDadosEntrada)) {
+                msgEntrada += "- Número de Complemento do Interessado ou CNPJ/CPF\n";
             }
             if (!infraInArray(61, valoresDadosEntrada)) {
                 msgEntrada += "- Sequencial\n";
@@ -258,13 +273,15 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             var valoresDadosSaida = [];
             $('[name^="nomeFuncionalDadosSaida"]').each(function (key, value) {
                 if (value.value != 'null') {
-                    valoresDadosSaida.push(value.value)
+                    var idMdLitCampoIntegracao = value.name.split("[");
+                    idMdLitCampoIntegracao = idMdLitCampoIntegracao[1].split("]");
+                    valoresDadosSaida.push(idMdLitCampoIntegracao[0]);
                 }
             });
 
             var msgSaida = '';
-            if (!infraInArray(66, valoresDadosSaida)) {
-                msgSaida += "- Número de Complemento do Interessado\n";
+            if (!infraInArray(66, valoresDadosSaida) && !infraInArray(96, valoresDadosSaida)) {
+                msgSaida += "- Número de Complemento do Interessado ou CNPJ/CPF\n";
             }
             if (!infraInArray(67, valoresDadosSaida)) {
                 msgSaida += "- Sequencial\n";
@@ -302,7 +319,9 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             var valoresDadosEntrada = [];
             $('[name^="nomeFuncionalDadosEntrada"]').each(function (key, value) {
                 if (value.value != 'null') {
-                    valoresDadosEntrada.push(value.value)
+                    var idMdLitCampoIntegracao = value.name.split("[");
+                    idMdLitCampoIntegracao = idMdLitCampoIntegracao[1].split("]");
+                    valoresDadosEntrada.push(idMdLitCampoIntegracao[0]);
                 }
             });
 
@@ -316,9 +335,6 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             if (!infraInArray(3, valoresDadosEntrada)) {
                 msgEntrada += "- Data de Vencimento\n";
             }
-            if (!infraInArray(1, valoresDadosEntrada)) {
-                msgEntrada += "- Número de Complemento do Interessado\n";
-            }
             if (!infraInArray(6, valoresDadosEntrada)) {
                 msgEntrada += "- Número do Processo\n";
             }
@@ -330,16 +346,15 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             var valoresDadosSaida = [];
             $('[name^="nomeFuncionalDadosSaida"]').each(function (key, value) {
                 if (value.value != 'null') {
-                    valoresDadosSaida.push(value.value)
+                    var idMdLitCampoIntegracao = value.name.split("[");
+                    idMdLitCampoIntegracao = idMdLitCampoIntegracao[1].split("]");
+                    valoresDadosSaida.push(idMdLitCampoIntegracao[0]);
                 }
             });
 
             var msgSaida = '';
             if (!infraInArray(12, valoresDadosSaida)) {
                 msgSaida += "- Link para Boleto\n";
-            }
-            if (!infraInArray(14, valoresDadosSaida)) {
-                msgSaida += "- Número de Complemento do Interessado\n";
             }
             if (!infraInArray(11, valoresDadosSaida)) {
                 msgSaida += "- Sequencial\n";
@@ -377,7 +392,9 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             var valoresDadosSaida = [];
             $('[name^="nomeFuncionalDadosSaida"]').each(function (key, value) {
                 if (value.value != 'null') {
-                    valoresDadosSaida.push(value.value)
+                    var idMdLitCampoIntegracao = value.name.split("[");
+                    idMdLitCampoIntegracao = idMdLitCampoIntegracao[1].split("]");
+                    valoresDadosSaida.push(idMdLitCampoIntegracao[0]);
                 }
             });
 
@@ -411,7 +428,9 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             var valoresDadosEntrada = [];
             $('[name^="nomeFuncionalDadosEntrada"]').each(function (key, value) {
                 if (value.value != 'null') {
-                    valoresDadosEntrada.push(value.value)
+                    var idMdLitCampoIntegracao = value.name.split("[");
+                    idMdLitCampoIntegracao = idMdLitCampoIntegracao[1].split("]");
+                    valoresDadosEntrada.push(idMdLitCampoIntegracao[0]);
                 }
             });
 
@@ -425,8 +444,8 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             if (!infraInArray(43, valoresDadosEntrada)) {
                 msgEntrada += "- Justificativa Lançamento\n";
             }
-            if (!infraInArray(36, valoresDadosEntrada)) {
-                msgEntrada += "- Número de Complemento do Interessado\n";
+            if (!infraInArray(36, valoresDadosEntrada) && nfraInArray(91, valoresDadosEntrada)) {
+                msgEntrada += "- Número de Complemento do Interessado ou CNPJ/CPF\n";
             }
             if (!infraInArray(42, valoresDadosEntrada)) {
                 msgEntrada += "- Número do Processo\n";
@@ -442,7 +461,9 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             var valoresDadosSaida = [];
             $('[name^="nomeFuncionalDadosSaida"]').each(function (key, value) {
                 if (value.value != 'null') {
-                    valoresDadosSaida.push(value.value)
+                    var idMdLitCampoIntegracao = value.name.split("[");
+                    idMdLitCampoIntegracao = idMdLitCampoIntegracao[1].split("]");
+                    valoresDadosSaida.push(idMdLitCampoIntegracao[0]);
                 }
             });
 
@@ -450,8 +471,8 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             if (!infraInArray(51, valoresDadosSaida)) {
                 msgSaida += "- Link para Boleto\n";
             }
-            if (!infraInArray(50, valoresDadosSaida)) {
-                msgSaida += "- Número de Complemento do Interessado\n";
+            if (!infraInArray(50, valoresDadosSaida) && !infraInArray(92, valoresDadosSaida)) {
+                msgSaida += "- Número de Complemento do Interessado ou CNPJ/CPF\n";
             }
             if (!infraInArray(49, valoresDadosSaida)) {
                 msgSaida += "- Sequencial\n";
@@ -489,7 +510,9 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             var valoresDadosEntrada = [];
             $('[name^="nomeFuncionalDadosEntrada"]').each(function (key, value) {
                 if (value.value != 'null') {
-                    valoresDadosEntrada.push(value.value)
+                    var idMdLitCampoIntegracao = value.name.split("[");
+                    idMdLitCampoIntegracao = idMdLitCampoIntegracao[1].split("]");
+                    valoresDadosEntrada.push(idMdLitCampoIntegracao[0]);
                 }
             });
 
@@ -497,8 +520,8 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             if (!infraInArray(57, valoresDadosEntrada)) {
                 msgEntrada += "- Data da Suspensão\n";
             }
-            if (!infraInArray(52, valoresDadosEntrada)) {
-                msgEntrada += "- Número de Complemento do Interessado\n";
+            if (!infraInArray(52, valoresDadosEntrada) && !infraInArray(93, valoresDadosEntrada)) {
+                msgEntrada += "- Número de Complemento do Interessado ou CNPJ/CPF\n";
             }
             if (!infraInArray(53, valoresDadosEntrada)) {
                 msgEntrada += "- Sequencial\n";
@@ -508,13 +531,15 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             var valoresDadosSaida = [];
             $('[name^="nomeFuncionalDadosSaida"]').each(function (key, value) {
                 if (value.value != 'null') {
-                    valoresDadosSaida.push(value.value)
+                    var idMdLitCampoIntegracao = value.name.split("[");
+                    idMdLitCampoIntegracao = idMdLitCampoIntegracao[1].split("]");
+                    valoresDadosSaida.push(idMdLitCampoIntegracao[0]);
                 }
             });
 
             var msgSaida = '';
-            if (!infraInArray(58, valoresDadosSaida)) {
-                msgSaida += "- Número de Complemento do Interessado\n";
+            if (!infraInArray(58, valoresDadosSaida) && !infraInArray(94, valoresDadosSaida)) {
+                msgSaida += "- Número de Complemento do Interessado ou CNPJ/CPF\n";
             }
             if (!infraInArray(59, valoresDadosSaida)) {
                 msgSaida += "- Sequencial\n";
@@ -552,13 +577,15 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             var valoresDadosEntrada = [];
             $('[name^="nomeFuncionalDadosEntrada"]').each(function (key, value) {
                 if (value.value != 'null') {
-                    valoresDadosEntrada.push(value.value)
+                    var idMdLitCampoIntegracao = value.name.split("[");
+                    idMdLitCampoIntegracao = idMdLitCampoIntegracao[1].split("]");
+                    valoresDadosEntrada.push(idMdLitCampoIntegracao[0]);
                 }
             });
 
             var msgEntrada = '';
-            if (!infraInArray(15, valoresDadosEntrada)) {
-                msgEntrada += "- Número de Complemento do Interessado\n";
+            if (!infraInArray(15, valoresDadosEntrada) && !infraInArray(87, valoresDadosEntrada)) {
+                msgEntrada += "- Número de Complemento do Interessado ou CNPJ/CPF\n";
             }
             if (!infraInArray(16, valoresDadosEntrada)) {
                 msgEntrada += "- Sequencial\n";
@@ -568,7 +595,9 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             var valoresDadosSaida = [];
             $('[name^="nomeFuncionalDadosSaida"]').each(function (key, value) {
                 if (value.value != 'null') {
-                    valoresDadosSaida.push(value.value)
+                    var idMdLitCampoIntegracao = value.name.split("[");
+                    idMdLitCampoIntegracao = idMdLitCampoIntegracao[1].split("]");
+                    valoresDadosSaida.push(idMdLitCampoIntegracao[0]);
                 }
             });
 
@@ -594,8 +623,8 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
             if (!infraInArray(24, valoresDadosSaida)) {
                 msgSaida += "- Link para Boleto\n";
             }
-            if (!infraInArray(82, valoresDadosSaida) && document.getElementById('chkSinVincularLancamento').checked) {
-                msgSaida += "- Número de Complemento do Interessado\n";
+            if (!infraInArray(82, valoresDadosSaida) && !infraInArray(88, valoresDadosSaida) && document.getElementById('chkSinVincularLancamento').checked) {
+                msgSaida += "- Número de Complemento do Interessado ou CNPJ/CPF\n";
             }
             if (!infraInArray(18, valoresDadosSaida)) {
                 msgSaida += "- Situação Lançamento\n";

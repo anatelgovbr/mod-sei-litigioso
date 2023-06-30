@@ -278,6 +278,7 @@
                             <th class="infraTh" style="display: none;">DocFormatado</th>
                             <th class="infraTh" style="display: none;">UrlAcessoDoc</th>
                             <th class="infraTh" style="display: none;">Deposito extrajudicial</th>
+                            <th class="infraTh" style="display: none;">Situacao Recursal</th>
                             <th class="infraTh" align="center" width="8%">Ações</th>
                         </tr>
 

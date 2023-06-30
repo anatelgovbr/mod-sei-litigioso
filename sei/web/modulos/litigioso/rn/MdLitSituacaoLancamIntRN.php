@@ -149,7 +149,7 @@ class MdLitSituacaoLancamIntRN extends InfraRN {
                 $objMdLitSituacaoLancamentoDTO = new MdLitSituacaoLancamentoDTO();
                 $objMdLitSituacaoLancamentoDTO->setStrStaOrigem(MdLitSituacaoLancamentoRN::$STA_ORIGEM_INTEGRACAO);
                 $objMdLitSituacaoLancamentoDTO->setNumCodigo(trim($arrResultadoWebService[$i][$objMdLitSituacaoLancamIntDTO->getStrMapeamentoCodigo()]));
-                $objMdLitSituacaoLancamentoDTO->setStrNome(trim($arrResultadoWebService[$i][$objMdLitSituacaoLancamIntDTO->getStrMapeamentoDescricao()]));
+                $objMdLitSituacaoLancamentoDTO->setStrNome(trim(utf8_decode($arrResultadoWebService[$i][$objMdLitSituacaoLancamIntDTO->getStrMapeamentoDescricao()])));
                 $objMdLitSituacaoLancamentoDTO->setStrSinAtivo('S');
                 $objMdLitSituacaoLancamentoDTO->setNumIdMdLitSituacaoLancInt($objMdLitSituacaoLancamIntDTO->getNumIdMdLitSituacaoLancamInt());
                 $objMdLitSituacaoLancamentoDTO->setStrSinCancelamento('N');
@@ -323,7 +323,7 @@ class MdLitSituacaoLancamIntRN extends InfraRN {
       throw new InfraException('Erro contando integrações das situações do lançamento.',$e);
     }
   }
-/* 
+/*
   protected function desativarControlado($arrObjMdLitSituacaoLancamIntDTO){
     try {
 

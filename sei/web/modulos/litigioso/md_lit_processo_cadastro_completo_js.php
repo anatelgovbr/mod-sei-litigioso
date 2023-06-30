@@ -967,7 +967,7 @@
             dispositivoid = document.getElementById("hdnIdIDNDispNormat").value;
 
             if (document.getElementById("selIDNCondutas").options.length > 1 && document.getElementById("selIDNCondutas").value == '') {
-                alert('A conduta  obrigatrio!');
+                alert('A conduta é obrigatório!');
                 return false;
             }
 
@@ -1515,7 +1515,7 @@
 
         objTabelaInteressado.remover = function (arr) {
             if (objTabelaInteressado.obterItens().length == 1) {
-                alert(" necessrio ao menos um Interessado");
+                alert(" necessário ao menos um Interessado");
                 return false;
             }
 
@@ -1552,11 +1552,11 @@
 
         if (dadoCompleto) {
             acaoDadosComplementares = "<img onclick=\"abrirModalDadosInteressado('" + contato.urlDadosComplementares + "')\" " +
-                " style='width: 24px' title='Dados Complementares do Interessado' src='modulos/litigioso/imagens/svg/dado_complementar.svg?'.Icone::VERSAO.'' class='infraImg'/>&nbsp;<input type='hidden' id='hdnContatoPossuiDadoComplementa_" + contato.idContato + "' value='" + contato.contatoPossuiDadoComplementar + "'>";
+                " style='width: 24px' title='Dados Complementares do Interessado' src='modulos/litigioso/imagens/svg/dado_complementar.svg?<?= Icone::VERSAO ?>' class='infraImg'/>&nbsp;<input type='hidden' id='hdnContatoPossuiDadoComplementa_" + contato.idContato + "' value='" + contato.contatoPossuiDadoComplementar + "'>";
         }
 
         var acaoAlterar = "<img onclick=\"alterarInteressado('" + contato.idContato + "','" + contato.urlAlterar + "')\" " +
-            " title='Alterar Interessado' src='<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/alterar.svg?<?= Icone::VERSAO ?>' class='infraImg'/>&nbsp;";
+            " title='Alterar Interessado' src='<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/alterar.svg' class='infraImg'/>&nbsp;";
 
         var mostrarExcluir = true;
         if (contato.contarLancamento > 0) {
@@ -1620,8 +1620,8 @@
                 idMdLitTipoControle: hdnIdMdLitTipoControle.value,
             },
             success: function (r) {
-                if ($('Contato', r).text() == '' && $('SinParamModal', r).text() == 'S') {
-                    alert(' necessria a indicao de ao menos um Interessado de tipo diferente de: rgos, Sistemas e Temporrio');
+                if ($('Contato', r).text() == '') {
+                    alert('Necessária a indicão de ao menos um Interessado de tipo diferente de: Órgãos, Sistemas e Temporário');
                     parent.document.getElementById('ifrVisualizacao').src = "<?= $strLinkAlteraProcesso?>";
                 }
 
@@ -1678,8 +1678,7 @@
     }
 
     function abrirModalDadosInteressado(url) {
-        infraAbrirJanela(url,
-            'alterarContato',
+        infraAbrirJanelaModal(url,
             1024,
             600);
     }
@@ -1708,6 +1707,13 @@
 
         var trs = tbInteressado.rows;
         var valido = true;
+
+        // caso não tenha registro de interessado já retorna não válido com alert.
+        if (!trs[1]) {
+            alert("Necessário ao menos um Interessado");
+            return false;
+        }
+
         var msg = '';
         var msgDadoComplementar = '';
         var dados;
@@ -1754,12 +1760,14 @@
                 msg += 'Por favor preencha os dados do Interessado ' + tds[8].innerText.trim() + '\n';
                 msg += ' - ' + dados.join('\n - ') + '\n\n';
             } else {
-                var hdnContatoPossuiDadoComplementar = document.getElementById('hdnContatoPossuiDadoComplementa_' + tds[0].innerText.trim()).value;
-                //caso a modal de Dados Complementares tenha sido configurada para apresentar, ento informar os dados dela  obrigatrio.
-                if (tds[9].innerText.trim() == 'S' && hdnContatoPossuiDadoComplementar == 0) {
-                    var hdnTbDadoInteressado = document.getElementById('hdnTbDadoInteressado_' + tds[0].innerText.trim());
-                    if (hdnTbDadoInteressado == null || hdnTbDadoInteressado.value == '') {
-                        msgDadoComplementar += '\n -' + tds[7].innerText.trim();
+                if (document.getElementById('hdnContatoPossuiDadoComplementa_' + tds[0].innerText.trim())){
+                    var hdnContatoPossuiDadoComplementar = document.getElementById('hdnContatoPossuiDadoComplementa_' + tds[0].innerText.trim()).value;
+                    //caso a modal de Dados Complementares tenha sido configurada para apresentar, ento informar os dados dela  obrigatrio.
+                    if (tds[9].innerText.trim() == 'S' && hdnContatoPossuiDadoComplementar == 0) {
+                        var hdnTbDadoInteressado = document.getElementById('hdnTbDadoInteressado_' + tds[0].innerText.trim());
+                        if (hdnTbDadoInteressado == null || hdnTbDadoInteressado.value == '') {
+                            msgDadoComplementar += '\n -' + tds[7].innerText.trim();
+                        }
                     }
                 }
             }

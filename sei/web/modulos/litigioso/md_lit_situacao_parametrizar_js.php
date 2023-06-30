@@ -495,7 +495,7 @@
             });
         }
 
-        $('#imgDesativar_' + id).attr('src', '/infra_css/svg/reativar.svg?<?= Icone::VERSAO ?>');
+        $('#imgDesativar_' + id).attr('src', '/infra_css/svg/reativar.svg');
         $('#imgDesativar_' + id).attr('title', 'Reativar Situação');
         $('#imgDesativar_' + id).attr('alt', 'Reativar Situação');
         $('#imgDesativar_' + id).attr('onclick', "acaoReativar(this,'" + id + "',1);");
@@ -524,7 +524,7 @@
             });
         }
 
-        $('#imgReativar_' + id).attr('src', '/infra_css/svg/desativar.svg?<?= Icone::VERSAO ?>');
+        $('#imgReativar_' + id).attr('src', '/infra_css/svg/desativar.svg');
         $('#imgReativar_' + id).attr('title', 'Desativar Situação');
         $('#imgReativar_' + id).attr('alt', 'Desativar Situação');
         $('#imgReativar_' + id).attr('onclick', "acaoDesativar(this,'" + id + "',1);");
