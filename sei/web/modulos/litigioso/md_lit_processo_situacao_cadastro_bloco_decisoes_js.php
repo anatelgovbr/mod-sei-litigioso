@@ -47,12 +47,26 @@
             return false;
         }
 
-        if (!verificarPreenchimentoDecisaoIncompleto()) {
+        if (
+            !verificaUltimaSituacaoDecisao() &&
+            document.getElementById('hdnIdMdLitFuncionalidade').value &&
+            !verificarPreenchimentoDecisaoIncompleto()
+        ) {
+            document.getElementById('hdnIdMdLitFuncionalidade').value = null;
             alert('É necessário completar o preenchimento das decisões antes de salvar.');
             return false;
         }
 
         return true;
+    }
+
+    function verificaUltimaSituacaoDecisao(){
+        const situacao = $('#tbSituacao tr').eq(1).find('td:eq(17)').text();
+        const novaSituacao = situacao.replace('(','').replace(')','').replace('ó','o');
+        if (novaSituacao == 'Decisoria'){
+            return true;
+        }
+        return false;
     }
 
     function verificarDecisaoNovo() {
@@ -87,20 +101,13 @@
 
         var valueNovo = document.getElementById('hdnTbDecisao').value;
         var arrayRetorno = processarItemListas(valueNovo);
-        var situacaoParcial = false;
 
         for(linhas = 0; linhas < arrayRetorno.length; linhas++){
             if(arrayRetorno[linhas][18] == 'S'){
-                situacaoParcial = true;
+                return false;
             }
         }
 
-        var arrObjTabelaSituacao = objTabelaDinamicaSituacao.obterItens();
-        var tipoRegistro = arrObjTabelaSituacao[objTabelaDinamicaSituacao.obterItens().length - 1][1];
-
-        if(situacaoParcial && tipoRegistro == 'N') {
-            return false;
-        }
         return true;
     }
 

@@ -964,7 +964,7 @@ class MdLitProcessoSituacaoRN extends InfraRN
         }
         $title = $this->_retornaTitleDocumento($tipoDoc, $numero);
 
-        $conteudoHtml = '<a title="' . $title . '" class="ancoraPadraoAzul" style="" onclick="' . $js . '">';
+        $conteudoHtml = '<a title="' . $title . '" class="ancoraPadraoAzul" onclick="' . $js . '">';
         $conteudoHtml .= $numDoc;
         $conteudoHtml .= '</a>';
 

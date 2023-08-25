@@ -66,6 +66,15 @@ class MdLitAtualizadorSeiRN extends InfraRN
         die;
     }
 
+    protected function normalizaVersao($versao)
+    {
+        $ultimoPonto = strrpos($versao, '.');
+        if ($ultimoPonto !== false) {
+            $versao = substr($versao, 0, $ultimoPonto) . substr($versao, $ultimoPonto + 1);
+        }
+        return $versao;
+    }
+
     protected function atualizarVersaoConectado()
     {
 
@@ -80,12 +89,9 @@ class MdLitAtualizadorSeiRN extends InfraRN
             }
 
             //testando versao do framework
-            $numVersaoInfraRequerida = '1.612.3';
-            $versaoInfraFormatada = (int)str_replace('.', '', VERSAO_INFRA);
-            $versaoInfraReqFormatada = (int)str_replace('.', '', $numVersaoInfraRequerida);
-
-            if ($versaoInfraFormatada < $versaoInfraReqFormatada) {
-                $this->finalizar('VERSÃO DO FRAMEWORK PHP INCOMPATÍVEL (VERSÃO ATUAL ' . VERSAO_INFRA . ', SENDO REQUERIDA VERSÃO IGUAL OU SUPERIOR A ' . $numVersaoInfraRequerida . ')', true);
+            $numVersaoInfraRequerida = '2.0.18';
+            if ($this->normalizaVersao(VERSAO_INFRA) < $this->normalizaVersao($numVersaoInfraRequerida)) {
+                $this->finalizar('VERSO DO FRAMEWORK PHP INCOMPATVEL (VERSO ATUAL ' . VERSAO_INFRA . ', SENDO REQUERIDA VERSO IGUAL OU SUPERIOR A ' . $numVersaoInfraRequerida . ')', true);
             }
 
             //checando permissoes na base de dados

@@ -409,7 +409,8 @@ class MdLitSoapClienteRN extends nusoap_client{
             InfraDebug::getInstance()->setBolLigado(false);
             InfraDebug::getInstance()->setBolDebugInfra(false);
             InfraDebug::getInstance()->setBolEcho(false);
-            throw new InfraException('Ocorreu erro ao executar o serviço de lançamento. ', $e );
+            $mensage = current($e->getArrObjInfraValidacao())->getStrDescricao();
+            throw new InfraException("Não foi possível realizar a integração com o Sistema de Arrecadação. \n" . $mensage);
         }
 
         if(count($arrResultado) > 0) {

@@ -356,7 +356,6 @@
                     infraDesabilitarCamposDivMulta(document.getElementById('divtxtDtConstituicao'));
 
                 } else {
-                    infraDesabilitarCamposDivMulta(document.getElementById('divDataGestaoMulta'));
                     infraHabilitarCamposDivMulta(document.getElementById('divDtaIntimacaoAplMulta'));
                     infraHabilitarCamposDivMulta(document.getElementById('divDtaDecursoPrazoRecurso'));
                 }
@@ -646,10 +645,6 @@
             return true;
         }
 
-        if (document.getElementById('hdnVlCreditoNaoLancado').value != '0,00' && document.getElementById('hdnJustificativaLancamento').value == '' && infraTrim(document.getElementById('hdnIdMdLitFuncionalidade').value == '') && document.getElementById('hdnTbVincularLancamento').value == '') {
-            alert('Foram identificados valores da Gestão de Multa pendentes de atualização no SISTEMA DE ARRECADAÇÃO. Verifique se a ação para atualização dos valores foi acionada.');
-            return false;
-        }
         // se nao estiver mostrando o fieldset de multa não terá validação
         if (document.getElementById('fieldsetMulta').style.display == 'none') {
             return true;
@@ -671,6 +666,7 @@
         }
 
         if(
+            document.getElementById('hdnIdMdLitFuncionalidade').value &&
             document.getElementById('txtDtIntimacaoAplMulta').getAttribute('campo-mapea-param-entrada') == 'S' &&
             document.getElementById('hdnJustificativaLancamento').value == '' &&
             document.getElementById('txtDtIntimacaoAplMulta').value != document.getElementById('txtDtIntimacaoAplMulta').getAttribute('data-valor-antigo')
@@ -680,6 +676,7 @@
         }
 
         if(
+            document.getElementById('hdnIdMdLitFuncionalidade').value &&
             document.getElementById('hdnJustificativaLancamento').value &&
             document.getElementById('txtDtApresentacaoRecurso').getAttribute('campo-mapea-param-entrada') == 'S' &&
             document.getElementById('hdnJustificativaLancamento').value == '' &&
@@ -690,6 +687,7 @@
         }
 
         if(
+            document.getElementById('hdnIdMdLitFuncionalidade').value &&
             document.getElementById('chkHouveConstituicao').checked == true &&
             document.getElementById('txtDtDecisaoDefinitiva').getAttribute('campo-mapea-param-entrada') == 'S' &&
             document.getElementById('hdnJustificativaLancamento').value == '' &&
@@ -701,6 +699,7 @@
 
         // regra do botao retificar quando altera data da intimação da decisão definitiva
         if(
+            document.getElementById('hdnIdMdLitFuncionalidade').value &&
             document.getElementById('chkHouveConstituicao').checked == true &&
             document.getElementById('txtDtIntimacaoConstituicao').getAttribute('campo-mapea-param-entrada') == 'S' &&
             document.getElementById('hdnJustificativaLancamento').value == '' &&
@@ -711,6 +710,7 @@
         }
 
         if(
+            document.getElementById('hdnIdMdLitFuncionalidade').value &&
             document.getElementById('chkHouveConstituicao').checked == true &&
             document.getElementById('txtDtConstituicao').getAttribute('campo-mapea-param-entrada') == 'S' &&
             document.getElementById('hdnJustificativaLancamento').value == '' &&
@@ -721,6 +721,7 @@
         }
 
         if(
+            document.getElementById('hdnIdMdLitFuncionalidade').value &&
             document.getElementById('txtDtApresentacaoRecurso').value &&
             document.getElementById('txtDtApresentacaoRecurso').getAttribute('campo-mapea-param-entrada') == 'S' &&
             document.getElementById('hdnJustificativaLancamento').value == '' &&
@@ -731,6 +732,7 @@
         }
 
         if(
+            document.getElementById('hdnIdMdLitFuncionalidade').value &&
             document.getElementById('txtDecisaoAplicacaoMulta').value &&
             document.getElementById('txtDecisaoAplicacaoMulta').getAttribute('campo-mapea-param-entrada') == 'S' &&
             document.getElementById('hdnJustificativaLancamento').value == '' &&
@@ -1006,7 +1008,10 @@
     function calcularData() {
         var objSituacao = objTabelaDinamicaSituacao.obterItens();
         var i = objSituacao.length - 1;
-        if (infraRetirarAcentos(objSituacao[i][17].infraReplaceAll(' ', '').infraReplaceAll('(', '').infraReplaceAll(')', '')) == 'Decisoria' && (document.getElementById('hdnIdSituacaoDecisao').value == '' || document.getElementById('hdnIdSituacaoDecisao').value == objSituacao[i][0])) {
+        if (
+            infraRetirarAcentos(objSituacao[i][17].infraReplaceAll(' ', '').infraReplaceAll('(', '').infraReplaceAll(')', '')) == 'Decisoria' &&
+            document.getElementById('hdnIdSituacaoDecisao').value == ''
+        ) {
             var dtaDecisaoAplicacaoMulta = objSituacao[i][11];
             //calcula a ultima data da decisão cadastrada  é adiciona 40 dias
             var dtaVencimento = infraCalcularDataDias(dtaDecisaoAplicacaoMulta, 40);
@@ -1015,6 +1020,8 @@
             document.getElementById('txtDtVencimento').value = dtaVencimento;
             document.getElementById('txtSituacaoDocOrigem').value = objSituacao[i][26] + " " + objSituacao[i][10] + " - " + objSituacao[i][13];
             verificarMudancaMulta();
+
+
         }
     }
 

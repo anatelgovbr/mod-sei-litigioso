@@ -373,7 +373,7 @@
                             <div class="col-sm-12 col-md-11 col-lg-9 col-xl-8">
                                 <div class="form-group">
                                     <label class="infraLabelObrigatorio" id="lblInteressado" name="lblInteressado"
-                                        for="txtDtVencimento">Interessado:</label>
+                                        for="txtInteressado">Interessado:</label>
                                     <select class="infraSelect form-control" name="selInteressado"
                                             id="selInteressado" <?= $objMdLitLancamentoDTO ? 'disabled="disabled"' : '' ?> >
                                         <?= $strComboInteressado ?>
@@ -387,7 +387,7 @@
                                     <div class="form-group">
                                         <label class="infraLabelObrigatorio" id="lbNumeroInteressado"
                                             name="lblNumeroInteressado"
-                                            for="txtDtVencimento">Número de Complemento do Interessado:</label>
+                                            for="txtNumeroInteressado">Número de Complemento do Interessado:</label>
                                         <select onchange="verificarMudancaMulta()"
                                                 class="infraSelect form-control"
                                                 name="selNumeroInteressado"
