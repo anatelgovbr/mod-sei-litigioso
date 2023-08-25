@@ -69,8 +69,18 @@ class MdLitAtualizadorSipRN extends InfraRN
         die;
     }
 
+    protected function normalizaVersao($versao)
+    {
+        $ultimoPonto = strrpos($versao, '.');
+        if ($ultimoPonto !== false) {
+            $versao = substr($versao, 0, $ultimoPonto) . substr($versao, $ultimoPonto + 1);
+        }
+        return $versao;
+    }
+
     protected function atualizarVersaoConectado()
     {
+        
         try {
             $this->inicializar('INICIANDO A INSTALAÇÃO/ATUALIZAÇÃO DO ' . $this->nomeDesteModulo . ' NO SIP VERSÃO ' . SIP_VERSAO);
 
@@ -78,17 +88,13 @@ class MdLitAtualizadorSipRN extends InfraRN
             if (!(BancoSip::getInstance() instanceof InfraMySql) &&
                 !(BancoSip::getInstance() instanceof InfraSqlServer) &&
                 !(BancoSip::getInstance() instanceof InfraOracle)) {
-
                 $this->finalizar('BANCO DE DADOS NÃO SUPORTADO: ' . get_parent_class(BancoSip::getInstance()), true);
             }
 
             //testando versao do framework
-            $numVersaoInfraRequerida = '1.612.3';
-            $versaoInfraFormatada = (int)str_replace('.', '', VERSAO_INFRA);
-            $versaoInfraReqFormatada = (int)str_replace('.', '', $numVersaoInfraRequerida);
-
-            if ($versaoInfraFormatada < $versaoInfraReqFormatada) {
-                $this->finalizar('VERSÃO DO FRAMEWORK PHP INCOMPATÍVEL (VERSÃO ATUAL ' . VERSAO_INFRA . ', SENDO REQUERIDA VERSÃO IGUAL OU SUPERIOR A ' . $numVersaoInfraRequerida . ')', true);
+            $numVersaoInfraRequerida = '2.0.18';
+            if ($this->normalizaVersao(VERSAO_INFRA) < $this->normalizaVersao($numVersaoInfraRequerida)) {
+                $this->finalizar('VERSO DO FRAMEWORK PHP INCOMPATVEL (VERSO ATUAL ' . VERSAO_INFRA . ', SENDO REQUERIDA VERSO IGUAL OU SUPERIOR A ' . $numVersaoInfraRequerida . ')', true);
             }
 
             //checando permissoes na base de dados

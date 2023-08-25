@@ -779,7 +779,7 @@
 
         var strLink = "window.open('" + url + "')";
         var tituloDocumento = document.getElementById('hdnTituloDoc').value;
-        var html = '<a title="' + tituloDocumento + '" style="" class="ancoraPadraoAzul" onclick ="' + strLink + '"> ' + txtNumeroSei + ' </a>';
+        var html = '<a title="' + tituloDocumento + '" class="ancoraPadraoAzul" onclick ="' + strLink + '"> ' + txtNumeroSei + ' </a>';
 
         return html;
     }
@@ -1265,40 +1265,57 @@
     // ações que são acionadas quando é excluída uma situação
     function acoesConjungadasBotaoExcluirSituacao(idSituacao){
 
-        if (<?= $ultimaSituacaoIntimacaoDecisao?>) {
-            $.ajax({
-                type: "POST",
-                url: "<?=SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_verificar_alteracao_dt_intimacao_recurso') ?>",
-                dataType: "xml",
-                async: false,
-                data: {'idSituacao': idSituacao},
-                success: function (data) {
-                    if ($(data).find('idLancamento').text()) {
-                        document.getElementById('hdnCreditosProcesso').value = $(data).find('idLancamento').text();
-                        document.getElementById('selCreditosProcesso').value = $(data).find('idLancamento').text();
-                        document.getElementById('selCreditosProcesso').setAttribute('disabled', 'disabled');
-                        document.getElementById('txtDtIntimacaoAplMulta').value = '';
-                        document.getElementById('hdnDtIntimacaoAplMulta').value = '';
-                        document.getElementById('txtDtDecursoPrazoRecurso').value = '';
-                        document.getElementById('hdnDtDecursoPrazoRecurso').value = '';
-                        verificarMudancaMulta();
-                    }
-                },
-                error: function (msgError) {
-                    msgCommit = "Erro ao processar verificação.";
-                },
-                complete: function (result) {
-                    infraAvisoCancelar();
+        //Busca um lancamento relacionado com a situacao de intimacao para excluir as datas na gestao de multa
+        $.ajax({
+            type: "POST",
+            url: "<?=SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_verificar_alteracao_dt_intimacao_recurso') ?>",
+            dataType: "xml",
+            async: false,
+            data: {'idSituacao': idSituacao},
+            success: function (data) {
+                if ($(data).find('idLancamento').text()) {
+                    document.getElementById('hdnCreditosProcesso').value = $(data).find('idLancamento').text();
+                    document.getElementById('selCreditosProcesso').value = $(data).find('idLancamento').text();
+                    document.getElementById('selCreditosProcesso').setAttribute('disabled', 'disabled');
+                    document.getElementById('txtDtIntimacaoAplMulta').value = '';
+                    document.getElementById('hdnDtIntimacaoAplMulta').value = '';
+                    document.getElementById('txtDtDecursoPrazoRecurso').value = '';
+                    document.getElementById('hdnDtDecursoPrazoRecurso').value = '';
+                    verificarMudancaMulta();
                 }
-            });
-        }
+            },
+            error: function (msgError) {
+                msgCommit = "Erro ao processar verificação.";
+            },
+            complete: function (result) {
+                infraAvisoCancelar();
+            }
+        });
 
-        if (<?= $ultimaSituacaoRecursalApresentacaoRecurso?>) {
-            document.getElementById('txtDtApresentacaoRecurso').value = '';
-            document.getElementById('hdnDtApresentacaoRecurso').value = '';
-            document.getElementById('apresentacao-recurso').style.display = 'none';
-            verificarMudancaMulta();
-        }
+        //Busca um lancamento relacionado com a apresentação de recuro
+        $.ajax({
+            type: "POST",
+            url: "<?=SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_verificar_alteracao_dt_recurso') ?>",
+            dataType: "xml",
+            async: false,
+            data: {'idSituacao': idSituacao},
+            success: function (data) {
+                if ($(data).find('idLancamento').text()) {
+                    document.getElementById('hdnCreditosProcesso').value = $(data).find('idLancamento').text();
+                    document.getElementById('selCreditosProcesso').value = $(data).find('idLancamento').text();
+                    document.getElementById('txtDtApresentacaoRecurso').value = '';
+                    document.getElementById('hdnDtApresentacaoRecurso').value = '';
+                    document.getElementById('apresentacao-recurso').style.display = 'none';
+                    verificarMudancaMulta();
+                }
+            },
+            error: function (msgError) {
+                msgCommit = "Erro ao processar verificação.";
+            },
+            complete: function (result) {
+                infraAvisoCancelar();
+            }
+        });
 
         if (<?= $ultimaSituacaoConclusiva?>) {
             document.getElementById('hdnCreditosProcesso').value = document.getElementById('selCreditosProcesso').value;

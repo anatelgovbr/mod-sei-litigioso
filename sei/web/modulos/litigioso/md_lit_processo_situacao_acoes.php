@@ -101,7 +101,9 @@ switch($_GET['acao']) {
                 header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=arvore_visualizar&acao_origem=' . $_GET['acao'] . '&id_procedimento=' . $idProcedimento . '&atualizar_arvore=1&id_documento=' . $idDocumento));
                 die;
             }catch (Exception $e){
-                PaginaSEI::getInstance()->processarExcecao($e);
+                $exception = new InfraException();
+                $exception->adicionarValidacao($e);
+                PaginaSEI::getInstance()->processarExcecao($exception);
             }
         }
 
@@ -113,19 +115,6 @@ switch($_GET['acao']) {
 
         // ---VERIFICAÇÕES DA ULTIMA SITUAÇÃO---
           $objUltimaSituacaoIntimacaoDecisao = end($arrGridSitu);
-          $objPenultimaSituacaoIntimacaoDecisao = $arrGridSitu[count($arrGridSitu) -2];
-
-          // verificação para saber se é uma intimação de decisão para resetar campo caso seja excluido a situação
-          $ultimaSituacaoIntimacaoDecisao = 'false';
-          if($objPenultimaSituacaoIntimacaoDecisao[17] == ' (Decisória)' && $objUltimaSituacaoIntimacaoDecisao[17] == ' (Intimação)'){
-              $ultimaSituacaoIntimacaoDecisao = 'true';
-          }
-
-          // verificação se é da Fase: Recursal Situação: Apresentação de Recurso (Recursal)
-          $ultimaSituacaoRecursalApresentacaoRecurso = 'false';
-          if($objUltimaSituacaoIntimacaoDecisao[17] == ' (Recursal)' && $objPenultimaSituacaoIntimacaoDecisao[17] == ' (Intimação)'){
-            $ultimaSituacaoRecursalApresentacaoRecurso = 'true';
-          }
 
           // verificação se é da Fase: Recursal Situação: Apresentação de Recurso (Recursal)
           $ultimaSituacaoConclusiva = 'false';
@@ -144,7 +133,6 @@ switch($_GET['acao']) {
             $strNomeUltimaSituacao = $arrGridSitu[$posicao][13];
         }
 
-      //  $arrGridSit = array();
         $strGridSituacao = PaginaSEI::getInstance()->gerarItensTabelaDinamica($arrGridSitu);
         
         //Preencher Grid Decisão
@@ -244,7 +232,7 @@ switch($_GET['acao']) {
         // Buscar quantidade de infrações cadastrado no processo
         $objControleLitigiosoDTO = new MdLitControleDTO();
         $objControleLitigiosoDTO->retNumIdControleLitigioso();
-        $objControleLitigiosoDTO->setDblIdProcedimento($_GET['id_procedimento']);
+        $objControleLitigiosoDTO->setDblIdProcedimento($_GET['id_procedimento'] ?: $_POST['hdnIdProcedimento']);
         $objControleLitigiosoRN  = new MdLitControleRN();
         $objControleLitigiosoDTO = $objControleLitigiosoRN->consultar($objControleLitigiosoDTO);
 
