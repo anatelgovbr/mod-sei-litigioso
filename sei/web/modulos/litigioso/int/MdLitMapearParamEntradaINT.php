@@ -136,7 +136,7 @@ class MdLitMapearParamEntradaINT extends InfraINT {
                 }
 
                 $class = '';
-                if(in_array($campoOrigemEntrada->getNumIdMdLitCampoIntegracao(), MdLitMapearParamEntradaRN::$ID_PARAM_LANCAMENTO_CREDITO_CAMPOS_OBRIGRATORIOS)){
+                if($idMdLitFuncionalidade != 1 && in_array($campoOrigemEntrada->getNumIdMdLitCampoIntegracao(), MdLitMapearParamEntradaRN::$ID_PARAM_LANCAMENTO_CREDITO_CAMPOS_OBRIGRATORIOS)){
                     $class = '" class="font-weight-bold"';
                 }
 

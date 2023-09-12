@@ -122,10 +122,10 @@ class MdLitDecisaoINT extends InfraINT
             $infracaoArr[$index][] = $decisao['data'] != '' ? $decisao['data'] : InfraData::getStrDataAtual();
             $nomeUsuario = $decisao['nome_usuario'] != '' ? strip_tags($decisao['nome_usuario']) : SessaoSEI::getInstance()->getStrNomeUsuario();
             $siglaUsuario = $decisao['sigla_usuario'] != '' ? strip_tags($decisao['sigla_usuario']) : SessaoSEI::getInstance()->getStrSiglaUsuario();
-            $infracaoArr[$index][] = '<a alt="' . $nomeUsuario . '" title="' . $nomeUsuario . '" class="ancoraSigla"> ' . $siglaUsuario . ' </a>';
+            $infracaoArr[$index][] = $decisao['nome_usuario'] != '' ? $nomeUsuario : '<a alt="' . $nomeUsuario . '" title="' . $nomeUsuario . '" class="ancoraSigla"> ' . $siglaUsuario . ' </a>';
             $siglaUnidade = $decisao['sigla_unidade'] != '' ? strip_tags($decisao['sigla_unidade']) : SessaoSEI::getInstance()->getStrSiglaUnidadeAtual();
             $descricaoUnidade = $decisao['descricao_unidade'] != '' ? strip_tags($decisao['descricao_unidade']) : SessaoSEI::getInstance()->getStrDescricaoUnidadeAtual();
-            $infracaoArr[$index][] = '<a alt="' . $descricaoUnidade . '" title="' . $descricaoUnidade . '" class="ancoraSigla"> ' . $siglaUnidade . ' </a>';
+            $infracaoArr[$index][] =$decisao['sigla_unidade'] != '' ? $siglaUnidade : '<a alt="' . $descricaoUnidade . '" title="' . $descricaoUnidade . '" class="ancoraSigla"> ' . $siglaUnidade . ' </a>';
             $localidade = $decisao['localidade'] == null ? $localidade : $decisao['localidade'];
             if ($localidade == MdLitDecisaoRN::$STA_LOCALIDADE_UF) {
                 $selectUf = $decisao['id_uf'] ? implode("#", $decisao['id_uf']) : $selectUf;
