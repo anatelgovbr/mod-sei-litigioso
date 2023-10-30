@@ -50,6 +50,7 @@
         if (
             !verificaUltimaSituacaoDecisao() &&
             document.getElementById('hdnIdMdLitFuncionalidade').value &&
+            document.getElementById('hdnIdMdLitFuncionalidade').value != <?php echo MdLitIntegracaoRN::$ARRECADACAO_CANCELAR_LANCAMENTO ?>  &&
             !verificarPreenchimentoDecisaoIncompleto()
         ) {
             document.getElementById('hdnIdMdLitFuncionalidade').value = null;

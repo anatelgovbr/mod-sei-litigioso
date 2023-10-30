@@ -284,6 +284,7 @@ class MdLitLancamentoINT extends InfraINT {
       $objMdLitLancamentoDTO->retTodos(false);
 
       $objMdLitLancamentoDTO->setDblIdProcedimento($numIdProcedimento);
+      $objMdLitLancamentoDTO->setOrdStrTipoLancamento(InfraDTO::$TIPO_ORDENACAO_DESC);
       $objMdLitLancamentoDTO->setOrdNumIdMdLitLancamento(InfraDTO::$TIPO_ORDENACAO_ASC);
       if($objMdLitSituacaoLancamentoDTO){
           $objMdLitLancamentoDTO->adicionarCriterio(array('IdMdLitSituacaoLancamento', 'IdMdLitSituacaoLancamento'), array(InfraDTO::$OPER_DIFERENTE, InfraDTO::$OPER_IGUAL), array($objMdLitSituacaoLancamentoDTO->getNumIdMdLitSituacaoLancamento(), null), array(InfraDTO::$OPER_LOGICO_OR));
