@@ -576,6 +576,9 @@ class MdLitLancamentoRN extends InfraRN {
             }
 
             // Atualizar id da intimacão que gerou data da intimação
+            if (!$post['hdnDtIntimacaoAplMulta']){
+                $objMdLitLancamentoDTO->setNumIdSituacaoIntimacao(null);
+            }
             if ($post['hdnDtIntimacaoAplMulta'] && empty($objMdLitLancamentoDTO->getNumIdSituacaoIntimacao())) {
                 $objMdLitLancamentoDTO->setNumIdSituacaoIntimacao($post['id_situacao']);
             }

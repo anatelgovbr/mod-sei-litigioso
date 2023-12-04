@@ -713,10 +713,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         }
 
         //adicionando parametro para controlar versao do modulo
-        $this->logar('ADICIONANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
-        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'0.0.2\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 0.0.2 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+        $this->atualizarNumeroVersao('0.0.2');
     }
 
     protected function instalarv003()
@@ -959,11 +956,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objSistemaRN->replicarRegraAuditoria($objReplicacaoRegraAuditoriaDTO);
 
         //Atualizando parametro para controlar versao do modulo
-        $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
-        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'0.0.3\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 0.0.3 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
-
+        $this->atualizarNumeroVersao('0.0.3');
     }
 
     protected function instalarv004()
@@ -1387,11 +1380,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objSistemaRN->replicarRegraAuditoria($objReplicacaoRegraAuditoriaDTO);
 
         //Atualizando parametro para controlar versao do modulo
-        $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
-        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'0.0.4\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 0.0.4 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
-
+        $this->atualizarNumeroVersao('0.0.4');
     }
 
     protected function instalarv100()
@@ -1612,10 +1601,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objSistemaRN->replicarRegraAuditoria($objReplicacaoRegraAuditoriaDTO);
 
         //Atualizando parametro para controlar versao do modulo
-        $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
-        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.0.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.0.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+        $this->atualizarNumeroVersao('1.0.0');
     }
 
     protected function instalarV110()
@@ -1747,10 +1733,7 @@ class MdLitAtualizadorSipRN extends InfraRN
 
 
         //Atualizando parametro para controlar versao do modulo
-        $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
-        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.1.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.1.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+        $this->atualizarNumeroVersao('1.1.0');
     }
 
     protected function instalarV120()
@@ -1791,10 +1774,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_decisao_desativar');
 
         //Atualizando parametro para controlar versao do modulo
-        $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
-        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.2.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.2.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+        $this->atualizarNumeroVersao('1.2.0');
     }
 
     protected function instalarV130()
@@ -1883,10 +1863,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiBasico, $numIdMenuSei, $objItemMenuDTORelatorioLitigiosos->getNumIdItemMenu(), $objRecursoRelatorioReincidenteDTO->getNumIdRecurso(), 'Reincidências Específicas', 20);
 
         //Atualizando parametro para controlar versao do modulo
-        $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
-        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.3.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.3.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+        $this->atualizarNumeroVersao('1.3.0');
     }
 
     protected function instalarV140()
@@ -1953,10 +1930,7 @@ class MdLitAtualizadorSipRN extends InfraRN
 
 
         //Atualizando parametro para controlar versao do modulo
-        $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
-        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.4.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.4.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+        $this->atualizarNumeroVersao('1.4.0');
     }
 
     protected function instalarV150()
@@ -2002,80 +1976,56 @@ class MdLitAtualizadorSipRN extends InfraRN
         }
 
         //Atualizando parametro para controlar versao do modulo
-        $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
-        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.5.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.5.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+        $this->atualizarNumeroVersao('1.5.0');
     }
 
     protected function instalarV160()
     {
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.6.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
-        $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
-        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.6.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.6.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+        $this->atualizarNumeroVersao('1.6.0');
     }
 
     protected function instalarV170()
     {
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.7.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
-        $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
-        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.7.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.7.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+        $this->atualizarNumeroVersao('1.7.0');
     }
 
     protected function instalarV180()
     {
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.8.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
-        $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
-        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.8.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.8.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+        $this->atualizarNumeroVersao('1.8.0');
     }
 
     protected function instalarV190()
     {
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.9.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
-        $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
-        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.9.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.9.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+        $this->atualizarNumeroVersao('1.9.0');
     }
 
     protected function instalarV1100()
     {
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.10.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
-        $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
-        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'1.10.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.10.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+        $this->atualizarNumeroVersao('1.10.0');
     }
 
     protected function instalarV200()
     {
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 2.0.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
-        $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
-        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'2.0.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 2.0.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+        $this->atualizarNumeroVersao('2.0.0');
     }
 
     protected function instalarV210()
     {
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 2.1.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
-        $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
-        BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'2.1.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
-
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 2.1.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+        $this->atualizarNumeroVersao('2.1.0');
     }
 
     private function adicionarRecursoPerfil($numIdSistema, $numIdPerfil, $strNome, $strCaminho = null)
@@ -2375,6 +2325,30 @@ class MdLitAtualizadorSipRN extends InfraRN
 
             $objPerfilRN->excluir(array($objPerfilDTO));
         }
+    }
+
+    /**
+     * Atualiza o nmero de versão do módulo nas tabelas de parâmetro do sistema
+     *
+     * @param string $parStrNumeroVersao
+     * @return void
+     */
+    private function atualizarNumeroVersao($parStrNumeroVersao)
+    {
+        $this->logar('ATUALIZANDO PARÂMETRO '. $this->nomeParametroModulo .' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+
+        $objInfraParametroDTO = new InfraParametroDTO();
+        $objInfraParametroDTO->setStrNome($this->nomeParametroModulo);
+        $objInfraParametroDTO->retTodos();
+        $objInfraParametroBD = new InfraParametroBD(BancoSIP::getInstance());
+        $arrObjInfraParametroDTO = $objInfraParametroBD->listar($objInfraParametroDTO);
+        foreach ($arrObjInfraParametroDTO as $objInfraParametroDTO) {
+            $objInfraParametroDTO->setStrValor($parStrNumeroVersao);
+            $objInfraParametroBD->alterar($objInfraParametroDTO);
+        }
+
+        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $parStrNumeroVersao .' DO '. $this->nomeDesteModulo .' REALIZADA COM SUCESSO NA BASE DO SIP');
+
     }
 
 }
