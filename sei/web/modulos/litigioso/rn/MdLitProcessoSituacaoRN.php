@@ -331,7 +331,13 @@ class MdLitProcessoSituacaoRN extends InfraRN
 
                 //se for a situação de instauração recupera
                 $resultInstauracao = $this->getSituacaoInstauracao($arrayAtributos);
-                $objMdLitProcessoSituacaoBD->excluir($arrObjMdLitProcessoSituacaoDTO[$i]);
+
+                // Caso não seja possivel excluir devido a algum relacionamento o registro é simplesmente inativado
+                if($this->existeNoHistoricoOuLancamento($arrObjMdLitProcessoSituacaoDTO[$i]->getNumIdMdLitProcessoSituacao())){
+                    $objMdLitProcessoSituacaoBD->desativar($arrObjMdLitProcessoSituacaoDTO[$i]);
+                } else {
+                    $objMdLitProcessoSituacaoBD->excluir($arrObjMdLitProcessoSituacaoDTO[$i]);
+                }
 
                 //se a situcação for a situação de instauração remove os dados do controle litigioso
                 if ($resultInstauracao) {
@@ -395,6 +401,36 @@ class MdLitProcessoSituacaoRN extends InfraRN
         } catch (Exception $e) {
             throw new InfraException('Erro excluindo Situação.', $e);
         }
+    }
+
+    public function existeNoHistoricoOuLancamento($idSituacaoCadastro)
+    {
+        $objLancamentoDTO = new MdLitLancamentoDTO();
+        $objLancamentoDTO->retNumIdMdLitLancamento();
+        $objLancamentoDTO->adicionarCriterio(
+          array('IdMdLitSituacaoDecisaoDefin','IdSituacaoDecisao', 'IdSituacaoIntimacao', 'IdSituacaoRecurso'),
+          array(InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL),
+          array($idSituacaoCadastro,$idSituacaoCadastro,$idSituacaoCadastro,$idSituacaoCadastro),
+          array(InfraDTO::$OPER_LOGICO_OR,InfraDTO::$OPER_LOGICO_OR,InfraDTO::$OPER_LOGICO_OR)
+        );
+
+        $objLancamentoDTO = (new MdLitLancamentoRN())->listar($objLancamentoDTO);
+
+        $objHistLancamentoDTO = new MdLitHistoricLancamentoDTO();
+        $objHistLancamentoDTO->retNumIdMdLitHistoricLancamento();
+        $objHistLancamentoDTO->adicionarCriterio(
+          array('IdMdLitSituacaoDecisaoDefin','IdSituacaoDecisao', 'IdSituacaoIntimacao'),
+          array(InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL),
+          array($idSituacaoCadastro,$idSituacaoCadastro,$idSituacaoCadastro),
+          array(InfraDTO::$OPER_LOGICO_OR,InfraDTO::$OPER_LOGICO_OR)
+        );
+        $objHistLancamentoDTO = (new MdLitHistoricLancamentoRN())->listar($objHistLancamentoDTO);
+
+        if ($objLancamentoDTO || $objHistLancamentoDTO) {
+            return true;
+        }
+
+        return false;
     }
 
     public function getSituacaoInstauracao($data)
@@ -1207,7 +1243,6 @@ class MdLitProcessoSituacaoRN extends InfraRN
             'hdnDtIntimacaoAplMulta'   => $post['hdnDtIntimacaoAplMulta'] ? $post['hdnDtIntimacaoAplMulta'] : null
         ];
 
-        // aqui
         $arrIdSituacao = $this->_prepararCadastroAlteracaoSituacao($arrSituacao, $dadosSituacaoRecurso, $post);
 
         //web-service com o sistema de faturamento
@@ -1272,8 +1307,6 @@ class MdLitProcessoSituacaoRN extends InfraRN
             $idsExcluidos = array_diff($idsSalvosBd, $idsTabelaAtual);
 
             if (count($idsExcluidos) > 0) {
-              $this->limparIdsIntimacao($idsExcluidos);
-              $this->limparIdsRecurso($idsExcluidos);
               $this->_limparDadosLancamentoConclusao($idsExcluidos, $post);
               $this->_preparaRetificarLancamentoTransitoJulgado($idsExcluidos);
               $this->_prepararExclusao($idsExcluidos);
@@ -1282,36 +1315,6 @@ class MdLitProcessoSituacaoRN extends InfraRN
         }
 
         return $idsExcluidos;
-    }
-
-    private function limparIdsIntimacao($idsExcluidos)
-    {
-        $objMdLitLancamentoRN = new MdLitLancamentoRN();
-        $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
-        $objMdLitLancamentoDTO->setNumIdSituacaoIntimacao($idsExcluidos, InfraDTO::$OPER_IN);
-        $objMdLitLancamentoDTO->setNumMaxRegistrosRetorno(1);
-        $objMdLitLancamentoDTO->retTodos();
-        $arrObjMdLitLancamento = $objMdLitLancamentoRN->listar($objMdLitLancamentoDTO);
-
-        foreach ($arrObjMdLitLancamento as $objMdLitLancamento){
-          $objMdLitLancamento->setNumIdSituacaoIntimacao(null);
-          $objMdLitLancamentoRN->alterar($objMdLitLancamento);
-        }
-    }
-
-    private function limparIdsRecurso($idsExcluidos)
-    {
-      $objMdLitLancamentoRN = new MdLitLancamentoRN();
-      $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
-      $objMdLitLancamentoDTO->setNumIdSituacaoRecurso($idsExcluidos, InfraDTO::$OPER_IN);
-      $objMdLitLancamentoDTO->setNumMaxRegistrosRetorno(1);
-      $objMdLitLancamentoDTO->retTodos();
-      $arrObjMdLitLancamento = $objMdLitLancamentoRN->listar($objMdLitLancamentoDTO);
-
-      foreach ($arrObjMdLitLancamento as $objMdLitLancamento){
-        $objMdLitLancamento->setNumIdSituacaoRecurso(null);
-        $objMdLitLancamentoRN->alterar($objMdLitLancamento);
-      }
     }
 
     private function _limparDataRecrusoNoLancamento($idsExcluidos)
