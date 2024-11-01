@@ -40,11 +40,15 @@
 
                 if ($countSit > 0) {
                     foreach ($arrObjSituacaoDTO as $objSituacaoDTO) {
-                        $dados = $objSituacaoLitigiosoRN->retornaArrTiposSituacao($objSituacaoDTO);
-                        $tipoSit = $dados['nome'] != '' ? ' (' . $dados['nome'] . ')' : '';
-                        $html .= '<option';
-                        $html .= ' value="' . $objSituacaoDTO->getNumIdSituacaoLitigioso() . '">';
-                        $html .= $objSituacaoDTO->getStrNome() . $tipoSit . '</option>';
+                        $arrPrazo = explode(',', $objSituacaoDTO->getStrPrazo());
+                        foreach ($arrPrazo as $prazo) {
+                            $dados = $objSituacaoLitigiosoRN->retornaArrTiposSituacao($objSituacaoDTO);
+                            $tipoSit = $dados['nome'] != '' ? ' (' . $dados['nome'] . ')' : '';
+                            $descricao = $prazo ? $objSituacaoDTO->getStrNome() . $tipoSit . ' - Prazo: '.$prazo.' dias' : $objSituacaoDTO->getStrNome() . $tipoSit;
+                            $html .= '<option value="' . $objSituacaoDTO->getNumIdSituacaoLitigioso() . '|'. $prazo . '">';
+                            $html .= $descricao.'</option>';
+                        }
+
                     }
                 }
             }

@@ -470,6 +470,7 @@
                             $objControleLitigiosoDTO->setDtaDataInstauracao($paramsPost['txtDtInstauracao']);
                             $objControleLitigiosoDTO->setNumIdMdLitTipoControle($paramsPost['hdnIdMdLitTipoControle']);
                             $objControleLitigioso = $this->cadastrar($objControleLitigiosoDTO);
+                            MdLitCamposAdFormINT::salvarInformacoesAdd($paramsPost);
                             // A - Alteração
                         } else {
                             $objControleLitigiosoDTO->setDblIdProcedimento($idProcedimento);
@@ -477,6 +478,7 @@
                             $objControleLitigiosoDTO->setDtaDataInstauracao($paramsPost['txtDtInstauracao']);
                             $objControleLitigiosoDTO->setNumIdMdLitTipoControle($paramsPost['hdnIdMdLitTipoControle']);
                             $objControleLitigioso = $this->alterar($objControleLitigiosoDTO);
+                            MdLitCamposAdFormINT::alterarInformacoesAdd($paramsPost);
                             $bolOperacao = 'a';
                         }
                     }

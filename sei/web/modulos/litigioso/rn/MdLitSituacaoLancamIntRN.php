@@ -143,6 +143,7 @@ class MdLitSituacaoLancamIntRN extends InfraRN {
         $this->validarArrChaveUnica($objMdLitSituacaoLancamIntDTO, $arrResultadoWebService, $objInfraException);
         $objInfraException->lancarValidacoes();
         $coresSelecionados = $objMdLitSituacaoLancamIntDTO->getArrCoresSelecionados();
+        $sinUtilizarAgendamento = $objMdLitSituacaoLancamIntDTO->getArrSinUtilizarAgendamento();
 
         if($numRegistros > 0){
             for ($i = 0; $i < $numRegistros; $i++) {
@@ -160,6 +161,11 @@ class MdLitSituacaoLancamIntRN extends InfraRN {
 
                 if(isset($coresSelecionados[$objMdLitSituacaoLancamentoDTO->getNumCodigo()])){
                     $objMdLitSituacaoLancamentoDTO->setStrCorSituacao($coresSelecionados[$objMdLitSituacaoLancamentoDTO->getNumCodigo()]);
+                }
+
+                $objMdLitSituacaoLancamentoDTO->setStrSinUtilizarAgendamento('N');
+                if(isset($sinUtilizarAgendamento[$objMdLitSituacaoLancamentoDTO->getNumCodigo()])){
+                    $objMdLitSituacaoLancamentoDTO->setStrSinUtilizarAgendamento('S');
                 }
 
                 $objMdLitSituacaoLancamentoRN->cadastrar($objMdLitSituacaoLancamentoDTO);

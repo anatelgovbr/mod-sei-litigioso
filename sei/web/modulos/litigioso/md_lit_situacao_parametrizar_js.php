@@ -95,7 +95,6 @@
 
     function preencherHddIds() {
 
-        //nao estou alterando a ordem, estou salvando apenas os demais dados de parametrizaçao
         document.getElementById("hdnIdAlteracaoOrdem").value = '';
         document.getElementById("hdnOperacaoOrdem").value = '';
         var hdnIdExclusao = document.getElementById('hdnIdExclusao');
@@ -140,6 +139,12 @@
         }
     }
 
+    function SomenteNumeroVirgula(e) {
+        var tecla = (window.event) ? event.keyCode : e.which;
+        if (tecla > 47 && tecla < 58) return true;
+        if (tecla == 8 || tecla == 0 || tecla == 44) return true;
+        return false;
+    }
 
     function validarParametrizacao() {
 
@@ -361,7 +366,6 @@
     }
 
     function controlarImputPrazo() {
-        //var table = document.getElementById('tbSituacao');
         if ($('[name="tbSituacao"]').length == 0) {
             return false;
         }
@@ -373,18 +377,19 @@
                 || $('input.alegacoes[data-linha="' + linha + '"]').prop('checked') == true
                 || $('input.recursal[data-linha="' + linha + '"]').prop('checked') == true) {
                 $('input.prazo[data-linha="' + linha + '"]').prop('readonly', false).show();
+
+                $('#div_dias_uteis_' + linha).show();
+                $('#div_dias_corridos_' + linha).show();
             } else {
                 $('input.prazo[data-linha="' + linha + '"]').prop('readonly', true).val('').hide();
-
+                $('#div_dias_uteis_' + linha).hide();
+                $('#div_dias_corridos_' + linha).hide();
             }
-
             if ($('#tbSituacao tr[data-linha="' + linha + '"]').hasClass('trVermelha')) {
                 limparLinha(linha);
                 habilitarDesabilitarLinha(linha, true);
             }
-
         });
-
     }
 
     function controlarCheckboxOpcional() {
@@ -664,5 +669,25 @@
         validarCheckboxObrigatoria();
 
         controlarImputPrazo();
+    }
+
+    function controlarRadiosTpPrazo(radio) {
+        var linha = $(radio).data('linha');
+        if (radio.id.startsWith('dias_uteis_')) {
+            $('#dias_corridos_' + linha).prop('checked', false);
+        } else if (radio.id.startsWith('dias_corridos_')) {
+            $('#dias_uteis_' + linha).prop('checked', false);
+        }
+    }
+
+    function limparCaracteresInvalidosPrazo(input) {
+        let valores = input.value.split(',');
+        valores = valores.filter(function(valor) {
+            return valor.trim() !== '' && valor.trim() !== '0';
+        });
+        input.value = valores.join(',');
+        if (input.value.endsWith(',')) {
+            input.value = input.value.slice(0, -1);
+        }
     }
 </script>

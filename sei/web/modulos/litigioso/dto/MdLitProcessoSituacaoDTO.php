@@ -47,6 +47,10 @@ class MdLitProcessoSituacaoDTO extends InfraDTO {
 
     $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_DTH, 'Inclusao', 'dth_inclusao');
 
+    $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM, 'PrazoSituacao', 'prazo');
+
+    $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'TipoPrazo', 'tp_prazo');
+
     $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinAtivo', 'sin_ativo');
 
     $this->configurarPK('IdMdLitProcessoSituacao',InfraDTO::$TIPO_PK_NATIVA);
@@ -85,7 +89,6 @@ class MdLitProcessoSituacaoDTO extends InfraDTO {
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'SinRecursalSit', 'ms.sin_recursal', 'md_lit_situacao ms');
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'SinConclusivaSit', 'ms.sin_conclusiva', 'md_lit_situacao ms');
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'SinOpcionalSit', 'ms.sin_opcional', 'md_lit_situacao ms');
-    $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'PrazoSituacao', 'ms.prazo', 'md_lit_situacao ms');
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'SinObrigatoria', 'ms.sin_obrigatoria', 'md_lit_situacao ms');
     $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'SinAlegacoes', 'ms.sin_alegacoes', 'md_lit_situacao ms');
 

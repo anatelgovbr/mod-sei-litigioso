@@ -151,7 +151,10 @@ class MdLitLancamentoINT extends InfraINT {
           //datas
           $dtDecisaoAplicacaoMulta          = $objMdLitLancamentoDTO->getDtaDecisao();
           $dtIntimacaoDecisaoAplicacaoMulta = $objMdLitLancamentoDTO->getDtaIntimacao();
-          $dtDecursoPrazoRecurso = $objMdLitLancamentoDTO->getDtaDecursoPrazoRecurso();
+
+
+          //DECURSO PRAZO
+          $dtDecursoPrazoRecurso            = $objMdLitLancamentoDTO->getDtaDecursoPrazoRecurso();
           $dtVencimento                     = $objMdLitLancamentoDTO->getDtaVencimento();
           $dtConstituicao                   = $objMdLitLancamentoDTO->getDtaConstituicaoDefinitiva();
           $dtIntimacaoConstituicao          = $objMdLitLancamentoDTO->getDtaIntimacaoDefinitiva();
@@ -207,6 +210,21 @@ class MdLitLancamentoINT extends InfraINT {
       $dtPrazoDefesa = $idmdLitLancamento ? $objMdLitLancamentoDTO->getDtaPrazoDefesa() : null;
       $selDocumento = $idmdLitLancamento ? $objMdLitLancamentoDTO->getNumIdMdLitSituacaoDecisaoDefin() : null;
       $txtSituacaoDocOrigem = $idmdLitLancamento ? (new MdLitLancamentoINT())->montarNomeSituacaoDocOrigem($objMdLitLancamentoDTO->getNumIdSituacaoDecisao()) : null;
+      $prazoDefesa = $idmdLitLancamento ? $objMdLitLancamentoDTO->getNumPrazoSituacaoDefesa() : null;
+      $tpPrazoDefesa = $idmdLitLancamento ? $objMdLitLancamentoDTO->getStrTipoPrazoDefesa() : null;
+      $prazoRecurso = $idmdLitLancamento ? $objMdLitLancamentoDTO->getNumPrazoSituacaoRecurso() : null;
+      $tpPrazoRecurso = $idmdLitLancamento ? $objMdLitLancamentoDTO->getStrTipoPrazoRecurso() : null;
+
+
+      //ATUALIZAR DATA DO DECURSO DO PRAZO PARA DEFESA
+      $dados['idProcedimento'] = $idProcedimento;
+      $dados['objMdLitLancamentoDTO'] = $idmdLitLancamento ? $objMdLitLancamentoDTO : null;
+      $strComboDataDecursoPrazoDefesa = (new MdLitProcessoSituacaoRN())->montarSelectDataDecursoPrazoDefesa($dados);
+      $htmlOptionDtDecursoPrazo = $strComboDataDecursoPrazoDefesa['htmlOption'];
+      $htmlOptionDtDecursoPrazo = htmlspecialchars($htmlOptionDtDecursoPrazo, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+      //ATUALIZAR DATA DO DECURSO DO PRAZO PARA RECURSO
+      $htmlOptionDtDecursoPrazoRecurso = (new MdLitProcessoSituacaoINT())->recuperarParaEdicaoComboBoxDataDecursoPrazoRecurso($objMdLitLancamentoDTO, $dtIntimacaoDecisaoAplicacaoMulta);
 
       $xml .= "<dados>\n";
       $xml .= "<isCancelar>".$isCancelar ."</isCancelar>\n";
@@ -247,6 +265,12 @@ class MdLitLancamentoINT extends InfraINT {
       $xml .= "<dtPrazoDefesa>$dtPrazoDefesa</dtPrazoDefesa>\n";
       $xml .= "<selDocumento>$selDocumento</selDocumento>\n";
       $xml .= "<txtSituacaoDocOrigem>$txtSituacaoDocOrigem</txtSituacaoDocOrigem>\n";
+      $xml .= "<htmlOptionDtDecursoPrazo>$htmlOptionDtDecursoPrazo</htmlOptionDtDecursoPrazo>\n";
+      $xml .= "<htmlOptionDtDecursoPrazoRecurso>$htmlOptionDtDecursoPrazoRecurso</htmlOptionDtDecursoPrazoRecurso>\n";
+      $xml .= "<prazoDefesa>$prazoDefesa</prazoDefesa>\n";
+      $xml .= "<tpPrazoDefesa>$tpPrazoDefesa</tpPrazoDefesa>\n";
+      $xml .= "<prazoRecurso>$prazoRecurso</prazoRecurso>\n";
+      $xml .= "<tpPrazoRecurso>$tpPrazoRecurso</tpPrazoRecurso>\n";
       $xml .= "</dados>";
 
       return $xml;

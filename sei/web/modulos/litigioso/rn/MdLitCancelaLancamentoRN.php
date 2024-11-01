@@ -307,6 +307,9 @@ class MdLitCancelaLancamentoRN extends InfraRN {
 
     private function _prepararObjCancelaLancamento($post){
         $idLancamento = array_key_exists('selCreditosProcesso', $post) ? $post['selCreditosProcesso'] : '';
+        if (!array_key_exists('selCreditosProcesso', $post)) {
+            $idLancamento = array_key_exists('hdnCreditosProcesso', $post) ? $post['hdnCreditosProcesso'] : '';
+        }
         $motCancel    = array_key_exists('hdnTxtMotivoCancelamento', $post) ?  $post['hdnTxtMotivoCancelamento'] : '';
         $justCancel   = array_key_exists('hdnJustificativaCancelamento', $post) ?  $post['hdnJustificativaCancelamento'] : '';
 

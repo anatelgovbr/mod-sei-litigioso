@@ -174,11 +174,6 @@
 
                     document.getElementById('txtDtIntimacaoAplMulta').value = $(result).find('dtIntimacaoDecisaoAplicacaoMulta').text();
                     document.getElementById('hdnDtIntimacaoAplMulta').value = $(result).find('dtIntimacaoDecisaoAplicacaoMulta').text();
-
-                    document.getElementById('txtDtDecursoPrazoRecurso').value = $(result).find('dtDecursoPrazoRecurso').text();
-                    document.getElementById('hdnDtDecursoPrazoRecurso').value = $(result).find('dtDecursoPrazoRecurso').text();
-                    document.getElementById('txtDtDecursoPrazoRecurso').setAttribute('data-valor-antigo', $(result).find('dtDecursoPrazoRecurso').text());
-
                     document.getElementById('txtDtVencimento').value = $(result).find('dtVencimento').text();
                     document.getElementById('txtDtConstituicao').value = $(result).find('dtConstituicao').text();
                     document.getElementById('txtDtConstituicao').setAttribute('data-valor-antigo', $(result).find('dtConstituicao').text());
@@ -193,6 +188,10 @@
                     document.getElementById('hdnIdSituacaoRecurso').value = $(result).find('idSituacaoRecurso').text();
                     document.getElementById('selDocumento').value = $(result).find('selDocumento').text();
                     document.getElementById('txtSituacaoDocOrigem').value = $(result).find('txtSituacaoDocOrigem').text();
+                    document.getElementById('hdnPrazoDefesa').value = $(result).find('prazoDefesa').text();
+                    document.getElementById('hdnTpPrazoDefesa').value = $(result).find('tpPrazoDefesa').text();
+                    document.getElementById('hdnPrazoRecurso').value = $(result).find('prazoRecurso').text();
+                    document.getElementById('hdnTpPrazoRecurso').value = $(result).find('tpPrazoRecurso').text();
 
                     //Data de apresentação do recurso
                     document.getElementById('txtDtApresentacaoRecurso').value = $(result).find('dtApresentacaoRecurso').text();
@@ -406,6 +405,12 @@
                 if (txtIntConst.value == '') {
                     txtIntConst.value = dtPadrao.value;
                 }
+
+                atualizarComboBoxPrazoDefesa(result);
+                atualizarComboBoxDtDecursoPrazoRecurso(result);
+                atualizarHiddenDtDecursoPrazo()
+                atualizarHiddenDtDecursoPrazoRecurso()
+
             },
             error: function (msgError) {
                 msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;
@@ -414,6 +419,121 @@
                 infraAvisoCancelar();
             }
         });
+    }
+
+    function atualizarComboBoxPrazoDefesa(result){
+        document.getElementById('hdnDtDecursoPrazo').value = $(result).find('dtPrazoDefesa').text();
+
+        var $select = $('#selDtDecursoPrazo');
+        $select.empty();
+
+        var options = $(result).find('htmlOptionDtDecursoPrazo').text();
+        options = options.replace(/ï¿½teis/g, 'úteis');
+
+        $select.append(options);
+        if ($select.find('option').length === 2) {
+            $select.find('option').eq(1).prop('selected', true);
+            $select.prop('disabled', true);
+        } else {
+            $select.prop('disabled', false);
+        }
+        verificarExistenciaPrazoDefesaCombo();
+    }
+
+    function atualizarComboBoxDtDecursoPrazoRecurso(result){
+        var $select = $('#selDtDecursoPrazoRecurso');
+        $select.empty();
+
+        var options = $(result).find('htmlOptionDtDecursoPrazoRecurso').text();
+
+        options = options.replace(/ï¿½teis/g, 'úteis');
+
+        $select.append(options);
+        if ($select.find('option').length === 2) {
+            $select.find('option').eq(1).prop('selected', true);
+            $select.prop('disabled', true);
+        } else {
+            $select.prop('disabled', false);
+        }
+
+        document.getElementById('selDtDecursoPrazoRecurso').value = $(result).find('dtDecursoPrazoRecurso').text();
+        document.getElementById('hdnDtDecursoPrazoRecurso').value = $(result).find('dtDecursoPrazoRecurso').text();
+        document.getElementById('selDtDecursoPrazoRecurso').setAttribute('data-valor-antigo', $(result).find('dtDecursoPrazoRecurso').text());
+
+        verificarExistenciaPrazoRecursoCombo()
+
+        var selectElement = document.getElementById("selDtDecursoPrazoRecurso");
+        var optionsCount = selectElement.options.length;
+
+        if (optionsCount === 0) {
+            selectElement.disabled = true;
+        } else if (optionsCount === 1) {
+            selectElement.selectedIndex = 0;
+            selectElement.disabled = true;
+        } else {
+            selectElement.disabled = false;
+        }
+    }
+
+    function verificarExistenciaPrazoDefesaCombo() {
+        const selectElement = document.getElementById('selDtDecursoPrazo');
+        const prazoDefesa = document.getElementById('hdnPrazoDefesa').value; // valor do prazo retornado do serviço
+        const tpPrazoDefesa = document.getElementById('hdnTpPrazoDefesa').value; // tipo de prazo retornado do serviço (U - úteis, C - corridos)
+        const selectedValue = document.getElementById('hdnDtDecursoPrazo').value; // valor da data retornada pelo serviço
+
+        let found = false;
+
+        // Verifica se a opção com o valor retornado do serviço já existe no select
+        for (let i = 0; i < selectElement.options.length; i++) {
+            if (selectElement.options[i].value === selectedValue) {
+                found = true;
+                break;
+            }
+        }
+
+        // Se não encontrou, cria a nova opção e seleciona
+        if (!found && selectedValue) { // Apenas cria a opção se selectedValue não for vazio
+            const newOptionText = `${selectedValue}`;
+            const newOption = new Option(newOptionText, selectedValue);
+            newOption.setAttribute('prazo-defesa', prazoDefesa);
+            newOption.setAttribute('tp-prazo-defesa', tpPrazoDefesa);
+            selectElement.add(newOption); // Adiciona a nova opção
+            selectElement.value = selectedValue; // Seleciona a nova opção
+        } else if (found) {
+            // Se a opção já existe, apenas seleciona ela
+            selectElement.value = selectedValue;
+        }
+    }
+
+
+    function verificarExistenciaPrazoRecursoCombo() {
+        const selectElement = document.getElementById('selDtDecursoPrazoRecurso');
+        const prazoRecurso = document.getElementById('hdnPrazoRecurso').value; // valor do prazo retornado do serviço
+        const tpPrazoRecurso = document.getElementById('hdnTpPrazoRecurso').value; // tipo de prazo retornado do serviço (U - úteis, C - corridos)
+        const selectedValue = document.getElementById('hdnDtDecursoPrazoRecurso').value; // valor da data retornada pelo serviço
+
+        let found = false;
+
+        // Verifica se a opção com o valor retornado do serviço já existe no select
+        for (let i = 0; i < selectElement.options.length; i++) {
+            if (selectElement.options[i].value === selectedValue) {
+                found = true;
+                break;
+            }
+        }
+
+        // Se não encontrou, cria a nova opção e seleciona
+        if (!found && selectedValue) {  // Verifica se selectedValue não é vazio
+            const newOptionText = `${selectedValue}`;
+            const newOption = new Option(newOptionText, selectedValue);
+            newOption.setAttribute('prazo-recurso', prazoRecurso);
+            newOption.setAttribute('tp-prazo-recurso', tpPrazoRecurso);
+            selectElement.add(newOption); // Adiciona a nova opção
+            selectElement.value = selectedValue; // Seleciona a nova opção
+        } else if (found) {
+            // Se a opção já existe, apenas seleciona ela
+            selectElement.value = selectedValue;
+        }
     }
 
     function suspenderEmRazaoRecurso(element){
@@ -486,6 +606,11 @@
 
         if (document.getElementById('txtDtVencimento').value == '') {
             alert('A Data de Vencimento é de preenchimento obrigatório.');
+            return false;
+        }
+
+        if (!document.getElementById('hdnDtDecursoPrazo').value ) {
+            alert('A Data do Decurso do Prazo para Defesa é obrigatória. Preencha antes de prosseguir.');
             return false;
         }
 
@@ -747,6 +872,11 @@
             return false;
         }
 
+        if (!document.getElementById('hdnDtDecursoPrazo').value ) {
+            alert('A Data do Decurso do Prazo para Defesa é obrigatória. Preencha antes de prosseguir.');
+            return false;
+        }
+
         return true;
     }
 
@@ -959,7 +1089,7 @@
             success: function (data) {
                 if ($(data).find('novaData').text()) {
                     document.getElementById('selCreditosProcesso').setAttribute('disabled', 'disabled');
-                    document.getElementById('txtDtDecursoPrazo').value = $(data).find('novaData').text();
+                    document.getElementById('selDtDecursoPrazo').value = $(data).find('novaData').text();
                     document.getElementById('hdnDtDecursoPrazo').value = $(data).find('novaData').text();
                 }
             },
@@ -1167,9 +1297,7 @@
 
     function calcularDecursoPrazoRecurso(idSituacao = null) {
         const dtDecisaoAplMulta = $('#hdnDtIntimacaoAplMulta').val();
-        const $txtDtDecursoPrazoRecurso = $('#txtDtDecursoPrazoRecurso');
-        const $hdnDtDecursoPrazoRecurso = $('#hdnDtDecursoPrazoRecurso');
-        let strDtDecursoPrazoRecurso = '';
+
         if (dtDecisaoAplMulta) {
             $.ajax({
                 url: '<?= $strLinkAjaxCalcularDataDecurso ?>',
@@ -1181,8 +1309,23 @@
                     'idSituacao': idSituacao
                 },
                 async: false,
-                success: function (response) {
-                    strDtDecursoPrazoRecurso = $(response).find('resultado').text();
+                success: function (result) {
+                    //ATUALIZAR INPUT DATA DO DECUROS DO PRAZO E O HIDDEN
+                    document.getElementById('hdnDtDecursoPrazoRecurso').value = $(result).find('hdnDtDecursoPrazoRecurso').text();
+
+                    var $select = $('#selDtDecursoPrazoRecurso');
+                    $select.empty();
+
+                    var options = $(result).find('htmlOption').text();
+                    options = options.replace(/ï¿½teis/g, 'úteis');
+
+                    $select.append(options);
+                    if ($select.find('option').length === 2) {
+                        $select.find('option').eq(1).prop('selected', true);
+                        $select.prop('disabled', true);
+                    } else {
+                        $select.prop('disabled', false);
+                    }
                 },
                 error: function (e) {
                     if ($(e.responseText).find('MensagemValidacao').text()) {
@@ -1193,8 +1336,6 @@
                 }
             });
         }
-        $hdnDtDecursoPrazoRecurso.val(strDtDecursoPrazoRecurso);
-        $txtDtDecursoPrazoRecurso.val(strDtDecursoPrazoRecurso);
     }
 
     function atualizarDataDecisaoDefinitiva() {
@@ -1233,6 +1374,31 @@
             }
         }
         return false;
+    }
+
+    function atualizarHiddenDtDecursoPrazo(){
+        document.getElementById('hdnDtDecursoPrazo').value = document.getElementById('selDtDecursoPrazo').value;
+
+        var selectElement = document.getElementById("selDtDecursoPrazo");
+
+        if (selectElement.selectedOptions.length > 0) {
+            var selectedOption = selectElement.selectedOptions[0];
+            document.getElementById('hdnPrazoDefesa').value = selectedOption.getAttribute('prazo-defesa')
+            document.getElementById('hdnTpPrazoDefesa').value = selectedOption.getAttribute('tp-prazo-defesa')
+        }
+    }
+
+    function atualizarHiddenDtDecursoPrazoRecurso(){
+        document.getElementById('hdnDtDecursoPrazoRecurso').value = document.getElementById('selDtDecursoPrazoRecurso').value;
+
+        var selectElement = document.getElementById("selDtDecursoPrazoRecurso");
+
+        if (selectElement.selectedOptions.length > 0) {
+            var selectedOption = selectElement.selectedOptions[0];
+            document.getElementById('hdnPrazoRecurso').value = selectedOption.getAttribute('prazo-recurso')
+            document.getElementById('hdnTpPrazoRecurso').value = selectedOption.getAttribute('tp-prazo-recurso')
+        }
+
     }
 
 </script>

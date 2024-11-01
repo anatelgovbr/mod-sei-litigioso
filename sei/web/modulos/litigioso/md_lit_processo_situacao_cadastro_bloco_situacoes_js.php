@@ -206,10 +206,10 @@
     function changeSituacoes() {
 
         limparCamposRelacionadosSituacao();
-        var selSituacoes = document.getElementById('selSituacoes');
+        var idSituacao = document.getElementById('selSituacoes').value.split('|')[0];
 
         var paramsAjax = {
-            idSituacao: selSituacoes.value,
+            idSituacao: idSituacao,
             idProcedimento: document.getElementById("hdnIdProcedimento").value,
             idTpControle: document.getElementById('hdnIdTipoControle').value
         };
@@ -546,6 +546,7 @@
             //Pega o Id Certo (Existem dois sels, um pra alteração, outro pra inserção)
             var selFases = retornaSelFasesCorreto();
             var selSituacoes = document.getElementById("selSituacoes");
+            var prazo = selSituacoes.value.split('|')[1];
             var dataAtual = infraDataAtual();
             var checkedAltPrecr = document.getElementById('rdAlteraPrescricao').checked;
 
@@ -589,7 +590,7 @@
                 tpInclusao,
                 document.getElementById('hdnIdProcedimento').value,
                 selFases.value,
-                selSituacoes.value,
+                selSituacoes.value.split('|')[0],
                 document.getElementById("hdnIdUsuario").value,
                 document.getElementById("hdnIdUnidade").value,
                 txtIntercorr,
@@ -613,7 +614,8 @@
                 hdnSinInst,
                 document.getElementById("txtNumeroSei").value,
                 document.getElementById("hdnUrlDocumento").value,
-                chkDpExtraJudicial
+                chkDpExtraJudicial,
+                prazo
             ];
 
             objTabelaDinamicaSituacao.recarregar();
@@ -1232,7 +1234,7 @@
         if (hdnStrIsGestor == '1' ? true : false) {
             var tbTabelaDinamicaSit = document.getElementById('tbSituacao');
             for (var i = 1; i < tbTabelaDinamicaSit.rows.length; i++) {
-                var icone = tbTabelaDinamicaSit.rows[i].cells[30].querySelector("[title='Remover Item']");
+                var icone = tbTabelaDinamicaSit.rows[i].cells[31].querySelector("[title='Remover Item']");
                 if(icone){
                     icone.parentNode.removeChild(icone);
                 }
@@ -1258,7 +1260,7 @@
                 acoesConjungadasBotaoExcluirSituacao(idSituacao);
             };
 
-            tbTabelaDinamicaSit.rows[1].cells[30].appendChild(image);
+            tbTabelaDinamicaSit.rows[1].cells[31].appendChild(image);
         }
     }
 
@@ -1279,8 +1281,14 @@
                     document.getElementById('selCreditosProcesso').setAttribute('disabled', 'disabled');
                     document.getElementById('txtDtIntimacaoAplMulta').value = '';
                     document.getElementById('hdnDtIntimacaoAplMulta').value = '';
-                    document.getElementById('txtDtDecursoPrazoRecurso').value = '';
+                    document.getElementById('selDtDecursoPrazoRecurso').value = '';
                     document.getElementById('hdnDtDecursoPrazoRecurso').value = '';
+
+                    //Bloquear e remover opções do campo Data do Decurso do Prazo para Recurso
+                    var $select = $('#selDtDecursoPrazoRecurso');
+                    $select.empty();
+                    $select.prop('disabled', true);
+
                     verificarMudancaMulta();
                 }
             },

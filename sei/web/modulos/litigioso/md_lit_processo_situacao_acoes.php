@@ -87,6 +87,7 @@ switch($_GET['acao']) {
 
         $idUltimoLancamento = MdLitLancamentoINT::consultarUltimoLancamento($idProcedimento);
         $objMdLitDecisaoRN = new MdLitDecisaoRN();
+        $objMdLitLancamentoDTO = $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
 
         if($openProcesso != '1') {
             $arrComandos[] = '<button type="submit" accesskey="S" name="sbmCadastrarSituacao" id="sbmCadastrarSituacao" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
@@ -269,18 +270,19 @@ switch($_GET['acao']) {
 
 
         //recuperar a ultima decisao
-        $dataDecursoPrazoDefesa = $objMdLitProcessoSituacaoRN->buscarDataDecursoPrazoDefesa($idProcedimento);
         $objMdLitProcessoSituacaoDecisoriaDTO = $objMdLitProcessoSituacaoRN->buscarUltimaSituacaoDecisoria($idProcedimento);
+        $dados['idProcedimento'] = $idProcedimento;
+        $strCombodataDecursoPrazoDefesa = $objMdLitProcessoSituacaoRN->montarSelectDataDecursoPrazoDefesa($dados);
 
         if($objMdLitLancamentoDTO){
-            $dataDecisaoAplicacaoMulta   = $objMdLitLancamentoDTO->getDtaDecisao();
-            $dataVencimento              = $objMdLitLancamentoDTO->getDtaVencimento();
-            $dataDecursoPrazoDefesa      = $objMdLitLancamentoDTO->getDtaPrazoDefesa();
-
-            $dtaConstituicaoDefinitiva   = $objMdLitLancamentoDTO->getDtaConstituicaoDefinitiva();
-            $dtaIntimacaoDefinitiva      = $objMdLitLancamentoDTO->getDtaIntimacaoDefinitiva();
-            $dtaDecisaoDefinitiva        = $objMdLitLancamentoDTO->getDtaDecisaoDefinitiva();
-            $dtaApresentacaoRecurso      = $objMdLitLancamentoDTO->getDtaApresentacaoRecurso();
+            $dataDecisaoAplicacaoMulta        = $objMdLitLancamentoDTO->getDtaDecisao();
+            $dataVencimento                   = $objMdLitLancamentoDTO->getDtaVencimento();
+            $dtaConstituicaoDefinitiva        = $objMdLitLancamentoDTO->getDtaConstituicaoDefinitiva();
+            $dtaIntimacaoDefinitiva           = $objMdLitLancamentoDTO->getDtaIntimacaoDefinitiva();
+            $dtaDecisaoDefinitiva             = $objMdLitLancamentoDTO->getDtaDecisaoDefinitiva();
+            $dtaApresentacaoRecurso           = $objMdLitLancamentoDTO->getDtaApresentacaoRecurso();
+            $dados['objMdLitLancamentoDTO'] = $objMdLitLancamentoDTO;
+            $strCombodataDecursoPrazoDefesa = $objMdLitProcessoSituacaoRN->montarSelectDataDecursoPrazoDefesa($dados);
 
         }elseif($objMdLitProcessoSituacaoDecisoriaDTO) {
             $dataDecisaoAplicacaoMulta = $objMdLitProcessoSituacaoDecisoriaDTO->getDtaData();

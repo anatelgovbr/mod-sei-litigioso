@@ -292,6 +292,9 @@ try {
             //link para acesso ao associar
             if ($_GET['acao'] != 'md_lit_tipo_controle_selecionar') {
 
+                //link para cadastrar campos adicionais
+                $strResultado .= '<a href="' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_tipo_controle_info_adicionais_listar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_tipo_controle_litigioso=' . $arrObjTipoControleLitigiosoDTO[$i]->getNumIdTipoControleLitigioso()) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/litigioso/imagens/svg/campos-add.svg?'.Icone::VERSAO.'" title="Adicionar campos adicionais ao cadastrar ao Controle Ligitioso - ' . $siglaTipoControle . '" alt="Adicionar campos adicionais ao cadastrar ao Controle Ligitioso - ' . $siglaTipoControle . '" class="infraImgGrid" /></a>&nbsp;';
+
                 //link para parametrizar dados complementares do interessado
                 if ($arrObjTipoControleLitigiosoDTO[$i]->getStrSinParamModalComplInteressado() != "S") {
                     $strResultado .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_parametrizar_interessado_cadastrar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_tipo_processo_litigioso=' . $arrObjTipoControleLitigiosoDTO[$i]->getNumIdTipoControleLitigioso())) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/litigioso/imagens/svg/cog_vazia.svg?'.Icone::VERSAO.'" title="Parametrizar Dados Complementares - ' . $siglaTipoControle . '" alt="Parametrizar Dados Complementares - ' . $siglaTipoControle . '" class="infraImgGrid" /></a>&nbsp;';

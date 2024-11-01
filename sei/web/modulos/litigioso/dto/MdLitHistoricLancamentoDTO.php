@@ -87,6 +87,14 @@ class MdLitHistoricLancamentoDTO extends InfraDTO {
 
     $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM, 'IdSituacaoRecisao', 'id_situacao_recurso');
 
+    $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM, 'PrazoSituacaoDefesa', 'prazo_defesa');
+
+    $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'TipoPrazoDefesa', 'tp_prazo_defesa');
+
+    $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM, 'PrazoSituacaoRecurso', 'prazo_recurso');
+
+    $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'TipoPrazoRecurso', 'tp_prazo_recurso');
+
     //Pk
     $this->configurarPK('IdMdLitHistoricLancamento',InfraDTO::$TIPO_PK_NATIVA);
 

@@ -383,44 +383,44 @@ class MdLitProcessoSituacaoINT extends InfraINT {
         return $xml;
     }
 
-  public static function verificarPrimeiraIntimacao($idProcedimento, $idSituacao, $novaDataSituacao)
-  {
-    $xml = '';
+    public static function verificarPrimeiraIntimacao($idProcedimento, $idSituacao, $novaDataSituacao)
+    {
+        $xml = '';
 
-    $MdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
-    $objMdLitProcessoSituacaoDTOPrimeiraIntimacao = $MdLitProcessoSituacaoRN->consultarPrimeiraIntimacao($idProcedimento);
+        $MdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
+        $objMdLitProcessoSituacaoDTOPrimeiraIntimacao = $MdLitProcessoSituacaoRN->consultarPrimeiraIntimacao($idProcedimento);
 
-    if($objMdLitProcessoSituacaoDTOPrimeiraIntimacao->getNumIdMdLitProcessoSituacao() == $idSituacao){
-        $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
-        $objMdLitSituacaoDTO->retTodos(false);
-        $objMdLitSituacaoDTO->setStrSinDefesa('S');
-        $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitProcessoSituacaoDTOPrimeiraIntimacao->getNumIdMdLitTipoControle());
-        $objMdLitSituacaoDTO->setNumMaxRegistrosRetorno(1);
+        if($objMdLitProcessoSituacaoDTOPrimeiraIntimacao->getNumIdMdLitProcessoSituacao() == $idSituacao){
+            $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
+            $objMdLitSituacaoDTO->retTodos(false);
+            $objMdLitSituacaoDTO->setStrSinDefesa('S');
+            $objMdLitSituacaoDTO->setNumIdTipoControleLitigioso($objMdLitProcessoSituacaoDTOPrimeiraIntimacao->getNumIdMdLitTipoControle());
+            $objMdLitSituacaoDTO->setNumMaxRegistrosRetorno(1);
 
-        $objMdLitSituacaoRN = new MdLitSituacaoRN();
-        $objMdLitSituacaoDTO = $objMdLitSituacaoRN->consultar($objMdLitSituacaoDTO);
+            $objMdLitSituacaoRN = new MdLitSituacaoRN();
+            $objMdLitSituacaoDTO = $objMdLitSituacaoRN->consultar($objMdLitSituacaoDTO);
 
-        if ($objMdLitSituacaoDTO && $objMdLitSituacaoDTO->getNumPrazo())
-           $novadata = InfraData::calcularData($objMdLitSituacaoDTO->getNumPrazo(), InfraData::$UNIDADE_DIAS, InfraData::$SENTIDO_ADIANTE, $novaDataSituacao);
+            if ($objMdLitSituacaoDTO && $objMdLitSituacaoDTO->getNumPrazo())
+               $novadata = InfraData::calcularData($objMdLitSituacaoDTO->getNumPrazo(), InfraData::$UNIDADE_DIAS, InfraData::$SENTIDO_ADIANTE, $novaDataSituacao);
 
-      $xml .= "<novaData>".$novadata ."</novaData>\n";
+          $xml .= "<novaData>".$novadata ."</novaData>\n";
+        }
+
+        return $xml;
     }
 
-    return $xml;
-  }
+    public static function verificarRelacaoLancamento($idProcedimento, $idSituacao, $tipoSituacao)
+    {
+        $xml = '';
 
-  public static function verificarRelacaoLancamento($idProcedimento, $idSituacao, $tipoSituacao)
-  {
-      $xml = '';
+        $objMdLitLancamentoRN = new MdLitLancamentoRN();
+        $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+        $objMdLitLancamentoDTO->setDblIdProcedimento($idProcedimento);
+        $objMdLitLancamentoDTO->setOrdNumIdMdLitLancamento(InfraDTO::$TIPO_ORDENACAO_DESC);
+        $objMdLitLancamentoDTO->setNumMaxRegistrosRetorno(1);
+        $objMdLitLancamentoDTO->retNumIdMdLitLancamento();
 
-      $objMdLitLancamentoRN = new MdLitLancamentoRN();
-      $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
-      $objMdLitLancamentoDTO->setDblIdProcedimento($idProcedimento);
-      $objMdLitLancamentoDTO->setOrdNumIdMdLitLancamento(InfraDTO::$TIPO_ORDENACAO_DESC);
-      $objMdLitLancamentoDTO->setNumMaxRegistrosRetorno(1);
-      $objMdLitLancamentoDTO->retNumIdMdLitLancamento();
-
-      switch ($tipoSituacao) {
+        switch ($tipoSituacao) {
 
         case 'Intimação':
           $objMdLitLancamentoDTO->setNumIdSituacaoIntimacao($idSituacao);
@@ -434,13 +434,207 @@ class MdLitProcessoSituacaoINT extends InfraINT {
           $objMdLitLancamentoDTO->setNumIdSituacaoRecurso($idSituacao);
           break;
 
-      }
+        }
 
-      $objMdLitLancamento = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
-      $idLancamento = $objMdLitLancamento ? $objMdLitLancamento->getNumIdMdLitLancamento() : null;
-      $xml .= "<idLancamento>".$idLancamento ."</idLancamento>\n";
+        $objMdLitLancamento = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
+        $idLancamento = $objMdLitLancamento ? $objMdLitLancamento->getNumIdMdLitLancamento() : null;
+        $xml .= "<idLancamento>".$idLancamento ."</idLancamento>\n";
 
-      return $xml;
-  }
+        return $xml;
+    }
+
+    public static function calcularDataDecursoPrazoRecurso($idProcedimento, $strDtBase)
+    {
+        $xml = '<resultado></resultado>';
+        $dados = self::montarComboBoxDataDecursoPrazoRecurso($idProcedimento, $strDtBase);
+
+        if ($dados) {
+            $xml  = "<resultado>\n";
+            $xml .= "<htmlOption>$dados</htmlOption>\n";
+            $xml .= "</resultado>";
+        }
+        return $xml;
+    }
+
+    public static function montarComboBoxDataDecursoPrazoRecurso($idProcedimento, $strDtBase)
+    {
+        $htmlOption = '';
+        $objUltimaSituacaoProcedimentoDTO = new MdLitProcessoSituacaoDTO();
+        $objUltimaSituacaoProcedimentoDTO->retTodos();
+        $objUltimaSituacaoProcedimentoDTO->setDblIdProcedimento($idProcedimento);
+        $objUltimaSituacaoProcedimentoDTO->setOrdNumIdMdLitProcessoSituacao(InfraDTO::$TIPO_ORDENACAO_DESC);
+        $objUltimaSituacaoProcedimentoDTO->setNumMaxRegistrosRetorno(1);
+
+        $objUltimaSituacaoProcedimentoDTO = (new MdLitProcessoSituacaoRN())->consultar($objUltimaSituacaoProcedimentoDTO);
+
+        $objLitSituacaoRN = new MdLitSituacaoRN();
+
+        $objSitDecisaoDTO = new MdLitSituacaoDTO();
+        $objSitDecisaoDTO->setNumIdSituacaoLitigioso($objUltimaSituacaoProcedimentoDTO->getNumIdMdLitSituacao());
+        $objSitDecisaoDTO->retNumIdSituacaoLitigioso();
+        $objSitDecisaoDTO->retNumOrdem();
+        $objSitDecisaoDTO->setStrSinDecisoria('S');
+        $objSitDecisaoDTO = $objLitSituacaoRN->consultar($objSitDecisaoDTO);
+
+        if ($objSitDecisaoDTO) {
+
+            $objSitRecursoDTO = new MdLitSituacaoDTO();
+            $objSitRecursoDTO->setNumIdTipoControleLitigioso($objUltimaSituacaoProcedimentoDTO->getNumIdMdLitTipoControle());
+            $objSitRecursoDTO->setStrSinRecursal('S');
+            $objSitRecursoDTO->setNumOrdem($objSitDecisaoDTO->getNumOrdem(), InfraDTO::$OPER_MAIOR);
+            $objSitRecursoDTO->setOrdNumOrdem(InfraDTO::$TIPO_ORDENACAO_ASC);
+            $objSitRecursoDTO->setNumMaxRegistrosRetorno(1);
+            $objSitRecursoDTO->retStrPrazo();
+            $objSitRecursoDTO->retStrTipoPrazo();
+            $objSitRecursoDTO = $objLitSituacaoRN->consultar($objSitRecursoDTO);
+
+            $dados = self::montarHtmlPrazo($strDtBase, $objSitRecursoDTO->getStrPrazo(), $objSitRecursoDTO->getStrTipoPrazo(), null);
+
+            $htmlOption = htmlspecialchars($dados, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        }
+        return $htmlOption;
+    }
+
+    public static function recuperarParaEdicaoComboBoxDataDecursoPrazoRecurso($objMdLitLancamentoDTO, $dtIntimacaoDecisaoAplicacaoMulta)
+    {
+        $htmlOption = '';
+        if($objMdLitLancamentoDTO && $dtIntimacaoDecisaoAplicacaoMulta && $objMdLitLancamentoDTO->getNumIdSituacaoDecisao()){
+
+            $objDecisaoDTO = new MdLitProcessoSituacaoDTO();
+            $objDecisaoDTO->setNumIdMdLitProcessoSituacao($objMdLitLancamentoDTO->getNumIdSituacaoDecisao());
+            $objDecisaoDTO->retNumIdMdLitProcessoSituacao();
+            $objDecisaoDTO->retNumIdMdLitSituacao();
+            $objDecisaoDTO = (new MdLitProcessoSituacaoRN())->consultar($objDecisaoDTO);
+
+            $objLitSituacaoRN = new MdLitSituacaoRN();
+            $objSitDecisaoDTO = new MdLitSituacaoDTO();
+            $objSitDecisaoDTO->setNumIdSituacaoLitigioso($objDecisaoDTO->getNumIdMdLitSituacao());
+            $objSitDecisaoDTO->retNumIdTipoControleLitigioso();
+            $objSitDecisaoDTO->retNumOrdem();
+            $objSitDecisaoDTO->setStrSinDecisoria('S');
+            $objSitDecisaoDTO = $objLitSituacaoRN->consultar($objSitDecisaoDTO);
+
+            if ($objSitDecisaoDTO) {
+
+                $objSitRecursoDTO = new MdLitSituacaoDTO();
+                $objSitRecursoDTO->setNumIdTipoControleLitigioso($objSitDecisaoDTO->getNumIdTipoControleLitigioso());
+                $objSitRecursoDTO->setStrSinRecursal('S');
+                $objSitRecursoDTO->setNumOrdem($objSitDecisaoDTO->getNumOrdem(), InfraDTO::$OPER_MAIOR);
+                $objSitRecursoDTO->setOrdNumOrdem(InfraDTO::$TIPO_ORDENACAO_ASC);
+                $objSitRecursoDTO->setNumMaxRegistrosRetorno(1);
+                $objSitRecursoDTO->retStrPrazo();
+                $objSitRecursoDTO->retStrTipoPrazo();
+                $objSitRecursoDTO = $objLitSituacaoRN->consultar($objSitRecursoDTO);
+                if($objSitRecursoDTO){
+                    $dados = self::montarHtmlPrazo($dtIntimacaoDecisaoAplicacaoMulta, $objSitRecursoDTO->getStrPrazo(), $objSitRecursoDTO->getStrTipoPrazo(), null);
+
+                    $htmlOption = htmlspecialchars($dados, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+                }
+            }
+        }
+
+        return $htmlOption;
+    }
+
+    public function montarHtmlPrazo($dataInicial, $prazo, $tipoPrazo, $dataSelecionada = null)
+    {
+
+        $return = [];
+
+        $arrayPrazos = explode(',', $prazo);
+        if(count($arrayPrazos) != 1) {
+            $return = '<option value=""></option>';
+        }
+        foreach ($arrayPrazos as $prazo) {
+
+            if ($tipoPrazo == MdLitSituacaoRN::$DIAS_CORRIDOS) {
+                $data = InfraData::calcularData($prazo, InfraData::$UNIDADE_DIAS, InfraData::$SENTIDO_ADIANTE, $dataInicial);
+                $option = $data . ' (prazo ' . $prazo . ' dias Corridos)';
+            }
+
+            if ($tipoPrazo == MdLitSituacaoRN::$DIAS_UTEIS) {
+                $data = self::calcularPrazoDiasUteis($dataInicial, $prazo);
+                $option = $data . ' (prazo ' . $prazo . ' dias Úteis)';
+            }
+
+            $isSelected = ($dataSelecionada == $data) ? 'selected' : '';
+            $return .= '<option value="' . $data . '" '.$isSelected.' prazo-recurso="'.$prazo.'" tp-prazo-recurso="'. $tipoPrazo .'">' . $option . '</option>';
+        }
+
+        return $return;
+    }
+
+    public function calcularPrazoDiasUteis($dtPrazoInicial, $diasPrazo)
+    {
+        self::removerTimeDate($dtPrazoInicial);
+
+        $qtdDiasUteis = 0;
+
+        $arrFeriados = self::recuperarFeriados($dtPrazoInicial);
+
+        while ($qtdDiasUteis < $diasPrazo) {
+            $dtPrazoInicial = InfraData::calcularData(1, InfraData::$UNIDADE_DIAS, InfraData::$SENTIDO_ADIANTE, $dtPrazoInicial);
+            $diaSemana = InfraData::obterDescricaoDiaSemana($dtPrazoInicial);
+
+            if ($diaSemana != 'sábado' && $diaSemana != 'domingo' && !in_array($dtPrazoInicial, $arrFeriados)) {
+                $qtdDiasUteis++;
+            }
+        }
+
+        return $dtPrazoInicial;
+    }
+
+    private function removerTimeDate(&$strData){
+        $countDate  = strlen($strData);
+        $isDateTime = $countDate > 10 ? true : false;
+        if($isDateTime){
+            $arrData = explode(" ",$strData);
+            $strData = $arrData[0];
+        }
+    }
+
+    public function recuperarFeriados($strDataInicial)
+    {
+        $numIdOrgao = SessaoSEI::getInstance()->getNumIdOrgaoUnidadeAtual();
+
+        if (is_null($numIdOrgao)){
+            $objOrgaoDTO = new OrgaoDTO();
+            $objOrgaoDTO->retNumIdOrgao();
+            $objOrgaoDTO->setBolExclusaoLogica(false);
+            $objOrgaoDTO->adicionarCriterio(array('SinAtivo','Sigla'),array(InfraDTO::$OPER_IGUAL,InfraDTO::$OPER_IGUAL),array('S',ConfiguracaoSEI::getInstance()->getValor('SessaoSEI','SiglaOrgaoSistema')),InfraDTO::$OPER_LOGICO_AND);
+
+            $objOrgaoRN = new OrgaoRN();
+            $arrObjOrgaoDTO = $objOrgaoRN->listarRN1353($objOrgaoDTO);
+            $numIdOrgao = !is_null($arrObjOrgaoDTO) && count($arrObjOrgaoDTO) > 0 ? current($arrObjOrgaoDTO)->getNumIdOrgao() : null;
+        }
+
+        $arrFeriados  = array();
+
+        $objFeriadoRN = new FeriadoRN();
+        $objFeriadoDTO = new FeriadoDTO();
+        $objFeriadoDTO->retDtaFeriado();
+        $objFeriadoDTO->retStrDescricao();
+
+        if($numIdOrgao != ''){
+            $objFeriadoDTO->adicionarCriterio(array('IdOrgao','IdOrgao'),
+              array(InfraDTO::$OPER_IGUAL,InfraDTO::$OPER_IGUAL),
+              array(null,$numIdOrgao),
+              array(InfraDTO::$OPER_LOGICO_OR));
+        }else{
+            $objFeriadoDTO->setNumIdOrgao(null);
+        }
+
+        $objFeriadoDTO->setDtaFeriado($strDataInicial, InfraDTO::$OPER_MAIOR_IGUAL);
+        $objFeriadoDTO->setOrdDtaFeriado(InfraDTO::$TIPO_ORDENACAO_ASC);
+
+        $arrObjFeriadoDTO = $objFeriadoRN->listar($objFeriadoDTO);
+
+        if(!empty($arrObjFeriadoDTO))
+        {
+            $arrFeriados = InfraArray::converterArrInfraDTO($arrObjFeriadoDTO, 'Feriado');
+        }
+
+        return $arrFeriados;
+    }
 }
 ?>

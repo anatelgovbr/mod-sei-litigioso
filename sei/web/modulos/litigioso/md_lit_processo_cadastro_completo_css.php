@@ -91,4 +91,34 @@
         margin-left: 40px;
     }
 
+    .ms-choice{
+        border: none;
+    }
+
+    .ms-choice span {
+        margin-top: 7px;
+        margin-left: 19px;
+    }
+
+    .campos-info-add {
+        padding-bottom: 10px;
+    }
+
+    .campo-adicional-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .campo-adicional {
+        flex: 1 1 calc(33.33% - 10px);
+        box-sizing: border-box;
+        margin-bottom: 10px;
+    }
+
+    .label-campo-adicional {
+        margin-left: 16px;
+        padding-bottom: 5px;
+        padding-top: 5px;
+    }
+
 </style>

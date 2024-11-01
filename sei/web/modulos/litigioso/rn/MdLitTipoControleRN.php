@@ -700,7 +700,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('S');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(1);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -716,7 +716,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(2);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -732,7 +732,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(3);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('S');
@@ -748,7 +748,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(15);
+            $objMdLitSituacaoDTO->setStrPrazo('15');
             $objMdLitSituacaoDTO->setNumOrdem(4);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -764,7 +764,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(5);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -780,7 +780,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(6);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -796,7 +796,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(7);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -812,7 +812,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(8);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('S');
@@ -828,7 +828,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(9);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -844,7 +844,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(10);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -860,7 +860,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(11);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -876,7 +876,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(12);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -892,7 +892,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(13);
             $objMdLitSituacaoDTO->setStrSinDecisoria('S');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -908,7 +908,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(14);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -924,7 +924,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(15);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('S');
@@ -940,7 +940,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(16);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -956,7 +956,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(17);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -972,7 +972,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(18);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('S');
@@ -988,7 +988,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(19);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -1004,7 +1004,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(20);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -1020,7 +1020,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(21);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -1036,7 +1036,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(22);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -1052,7 +1052,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(23);
             $objMdLitSituacaoDTO->setStrSinDecisoria('S');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -1068,7 +1068,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(24);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -1084,7 +1084,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(25);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('S');
@@ -1100,7 +1100,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(26);
             $objMdLitSituacaoDTO->setStrSinDecisoria('S');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -1116,7 +1116,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(27);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -1132,7 +1132,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(28);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('S');
@@ -1148,7 +1148,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(29);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -1164,7 +1164,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(30);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -1180,7 +1180,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(31);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -1196,7 +1196,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(32);
             $objMdLitSituacaoDTO->setStrSinDecisoria('S');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -1212,7 +1212,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(33);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');
@@ -1228,7 +1228,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('N');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(34);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('S');
@@ -1244,7 +1244,7 @@
             $objMdLitSituacaoDTO->setStrSinAtivo('S');
             $objMdLitSituacaoDTO->setStrSinInstauracao('N');
             $objMdLitSituacaoDTO->setStrSinConclusiva('S');
-            $objMdLitSituacaoDTO->setNumPrazo(null);
+            $objMdLitSituacaoDTO->setStrPrazo(null);
             $objMdLitSituacaoDTO->setNumOrdem(35);
             $objMdLitSituacaoDTO->setStrSinDecisoria('N');
             $objMdLitSituacaoDTO->setStrSinIntimacao('N');

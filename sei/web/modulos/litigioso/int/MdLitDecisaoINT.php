@@ -366,65 +366,6 @@ class MdLitDecisaoINT extends InfraINT
 
         return self::somarDiaUtil(1, $dataInicial);
     }
-
-    public static function calcularDataDecursoPrazoRecurso($idProcedimento, $idTipoControle, $strDtBase, $idSituacao)
-    {
-        $data = '';
-        $objMdLitProcessoSituacaoDTO = new MdLitProcessoSituacaoDTO();
-        $objMdLitProcessoSituacaoDTO->retTodos();
-        $objMdLitProcessoSituacaoDTO->setDblIdProcedimento($idProcedimento);
-        $objMdLitProcessoSituacaoDTO->setNumIdMdLitTipoControle($idTipoControle);
-        $objMdLitProcessoSituacaoDTO->setOrdNumIdMdLitSituacao(InfraDTO::$TIPO_ORDENACAO_DESC);
-
-        // se for uma alteração da situação busca o prazo de recurso da situação correta
-        if($idSituacao){
-          $objMdLitProcessoSituacaoDTO->setNumIdMdLitProcessoSituacao($idSituacao, InfraDTO::$OPER_MENOR_IGUAL);
-        }
-
-        $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
-        $objMdLitProcessoSituacaoDTO = current($objMdLitProcessoSituacaoRN->listar($objMdLitProcessoSituacaoDTO));
-
-        $idNumIdSituacaoLitigiosoDesisorio = $objMdLitProcessoSituacaoDTO->getNumIdMdLitSituacao();
-
-        $objSituacaoLitigiosoDTO = new MdLitSituacaoDTO();
-        $objSituacaoLitigiosoDTO->retNumIdSituacaoLitigioso();
-        $objSituacaoLitigiosoDTO->retStrSinDecisoria();
-        $objSituacaoLitigiosoDTO->retNumOrdem();
-        $objSituacaoLitigiosoDTO->retStrSinRecursal();
-        $objSituacaoLitigiosoDTO->retStrNomeFase();
-        $objSituacaoLitigiosoDTO->retStrNome();
-        $objSituacaoLitigiosoDTO->retNumPrazo();
-
-        $objSituacaoLitigiosoDTO->setNumIdTipoControleLitigioso($idTipoControle);
-        $objSituacaoLitigiosoDTO->setStrSinAtivo('S');
-
-        $objSituacaoLitigiosoRN = new MdLitSituacaoRN();
-
-        $objSituacaoLitigiosoDTO->setNumIdSituacaoLitigioso($idNumIdSituacaoLitigiosoDesisorio);
-        //$objSituacaoLitigiosoDTO->setStrSinDecisoria('S');
-        $objSituacaoDecisoria = $objSituacaoLitigiosoRN->consultar($objSituacaoLitigiosoDTO);
-        if ($objSituacaoDecisoria) {
-
-            $objSituacaoLitigiosoDTO->unSetNumIdSituacaoLitigioso();
-            $objSituacaoLitigiosoDTO->unSetStrSinDecisoria();
-            $objSituacaoLitigiosoDTO->setNumOrdem($objSituacaoDecisoria->getNumOrdem(), InfraDTO::$OPER_MAIOR_IGUAL);
-            $objSituacaoLitigiosoDTO->setOrdNumOrdem(InfraDTO::$TIPO_ORDENACAO_ASC);
-
-            $arrObjSituacaoLitigiosoDTO = $objSituacaoLitigiosoRN->listarComTipoDeControle($objSituacaoLitigiosoDTO, $idTipoControle);
-            $objRecursoDTO = null;
-            foreach ($arrObjSituacaoLitigiosoDTO as $dto) {
-                if ($dto->getStrSinRecursal() == 'S') {
-                    $objRecursoDTO = $dto;
-                    break;
-                }
-            }
-
-            if ($objRecursoDTO && $objRecursoDTO->getNumPrazo()) {
-                $data = self::calcularDataPrazo($objRecursoDTO->getNumPrazo(), $strDtBase);
-            }
-        }
-        return "<resultado>{$data}</resultado>";
-    }
 }
 
 ?>

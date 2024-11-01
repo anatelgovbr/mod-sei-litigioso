@@ -186,34 +186,29 @@
             <div class="row linha">
                 <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
                     <!--Data do Decurso do Prazo para Defesa -->
-                    <div id="divDataGestaoMulta">
-                        <div class="row linha">
-                            <div class="col-sm-12 col-md-12 col-lg-10 col-xl-10">
+                    <div>
+                        <div class="row">
+                            <div class="col-sm-12 col-md-11 col-lg-9 col-xl-8">
                                 <div class="form-group">
-                                    <label class="infraLabelOpcional" id="lblDtDecursoPrazo" name="lblDtDecursoPrazo"
-                                        for="txtDtDecursoPrazo">Data do Decurso do Prazo para Defesa:</label>
+                                    <label class="infraLabelObrigatorio" id="lblDtDecursoPrazo" name="lblDtDecursoPrazo"
+                                           for="txtDtDecursoPrazo">Data do Decurso do Prazo para Defesa:</label>
+
                                     <a style="margin-left: 5px;; margin-top: 6px;"
-                                       id="btAjudaDtDecursoPrazo" <?= PaginaSEI::montarTitleTooltip('A  Data do Decurso do Prazo para Defesa é calculada automaticamente a partir da Data da Intimação da Instauração, em quantidade de dias previamente definida na Parametrização de Situações.', 'Ajuda') ?>
+                                       id="btAjudaDtDecursoPrazo" <?= PaginaSEI::montarTitleTooltip('A  Data do Decurso do Prazo para Defesa é calculada automaticamente a partir da Data da Intimação da Instauração, em quantidade de dias previamente definida na Parametrização de Situações para situação do tipo Defesa.', 'Ajuda') ?>
                                        tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                                         <img id="imgAjudaDtDecursoPrazo" border="0"
                                              src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
                                              class="infraImg imgAjudaCtrlProcLit"/>
                                     </a>
-                                    <div class="input-group mb-3">
-                                        <input class="campoData infraText campoDisable" onchange="verificarMudancaMulta();"
-                                            type="text"
-                                            id="txtDtDecursoPrazo"
-                                            name="txtDtDecursoPrazo"
-                                            onkeypress="return infraMascara(this, event, '##/##/####');"
-                                            value="<?= $dataDecursoPrazoDefesa ?>"
-                                            data-valor-antigo="<?= $dataDecursoPrazoDefesa ?>"
-                                            disabled/>
-                                    </div>
+                                    <select class="infraSelect form-control" name="selDtDecursoPrazo" onchange="atualizarHiddenDtDecursoPrazo();"
+                                            id="selDtDecursoPrazo" <?= $strCombodataDecursoPrazoDefesa['disabled'] ? 'disabled' : '' ?> >
+                                        <?= $strCombodataDecursoPrazoDefesa['htmlOption'] ?>
+                                    </select>
                                 </div>
                             </div>
                         </div>
-
-                        <!--Data da Decisão de Aplicação de Multa -->
+                    </div>
+                    <div id="divDataGestaoMulta">
                         <div class="row">
                             <div class="col-sm-12 col-md-12 col-lg-10 col-xl-10">
                                 <div class="form-group">
@@ -289,6 +284,26 @@
                         </div>
                         <!--Data do Decurso do Prazo para Recurso -->
                         <div class="row" id="divDtaDecursoPrazoRecurso">
+                            <div class="col-sm-12 col-md-11 col-lg-9 col-xl-8">
+                                <div class="form-group">
+                                    <label class="infraLabelOpcional" id="lblDtDecursoPrazoRecurso"
+                                           name="lblDtDecursoPrazoRecurso"
+                                           for="txtDtDecursoPrazoRecurso">Data do Decurso do Prazo para Recurso:</label>
+
+                                    <a style="margin-left: 5px;; margin-top: 6px;"
+                                       id="btAjudaDtDecursoPrazoRecurso" <?= PaginaSEI::montarTitleTooltip('A Data do Decurso do Prazo para Recurso é calculada automaticamente, a contar da Data da Intimação da Decisão de Aplicação da Multa correspondente, em quantidade de dias previamente definida na Parametrização de Situações, e exigirá a Retificação de Lançamento se este campo estiver integrado com o sistema de arrecadação.', 'Ajuda') ?>
+                                       tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                        <img id="imgAjudaDtDecursoPrazoRecurso" border="0"
+                                             src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
+                                             class="infraImg imgAjudaCtrlProcLit"/>
+                                    </a>
+                                    <select class="infraSelect form-control" name="selDtDecursoPrazoRecurso" onchange="atualizarHiddenDtDecursoPrazoRecurso();"
+                                            id="selDtDecursoPrazoRecurso">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" id="divDtaDecursoPrazoRecurso" style="display: none">
                             <div class="col-sm-12 col-md-12 col-lg-10 col-xl-10">
                                 <div class="form-group">
                                     <label class="infraLabelOpcional" id="lblDtDecursoPrazoRecurso"
@@ -576,11 +591,15 @@
 <input type="hidden" name="hdnVlDtUltimoPagamento" id="hdnVlDtUltimoPagamento" value=""/>
 <input type="hidden" name="hdnVlSaldoDevAtualizado" id="hdnVlSaldoDevAtualizado" value=""/>
 <input type="hidden" name="hdnVlCredConstituidoDef" id="hdnVlCredConstituidoDef" value=""/>
-<input type="hidden" name="hdnDtDecursoPrazo" id="hdnDtDecursoPrazo" value="<?= $dataDecursoPrazoDefesa ?>"/>
+<input type="hidden" name="hdnDtDecursoPrazo" id="hdnDtDecursoPrazo" value="<?= $strCombodataDecursoPrazoDefesa['hdnDtDecursoPrazo']   ?>"/>
 <input type="hidden" name="hdnTbVincularLancamento" id="hdnTbVincularLancamento" value=""/>
 <input type="hidden" name="hdnStrUltimaSituacao" id="hdnStrUltimaSituacao" value="<?= trim($strUltimaSituacao); ?>"/>
 <input type="hidden" name="hdnStrNomeUltimaSituacao" id="hdnStrNomeUltimaSituacao" value="<?= trim($strNomeUltimaSituacao); ?>"/>
 <input type="hidden" name="hdnExisteSuspensao" id="hdnExisteSuspensao" value="<?= trim($existeSuspencao); ?>"/>
+<input type="hidden" name="hdnPrazoDefesa" id="hdnPrazoDefesa" value=""/>
+<input type="hidden" name="hdnTpPrazoDefesa" id="hdnTpPrazoDefesa" value=""/>
+<input type="hidden" name="hdnPrazoRecurso" id="hdnPrazoRecurso" value=""/>
+<input type="hidden" name="hdnTpPrazoRecurso" id="hdnTpPrazoRecurso" value=""/>
 
 <!-- Hidden id da Funcionalidade que está sendo manipulada -->
 <input type="hidden" name="hdnIdMdLitFuncionalidade" id="hdnIdMdLitFuncionalidade" value=""/>

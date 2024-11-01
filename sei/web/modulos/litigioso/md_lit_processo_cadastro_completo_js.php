@@ -56,7 +56,6 @@
         }
     }
 
-
     function enterAdicionarInfracao(e) {
         if (e && e.keyCode == 13) {
             adicionarDI();
@@ -193,6 +192,9 @@
         if ('<?=$_GET['acao']?>' == 'md_lit_processo_cadastro_consultar') {
             infraDesabilitarCamposDiv(document.getElementById('frmCadastroProcesso'))
         }
+
+        aplicarMultipleSelectConfig();
+        organizarCamposPorLinha();
     }
 
     function sair() {
@@ -225,7 +227,6 @@
             campo.value = '';
         }
     }
-
 
     function carregarDependenciaConduta() {
         objAjaxIdConduta = new infraAjaxMontarSelectDependente('txtIDNDispNormat', 'selIDNCondutas', '<?=$strLinkAjaxDependConduta?>');
@@ -297,7 +298,6 @@
         objAutoCompletarICDispositivoNormativo.selecionar('<?=$strIdUnidade?>', '<?=PaginaSEI::getInstance()->formatarParametrosJavascript($strNomeRemetente);?>');
     }
 
-
     function validarCampo(obj, event, tamanho) {
         if (!somenteNumeros(event)) {
             return somenteNumeros(event)
@@ -316,6 +316,9 @@
     }
 
     function OnSubmitForm(formulario) {
+        if (!validarInformacoesAdicionais()) {
+            return false;
+        }
         if (validarCadastro(formulario)) {
             //exibe o aviso pois o servio pode deixar a requisio lenta
             addArrayInflacaoExcluidaNoHidden();
@@ -388,6 +391,15 @@
                 return false;
             }
         }
+
+        if(validarCamposInfoAdicionais()){
+            return false;
+        }
+
+        if(validarCamposEmDuplicidade()){
+            return false;
+        }
+
         return true;
     }
 
@@ -689,7 +701,6 @@
         }
     }
 
-
     // PS - funcionalidades
     objTabelaPS = new infraTabelaDinamica('tbProcessosSobrestados', 'hdnListaPSIndicados', false, false);
     objTabelaPS.gerarEfeitoTabela = true;
@@ -729,7 +740,6 @@
         }
         return null;
     };
-
 
     function adicionarPS() {
         //var id = document.getElementById('txtNumeroProcessoPS').value+document.getElementById('txtNumeroSeiPS').value;
@@ -824,7 +834,6 @@
     }
 
     // PS - funcionalidades - FIM
-
 
     // Infrao - funcionalidades
     objTabelaDI = new infraTabelaDinamica('tbDispositivosInfrigidos', 'hdnListaDIIndicados', true, true);
@@ -942,7 +951,6 @@
         }
         return null;
     };
-
 
     function adicionarDI() {
         var id = '';
@@ -1277,7 +1285,6 @@
         }
     }
 
-
     function changeInfracoes() {
         var dp = document.getElementsByName('rdInfracoes[]')[0].checked;
 
@@ -1307,7 +1314,6 @@
     }
 
     // Infrao - funcionalidades - FIM
-
 
     //Doc Instaurador - funcionalidades
     objTabelaDocInstaurador = new infraTabelaDinamica('tbDocInstaurador', 'hdnListaDocInstauradores', true, true);
@@ -1473,7 +1479,6 @@
     }
 
     //Doc Instaurador - funcionalidades - FIM
-
 
     function removerSobrestamentoProcesso(id, IdProcedimentoPS) {
         if (confirm('Confirma remoo de sobrestamento do processo?')) {
@@ -1858,6 +1863,325 @@
         };
 
         objLupaMotivos = new infraLupaSelect('selMotivos', 'hdnMotivos', '<?=$strLinkMotivosSelecao?>');
+    }
+
+    // ADICIONAR UM CAMPO NIVEL 1 NA GRID
+    function adicionarCampo() {
+
+        if(verificarSeJaEstaNaGrid()){
+            document.getElementById("selCampo").value = null;
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "<?=SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_consultar_campo') ?>",
+            dataType: "xml",
+            data: { idTipoInformacao: document.getElementById("selCampo").value },
+            async: false,
+            success: function (result) {
+                // Selecionar a tabela
+                var tabela = document.getElementById('tbCamposSelecionados');
+
+                // Remover a linha com o ID "nenhumaOpcao1", se existir
+                var linhaNenhumCampo = document.getElementById('nenhumCampo');
+                if (linhaNenhumCampo) {
+                    linhaNenhumCampo.parentNode.removeChild(linhaNenhumCampo);
+                }
+
+                var arrCampos = $(result).find('HtmlCampos').html();
+                var labelTpInfor = $(result).find('HtmlTipoInformacao').html();
+                if (arrCampos) {
+                    // Inserir uma nova linha na tabela
+                    var novaLinha = tabela.insertRow();
+
+                    // Criar uma célula que conterá todos os campos adicionais em um contêiner flexível
+                    var primeiraCelula = novaLinha.insertCell();
+                    primeiraCelula.innerHTML = '<div class="label-campo-adicional">' + labelTpInfor + '</div><div class="campo-adicional-container">' + arrCampos + '</div>';
+
+                    // Criar a célula para ações
+                    var acoesNovaLinha = novaLinha.insertCell();
+                    acoesNovaLinha.style.textAlign = 'center';
+
+                    // Criar o ícone de excluir
+                    var img = document.createElement('img');
+                    img.src = '<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/remover.svg';
+                    img.title = 'Excluir Informação Adicional';
+                    img.alt = 'Excluir Informação Adicional';
+                    img.className = 'infraImg';
+                    img.style.marginTop = '20px';
+                    img.setAttribute('onclick', 'excluirCampo(this)');
+                    acoesNovaLinha.appendChild(img);
+
+                    // Limpar a seleção do campo
+                    document.getElementById("selCampo").value = null;
+
+                    // Aplicar a configuração do multiple select
+                    aplicarMultipleSelectConfig();
+                } else {
+                    console.error("Nenhum campo adicional encontrado no XML.");
+                }
+                aplicarMultipleSelectConfig();
+            },
+            error: function (msgError) {
+                msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;
+                valid = false;
+                return false;
+            }
+        });
+        organizarCamposPorLinha();
+    }
+
+    function verificarSeJaEstaNaGrid() {
+        var idCampo = document.getElementById("selCampo").value;
+
+        var hasField = $('#tbCamposSelecionados div[data-id-campo-tp-controle]').filter(function() {
+            return $(this).attr('data-id-campo-tp-controle') === idCampo;
+        }).length > 0;
+
+        if (hasField) {
+            alert('Este Campo já foi adicionado.');
+            return true;
+        }
+
+        return false;
+
+    }
+
+    // APAGA UMA LINHA DA TABELA COM TODOS CAMPOS
+    function excluirCampo(element){
+        var linha = element.closest('tr');
+        if (linha) {
+            linha.parentNode.removeChild(linha);
+        }
+        verificarLinhasTabela();
+        organizarCamposPorLinha();
+    }
+
+    // VERIFICAR E ATUALIZAR TABELA SE NÃO EXISTIR REGISTRO
+    function verificarLinhasTabela() {
+        // Selecionar a tabela e o corpo da tabela
+        var tabela = document.getElementById('tbCamposSelecionados');
+        var tbody = tabela.getElementsByTagName('tbody')[0];
+
+        // Contar o número de linhas (excluindo o cabeçalho)
+        var numLinhas = tbody.getElementsByTagName('tr').length - 1; // -1 para excluir o cabeçalho
+
+        // Verificar se o número de linhas é menor que 1
+        if (numLinhas < 1) {
+            // Remover a linha "Nenhum campo adicionado" se já existir
+            var nenhumCampo = document.getElementById('nenhumCampo');
+            if (nenhumCampo) {
+                tbody.removeChild(nenhumCampo);
+            }
+
+            // Criar a nova linha
+            var novaLinha = document.createElement('tr');
+            novaLinha.id = 'nenhumCampo';
+
+            // Criar a célula e definir suas propriedades
+            var novaCelula = document.createElement('td');
+            novaCelula.colSpan = 4; // Assumindo que a tabela tem 4 colunas
+            novaCelula.style.textAlign = 'center';
+            novaCelula.textContent = 'Nenhum campo adicionado';
+
+            // Adicionar a célula à linha
+            novaLinha.appendChild(novaCelula);
+
+            // Adicionar a linha ao corpo da tabela
+            tbody.appendChild(novaLinha);
+        }
+    }
+
+    // FUNÇÃO PARA QUE QUANDO FOR ALTERADO UMA OPÇÃO NO FORMULARIO APAGA OS NIVEIS POSTEIRES E CARREGA O CAMPO NOVO COM FILHOS SE EXISTIR
+    function mudarOpcaoComboBox(element){
+        var valorAntigo = $(element).attr('data-old-value');
+        $.ajax({
+            type: "POST",
+            url: "<?=SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_consultar_campo_dependente_opcao') ?>",
+            dataType: "xml",
+            data: { idOpcao: element.value },
+            async: false,
+            success: function (result) {
+                var novoCampoHtml = $(result).find('resultado').html();
+                $(element).closest('.campos-info-add').after(novoCampoHtml);
+                $(element).attr('data-old-value', element.value);
+            },
+            error: function (msgError) {
+                msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;
+                valid = false;
+                return false;
+            }
+        });
+        verificarCampoFilhoParaRemover(element, valorAntigo);
+        organizarCamposPorLinha()
+    }
+
+    function verificarCampoFilhoParaRemover(element, idOpcao) {
+
+        $.ajax({
+            type: "POST",
+            url: "<?=SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_consultar_campo_dependente_para_remover') ?>",
+            dataType: "xml",
+            data: { idOpcao },
+            async: false,
+            success: function (result) {
+                $(result).find('idCampoAdd').each(function() {
+                    var idCampoAdd = $(this).text();
+                    var campoParaRemover = $(element).closest('.campo-adicional-container').find('[data-id-campo-add="' + idCampoAdd + '"]').closest('.campos-info-add');
+
+                    if (campoParaRemover.length > 0) {
+                        var selectElement = campoParaRemover.find('select[data-id-campo-add="' + idCampoAdd + '"]');
+                        if (selectElement.length > 0) {
+                            var valorSelecionado = selectElement.val();
+                            verificarCampoFilhoParaRemover(selectElement[0], valorSelecionado);
+                        }
+                        campoParaRemover.remove();
+                    }
+                });
+            },
+            error: function (msgError) {
+                msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;
+                valid = false;
+                return false;
+            }
+        });
+    }
+
+    function aplicarMultipleSelectConfig(){
+        var selects = document.querySelectorAll('#tbCamposSelecionados select[multiple="multiple"]');
+        selects.forEach(function(selectElement) {
+            if (selectElement.id) {
+                $("#" + selectElement.id).multipleSelect({
+                    filter: false,
+                    minimumCountSelected: 1,
+                    selectAll: true
+                });
+            }
+        });
+
+        // AJUSTES DE POSICIONAMENTO
+        document.querySelectorAll('.ms-parent.infraSelect.multipleSelect.form-control').forEach(function(div) {
+            div.style.width = '100%';
+            div.style.height = '30px';
+            div.style.borderRadius = '3px';
+        });
+
+        document.querySelectorAll('.ms-choice').forEach(function(div) {
+            div.style.height = '4px';
+        });
+
+        document.querySelectorAll('.ms-drop.bottom').forEach(function(div) {
+            div.style.marginLeft = '-12px';
+        });
+    }
+
+    function validarCamposEmDuplicidade() {
+        var linhas = document.querySelectorAll('#tbCamposSelecionados tbody tr');
+        var valoresLinhas = [];
+        var count = 0;
+
+        for (var i = 0; i < linhas.length; i++) {
+            var linha = linhas[i];
+            var campos = linha.querySelectorAll('[data-id-campo-add]');
+            var row = '';
+
+            campos.forEach(function(campo) {
+                row += campo.getAttribute("data-id-campo-add").trim();
+                if (campo.tagName === 'INPUT' || (campo.tagName === 'SELECT' && !campo.multiple)) {
+                    row += campo.value.trim();
+                } else if (campo.tagName === 'SELECT' && campo.multiple) {
+                    // Para campo multiselect, concatena todos os valores selecionados
+                    var selectedOptions = Array.from(campo.selectedOptions).map(option => option.value.trim());
+                    row += selectedOptions.join(',');
+                } else {
+                    row += campo.innerText.trim();
+                }
+            });
+
+            // Verifica se a linha está vazia (sem campos)
+            if (row.trim() === '') {
+                continue;
+            }
+
+            if (valoresLinhas.includes(row.trim())) {
+                alert('Os dados da linha ' + (count + 1) + ' estão repetidos.'); // Adiciona 1 ao count para ajuste no índice da linha
+                return true;
+            } else {
+                valoresLinhas.push(row.trim());
+            }
+            count++;
+        }
+        return false;
+    }
+
+    function organizarCamposPorLinha() {
+        var linhas = document.querySelectorAll('#tbCamposSelecionados tbody tr');
+        var organizador = [];
+
+        linhas.forEach(function(linha, index) {
+            var campos = linha.querySelectorAll('[data-id-campo-add]');
+            var idsCampos = [];
+
+            campos.forEach(function(campo) {
+                idsCampos.push(campo.getAttribute('id'));
+            });
+
+            organizador.push(idsCampos);
+        });
+
+        var campoOrganizador = document.getElementById('campoOrganizador');
+        campoOrganizador.value = JSON.stringify(organizador);
+    }
+
+    function validarInformacoesAdicionais() {
+
+        var isValid = true;
+
+        var params = {
+            campos: coletarCamposGrid(),
+            id_procedimento: document.getElementById('idProcedimento').value,
+            campoOrganizador: document.getElementById('campoOrganizador').value
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "<?=SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_validar_preenchiemnto_campos') ?>",
+            dataType: "xml",
+            data: params,
+            async: false,
+            success: function (result) {
+                var msg = $(result).find('msg').text();
+                if(msg != ''){
+                    alert(msg);
+                    isValid = false;
+                }
+            },
+            error: function (msgError) {
+                msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;
+                valid = false;
+                return false;
+            }
+        });
+
+
+        return isValid;
+    }
+
+    function coletarCamposGrid() {
+        var dados = {};
+
+        $('#tbCamposSelecionados').find('input, select').each(function() {
+            var input = $(this);
+            var name = input.attr('name');
+            var value = input.val();
+
+            if (name) {
+                dados[name] = value;
+            }
+        });
+
+        return dados;
     }
 
 </script>

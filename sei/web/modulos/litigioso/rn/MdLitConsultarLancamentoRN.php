@@ -222,6 +222,10 @@ class MdLitConsultarLancamentoRN extends InfraRN
     private function montarParametrosEntradaConsultarLancamento($objMdLitIntegracaoDTO, $dadosEntrada, $sinRenunciaRecurso= null){
         $montarParametroEntrada = array();
         $idLancamento = array_key_exists('selCreditosProcesso', $dadosEntrada) ? $dadosEntrada['selCreditosProcesso'] : '';
+        if (!array_key_exists('selCreditosProcesso', $dadosEntrada)) {
+            $idLancamento = array_key_exists('hdnCreditosProcesso', $dadosEntrada) ? $dadosEntrada['hdnCreditosProcesso'] : '';
+        }
+
         $objMdLitLancamentoRN = new MdLitLancamentoRN();
         $objMdLitLancamentoDTO = $objMdLitLancamentoRN->retornaObjLancamento($idLancamento);
 

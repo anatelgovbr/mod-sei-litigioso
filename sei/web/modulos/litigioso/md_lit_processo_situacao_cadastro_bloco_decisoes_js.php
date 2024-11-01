@@ -37,7 +37,7 @@
     }
 
     function verificarCondicionaisDecisao() {
-        if (document.getElementById('hdnErroSituacao').value == 0 && isTpSitDecisoria && !verificarDecisaoNovo()) {
+        if (document.getElementById('hdnErroSituacao').value == 0 && isTpSitDecisoria && !verificarDecisaoNovo() && (document.getElementById('hdnIdMdLitFuncionalidade').value != <?php echo MdLitIntegracaoRN::$ARRECADACAO_CANCELAR_LANCAMENTO ?>)) {
             alert('cadastre ao menos uma Infração na modal de Cadastro de Decisões!');
             return false;
         }

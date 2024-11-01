@@ -568,6 +568,11 @@ class MdLitLancamentoRN extends InfraRN {
             $objMdLitLancamentoDTO->setDtaDecisaoDefinitiva($post['hdnDtDecisaoDefinitiva']);
             $objMdLitLancamentoDTO->setDtaApresentacaoRecurso($post['hdnDtApresentacaoRecurso'] ?: null);
             $objMdLitLancamentoDTO->setDtaIntimacao($post['hdnDtIntimacaoAplMulta']);
+            $objMdLitLancamentoDTO->setDtaIntimacaoDefinitiva($post['txtDtIntimacaoConstituicao']);
+            $objMdLitLancamentoDTO->setNumPrazoSituacaoDefesa($post['hdnPrazoDefesa']);
+            $objMdLitLancamentoDTO->setStrTipoPrazoDefesa($post['hdnTpPrazoDefesa']);
+            $objMdLitLancamentoDTO->setNumPrazoSituacaoRecurso($post['hdnPrazoRecurso']);
+            $objMdLitLancamentoDTO->setStrTipoPrazoRecurso($post['hdnTpPrazoRecurso']);
 
             // se houver alteração na data do decurso do prazo para defeza deve alterar em todos lancamentos
             if($objMdLitLancamentoDTO->getDtaPrazoDefesa() != $post['hdnDtDecursoPrazo']){
@@ -815,6 +820,8 @@ class MdLitLancamentoRN extends InfraRN {
         $objMdLitLancamentoNovo->setDblVlrSaldoDevedor($objMdLitLancamentoNovo->getDblVlrLancamento());
         $objMdLitLancamentoNovo->setStrSinSuspenso('N');
         $objMdLitLancamentoNovo->setDblVlrPago(0);
+        $objMdLitLancamentoNovo->setNumPrazoSituacaoDefesa($post['hdnPrazoDefesa']);
+        $objMdLitLancamentoNovo->setStrTipoPrazoDefesa($post['hdnTpPrazoDefesa']);
 
         $objMdLitLancamentoNovo = $this->cadastrar($objMdLitLancamentoNovo);
     }
@@ -1264,7 +1271,10 @@ class MdLitLancamentoRN extends InfraRN {
 
     public function retornaObjLancAlteracaoConsultaLanc($post)
     {
-        $idLancamento = array_key_exists('selCreditosProcesso', $post) && $post['selCreditosProcesso'] != '' ? trim($post['selCreditosProcesso']) : '';
+        $idLancamento = array_key_exists('selCreditosProcesso', $post) ? $post['selCreditosProcesso'] : '';
+        if (!array_key_exists('selCreditosProcesso', $post)) {
+            $idLancamento = array_key_exists('hdnCreditosProcesso', $post) ? $post['hdnCreditosProcesso'] : '';
+        }
 
         if ($idLancamento != '')
         {

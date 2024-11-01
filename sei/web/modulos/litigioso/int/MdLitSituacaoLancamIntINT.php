@@ -148,6 +148,7 @@ class MdLitSituacaoLancamIntINT extends InfraINT {
 
             $strResultado .= '<th class="infraTh" width="5%">&nbsp;Código&nbsp;</th>' . "\n";
             $strResultado .= '<th class="infraTh" width="25%">&nbsp;Descrição&nbsp;</th>' . "\n";
+            $strResultado .= '<th class="infraTh" width="10%">&nbsp;Utilizar no Agendamento&nbsp;</th>' . "\n";
             $strResultado .= '<th class="infraTh" width="10%">&nbsp;Situação de Cancelamento&nbsp;</th>' . "\n";
             $strResultado .= '<th class="infraTh" width="10%">&nbsp;Cor&nbsp;</th>' . "\n";
             $strResultado .= '</tr>' . "\n";
@@ -156,6 +157,7 @@ class MdLitSituacaoLancamIntINT extends InfraINT {
             $strOptionCor = MdLitSituacaoLancamentoINT::montarSelectCor();
             for ($i = 0; $i < $numRegistros; $i++) {
                 $sinCancelado = '';
+                $sinUtilizarAgendamento = '';
                 if($objMdLitSituacaoLancamIntDTO->isSetNumIdMdLitSituacaoLancamInt() && $objMdLitSituacaoLancamIntDTO->getNumIdMdLitSituacaoLancamInt()){
                     $objMdLitSituacaoLancamentoDTO = new MdLitSituacaoLancamentoDTO();
                     $objMdLitSituacaoLancamentoDTO->retTodos();
@@ -164,6 +166,10 @@ class MdLitSituacaoLancamIntINT extends InfraINT {
                     $objMdLitSituacaoLancamentoDTO->setStrSinAtivoIntegracao('S');
 
                     $objMdLitSituacaoLancamentoDTO = $objMdLitSituacaoLancamentoRN->consultar($objMdLitSituacaoLancamentoDTO);
+
+                    if($objMdLitSituacaoLancamentoDTO && $objMdLitSituacaoLancamentoDTO->getStrSinUtilizarAgendamento() == 'S'){
+                        $sinUtilizarAgendamento = " checked='checked' ";
+                    }
 
                     if($objMdLitSituacaoLancamentoDTO && $objMdLitSituacaoLancamentoDTO->getStrSinCancelamento() == 'S'){
                         $sinCancelado = " checked='checked' ";
@@ -192,6 +198,11 @@ class MdLitSituacaoLancamIntINT extends InfraINT {
                 $strResultado .= "</td>";
 
                 $codigo = trim($arrResultadoWebService[$i][$objMdLitSituacaoLancamIntDTO->getStrChaveUnica()]);
+                // Utilizar no Agendamento
+                $strResultado .= "<td id='agendamento_$idLinha' style='text-align: center;'>";
+                $strResultado .= "<input class='infraCheckbox' type='checkbox' name='sinUtilizarAgendamento[{$codigo}]' id='sinUtilizarAgendamento_$i' {$sinUtilizarAgendamento} >";
+                $strResultado .= "</td>";
+
                 // Situação de Cancelamento
                 $strResultado .= "<td id='cancelamento_$idLinha' style='text-align: center;'>";
                 $strResultado .= "<input class='infraRadio' type='radio' {$sinCancelado} name='rdoSinCancelamentoIntegracao' id='rdoSinCancelamento_$i' value='$codigo'  >";

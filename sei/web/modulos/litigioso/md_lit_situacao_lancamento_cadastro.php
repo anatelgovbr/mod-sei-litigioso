@@ -175,6 +175,7 @@ try {
                     $objMdLitSituacaoLancamIntDTO->setArrCoresSelecionados($_POST['selCores']);
                     $objMdLitSituacaoLancamIntDTO->setStrTipoClienteWs($_POST['tipoWs']);
                     $objMdLitSituacaoLancamIntDTO->setStrVersaoSoap($_POST['versaoSoap']);
+                    $objMdLitSituacaoLancamIntDTO->setArrSinUtilizarAgendamento($_POST['sinUtilizarAgendamento']);
 
                     if ($arrMapeamento) {
                         foreach ($arrMapeamento as $mapeamento) {
@@ -410,7 +411,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                                     <a id="btAjuda" <?= PaginaSEI::montarTitleTooltip($strToolTipLblMan, 'Ajuda') ?>
                                         tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                                         <img border="0"
-                                                src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg<?= Icone::VERSAO ?>"
+                                                src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg?<?= Icone::VERSAO ?>"
                                                 class="infraImgModulo"/>
                                     </a>
                                 </label>
@@ -422,7 +423,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         </div>
         <div class="" id="divIntegracao"
                 style="display:<?= $rdoOrigem == MdLitServicoRN::$STA_ORIGEM_INTEGRACAO ? 'block' : 'none' ?>">
-            <?php $strToolTipEnd = '<<a descrição do texto de ajuda será elaborado após o serviço estar disponível no barramento, pois teremos verificado todas as validações necessárias>>' ?>
+            <?php $strToolTipEnd = 'A seleção da Operação para poder Mapear os campos de Origem e Destino somente é possível depois que validar o Endereço WSDL acima.' ?>
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-10 col-xl-9">
                     <div class="form-group">
@@ -486,7 +487,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                         <a id="btAjuda" <?= PaginaSEI::montarTitleTooltip($strToolTipEnd, 'Ajuda') ?>
                             tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                             <img border="0"
-                                    src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg<?= Icone::VERSAO ?>"
+                                    src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg?<?= Icone::VERSAO ?>"
                                     class="infraImgModulo"/>
                         </a>
                     </label>

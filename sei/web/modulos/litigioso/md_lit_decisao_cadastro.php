@@ -204,7 +204,7 @@ PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->abrirJavaScript();
 
-require_once('md_lit_decisao_cadastro_js.php');
+
 
 PaginaSEI::getInstance()->fecharJavaScript();
 PaginaSEI::getInstance()->fecharHead();
@@ -232,6 +232,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                value="<?= $objMdLitControleDTO->getNumIdMdLitTipoControle() ?>"/>
     </form>
 <?
+require_once('md_lit_decisao_cadastro_js.php');
 PaginaSEI::getInstance()->fecharBody();
 PaginaSEI::getInstance()->fecharHtml();
 ?>

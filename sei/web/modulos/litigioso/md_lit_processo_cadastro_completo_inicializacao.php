@@ -154,7 +154,7 @@
                 $strLinkMotivosSelecao = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_motivo_selecionar&tipo_selecao=2&id_object=objLupaMotivos&idTipoControle='.$idMdRelTipoCntroleTipoProcedimento);
                 $strLinkAjaxMotivos = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=motivo_auto_completar');
 
-            // TIPO DE CONTROLE LITIGIOSO - GERAR SOBRESTADOS
+                // TIPO DE CONTROLE LITIGIOSO - GERAR SOBRESTADOS
                 // TELA : Alterar Tipo de Controle Litigioso
                 // OPÇÃO: Pode sobrestar a tramitação de outros processos
                 // [RN8] Caso seja um Tipo de Controle Litigioso normal (que não gera Sobrestamento de outros processos),
@@ -195,9 +195,6 @@
 
                 $objControleLitigiosoDTO = new MdLitControleDTO();
                 $objControleLitigiosoDTO->retTodos();
-//		$objControleLitigiosoDTO->retStrProtocoloFormatado();
-//		$objControleLitigiosoDTO->retStrNumero();
-//		$objControleLitigiosoDTO->retStrSerie();
                 $objControleLitigiosoDTO->setDblIdProcedimento($_GET['id_procedimento']);
                 $objControleLitigiosoRN  = new MdLitControleRN();
                 $objControleLitigiosoDTO = $objControleLitigiosoRN->consultar($objControleLitigiosoDTO);
@@ -419,6 +416,11 @@
                 $existeMotivo = $objMdLitRelTpControlMotiRN->contar($objMdLitRelTpControlMotiDTO);
 
                 $bolOperacao = 'a';
+
+                $arrOpcoesCampoAdicionais = MdLitTpInfoAdINT::recuperarOpcoesTipoInformacoes($idTpControle);
+
+                $arrTabelaCamposAdicionais = MdLitCamposAdFormINT::recuperarCampoFormulario($_GET['id_procedimento']);
+                $atualizadoPor = MdLitCamposAdFormINT::recuperarAtualizadoPor($_GET['id_procedimento']);
 
                 break;
 

@@ -51,7 +51,7 @@
                             <th class="infraTh">Última Decisão</th>
                             <th class="infraTh">Espécie de Decisão</th>
                             <th class="infraTh">Data da Operação</th>
-                            <th class="infraTh" align="center">Usuário</th>
+                            <th class="infraTh" style="display: none" align="center">Usuário</th>
                             <th class="infraTh" align="center">Unidade</th>
                             <th class="infraTh" style="display: none">tipo localidade</th>
                             <th class="infraTh" style="display: none">Select UF</th>

@@ -52,7 +52,7 @@
                                            'SinLivre',
                                            'sin_livre');*/
 
-            $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM,
+            $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
                                            'Prazo',
                                            'prazo');
 
@@ -91,6 +91,10 @@
             $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
                                             'SinAlegacoes',
                                             'sin_alegacoes');
+
+            $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
+                                            'TipoPrazo',
+                                           'tp_prazo');
 
             $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeFase', 'nome', 'md_lit_fase');
             $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'SinAtivoFase', 'sin_ativo', 'md_lit_fase');
