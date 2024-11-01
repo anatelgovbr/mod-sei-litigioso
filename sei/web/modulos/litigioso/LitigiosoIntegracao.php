@@ -10,7 +10,7 @@
 
         public function getVersao()
         {
-            return '2.1.0';
+            return '2.2.0';
         }
 
         public function getInstituicao()
@@ -346,6 +346,30 @@
                 case 'md_lit_vincular_lancamento':
                     require_once dirname(__FILE__).'/md_lit_vincular_lancamento.php';
                     return true;
+
+                case 'md_lit_tipo_controle_info_adicionais_listar':
+                case 'md_lit_tipo_controle_info_adicionais_desativar':
+                case 'md_lit_tipo_controle_info_adicionais_ativar':
+                case 'md_lit_tipo_controle_info_adicionais_excluir':
+                    require_once dirname(__FILE__).'/md_lit_tipo_controle_info_adicionais.php';
+                    return true;
+
+                case 'md_lit_tipo_controle_info_adicionais_cadastrar' :
+                case 'md_lit_tipo_controle_info_adicionais_alterar' :
+                    require_once dirname(__FILE__) . '/md_lit_tp_info_add.php';
+                    return true;
+
+                case 'md_lit_campos_add_listar' :
+                case 'md_lit_campos_add_desativar' :
+                case 'md_lit_campos_add_ativar' :
+                case 'md_lit_campos_add_excluir' :
+                    require_once dirname(__FILE__) . '/md_lit_campos_add_lista.php';
+                    return true;
+
+                case 'md_lit_campos_add_cadastrar' :
+                case 'md_lit_campos_add_alterar' :
+                    require_once dirname(__FILE__) . '/md_lit_campo_adicional_cadastro.php';
+                    return true;
             }
 
             return false;
@@ -590,7 +614,7 @@
                     break;
 
                 case 'md_lit_calcular_data_decurso_prazo_recurso':
-                    $xml = MdLitDecisaoINT::calcularDataDecursoPrazoRecurso($_REQUEST['idProcedimento'], $_REQUEST['idTpControle'],  $_REQUEST['dtDecisaoAplMulta'],$_REQUEST['idSituacao']);
+                    $xml = MdLitProcessoSituacaoINT::calcularDataDecursoPrazoRecurso($_REQUEST['idProcedimento'], $_REQUEST['dtDecisaoAplMulta'],$_REQUEST['idSituacao']);
                     break;
 
                 case 'md_lit_atualizar_data_decisao_definitiva':
@@ -628,6 +652,42 @@
                 case 'md_lit_verificar_ligacao_lancamento':
                   $xml = "<resultado>". MdLitProcessoSituacaoINT::verificarRelacaoLancamento($_POST['id_procedimento'], $_POST['id_processo_situacao'], $_POST['tipo_situacao'])."</resultado>";
                   break;
+
+                case 'md_lit_verificar_prazo_decisao':
+                  $xml = "<resultado>". MdLitProcessoSituacaoINT::montarSelectDtDecursoParaRecurso($_POST['idProcedimento'], $_POST['idSituacao'])."</resultado>";
+                  break;
+
+                case 'md_lit_salvar_inf_add':
+                    $xml = "<resultado>". MdLitCamposAdINT::salvarInformacaoAdd($_POST)."</resultado>";
+                    break;
+
+                case 'md_lit_salvar_tp_info_add':
+                    $xml = "<resultado>". MdLitTpInfoAdINT::salvarTipoInformacao($_POST)."</resultado>";
+                    break;
+
+                case 'md_lit_inf_remover_opcao':
+                    $xml = "<resultado>". MdLitCamposAdSelINT::excluirOpcaoCampoAdd($_POST['idMdLitCamposAdSel'])."</resultado>";
+                    break;
+
+                case 'md_lit_consultar_campo':
+                    $xml = "<resultado>". MdLitCamposAdINT::consultarCampo($_POST['idTipoInformacao'])."</resultado>";
+                    break;
+
+                case 'md_lit_campos_add_salvar_ordem':
+                    $xml = "<resultado>". MdLitCamposAdINT::salvarOrdem($_POST['ordemCampos'])."</resultado>";
+                    break;
+
+                case 'md_lit_consultar_campo_dependente_opcao':
+                    $xml = "<resultado>". MdLitCamposAdINT::consultarCampoDependente($_POST['idOpcao'])."</resultado>";
+                    break;
+
+                case 'md_lit_consultar_campo_dependente_para_remover':
+                    $xml = "<resultado>". MdLitCamposAdINT::consultarCampoDependenteParaRemover($_POST['idOpcao'])."</resultado>";
+                    break;
+
+                case 'md_lit_validar_preenchiemnto_campos':
+                    $xml = "<resultado>". MdLitCamposAdINT::validarPreenchimentoCampos($_POST)."</resultado>";
+                    break;
 
             }
 
@@ -961,14 +1021,22 @@
                 $objMdLitProcessoSituacaoDTO->retStrNomeFase();
                 $objMdLitProcessoSituacaoDTO->retStrNomeSituacao();
                 $objMdLitProcessoSituacaoDTO->setDblIdDocumento($objDocumentoAPI->getIdDocumento());
+                $objMdLitProcessoSituacaoDTO->setBolExclusaoLogica(false);
                 $objMdLitProcessoSituacaoDTO->setOrdDthInclusao(InfraDTO::$TIPO_ORDENACAO_DESC);
-                $objMdLitProcessoSituacaoDTO->setNumMaxRegistrosRetorno(1);
 
                 $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
-                $objMdLitProcessoSituacaoDTO = $objMdLitProcessoSituacaoRN->consultar($objMdLitProcessoSituacaoDTO);
+                $arrMdLitProcessoSituacaoDTO = $objMdLitProcessoSituacaoRN->listar($objMdLitProcessoSituacaoDTO);
 
-                if($objMdLitProcessoSituacaoDTO){
-                    $msg = 'Não é permitido excluir este documento, pois ele está relacionado com a Fase/Situação '.$objMdLitProcessoSituacaoDTO->getStrNomeFase().'/'.$objMdLitProcessoSituacaoDTO->getStrNomeSituacao().' no Módulo de Controle Litigioso.';
+                if(!empty($arrMdLitProcessoSituacaoDTO)){
+                    $msg = 'Não é permitido Excluir este documento, pois ele está relacionado com as Fases/Situações abaixo listadas no SEI Litigioso:\n \n';
+                    foreach ($arrMdLitProcessoSituacaoDTO as $objMdLitProcessoSituacaoDTO) {
+                        $txt = '- '.$objMdLitProcessoSituacaoDTO->getStrNomeFase().'/'.$objMdLitProcessoSituacaoDTO->getStrNomeSituacao();
+                        if($objMdLitProcessoSituacaoDTO->getStrSinAtivo() == 'N'){
+                            $txt .= ' (histórico oculto)';
+                        }
+                        $txt .= '\n';
+                        $msg .= $txt;
+                    }
                     $objInfraException = new InfraException();
                     $objInfraException->adicionarValidacao($msg);
                     $objInfraException->lancarValidacoes();
@@ -986,13 +1054,17 @@
                 $objMdLitProcessoSituacaoDTO->retStrNomeSituacao();
                 $objMdLitProcessoSituacaoDTO->setDblIdDocumento($objDocumentoAPI->getIdDocumento());
                 $objMdLitProcessoSituacaoDTO->setOrdDthInclusao(InfraDTO::$TIPO_ORDENACAO_DESC);
-                $objMdLitProcessoSituacaoDTO->setNumMaxRegistrosRetorno(1);
 
                 $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
-                $objMdLitProcessoSituacaoDTO = $objMdLitProcessoSituacaoRN->consultar($objMdLitProcessoSituacaoDTO);
+                $arrMdLitProcessoSituacaoDTO = $objMdLitProcessoSituacaoRN->listar($objMdLitProcessoSituacaoDTO);
 
-                if($objMdLitProcessoSituacaoDTO){
-                    $msg = 'Não é permitido cancelar este documento, pois ele está relacionado com a Fase/Situação '.$objMdLitProcessoSituacaoDTO->getStrNomeFase().'/'.$objMdLitProcessoSituacaoDTO->getStrNomeSituacao().' no Módulo de Controle Litigioso.';
+                if(!empty($arrMdLitProcessoSituacaoDTO)){
+                    $msg = 'Não é permitido Cancelar este documento, pois ele está relacionado com as Fases/Situações abaixo listadas no SEI Litigioso:\n \n';
+
+                    foreach ($arrMdLitProcessoSituacaoDTO as $objMdLitProcessoSituacaoDTO) {
+                        $msg .= '- '.$objMdLitProcessoSituacaoDTO->getStrNomeFase().'/'.$objMdLitProcessoSituacaoDTO->getStrNomeSituacao().'\n';
+                    }
+
                     $objInfraException = new InfraException();
                     $objInfraException->adicionarValidacao($msg);
                     $objInfraException->lancarValidacoes();
@@ -1152,7 +1224,7 @@
                         $arrNumProcesso[] = array($objProtocoloDTO->getStrProtocoloFormatado(), $objMdLitProcessoSituacaoDTO->getStrSiglaUnidade());
                     }
 
-                    if (!in_array(SessaoSEI::getInstance()->getNumIdUnidadeAtual(), $arrUnidadeCadastroLitigioso)) {
+                    if ($this->verificarUnidadePermitidaViaParametro() && !in_array(SessaoSEI::getInstance()->getNumIdUnidadeAtual(), $arrUnidadeCadastroLitigioso)) {
                         $msg = 'Não é permitido alterar este Contato, pois ele é utilizado pelo Módulo Litigioso nos seguintes processos:\n';
                         foreach ($arrNumProcesso as $key => $processo) {
                             if ($key == 10)
@@ -1172,6 +1244,26 @@
 
 
             return parent::alterarContato($objContatoAPI);
+        }
+
+        protected function verificarUnidadePermitidaViaParametro()
+        {
+            $retorno = true;
+
+            $objInfraParametroDTO = new InfraParametroDTO();
+            $objInfraParametroDTO->setStrNome('MODULO_LITIGIOSO_ID_UNIDADES_NAO_BLOQUEAR_ALTERAR_CONTATO');
+            $objInfraParametroDTO->setNumMaxRegistrosRetorno(1);
+            $objInfraParametroDTO->retStrValor();
+            $arrUnidades = (new InfraParametroBD(BancoSEI::getInstance()))->consultar($objInfraParametroDTO);
+
+            if ($arrUnidades) {
+                $arrUnidades = explode(',', $arrUnidades->getStrValor());
+                if(in_array(SessaoSEI::getInstance()->getNumIdUnidadeAtual(), $arrUnidades)){
+                    $retorno = false;
+                }
+            }
+
+            return $retorno;
         }
 
         protected function verificaModuloPeticionamentoInstalado($versao = null)

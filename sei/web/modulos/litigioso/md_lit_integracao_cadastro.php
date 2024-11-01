@@ -18,7 +18,7 @@ SessaoSEI::getInstance()->validarLink();
 
 //TOLTIP
 $strTolTipEnd = 'O Sistema correspondente ao WSDL indicado deve estar previamente cadastrado no menu Administração > Sistemas e com Serviço também cadastrado com os IPs pertinentes.';
-$strTolTipOperacao = 'a descrição do texto de ajuda será elaborado após o serviço estar disponível no barramento, pois teremos verificado todas as validações necessárias';
+$strTolTipOperacao = 'A seleção da Operação para poder Mapear os campos de Origem e Destino somente é possível depois que validar o Endereço WSDL acima.';
 
 //URL Cancelar
 $strUrlCancelar = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno()

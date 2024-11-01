@@ -1,4 +1,4 @@
-<?php if(0){?><script><?}?>
+<script type="text/javascript">
     setTimeout(function(){
         processando();
     },0);
@@ -213,86 +213,91 @@
                 var tamanhoTR = document.getElementById('tableDadosComplementarInteressado').rows.length;
                 for (var j = 1;j < tamanhoTR; j++ ){
                     var table = document.getElementById('tableDadosComplementarInteressado');
-                    if(arrItens[i][1] == table.rows[j].children[0].getElementsByTagName('input')[0].value){
-                        if(idAnterior == arrItens[i][1]){
-                            j = incluirLinha(table.rows[j].children[0].children[2]);
-                            //combo tipo decisao
-                            var selectTipoDecisao = table.rows[j].children[0].children[0]
-                            carregarTipoDecisao(selectTipoDecisao,arrItens[i][2]);
-                            // combo especie decisao
-                            carregarComboEspecieDecisao(selectTipoDecisao, arrItens[i][3]);
-                            //input multa
-                            table.rows[j].children[2].children[0].value = arrItens[i][4];
-                            //valor ressarcimento
-                            table.rows[j].children[3].children[0].value = arrItens[i][5];
-                            //input prazo
-                            table.rows[j].children[5].children[0].value = arrItens[i][7] != 'null'? arrItens[i][7] :'';
-                            //combo obrigacao
-                            table.rows[j].children[4].children[0].value = arrItens[i][6];
-                            if(!isSituacaoDecisaoNovo){
-                                //id_decisao hidden
-                                table.rows[j].children[0].children[2].value = arrItens[i][0];
-                                //input id_usuario
-                                table.rows[j].children[5].children[1].value = arrItens[i][8];
-                                //input id_unidade
-                                table.rows[j].children[5].children[2].value = arrItens[i][9];
-                                //input data
-                                table.rows[j].children[5].children[3].value = arrItens[i][13];
-                                //input nome_usuario
-                                table.rows[j].children[5].children[4].value = arrItens[i][14];
-                                //input sigla_unidade
-                                table.rows[j].children[5].children[5].value = arrItens[i][15];
-                                //input sin_cadastro_parcial
-                                //table.rows[j].children[5].children[6].value = arrItens[i][18];
-                            }
-                        }else{
-                            if(arrItens[i][16] == 'N'){
-                                //checkbox localidade Nacional
-                                table.rows[j].children[1].children[0].children[0].checked = true;
-                                changeLocalidades(table.rows[j].children[1].children[0].children[0], false);
-                            }else if(arrItens[i][16] == 'U'){
-                                //checkbox localidade U
-                                table.rows[j].children[1].children[3].children[0].checked = true;
-                                changeLocalidades(table.rows[j].children[1].children[3].children[0], true);
-                                var selectUF = table.rows[j].children[1].children[5].children[0];
-                                var arrUf = arrItens[j - 1][17].split('#');
-                                $(selectUF).multipleSelect("setSelects", arrUf);
-                            }
-                            //combo tipo decisao
-                            var selectTipoDecisao = table.rows[j].children[2].children[0];
-                            carregarTipoDecisao(selectTipoDecisao,arrItens[i][2]);
-                            // combo especie decisao
-                            carregarComboEspecieDecisao(selectTipoDecisao, arrItens[i][3]);
-                            //input multa
-                            if(arrItens[i][4]) {
-                                table.rows[j].children[4].children[0].value = arrItens[i][4];
-                            }
-                            //input prazo
-                            table.rows[j].children[7].children[0].value = arrItens[i][7] != 'null' ? arrItens[i][7] : '';
-                            //valor ressarcimento
-                            table.rows[j].children[5].children[0].value = arrItens[i][5];
-                            //combo obrigacao
-                            table.rows[j].children[6].children[0].value = arrItens[i][6];
-                            if(!isSituacaoDecisaoNovo){
-                                //id_decisao hidden
-                                table.rows[j].children[0].children[1].value = arrItens[i][0];
-                                //input id_usuario
-                                table.rows[j].children[7].children[1].value = arrItens[i][8];
-                                //input id_unidade
-                                table.rows[j].children[7].children[2].value = arrItens[i][9];
-                                //input data
-                                table.rows[j].children[7].children[3].value = arrItens[i][13];
-                                //input nome_usuario
-                                table.rows[j].children[7].children[4].value = arrItens[i][14];
-                                //input sigla_unidade
-                                table.rows[j].children[7].children[5].value = arrItens[i][15];
-                                //input sin_cadastro_parcial
-                                // table.rows[j].children[7].children[6].value = arrItens[i][18];
-                            }
-                        }
 
-                        idAnterior = arrItens[i][1];
-                        break;
+                    if ( table.rows.length > 0) {
+                            if(arrItens[i][1] == table.rows[j].children[0].getElementsByTagName('input')[0].value){
+                                if(idAnterior == arrItens[i][1]){
+                                    j = incluirLinha(table.rows[j].children[0].children[2]);
+                                    //combo tipo decisao
+                                    var selectTipoDecisao = table.rows[j].children[0].children[0]
+                                    carregarTipoDecisao(selectTipoDecisao,arrItens[i][2]);
+                                    // combo especie decisao
+                                    carregarComboEspecieDecisao(selectTipoDecisao, arrItens[i][3]);
+                                    //input multa
+                                    table.rows[j].children[2].children[0].value = arrItens[i][4];
+                                    //valor ressarcimento
+                                    table.rows[j].children[3].children[0].value = arrItens[i][5];
+                                    //input prazo
+                                    table.rows[j].children[5].children[0].value = arrItens[i][7] != 'null'? arrItens[i][7] :'';
+                                    //combo obrigacao
+                                    table.rows[j].children[4].children[0].value = arrItens[i][6];
+                                    if(!isSituacaoDecisaoNovo){
+                                        //id_decisao hidden
+                                        table.rows[j].children[0].children[2].value = arrItens[i][0];
+                                        //input id_usuario
+                                        table.rows[j].children[5].children[1].value = arrItens[i][8];
+                                        //input id_unidade
+                                        table.rows[j].children[5].children[2].value = arrItens[i][9];
+                                        //input data
+                                        table.rows[j].children[5].children[3].value = arrItens[i][13];
+                                        //input nome_usuario
+                                        table.rows[j].children[5].children[4].value = arrItens[i][14];
+                                        //input sigla_unidade
+                                        table.rows[j].children[5].children[5].value = arrItens[i][15];
+                                        //input sin_cadastro_parcial
+                                        //table.rows[j].children[5].children[6].value = arrItens[i][18];
+                                    }
+                                }else{
+                                    if(arrItens[i][16] == 'N'){
+                                        //checkbox localidade Nacional
+                                        table.rows[j].children[1].children[0].children[0].checked = true;
+                                        changeLocalidades(table.rows[j].children[1].children[0].children[0], false);
+                                    }else if(arrItens[i][16] == 'U'){
+                                        //checkbox localidade U
+                                        table.rows[j].children[1].children[3].children[0].checked = true;
+                                        changeLocalidades(table.rows[j].children[1].children[3].children[0], true);
+                                        var selectUF = table.rows[j].children[1].children[5].children[0];
+                                        var arrUf = arrItens[j - 1][17].split('#');
+                                        $(selectUF).multipleSelect("setSelects", arrUf);
+                                    }
+                                    //combo tipo decisao
+                                    var selectTipoDecisao = table.rows[j].children[2].children[0];
+                                    carregarTipoDecisao(selectTipoDecisao,arrItens[i][2]);
+                                    // combo especie decisao
+                                    carregarComboEspecieDecisao(selectTipoDecisao, arrItens[i][3]);
+                                    //input multa
+                                    if(arrItens[i][4]) {
+                                        table.rows[j].children[4].children[0].value = arrItens[i][4];
+                                    }
+                                    //input prazo
+                                    table.rows[j].children[7].children[0].value = arrItens[i][7] != 'null' ? arrItens[i][7] : '';
+                                    //valor ressarcimento
+                                    table.rows[j].children[5].children[0].value = arrItens[i][5];
+                                    //combo obrigacao
+                                    table.rows[j].children[6].children[0].value = arrItens[i][6];
+                                    if(!isSituacaoDecisaoNovo){
+                                        //id_decisao hidden
+                                        table.rows[j].children[0].children[1].value = arrItens[i][0];
+                                        //input id_usuario
+                                        table.rows[j].children[7].children[1].value = arrItens[i][8];
+                                        //input id_unidade
+                                        table.rows[j].children[7].children[2].value = arrItens[i][9];
+                                        //input data
+                                        table.rows[j].children[7].children[3].value = arrItens[i][13];
+                                        //input nome_usuario
+                                        table.rows[j].children[7].children[4].value = arrItens[i][14];
+                                        //input sigla_unidade
+                                        table.rows[j].children[7].children[5].value = arrItens[i][15];
+                                        //input sin_cadastro_parcial
+                                        // table.rows[j].children[7].children[6].value = arrItens[i][18];
+                                    }
+                                }
+
+                                idAnterior = arrItens[i][1];
+                                break;
+                            }
+                    } else {
+                        montaResultado();
                     }
                 }
 
@@ -770,4 +775,4 @@
         });
     });
 
-    <? if(0){?></script><?}?>
+</script>

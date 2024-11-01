@@ -589,6 +589,23 @@ class MdLitHistoricLancamentoRN extends InfraRN {
       $objMdLitHistLancDTO->setNumIdSituacaoDecisao($objMdLitLancamentoDTO->getNumIdSituacaoDecisao());
     }
 
+    if($objMdLitLancamentoDTO->isSetNumPrazoSituacaoDefesa()) {
+        $objMdLitHistLancDTO->setNumPrazoSituacaoDefesa($objMdLitLancamentoDTO->getNumPrazoSituacaoDefesa());
+    }
+
+    if($objMdLitLancamentoDTO->isSetStrTipoPrazoDefesa()) {
+        $objMdLitHistLancDTO->setStrTipoPrazoDefesa($objMdLitLancamentoDTO->getStrTipoPrazoDefesa());
+    }
+
+    if($objMdLitLancamentoDTO->isSetNumPrazoSituacaoRecurso()) {
+        $objMdLitHistLancDTO->setNumPrazoSituacaoRecurso($objMdLitLancamentoDTO->getNumPrazoSituacaoRecurso());
+    }
+
+    if($objMdLitLancamentoDTO->isSetStrTipoPrazoRecurso()) {
+        $objMdLitHistLancDTO->setStrTipoPrazoRecurso($objMdLitLancamentoDTO->getStrTipoPrazoRecurso());
+    }
+
+
     return $objMdLitHistLancDTO;
   }
 

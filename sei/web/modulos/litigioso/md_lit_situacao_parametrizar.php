@@ -316,6 +316,16 @@ try {
                         $objSituacaoLitigiosoDTO3->setStrSinAlegacoes($sinAlegacoes);
                         $objSituacaoLitigiosoDTO3->setNumOrdem($ordem);
 
+
+                        // Nem sempre o prazo será preenchido e então a marcação correta será aplicado pois pode ser dias uteis ou corridos
+                        if (isset($_POST['dias_corridos_' . $value])) {
+                            $objSituacaoLitigiosoDTO3->setStrTipoPrazo('C');
+                        }
+
+                        if (isset($_POST['dias_uteis_' . $value])) {
+                            $objSituacaoLitigiosoDTO3->setStrTipoPrazo('U');
+                        }
+
                         //A situação so pode ser obrigatoria caso a situação seja livre.
                         if($objSituacaoLitigiosoRN->verificaSeSituacaoLivre($objSituacaoLitigiosoDTO3)){
                             $objSituacaoLitigiosoDTO3->setStrSinObrigatoria($sinObrigatoria);
@@ -343,7 +353,7 @@ try {
                             }
 
                         } else {
-                            $objSituacaoLitigiosoDTO3->setNumPrazo($_POST['prazo_' . $value]);
+                            $objSituacaoLitigiosoDTO3->setStrPrazo($_POST['prazo_' . $value]);
 
                             if ($instauracaoSin === 'S') {
                                 $contInst++;
@@ -422,12 +432,13 @@ try {
     $objSituacaoLitigiosoDTO->retStrSinConclusiva();
     $objSituacaoLitigiosoDTO->retStrSinOpcional();
     $objSituacaoLitigiosoDTO->retStrSinAtivo();
-    $objSituacaoLitigiosoDTO->retNumPrazo();
+    $objSituacaoLitigiosoDTO->retStrPrazo();
     $objSituacaoLitigiosoDTO->retNumIdSituacaoLitigioso();
     $objSituacaoLitigiosoDTO->retStrNome();
     $objSituacaoLitigiosoDTO->retNumIdFaseLitigioso();
     $objSituacaoLitigiosoDTO->retStrSinObrigatoria();
     $objSituacaoLitigiosoDTO->retStrSinAlegacoes();
+    $objSituacaoLitigiosoDTO->retStrTipoPrazo();
 
     $objSituacaoLitigiosoDTO->retStrNomeFase();
 
@@ -506,7 +517,7 @@ try {
         $strResultado .= '<th class="infraTh" name="rdInstConcl[]"><label class="labelTH">&nbsp;Conclusão&nbsp;</label></th>' . "\n";
         $strResultado .= '<th class="infraTh"><label class="labelTH">&nbsp;Opcional&nbsp;</label></th>' . "\n";
         $strResultado .= '<th class="infraTh"><label class="labelTH">&nbsp;Obrigatória&nbsp;</label></th>' . "\n";
-        $strResultado .= '<th class="infraTh" align="center"> <label class="labelTH" >&nbsp;Prazo (dias)&nbsp;</label></th>' . "\n";
+        $strResultado .= '<th class="infraTh" colspan="2" align="center" style="min-width: 220px;"><label class="labelTH">&nbsp;Prazo&nbsp;</label></th>' . "\n";
         $strResultado .= '<th class="infraTh" style="min-width: 120px;">Ações</th>' . "\n";
         $strResultado .= '</tr>' . "\n";
         $strResultado .= '</thead>';
@@ -546,17 +557,18 @@ try {
                     . PaginaSEI::getInstance()->getDiretorioSvgGlobal() . '/mover_abaixo.svg?'.Icone::VERSAO.'" /> </a>';
             }
 
-            $instauracao = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinInstauracao() === 'S' ? 'checked="checked"' : '';
-            $intimacao   = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinIntimacao() === 'S' ? 'checked="checked"' : '';
-            $decisoria   = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinDecisoria() === 'S' ? 'checked="checked"' : '';
-            $defesa     = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinDefesa() === 'S' ? 'checked="checked"' : '';
-            $recursal   = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinRecursal() === 'S' ? 'checked="checked"' : '';
-            $conclusiva = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinConclusiva() === 'S' ? 'checked="checked"' : '';
-            $disabled   = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinAtivo() === 'N' ? 'disabled="disabled"' : '';
-            $opcional   = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinOpcional() === 'S' ? 'checked="checked"' : '';
+            $instauracao   = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinInstauracao() === 'S' ? 'checked="checked"' : '';
+            $intimacao     = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinIntimacao() === 'S' ? 'checked="checked"' : '';
+            $decisoria     = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinDecisoria() === 'S' ? 'checked="checked"' : '';
+            $defesa        = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinDefesa() === 'S' ? 'checked="checked"' : '';
+            $recursal      = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinRecursal() === 'S' ? 'checked="checked"' : '';
+            $conclusiva    = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinConclusiva() === 'S' ? 'checked="checked"' : '';
+            $disabled      = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinAtivo() === 'N' ? 'disabled="disabled"' : '';
+            $opcional      = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinOpcional() === 'S' ? 'checked="checked"' : '';
             $obrigatoria   = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinObrigatoria() === 'S' ? 'checked="checked"' : '';
-            $alegacoes   = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinAlegacoes() === 'S' ? 'checked="checked"' : '';
+            $alegacoes     = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinAlegacoes() === 'S' ? 'checked="checked"' : '';
             $readOnlyPrazo = $arrObjSituacaoLitigiosoDTO[$i]->getStrSinDefesa() === 'S' ? '' : 'readonly';
+            $tpPrazo       = $arrObjSituacaoLitigiosoDTO[$i]->getStrTipoPrazo();
 
             $vItemPreenchidoDesativar = '0';
             if($instauracao || $intimacao || $defesa || $alegacoes || $decisoria || $recursal || $conclusiva || $opcional || $obrigatoria){
@@ -578,7 +590,15 @@ try {
             $strResultado .= '<td align="center" title="Conclusão"><input id="conclusiva_' . $idLinha . '" class="conclusiva infraRadio" type="radio" ' . $conclusiva . ' ' . $disabled . '  class="conclusao" name="conclusiva" onchange="controlarRadios(this)" data-linha="'.$idSituacao.'"  value="'.$idSituacao.'"></td>';
             $strResultado .= '<td align="center" title="Opcional"><input id="opcional_' . $idLinha . '" class="opcional infraCheckbox" type="checkbox"' . $opcional . ' ' . $disabled . ' onclick="selecionarOpcional(this)" name="opcional_' . $idSituacao . '" data-linha="'.$idSituacao.'"></td>';
             $strResultado .= '<td align="center" title="Obrigatória"><input id="obrigatoria_' . $idLinha . '" class="obrigatoria infraCheckbox" type="checkbox"' . $obrigatoria . ' ' . $disabled . ' onclick="selecionarObrigatoria('.$idSituacao.')" name="obrigatoria_'.$idSituacao.'" data-linha="'.$idSituacao.'"> </td>';
-            $strResultado .= '<td align="center" title="Prazo (dias)"> <input class="prazo infraText form-control" maxlength="3" size="1" ' . $disabled . ' '.$readOnlyPrazo.'   onkeypress="return SomenteNumero(event)"  name="prazo_' . $idSituacao . '" type="text"  value="' . PaginaSEI::tratarHTML($arrObjSituacaoLitigiosoDTO[$i]->getNumPrazo()) . '" data-linha="'.$idSituacao.'"></td>';
+            $strResultado .= '<td align="center" title="Prazo(dias) separados por virgula quando houver mais de um"> <input class="prazo infraText form-control" onblur="limparCaracteresInvalidosPrazo(this)" onkeypress="return SomenteNumeroVirgula(event)" size="1" ' . $disabled . ' '.$readOnlyPrazo.' name="prazo_' . $idSituacao . '" type="text"  value="' . PaginaSEI::tratarHTML($arrObjSituacaoLitigiosoDTO[$i]->getStrPrazo()) . '" data-linha="'.$idSituacao.'"></td>';
+            $strResultado .= '<td align="center" title="Tipo de Dias">
+                                <div id="div_dias_uteis_' . $idLinha . '" style="display: block;">
+                                    <input class="infraRadio" onchange="controlarRadiosTpPrazo(this)" ' . ($tpPrazo == "U" ? 'checked="checked"' : '') . ' type="radio" id="dias_uteis_' . $idLinha . '" name="dias_uteis_' . $idSituacao . '" data-linha="' . $idSituacao . '"> Dias Úteis
+                                </div>
+                                <div id="div_dias_corridos_' . $idLinha . '" style="display: block; margin-top: 5px;">
+                                    <input class="infraRadio" onchange="controlarRadiosTpPrazo(this)" ' . ($tpPrazo == "C" ? 'checked="checked"' : '') . ' type="radio" id="dias_corridos_' . $idLinha . '" name="dias_corridos_' . $idSituacao . '" data-linha="' . $idSituacao . '"> Dias Corridos
+                                </div>
+                            </td>';
             $strResultado .= '<td align="center">';
 
             $strResultado .= PaginaSEI::getInstance()->getAcaoTransportarItem($i, $idSituacao);

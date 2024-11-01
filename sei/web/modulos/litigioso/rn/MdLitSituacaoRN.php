@@ -10,6 +10,8 @@
 
     class MdLitSituacaoRN extends InfraRN
     {
+        public static $DIAS_CORRIDOS = 'C';
+        public static $DIAS_UTEIS = 'U';
 
         public function __construct()
         {
@@ -674,7 +676,9 @@
         protected function atualizarSinsSituacaoControlado(){
             $objSituacaoLitigiosoBD = new MdLitSituacaoBD($this->getObjInfraIBanco());
             $objMdLitSituacaoDTO = new MdLitSituacaoDTO();
-            $objMdLitSituacaoDTO->retTodos();
+            $objMdLitSituacaoDTO->retNumIdSituacaoLitigioso();
+            $objMdLitSituacaoDTO->retStrSinObrigatoria();
+            $objMdLitSituacaoDTO->retStrSinAlegacoes();
 
             if($this->contar($objMdLitSituacaoDTO) > 0){
                 $arrObjs = $this->listar($objMdLitSituacaoDTO);

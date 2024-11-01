@@ -33,6 +33,12 @@
     }
 
     function salvar() {
+
+        if(validarSituacaoAgendamentoMarcada()){
+            alert('É obrigatório marcar pelo menos uma Situação para Utilizar no Agendamento de consulta ao financeiro.');
+            return;
+        }
+
         var frm = document.getElementById('frmSituacaoCadastro');
         var rdoIntegracao = document.getElementById('rdoIntegracao');
         var rdoManual = document.getElementById('rdoManual');
@@ -53,6 +59,19 @@
             }
         }
 
+    }
+
+    function validarSituacaoAgendamentoMarcada(){
+        var formulario = document.getElementById("frmSituacaoCadastro");
+        var dados = new FormData(formulario);
+        var valido = false;
+
+        dados.forEach(function(valor, chave){
+            if (chave.includes('sinUtilizarAgendamento')) {
+                valido = true;
+            }
+        });
+        return !valido;
     }
 
     function cancelar() {

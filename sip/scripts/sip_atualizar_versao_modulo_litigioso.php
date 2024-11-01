@@ -5,10 +5,10 @@ class MdLitAtualizadorSipRN extends InfraRN
 {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '2.1.0';
+    private $versaoAtualDesteModulo = '2.2.0';
     private $nomeDesteModulo = 'MÓDULO DE CONTROLE LITIGIOSO';
     private $nomeParametroModulo = 'VERSAO_MODULO_LITIGIOSO';
-    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4', '1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '2.0.0', '2.1.0');
+    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4', '1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '2.0.0', '2.1.0', '2.2.0');
 
     private $nomeGestorControleLitigioso = "Gestor de Controle Litigioso";
     private $descricaoGestorControleLitigioso = "Acesso aos recursos específicos de Gestor de Controle Litigioso do módulo Litigioso do SEI.";
@@ -80,7 +80,7 @@ class MdLitAtualizadorSipRN extends InfraRN
 
     protected function atualizarVersaoConectado()
     {
-        
+
         try {
             $this->inicializar('INICIANDO A INSTALAÇÃO/ATUALIZAÇÃO DO ' . $this->nomeDesteModulo . ' NO SIP VERSÃO ' . SIP_VERSAO);
 
@@ -103,8 +103,8 @@ class MdLitAtualizadorSipRN extends InfraRN
             if (count($objInfraMetaBD->obterTabelas('sip_teste')) == 0) {
                 BancoSip::getInstance()->executarSql('CREATE TABLE sip_teste (id ' . $objInfraMetaBD->tipoNumero() . ' null)');
             }
-            
-			BancoSip::getInstance()->executarSql('DROP TABLE sip_teste');
+
+            BancoSip::getInstance()->executarSql('DROP TABLE sip_teste');
 
             $objInfraParametro = new InfraParametro(BancoSip::getInstance());
 
@@ -145,6 +145,8 @@ class MdLitAtualizadorSipRN extends InfraRN
                     $this->instalarv200();
                 case '2.0.0':
                     $this->instalarv210();
+                case '2.1.0':
+                    $this->instalarv220();
                     break;
 
                 default:
@@ -433,8 +435,8 @@ class MdLitAtualizadorSipRN extends InfraRN
 
     protected function instalarv002()
     {
-
-        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 0.0.2 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $nmVersao = '0.0.2';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
         $objSistemaRN = new SistemaRN();
         $objPerfilRN = new PerfilRN();
@@ -713,13 +715,13 @@ class MdLitAtualizadorSipRN extends InfraRN
         }
 
         //adicionando parametro para controlar versao do modulo
-        $this->atualizarNumeroVersao('0.0.2');
+        $this->atualizarNumeroVersao($nmVersao);
     }
 
     protected function instalarv003()
     {
-
-        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 0.0.3 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $nmVersao = '0.0.3';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
         $objSistemaRN = new SistemaRN();
         $objPerfilRN = new PerfilRN();
@@ -956,13 +958,13 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objSistemaRN->replicarRegraAuditoria($objReplicacaoRegraAuditoriaDTO);
 
         //Atualizando parametro para controlar versao do modulo
-        $this->atualizarNumeroVersao('0.0.3');
+        $this->atualizarNumeroVersao($nmVersao);
     }
 
     protected function instalarv004()
     {
-
-        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 0.0.4 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $nmVersao = '0.0.4';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
         $objSistemaRN = new SistemaRN();
         $objPerfilRN = new PerfilRN();
@@ -1380,13 +1382,13 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objSistemaRN->replicarRegraAuditoria($objReplicacaoRegraAuditoriaDTO);
 
         //Atualizando parametro para controlar versao do modulo
-        $this->atualizarNumeroVersao('0.0.4');
+        $this->atualizarNumeroVersao($nmVersao);
     }
 
     protected function instalarv100()
     {
-
-        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.0.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $nmVersao = '1.0.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
         $objSistemaRN = new SistemaRN();
         $objPerfilRN = new PerfilRN();
@@ -1601,12 +1603,13 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objSistemaRN->replicarRegraAuditoria($objReplicacaoRegraAuditoriaDTO);
 
         //Atualizando parametro para controlar versao do modulo
-        $this->atualizarNumeroVersao('1.0.0');
+        $this->atualizarNumeroVersao($nmVersao);
     }
 
     protected function instalarV110()
     {
-        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.1.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $nmVersao = '1.1.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
         $objSistemaRN = new SistemaRN();
         $objPerfilRN = new PerfilRN();
@@ -1733,12 +1736,13 @@ class MdLitAtualizadorSipRN extends InfraRN
 
 
         //Atualizando parametro para controlar versao do modulo
-        $this->atualizarNumeroVersao('1.1.0');
+        $this->atualizarNumeroVersao($nmVersao);
     }
 
     protected function instalarV120()
     {
-        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.2.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $nmVersao = '1.2.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
 
         $objSistemaRN = new SistemaRN();
@@ -1774,12 +1778,13 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_decisao_desativar');
 
         //Atualizando parametro para controlar versao do modulo
-        $this->atualizarNumeroVersao('1.2.0');
+        $this->atualizarNumeroVersao($nmVersao);
     }
 
     protected function instalarV130()
     {
-        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.3.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $nmVersao = '1.3.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
 
         $objSistemaRN = new SistemaRN();
@@ -1863,12 +1868,13 @@ class MdLitAtualizadorSipRN extends InfraRN
         $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiBasico, $numIdMenuSei, $objItemMenuDTORelatorioLitigiosos->getNumIdItemMenu(), $objRecursoRelatorioReincidenteDTO->getNumIdRecurso(), 'Reincidências Específicas', 20);
 
         //Atualizando parametro para controlar versao do modulo
-        $this->atualizarNumeroVersao('1.3.0');
+        $this->atualizarNumeroVersao($nmVersao);
     }
 
     protected function instalarV140()
     {
-        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.4.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $nmVersao = '1.4.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
 
         $objSistemaRN = new SistemaRN();
@@ -1930,12 +1936,13 @@ class MdLitAtualizadorSipRN extends InfraRN
 
 
         //Atualizando parametro para controlar versao do modulo
-        $this->atualizarNumeroVersao('1.4.0');
+        $this->atualizarNumeroVersao($nmVersao);
     }
 
     protected function instalarV150()
     {
-        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.5.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $nmVersao = '1.5.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
         $objSistemaRN = new SistemaRN();
         $objPerfilRN = new PerfilRN();
@@ -1976,56 +1983,139 @@ class MdLitAtualizadorSipRN extends InfraRN
         }
 
         //Atualizando parametro para controlar versao do modulo
-        $this->atualizarNumeroVersao('1.5.0');
+        $this->atualizarNumeroVersao($nmVersao);
     }
 
     protected function instalarV160()
     {
-        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.6.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $nmVersao = '1.6.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
-        $this->atualizarNumeroVersao('1.6.0');
+        $this->atualizarNumeroVersao($nmVersao);
     }
 
     protected function instalarV170()
     {
-        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.7.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $nmVersao = '1.7.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
-        $this->atualizarNumeroVersao('1.7.0');
+        $this->atualizarNumeroVersao($nmVersao);
     }
 
     protected function instalarV180()
     {
-        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.8.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $nmVersao = '1.8.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
-        $this->atualizarNumeroVersao('1.8.0');
+        $this->atualizarNumeroVersao($nmVersao);
     }
 
     protected function instalarV190()
     {
-        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.9.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $nmVersao = '1.9.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
-        $this->atualizarNumeroVersao('1.9.0');
+        $this->atualizarNumeroVersao($nmVersao);
     }
 
     protected function instalarV1100()
     {
-        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.10.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $nmVersao = '1.10.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
-        $this->atualizarNumeroVersao('1.10.0');
+        $this->atualizarNumeroVersao($nmVersao);
     }
 
     protected function instalarV200()
     {
-        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 2.0.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $nmVersao = '2.0.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
-        $this->atualizarNumeroVersao('2.0.0');
+        $this->atualizarNumeroVersao($nmVersao);
     }
 
     protected function instalarV210()
     {
-        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 2.1.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $nmVersao = '2.1.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
-        $this->atualizarNumeroVersao('2.1.0');
+        $this->atualizarNumeroVersao($nmVersao);
+    }
+
+    protected function instalarV220()
+    {
+        $nmVersao = '2.2.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+
+        $objSistemaRN = new SistemaRN();
+        $objPerfilRN = new PerfilRN();
+
+        $objSistemaDTO = new SistemaDTO();
+        $objSistemaDTO->retNumIdSistema();
+        $objSistemaDTO->setStrSigla('SEI');
+        $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
+
+        if ($objSistemaDTO == null) {
+            throw new InfraException('Sistema SEI não encontrado.');
+        }
+
+        $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
+
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome($this->nomeGestorControleLitigioso);
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+            throw new InfraException('Perfil Gestor de Controle Litigioso do sistema SEI não encontrado.');
+        }
+
+        $numIdPerfilSeiGestorLitigioso = $objPerfilDTO->getNumIdPerfil();
+
+        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_decisao_alterar');
+
+        $this->logar('ADICINANDO RECURSO PARA GESTOR LIGITIOSO PARA CADASTRAR CAMPOS ADICIONAIS');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_campo_add_cadastrar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_campo_add_alterar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_campo_add_excluir');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_campo_add_consultar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_campo_add_listar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_campo_add_sel_cadastrar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_campo_add_sel_alterar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_campo_add_sel_excluir');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_campo_add_sel_consultar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_campo_add_sel_listar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_tp_info_add_cadastrar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_tp_info_add_alterar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_tp_info_add_consultar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_tp_info_add_contar');
+
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome('Básico');
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
+        }
+
+        $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
+
+        $this->logar('ADICINANDO RECURSO PARA USUARIO BASICO INCLUIR INFORMAÇÕES ADICIONAIS ');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_campo_add_form_cadastrar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_campo_add_form_alterar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_campo_add_form_excluir');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_campo_add_form_consultar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_campo_add_form_listar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_campo_add_form_listar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_opc_camp_mult_cadastrar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_opc_camp_mult_excluir');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_opc_camp_mult_listar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tp_info_add_listar');
+
+        $this->atualizarNumeroVersao($nmVersao);
     }
 
     private function adicionarRecursoPerfil($numIdSistema, $numIdPerfil, $strNome, $strCaminho = null)
@@ -2361,7 +2451,7 @@ try {
     InfraScriptVersao::solicitarAutenticacao(BancoSip::getInstance());
     $objVersaoSipRN = new MdLitAtualizadorSipRN();
     $objVersaoSipRN->atualizarVersao();
-	exit;
+    exit;
 
 } catch (Exception $e) {
     echo(InfraException::inspecionar($e));

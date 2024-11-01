@@ -45,16 +45,17 @@ class MdLitAgendamentoAutomaticoRN extends InfraRN {
                 }
 
                 $objMdLitSituacaoLancamentoDTO = new MdLitSituacaoLancamentoDTO();
-                $objMdLitSituacaoLancamentoDTO->retTodos(false);
+                $objMdLitSituacaoLancamentoDTO->retNumIdMdLitSituacaoLancamento();
+                $objMdLitSituacaoLancamentoDTO->setStrSinUtilizarAgendamento('S');
 
                 $objMdLitSituacaoLancamentoRN = new MdLitSituacaoLancamentoRN();
-                $objMdLitSituacaoLancamentoDTO = $objMdLitSituacaoLancamentoRN->consultarSituacaoCancelamento($objMdLitSituacaoLancamentoDTO);
+                $objMdLitSituacaoLancamentoDTO = $objMdLitSituacaoLancamentoRN->listar($objMdLitSituacaoLancamentoDTO);
+
+                $arrIdSituacao = InfraArray::converterArrInfraDTO($objMdLitSituacaoLancamentoDTO, 'IdMdLitSituacaoLancamento');
 
                 $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
                 $objMdLitLancamentoDTO->retTodos(false);
-                if($objMdLitSituacaoLancamentoDTO){
-                    $objMdLitLancamentoDTO->adicionarCriterio(array('IdMdLitSituacaoLancamento', 'IdMdLitSituacaoLancamento'), array(InfraDTO::$OPER_DIFERENTE, InfraDTO::$OPER_IGUAL), array($objMdLitSituacaoLancamentoDTO->getNumIdMdLitSituacaoLancamento(), null), array(InfraDTO::$OPER_LOGICO_OR));
-                }
+                $objMdLitLancamentoDTO->setNumIdMdLitSituacaoLancamento($arrIdSituacao , InfraDTO::$OPER_IN);
 
                 $objMdLitLancamentoRN = new MdLitLancamentoRN();
                 $arrObjMdLitLancamentoDTO = $objMdLitLancamentoRN->listar($objMdLitLancamentoDTO);

@@ -705,6 +705,73 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();" onunloa
         </div>
         <!--  PROCESSOS A SEREM SOBRESTADOS - FIM-->
 
+        <!--INFORMAÇOES ADICIONAIS-->
+        <? if($arrOpcoesCampoAdicionais != '<option value=""></option>') { ?>
+        <div id="divInformacoesComplementares" class="linha">
+            <div class="rowFieldSet">
+                <fieldset class="infraFieldset form-control NumeroSEINaoValidado" id="fieldInfoAdd">
+                    <legend class="infraLegend">&nbsp;Informações Adicionais&nbsp;</legend>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <table width="100%">
+                                <td width="31.5%">
+                                    <div class="campo-adicional col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                        <label id="lblSelCampo" for="lblSelCampo" >Selecione o Tipo de Informação Adicional:</label>
+                                        <div class="input-group mb-4">
+                                            <select id="selCampo"
+                                                    name="selCampo"
+                                                    class="infraSelect form-control">
+                                                <? echo $arrOpcoesCampoAdicionais; ?>
+                                            </select>
+                                    </div>
+                                </td>
+                                <td width="68.5%">
+                                    <button type="button" name="sbmSelecionarCampo" id="sbmSelecionarCampo"
+                                            value="Selecionar"
+                                            class="infraButton sbmValidarNumeroSei"
+                                            style="margin-left: -10px"
+                                            onclick="adicionarCampo()">Adicionar
+                                    </button>
+                                </td>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <table width="100%" id="tbCamposSelecionados" class="infraTable">
+                                <caption
+                                        class="infraCaption">Atualizado por: <? echo $atualizadoPor; ?></caption>
+                                <tr>
+                                    <th class="infraTh" width="94%"> Campos de Informações Adicionais </th>
+                                    <th class="infraTh" width="6%">Ações</th>
+                                </tr>
+                                <?
+                                    // EXIBE AS OPÇÕES CADASTRADAS NA TELA
+                                    echo $arrTabelaCamposAdicionais;
+
+                                    // CASO NÃO TENHA OPÇÕES CADASTRADAS EXIBE MENSAGEM
+                                    if($arrTabelaCamposAdicionais == '') {
+                                        ?>
+                                        <tr id="nenhumCampo">
+                                            <td colspan="4" style="text-align: center">Nenhum campo adicionado</td>
+                                        </tr>
+                                        <?
+                                    }
+                                ?>
+                            </table>
+                        </div>
+                    </div>
+                    <input type="hidden" id="campoOrganizador" name="campoOrganizador" value=""/>
+                </fieldset>
+
+                <!-- FIM MOTIVOS -->
+            </div>
+        </div>
+        <? } ?>
+        <!--  PROCESSOS A SEREM SOBRESTADOS -->
+
         <?
         PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos);
         PaginaSEI::getInstance()->fecharAreaDados();
