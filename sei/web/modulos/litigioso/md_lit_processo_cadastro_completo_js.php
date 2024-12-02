@@ -392,10 +392,6 @@
             }
         }
 
-        if(validarCamposInfoAdicionais()){
-            return false;
-        }
-
         if(validarCamposEmDuplicidade()){
             return false;
         }

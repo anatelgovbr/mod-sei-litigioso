@@ -82,9 +82,8 @@
 
         //pegar do fieldset do interessado na tela de controle litigioso
         var idContato = document.getElementById('hdnIdContato').value;
-        var hdnTbDadoInteressado = eval('window.top.document.getElementById("ifrVisualizacao").contentWindow.hdnTbDadoInteressado_'+idContato);
-        console.log(hdnTbDadoInteressado);
-        if(typeof hdnTbDadoInteressado != 'undefined'){
+        var hdnTbDadoInteressado = window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnTbDadoInteressado_'+idContato);
+        if(hdnTbDadoInteressado){
             document.getElementById('hdnListaDadosComplementares').value = hdnTbDadoInteressado.value;
             if(hdnTbDadoInteressado.getAttribute('outorgado') == 'S'){
                 document.getElementById('optOutorgadaSim').checked = true;
@@ -274,17 +273,17 @@
         }
         validarNumeroVazio();
         var idContato = document.getElementById('hdnIdContato').value;
-        var hdnTbDadoInteressado = eval('window.top.document.getElementById("ifrVisualizacao").contentWindow.hdnTbDadoInteressado_'+idContato);
+        var hdnTbDadoInteressado = window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnTbDadoInteressado_'+idContato);
         var checkedOutorgado = document.getElementById('optOutorgadaSim').checked? 'S':'N';
 
-        if(typeof hdnTbDadoInteressado == 'undefined'){
+        if(!hdnTbDadoInteressado){
             var hdnTbDadoInteressado = document.createElement("input");
             hdnTbDadoInteressado.setAttribute("type", "hidden");
             hdnTbDadoInteressado.setAttribute("name", "hdnTbDadoInteressado[]");
             hdnTbDadoInteressado.setAttribute("id", "hdnTbDadoInteressado_"+idContato);
             hdnTbDadoInteressado.setAttribute("value", objTblDadosComplementares.hdn.value);
             hdnTbDadoInteressado.setAttribute("outorgado", checkedOutorgado);
-            window.top.document.getElementById("ifrVisualizacao").contentWindow.divInteressados.appendChild(hdnTbDadoInteressado);
+            window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById("divInteressados").appendChild(hdnTbDadoInteressado);
 
             $(window.top.document).find('div[id^=divInfraSparklingModalClose]').click();
             return false;
