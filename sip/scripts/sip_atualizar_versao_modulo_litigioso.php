@@ -5,10 +5,10 @@ class MdLitAtualizadorSipRN extends InfraRN
 {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '2.2.0';
+    private $versaoAtualDesteModulo = '2.3.0';
     private $nomeDesteModulo = 'MÓDULO DE CONTROLE LITIGIOSO';
     private $nomeParametroModulo = 'VERSAO_MODULO_LITIGIOSO';
-    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4', '1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '2.0.0', '2.1.0', '2.2.0');
+    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4', '1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0');
 
     private $nomeGestorControleLitigioso = "Gestor de Controle Litigioso";
     private $descricaoGestorControleLitigioso = "Acesso aos recursos específicos de Gestor de Controle Litigioso do módulo Litigioso do SEI.";
@@ -147,6 +147,8 @@ class MdLitAtualizadorSipRN extends InfraRN
                     $this->instalarv210();
                 case '2.1.0':
                     $this->instalarv220();
+                case '2.2.0':
+                    $this->instalarv230();
                     break;
 
                 default:
@@ -205,6 +207,7 @@ class MdLitAtualizadorSipRN extends InfraRN
             $objPerfilDTOGestorLitigioso->setStrDescricao($this->descricaoGestorControleLitigioso);
             $objPerfilDTOGestorLitigioso->setStrSinCoordenado('N');
             $objPerfilDTOGestorLitigioso->setStrSinAtivo('S');
+            $objPerfilDTOGestorLitigioso->setStrSin2Fatores('N');
 
             $objPerfilDTOGestorLitigioso = $objPerfilRN->cadastrar($objPerfilDTOGestorLitigioso);
 
@@ -502,6 +505,7 @@ class MdLitAtualizadorSipRN extends InfraRN
             $objPerfilDTOGestorLitigioso->setStrDescricao($this->descricaoGestorControleLitigioso);
             $objPerfilDTOGestorLitigioso->setStrSinCoordenado('N');
             $objPerfilDTOGestorLitigioso->setStrSinAtivo('S');
+            $objPerfilDTOGestorLitigioso->setStrSin2Fatores('N');
 
             $objPerfilDTOGestorLitigioso = $objPerfilRN->cadastrar($objPerfilDTOGestorLitigioso);
 
@@ -788,6 +792,7 @@ class MdLitAtualizadorSipRN extends InfraRN
             $objPerfilDTOGestorLitigioso->setStrDescricao($this->descricaoGestorControleLitigioso);
             $objPerfilDTOGestorLitigioso->setStrSinCoordenado('N');
             $objPerfilDTOGestorLitigioso->setStrSinAtivo('S');
+            $objPerfilDTOGestorLitigioso->setStrSin2Fatores('N');
 
 
             $objPerfilDTOGestorLitigioso = $objPerfilRN->cadastrar($objPerfilDTOGestorLitigioso);
@@ -1031,6 +1036,7 @@ class MdLitAtualizadorSipRN extends InfraRN
             $objPerfilDTOGestorLitigioso->setStrDescricao($this->descricaoGestorControleLitigioso);
             $objPerfilDTOGestorLitigioso->setStrSinCoordenado('N');
             $objPerfilDTOGestorLitigioso->setStrSinAtivo('S');
+            $objPerfilDTOGestorLitigioso->setStrSin2Fatores('N');
 
             $objPerfilDTOGestorLitigioso = $objPerfilRN->cadastrar($objPerfilDTOGestorLitigioso);
 
@@ -1443,6 +1449,7 @@ class MdLitAtualizadorSipRN extends InfraRN
             $objPerfilDTOGestorLitigioso->setStrDescricao($this->descricaoGestorControleLitigioso);
             $objPerfilDTOGestorLitigioso->setStrSinCoordenado('N');
             $objPerfilDTOGestorLitigioso->setStrSinAtivo('S');
+            $objPerfilDTOGestorLitigioso->setStrSin2Fatores('N');
 
 
             $objPerfilDTOGestorLitigioso = $objPerfilRN->cadastrar($objPerfilDTOGestorLitigioso);
@@ -2114,6 +2121,14 @@ class MdLitAtualizadorSipRN extends InfraRN
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_opc_camp_mult_excluir');
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_opc_camp_mult_listar');
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tp_info_add_listar');
+
+        $this->atualizarNumeroVersao($nmVersao);
+    }
+
+    protected function instalarV230()
+    {
+        $nmVersao = '2.3.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
         $this->atualizarNumeroVersao($nmVersao);
     }

@@ -255,9 +255,9 @@ PaginaSEI::getInstance()->abrirJavaScript();
 if(0){?><script><?}?>
     function inicializar(){
         recuperarNumeroComplementar();
-        document.getElementById('hdnDecisaoAplicacaoMulta').value = window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('txtDecisaoAplicacaoMulta').value;
-        document.getElementById('hdnVlTotalMulta').value = window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnVlTotalMulta').value;
-        document.getElementById('hdnDtVencimento').value = window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('txtDtVencimento').value;
+        document.getElementById('hdnDecisaoAplicacaoMulta').value =  window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('txtDecisaoAplicacaoMulta').value;
+        document.getElementById('hdnVlTotalMulta').value =  window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnVlTotalMulta').value;
+        document.getElementById('hdnDtVencimento').value =  window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('txtDtVencimento').value;
         var bolValorDiferente = false;
 
         <?php if($objMdLitLancamentoDTO && $objMdLitLancamentoDTO->isSetDblVlrLancamento()){ ?>
@@ -265,7 +265,7 @@ if(0){?><script><?}?>
             bolValorDiferente = valor != document.getElementById('hdnVlTotalMulta').value;
         <?php } ?>
 
-        if( window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('selCreditosProcesso').options.length > 1 && bolValorDiferente){
+        if(  window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('selCreditosProcesso').options.length > 1 && bolValorDiferente){
             document.getElementById('sbmConfirmar').remove();
             alert('Não foi possível realizar a vinculação do lançamento pré existente em razão de divergência entre o valor retornado do Sistema de Arrecadação e o constante nas decisões deste processo (que possui múltiplas multas indicadas).\n' +
                 '\n\n' +
@@ -291,7 +291,7 @@ if(0){?><script><?}?>
     }
 
     function recuperarNumeroComplementar(){
-        var selectNumeroInteressado = window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('selNumeroInteressado');
+        var selectNumeroInteressado =  window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('selNumeroInteressado');
 
         for(var i = 0; i <= selectNumeroInteressado.options.length; i++){
             if(selectNumeroInteressado.options[i].selected){
@@ -318,8 +318,8 @@ if(0){?><script><?}?>
         objTabelaLancamento = new infraTabelaDinamica('tbLancamento', 'hdntbLancamento', false, false);
         objTabelaLancamento.atualizaHdn();
 
-        window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnTbVincularLancamento').value = objTabelaLancamento.hdn.value;
-        window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('sbmCadastrarSituacao').click();
+        window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnTbVincularLancamento').value = objTabelaLancamento.hdn.value;
+        window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('sbmCadastrarSituacao').click();
         $(window.top.document).find('div[id^=divInfraSparklingModalClose]').click();
         return false;
     }

@@ -37,12 +37,12 @@
     }
 
     function verificarCondicionaisDecisao() {
-        if (document.getElementById('hdnErroSituacao').value == 0 && isTpSitDecisoria && !verificarDecisaoNovo() && (document.getElementById('hdnIdMdLitFuncionalidade').value != <?php echo MdLitIntegracaoRN::$ARRECADACAO_CANCELAR_LANCAMENTO ?>)) {
+        if (window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnErroSituacao').value == 0 && isTpSitDecisoria && !verificarDecisaoNovo() && (window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnIdMdLitFuncionalidade').value != <?php echo MdLitIntegracaoRN::$ARRECADACAO_CANCELAR_LANCAMENTO ?>)) {
             alert('cadastre ao menos uma Infração na modal de Cadastro de Decisões!');
             return false;
         }
 
-        if (document.getElementById('fieldsetDecisao').style.display != 'none' && !verificarDecisaoPendenteCadastro()) {
+        if (window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('fieldsetDecisao').style.display != 'none' && !verificarDecisaoPendenteCadastro()) {
             alert('É necessário cadastrar as decisões de todas infrações antes de salvar.');
             return false;
         }
@@ -53,7 +53,7 @@
             document.getElementById('hdnIdMdLitFuncionalidade').value != <?php echo MdLitIntegracaoRN::$ARRECADACAO_CANCELAR_LANCAMENTO ?>  &&
             !verificarPreenchimentoDecisaoIncompleto()
         ) {
-            document.getElementById('hdnIdMdLitFuncionalidade').value = null;
+            window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnIdMdLitFuncionalidade').value = null;
             alert('É necessário completar o preenchimento das decisões antes de salvar.');
             return false;
         }

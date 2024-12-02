@@ -124,11 +124,11 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         }
         var optionsSelMotivo = document.getElementById('selMotivoCancelar').options;
 
-        window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnIdMotivoCancelamento').value      = document.getElementById('selMotivoCancelar').value;
-        window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnJustificativaCancelamento').value = document.getElementById('txtJustificativaCancelamento').value;
-        window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnIdMdLitFuncionalidade').value     = document.getElementById('hdnIdMdLitFuncionalidade').value;
-        window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnTxtMotivoCancelamento').value     = optionsSelMotivo[optionsSelMotivo.selectedIndex].text;
-        window.top.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('sbmCadastrarSituacao').click();
+        window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnIdMotivoCancelamento').value      = document.getElementById('selMotivoCancelar').value;
+        window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnJustificativaCancelamento').value = document.getElementById('txtJustificativaCancelamento').value;
+        window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnIdMdLitFuncionalidade').value     = document.getElementById('hdnIdMdLitFuncionalidade').value;
+        window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnTxtMotivoCancelamento').value     = optionsSelMotivo[optionsSelMotivo.selectedIndex].text;
+        window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('sbmCadastrarSituacao').click();
         $(window.top.document).find('div[id^=divInfraSparklingModalClose]').click();
 
         return false;

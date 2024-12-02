@@ -5,10 +5,10 @@ class MdLitAtualizadorSeiRN extends InfraRN
 {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '2.2.0';
+    private $versaoAtualDesteModulo = '2.3.0';
     private $nomeDesteModulo = 'MÓDULO DE CONTROLE LITIGIOSO';
     private $nomeParametroModulo = 'VERSAO_MODULO_LITIGIOSO';
-    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4', '1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '2.0.0', '2.1.0', '2.2.0');
+    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4', '1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0');
 
     public function __construct()
     {
@@ -84,14 +84,16 @@ class MdLitAtualizadorSeiRN extends InfraRN
             //checando BDs suportados
             if (!(BancoSEI::getInstance() instanceof InfraMySql) &&
                 !(BancoSEI::getInstance() instanceof InfraSqlServer) &&
+                !(BancoSEI::getInstance() instanceof InfraPostgreSql) &&
                 !(BancoSEI::getInstance() instanceof InfraOracle)) {
                 $this->finalizar('BANCO DE DADOS NÃO SUPORTADO: ' . get_parent_class(BancoSEI::getInstance()), true);
             }
 
             //testando versao do framework
-            $numVersaoInfraRequerida = '2.0.18';
-            if ($this->normalizaVersao(VERSAO_INFRA) < $this->normalizaVersao($numVersaoInfraRequerida)) {
-                $this->finalizar('VERSO DO FRAMEWORK PHP INCOMPATVEL (VERSO ATUAL ' . VERSAO_INFRA . ', SENDO REQUERIDA VERSO IGUAL OU SUPERIOR A ' . $numVersaoInfraRequerida . ')', true);
+
+            $numVersaoInfraRequerida = '2.23.8';
+            if (version_compare(VERSAO_INFRA, $numVersaoInfraRequerida) < 0) {
+                $this->finalizar('VERSÃO DO FRAMEWORK PHP INCOMPATÍVEL (VERSÃO ATUAL ' . VERSAO_INFRA . ', SENDO REQUERIDA VERSÃO IGUAL OU SUPERIOR A ' . $numVersaoInfraRequerida . ')', true);
             }
 
             //checando permissoes na base de dados
@@ -144,6 +146,8 @@ class MdLitAtualizadorSeiRN extends InfraRN
                     $this->instalarv210();
                 case '2.1.0':
                     $this->instalarv220();
+                case '2.2.0':
+                    $this->instalarv230();
                     break;
 
                 default:
@@ -650,7 +654,7 @@ class MdLitAtualizadorSeiRN extends InfraRN
         $coluna = $objInfraMetaBD->obterColunasTabela('md_lit_tipo_controle', 'sin_param_modal_compl_interes');
 
         if ($coluna == null || !is_array($coluna)) {
-            $objInfraMetaBD->adicionarColuna('md_lit_tipo_controle', 'sin_param_modal_compl_interes', '' . $objInfraMetaBD->tipoTextoVariavel(1), 'NULL');
+            $objInfraMetaBD->adicionarColuna('md_lit_tipo_controle', 'sin_param_modal_compl_interes', '' . $objInfraMetaBD->tipoTextoVariavel(1), 'null');
         }
 
 
@@ -1404,10 +1408,10 @@ class MdLitAtualizadorSeiRN extends InfraRN
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
 
         $this->logar('ALTERANDO A TABELA md_lit_rel_dis_nor_con_ctr');
-        $objInfraMetaBD->alterarColuna('md_lit_rel_dis_nor_con_ctr', 'dta_infracao', $objInfraMetaBD->tipoDataHora(), 'NULL');
-        $objInfraMetaBD->adicionarColuna('md_lit_rel_dis_nor_con_ctr', 'dta_infracao_periodo_inicial', $objInfraMetaBD->tipoDataHora(), 'NULL');
-        $objInfraMetaBD->adicionarColuna('md_lit_rel_dis_nor_con_ctr', 'dta_infracao_periodo_final', $objInfraMetaBD->tipoDataHora(), 'NULL');
-        $objInfraMetaBD->adicionarColuna('md_lit_rel_dis_nor_con_ctr', 'sta_infracao_data', $objInfraMetaBD->tipoTextoFixo(1), 'NULL');
+        $objInfraMetaBD->alterarColuna('md_lit_rel_dis_nor_con_ctr', 'dta_infracao', $objInfraMetaBD->tipoDataHora(), 'null');
+        $objInfraMetaBD->adicionarColuna('md_lit_rel_dis_nor_con_ctr', 'dta_infracao_periodo_inicial', $objInfraMetaBD->tipoDataHora(), 'null');
+        $objInfraMetaBD->adicionarColuna('md_lit_rel_dis_nor_con_ctr', 'dta_infracao_periodo_final', $objInfraMetaBD->tipoDataHora(), 'null');
+        $objInfraMetaBD->adicionarColuna('md_lit_rel_dis_nor_con_ctr', 'sta_infracao_data', $objInfraMetaBD->tipoTextoFixo(1), 'null');
 
 
         $this->logar('ATUALIZANDO REGISTRO DA TABELA md_lit_rel_dis_nor_con_ctr');
@@ -1425,7 +1429,7 @@ class MdLitAtualizadorSeiRN extends InfraRN
         }
 
         $this->logar('ALTERANDO A TABELA md_lit_decisao');
-        $objInfraMetaBD->adicionarColuna('md_lit_decisao', 'sta_localidade', $objInfraMetaBD->tipoTextoFixo(1), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_decisao', 'sta_localidade', $objInfraMetaBD->tipoTextoFixo(1), 'null');
 
 
         $this->logar('CRIANDO A TABELA md_lit_rel_decisao_uf');
@@ -1441,7 +1445,7 @@ class MdLitAtualizadorSeiRN extends InfraRN
 
 
         $this->logar('ALTERANDO A TABELA md_lit_rel_tipo_ctrl_tipo_dec');
-        $objInfraMetaBD->adicionarColuna('md_lit_rel_tipo_ctrl_tipo_dec', 'id_md_lit_especie_decisao', $objInfraMetaBD->tipoNumero(), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_rel_tipo_ctrl_tipo_dec', 'id_md_lit_especie_decisao', $objInfraMetaBD->tipoNumero(), 'null');
 
 
         $objInfraMetaBD->excluirChaveEstrangeira('md_lit_rel_tipo_ctrl_tipo_dec', 'fk_rel_tipo_ctrl_tipo_dec_01');
@@ -1488,7 +1492,7 @@ class MdLitAtualizadorSeiRN extends InfraRN
             $objMdLitRelTipoControleTipoDecisaoRN->cadastrar($arrObjMdLitRelTipoControleTipoDecisaoDTOCadastro);
         }
 
-        $objInfraMetaBD->alterarColuna('md_lit_rel_tipo_ctrl_tipo_dec', 'id_md_lit_especie_decisao', $objInfraMetaBD->tipoNumero(), 'NOT NULL');
+        $objInfraMetaBD->alterarColuna('md_lit_rel_tipo_ctrl_tipo_dec', 'id_md_lit_especie_decisao', $objInfraMetaBD->tipoNumero(), 'not null');
         $objInfraMetaBD->adicionarChavePrimaria('md_lit_rel_tipo_ctrl_tipo_dec', 'pk_md_lit_rel_tipo_ctrl_tipo', array('id_md_lit_tipo_decisao', 'id_md_lit_tipo_controle', 'id_md_lit_especie_decisao'));
 
         $objInfraMetaBD->adicionarChaveEstrangeira('fk_rel_tipo_ctrl_tipo_dec_01', 'md_lit_rel_tipo_ctrl_tipo_dec', array('id_md_lit_tipo_decisao'), 'md_lit_tipo_decisao', array('id_md_lit_tipo_decisao'));
@@ -1507,7 +1511,7 @@ class MdLitAtualizadorSeiRN extends InfraRN
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
 
         $this->logar('ALTERANDO A TABELA md_lit_decisao');
-        $objInfraMetaBD->adicionarColuna('md_lit_decisao', 'sin_cadastro_parcial', $objInfraMetaBD->tipoTextoFixo(1), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_decisao', 'sin_cadastro_parcial', $objInfraMetaBD->tipoTextoFixo(1), 'null');
 
 
         $this->atualizarNumeroVersao($nmVersao);
@@ -1521,7 +1525,7 @@ class MdLitAtualizadorSeiRN extends InfraRN
 
 
         $this->logar('ALTERANDO A TABELA md_lit_reinciden_anteceden');
-        $objInfraMetaBD->adicionarColuna('md_lit_reinciden_anteceden', 'tp_regra_reincidencia', $objInfraMetaBD->tipoTextoFixo(1), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_reinciden_anteceden', 'tp_regra_reincidencia', $objInfraMetaBD->tipoTextoFixo(1), 'null');
 
 
         $this->logar('EXECUTANDO A criação/edição da administração de Antecedentes');
@@ -1565,7 +1569,7 @@ class MdLitAtualizadorSeiRN extends InfraRN
 
 
         $this->logar('ALTERANDO A TABELA md_lit_decisao');
-        $objInfraMetaBD->adicionarColuna('md_lit_decisao', 'sin_ultima_decisao', $objInfraMetaBD->tipoTextoFixo(1), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_decisao', 'sin_ultima_decisao', $objInfraMetaBD->tipoTextoFixo(1), 'null');
 
         $this->logar('ALTERANDO O registro da tabela md_lit_decisao sinalizando com a ultima decisao');
         $objMdLitDecisaoRN = new MdLitDecisaoRN();
@@ -1577,7 +1581,7 @@ class MdLitAtualizadorSeiRN extends InfraRN
         $objMdLitDecisaoRN->vincularDecisaoComLancamento($arrObjMdLitDecisaoDTOUltima);
 
         $this->logar('ALTERANDO A TABELA md_lit_historic_lancamento');
-        $objInfraMetaBD->alterarColuna('md_lit_historic_lancamento', 'justificativa', $objInfraMetaBD->tipoTextoVariavel(250), 'NULL');
+        $objInfraMetaBD->alterarColuna('md_lit_historic_lancamento', 'justificativa', $objInfraMetaBD->tipoTextoVariavel(250), 'null');
 
         if ($objInfraMetaBD->getObjInfraIBanco() instanceof InfraSqlServer){
             $this->logar('ALTERANDO o nome da PK da tabela md_lit_rel_disp_norm_conduta');
@@ -1610,7 +1614,7 @@ class MdLitAtualizadorSeiRN extends InfraRN
 
 
         $this->logar('ALTERANDO A TABELA md_lit_integracao');
-        $objInfraMetaBD->adicionarColuna('md_lit_integracao', 'sin_vincular_lancamento', $objInfraMetaBD->tipoTextoFixo(1), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_integracao', 'sin_vincular_lancamento', $objInfraMetaBD->tipoTextoFixo(1), 'null');
 
         $this->logar('Adicionando novos parametros na combo de saida da funcionalidade Arrecadação Consulta Lançamento ');
 
@@ -1697,7 +1701,7 @@ class MdLitAtualizadorSeiRN extends InfraRN
         BancoSEI::getInstance()->executarSql('DROP TABLE md_lit_modalidade');
 
 
-        if (BancoSEI::getInstance() instanceof InfraOracle) {
+        if (BancoSEI::getInstance() instanceof InfraOracle || BancoSEI::getInstance() instanceof InfraPostgreSql) {
             BancoSEI::getInstance()->executarSql('DROP SEQUENCE seq_md_lit_modalidade');
             BancoSEI::getInstance()->executarSql('DROP SEQUENCE seq_md_lit_abrangencia');
         } else {
@@ -1844,19 +1848,19 @@ class MdLitAtualizadorSeiRN extends InfraRN
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
 
         $this->logar('Adicionanda a coluna de indicação de tipo de multa na na Espécie de decisão');
-        $objInfraMetaBD->adicionarColuna('md_lit_especie_decisao', 'sta_tipo_indicacao_multa', $objInfraMetaBD->tipoTextoFixo(1), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_especie_decisao', 'sta_tipo_indicacao_multa', $objInfraMetaBD->tipoTextoFixo(1), 'null');
         $instanciaBanco->executarSql("UPDATE md_lit_especie_decisao set sta_tipo_indicacao_multa = 1 WHERE sin_rd_gestao_multa = 'S' ");
 
         $this->logar('Adicionnda a coluna de indicação de ressarcimento de valor na Espécie de decisão');
-        $objInfraMetaBD->adicionarColuna('md_lit_especie_decisao', 'sin_ressarcimento_valor', $objInfraMetaBD->tipoTextoFixo(1), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_especie_decisao', 'sin_ressarcimento_valor', $objInfraMetaBD->tipoTextoFixo(1), 'null');
         $instanciaBanco->executarSql("UPDATE md_lit_especie_decisao set sin_ressarcimento_valor = 'N' ");
 
         $this->logar('Adicionada a coluna para inclusão de valor de ressarcimento na decisão');
-        $objInfraMetaBD->adicionarColuna('md_lit_decisao', 'valor_ressarcimento', $objInfraMetaBD->tipoNumeroDecimal(19, 2), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_decisao', 'valor_ressarcimento', $objInfraMetaBD->tipoNumeroDecimal(19, 2), 'null');
 
         $this->logar('Adicionanda a coluna para inclusão de valor de ressarcimento na decisão');
         //adcição da coluna de valor de multa sem integracao(por idicação de valor) na tabela de decisão
-        $objInfraMetaBD->adicionarColuna('md_lit_decisao', 'valor_multa_sem_integracao', $objInfraMetaBD->tipoNumeroDecimal(19, 2), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_decisao', 'valor_multa_sem_integracao', $objInfraMetaBD->tipoNumeroDecimal(19, 2), 'null');
 
         $this->atualizarNumeroVersao($nmVersao);
     }
@@ -1871,11 +1875,11 @@ class MdLitAtualizadorSeiRN extends InfraRN
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
 
         $this->logar('ADIÇÃO DA COLUNA DE OBRIGATORIEDADE NA PARAMETRIZAÇÃO DA "SITUAÇÃO".');
-        $objInfraMetaBD->adicionarColuna('md_lit_situacao', 'sin_obrigatoria', $objInfraMetaBD->tipoTextoFixo(1), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_situacao', 'sin_obrigatoria', $objInfraMetaBD->tipoTextoFixo(1), 'null');
         //$instanciaBanco->executarSql("UPDATE md_lit_situacao set sin_obrigatoria = 'N'; ");
 
         $this->logar('ADIÇÃO DA COLUNA DE "ALEGAÇÕES" NA PARAMETRIZAÇÃO DA "SITUAÇÃO".');
-        $objInfraMetaBD->adicionarColuna('md_lit_situacao', 'sin_alegacoes', $objInfraMetaBD->tipoTextoFixo(1), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_situacao', 'sin_alegacoes', $objInfraMetaBD->tipoTextoFixo(1), 'null');
         //$instanciaBanco->executarSql("UPDATE md_lit_situacao set sin_alegacoes =  'N'; ");
 
         $objMdLitSituacaoRN = new MdLitSituacaoRN();
@@ -1986,27 +1990,27 @@ class MdLitAtualizadorSeiRN extends InfraRN
             $instanciaBanco->abrirTransacao();
 
             $this->logar('INCLUSÂO DE COLUNA NA TABELA md_lit_integracao PARA DEFINIÇÃO DOS TIPOS DE CLIENTE WS');
-            $objInfraMetaBD->adicionarColuna('md_lit_integracao', 'tipo_cliente_ws', $objInfraMetaBD->tipoTextoFixo(4), 'NULL');
+            $objInfraMetaBD->adicionarColuna('md_lit_integracao', 'tipo_cliente_ws', $objInfraMetaBD->tipoTextoFixo(4), 'null');
             $instanciaBanco->executarSql("UPDATE md_lit_integracao SET tipo_cliente_ws = 'SOAP' ");
 
             $this->logar('INCLUSÂO DE COLUNA NA TABELA md_lit_integracao PARA DEFINIÇÃO DAS VERSÕES DO SOAP');
-            $objInfraMetaBD->adicionarColuna('md_lit_integracao', 'versao_soap', $objInfraMetaBD->tipoTextoFixo(5), 'NULL');
+            $objInfraMetaBD->adicionarColuna('md_lit_integracao', 'versao_soap', $objInfraMetaBD->tipoTextoFixo(5), 'null');
             $instanciaBanco->executarSql("UPDATE md_lit_integracao SET versao_soap = '1.2' ");
 
             $this->logar('INCLUSÂO DE COLUNA NA TABELA md_lit_servico_integracao PARA DEFINIÇÃO DOS TIPOS DE CLIENTE WS');
-            $objInfraMetaBD->adicionarColuna('md_lit_servico_integracao', 'tipo_cliente_ws', $objInfraMetaBD->tipoTextoFixo(4), 'NULL');
+            $objInfraMetaBD->adicionarColuna('md_lit_servico_integracao', 'tipo_cliente_ws', $objInfraMetaBD->tipoTextoFixo(4), 'null');
             $instanciaBanco->executarSql("UPDATE md_lit_servico_integracao SET tipo_cliente_ws = 'SOAP' ");
 
             $this->logar('INCLUSÂO DE COLUNA NA TABELA md_lit_servico_integracao PARA DEFINIÇÃO DAS VERSÕES DO SOAP');
-            $objInfraMetaBD->adicionarColuna('md_lit_servico_integracao', 'versao_soap', $objInfraMetaBD->tipoTextoFixo(5), 'NULL');
+            $objInfraMetaBD->adicionarColuna('md_lit_servico_integracao', 'versao_soap', $objInfraMetaBD->tipoTextoFixo(5), 'null');
             $instanciaBanco->executarSql("UPDATE md_lit_servico_integracao SET versao_soap = '1.2' ");
 
             $this->logar('INCLUSÂO DE COLUNA NA TABELA md_lit_situacao_lancam_int PARA DEFINIÇÃO DOS TIPOS DE CLIENTE WS');
-            $objInfraMetaBD->adicionarColuna('md_lit_situacao_lancam_int', 'tipo_cliente_ws', $objInfraMetaBD->tipoTextoFixo(4), 'NULL');
+            $objInfraMetaBD->adicionarColuna('md_lit_situacao_lancam_int', 'tipo_cliente_ws', $objInfraMetaBD->tipoTextoFixo(4), 'null');
             $instanciaBanco->executarSql("UPDATE md_lit_situacao_lancam_int SET tipo_cliente_ws = 'SOAP' ");
 
             $this->logar('INCLUSÂO DE COLUNA NA TABELA md_lit_situacao_lancam_int PARA DEFINIÇÃO DAS VERSÕES DO SOAP');
-            $objInfraMetaBD->adicionarColuna('md_lit_situacao_lancam_int', 'versao_soap', $objInfraMetaBD->tipoTextoFixo(5), 'NULL');
+            $objInfraMetaBD->adicionarColuna('md_lit_situacao_lancam_int', 'versao_soap', $objInfraMetaBD->tipoTextoFixo(5), 'null');
             $instanciaBanco->executarSql("UPDATE md_lit_situacao_lancam_int SET versao_soap = '1.2' ");
 
             $this->atualizarNumeroVersao($nmVersao);
@@ -2035,7 +2039,7 @@ class MdLitAtualizadorSeiRN extends InfraRN
         $objInfraMetaBD->setBolValidarIdentificador(true);
 
         $arrTabelas = array('md_lit_adm_modalidad_outor', 'md_lit_adm_tipo_outor', 'md_lit_assoc_disp_normat', 'md_lit_campo_integracao', 'md_lit_cancela_lancamento', 'md_lit_conduta', 'md_lit_controle', 'md_lit_dado_interessado', 'md_lit_decisao', 'md_lit_disp_normat', 'md_lit_especie_decisao', 'md_lit_fase', 'md_lit_funcionalidade', 'md_lit_historic_lancamento', 'md_lit_integracao', 'md_lit_lancamento', 'md_lit_mapea_param_entrada', 'md_lit_mapea_param_saida', 'md_lit_mapea_param_valor', 'md_lit_motivo', 'md_lit_nome_funcional', 'md_lit_numero_interessado', 'md_lit_obrigacao', 'md_lit_param_interessado', 'md_lit_processo_situacao', 'md_lit_reinciden_anteceden', 'md_lit_rel_controle_motivo', 'md_lit_rel_decis_lancament', 'md_lit_rel_decisao_uf', 'md_lit_rel_dis_nor_con_ctr', 'md_lit_rel_disp_norm_conduta', 'md_lit_rel_disp_norm_revogado', 'md_lit_rel_disp_norm_tipo_ctrl', 'md_lit_rel_esp_decisao_obr', 'md_lit_rel_num_inter_modali', 'md_lit_rel_num_inter_servico', 'md_lit_rel_num_inter_tp_outor', 'md_lit_rel_protoco_protoco', 'md_lit_rel_sit_serie', 'md_lit_rel_tipo_ctrl_tipo_dec', 'md_lit_rel_tp_control_moti', 'md_lit_rel_tp_controle_proced', 'md_lit_rel_tp_controle_unid', 'md_lit_rel_tp_controle_usu', 'md_lit_rel_tp_ctrl_proc_sobres', 'md_lit_rel_tp_dec_rein_ante', 'md_lit_rel_tp_especie_dec', 'md_lit_servico', 'md_lit_servico_integracao', 'md_lit_situacao', 'md_lit_situacao_lancam_int', 'md_lit_situacao_lancamento', 'md_lit_tipo_controle', 'md_lit_tipo_decisao');
-		    $this->fixIndices($objInfraMetaBD, $arrTabelas);
+        $this->fixIndices($objInfraMetaBD, $arrTabelas);
 
         $this->atualizarNumeroVersao($nmVersao);
     }
@@ -2099,7 +2103,7 @@ class MdLitAtualizadorSeiRN extends InfraRN
 
             $objInfraMetaBD = new InfraMetaBD($instanciaBanco);
             $this->logar('ADICIONANDO A COLUNA dta_decurso_prazo_recurso NA TABELA md_lit_lancamento');
-            $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'dta_decurso_prazo_recurso', $objInfraMetaBD->tipoDataHora(), 'NULL');
+            $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'dta_decurso_prazo_recurso', $objInfraMetaBD->tipoDataHora(), 'null');
 
             $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
 
@@ -2163,9 +2167,9 @@ class MdLitAtualizadorSeiRN extends InfraRN
             }
 
             $this->logar('ADICIONANDO A COLUNA cpf NA TABELA md_lit_dado_interessado');
-            $objInfraMetaBD->adicionarColuna('md_lit_dado_interessado', 'cpf', $objInfraMetaBD->tipoNumeroGrande(), 'NULL');
+            $objInfraMetaBD->adicionarColuna('md_lit_dado_interessado', 'cpf', $objInfraMetaBD->tipoNumeroGrande(), 'null');
             $this->logar('ADICIONANDO A COLUNA cnpj NA TABELA md_lit_dado_interessado');
-            $objInfraMetaBD->adicionarColuna('md_lit_dado_interessado', 'cnpj', $objInfraMetaBD->tipoNumeroGrande(), 'NULL');
+            $objInfraMetaBD->adicionarColuna('md_lit_dado_interessado', 'cnpj', $objInfraMetaBD->tipoNumeroGrande(), 'null');
 
             $objMdLitDadoInteressadoDTO = new MdLitDadoInteressadoDTO();
             $objMdLitDadoInteressadoDTO->retTodos();
@@ -2204,12 +2208,12 @@ class MdLitAtualizadorSeiRN extends InfraRN
             }
 
             $this->logar('RENOMEANDO coluna na tabela md_lit_especie_decisao de sin_ressarcimento_valor para sin_valor');
-            $objInfraMetaBD->adicionarColuna('md_lit_especie_decisao', 'sin_valor', $objInfraMetaBD->tipoTextoFixo(1), 'NULL');
+            $objInfraMetaBD->adicionarColuna('md_lit_especie_decisao', 'sin_valor', $objInfraMetaBD->tipoTextoFixo(1), 'null');
             BancoSEI::getInstance()->executarSql('UPDATE md_lit_especie_decisao set sin_valor=sin_ressarcimento_valor');
             $objInfraMetaBD->excluirColuna('md_lit_especie_decisao', 'sin_ressarcimento_valor');
 
             $this->logar('RENOMEANDO coluna na tabela md_lit_decisao de valor_ressarcimento para valor');
-            $objInfraMetaBD->adicionarColuna('md_lit_decisao', 'valor', $objInfraMetaBD->tipoNumeroDecimal(19, 2), 'NULL');
+            $objInfraMetaBD->adicionarColuna('md_lit_decisao', 'valor', $objInfraMetaBD->tipoNumeroDecimal(19, 2), 'null');
             BancoSEI::getInstance()->executarSql('UPDATE md_lit_decisao set valor=valor_ressarcimento');
             $objInfraMetaBD->excluirColuna('md_lit_decisao', 'valor_ressarcimento');
 
@@ -2235,10 +2239,10 @@ class MdLitAtualizadorSeiRN extends InfraRN
 
         $arrTabelas = array('md_lit_adm_modalidad_outor', 'md_lit_adm_tipo_outor', 'md_lit_assoc_disp_normat', 'md_lit_campo_integracao', 'md_lit_cancela_lancamento', 'md_lit_conduta', 'md_lit_controle', 'md_lit_dado_interessado', 'md_lit_decisao', 'md_lit_disp_normat', 'md_lit_especie_decisao', 'md_lit_fase', 'md_lit_funcionalidade', 'md_lit_historic_lancamento', 'md_lit_integracao', 'md_lit_lancamento', 'md_lit_mapea_param_entrada', 'md_lit_mapea_param_saida', 'md_lit_mapea_param_valor', 'md_lit_motivo', 'md_lit_nome_funcional', 'md_lit_numero_interessado', 'md_lit_obrigacao', 'md_lit_param_interessado', 'md_lit_processo_situacao', 'md_lit_reinciden_anteceden', 'md_lit_rel_controle_motivo', 'md_lit_rel_decis_lancament', 'md_lit_rel_decisao_uf', 'md_lit_rel_dis_nor_con_ctr', 'md_lit_rel_disp_norm_conduta', 'md_lit_rel_disp_norm_revogado', 'md_lit_rel_disp_norm_tipo_ctrl', 'md_lit_rel_esp_decisao_obr', 'md_lit_rel_num_inter_modali', 'md_lit_rel_num_inter_servico', 'md_lit_rel_num_inter_tp_outor', 'md_lit_rel_protoco_protoco', 'md_lit_rel_sit_serie', 'md_lit_rel_tipo_ctrl_tipo_dec', 'md_lit_rel_tp_control_moti', 'md_lit_rel_tp_controle_proced', 'md_lit_rel_tp_controle_unid', 'md_lit_rel_tp_controle_usu', 'md_lit_rel_tp_ctrl_proc_sobres', 'md_lit_rel_tp_dec_rein_ante', 'md_lit_rel_tp_especie_dec', 'md_lit_servico', 'md_lit_servico_integracao', 'md_lit_situacao', 'md_lit_situacao_lancam_int', 'md_lit_situacao_lancamento', 'md_lit_tipo_controle', 'md_lit_tipo_decisao');
 
-		    $this->fixIndices($objInfraMetaBD, $arrTabelas);
+        $this->fixIndices($objInfraMetaBD, $arrTabelas);
 
         $this->atualizarNumeroVersao($nmVersao);
-	}
+    }
 
     protected function instalarv210()
     {
@@ -2324,34 +2328,34 @@ class MdLitAtualizadorSeiRN extends InfraRN
         BancoSEI::getInstance()->executarSql('UPDATE md_lit_campo_integracao SET nome_campo = \'Renúncia ao direito de recorrer\' WHERE nome_campo = \'Renúncia de Recurso\'');
 
         $this->logar('Adicionando campos para documento no lançamento e data da decisão definitiva');
-        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'id_md_lit_sit_dec_def', $objInfraMetaBD->tipoNumero(), 'NULL');
-        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'dta_decisao_definitiva', $objInfraMetaBD->tipoDataHora(), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'id_md_lit_sit_dec_def', $objInfraMetaBD->tipoNumero(), 'null');
+        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'dta_decisao_definitiva', $objInfraMetaBD->tipoDataHora(), 'null');
         $objInfraMetaBD->adicionarChaveEstrangeira('fk7_md_lit_lancamento', 'md_lit_lancamento', array('id_md_lit_sit_dec_def'), 'md_lit_processo_situacao', array('id_md_lit_processo_situacao'));
 
-        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'id_md_lit_sit_dec_def', $objInfraMetaBD->tipoNumero(), 'NULL');
-        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'dta_decisao_definitiva', $objInfraMetaBD->tipoDataHora(), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'id_md_lit_sit_dec_def', $objInfraMetaBD->tipoNumero(), 'null');
+        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'dta_decisao_definitiva', $objInfraMetaBD->tipoDataHora(), 'null');
         $objInfraMetaBD->adicionarChaveEstrangeira('fk8_md_lit_historic_lancamento', 'md_lit_historic_lancamento', array('id_md_lit_sit_dec_def'), 'md_lit_processo_situacao', array('id_md_lit_processo_situacao'));
 
-        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'dta_apresentacao_recurso', $objInfraMetaBD->tipoDataHora(), 'NULL');
-        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'dta_apresentacao_recurso', $objInfraMetaBD->tipoDataHora(), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'dta_apresentacao_recurso', $objInfraMetaBD->tipoDataHora(), 'null');
+        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'dta_apresentacao_recurso', $objInfraMetaBD->tipoDataHora(), 'null');
 
-        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'id_situacao_decisao', $objInfraMetaBD->tipoNumero(), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'id_situacao_decisao', $objInfraMetaBD->tipoNumero(), 'null');
         $objInfraMetaBD->adicionarChaveEstrangeira('fk8_md_lit_lancamento', 'md_lit_lancamento', array('id_situacao_decisao'), 'md_lit_processo_situacao', array('id_md_lit_processo_situacao'));
-        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'id_situacao_decisao', $objInfraMetaBD->tipoNumero(), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'id_situacao_decisao', $objInfraMetaBD->tipoNumero(), 'null');
         $objInfraMetaBD->adicionarChaveEstrangeira('fk9_md_lit_historic_lanc', 'md_lit_historic_lancamento', array('id_situacao_decisao'), 'md_lit_processo_situacao', array('id_md_lit_processo_situacao'));
 
-        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'id_situacao_intimacao', $objInfraMetaBD->tipoNumero(), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'id_situacao_intimacao', $objInfraMetaBD->tipoNumero(), 'null');
         $objInfraMetaBD->adicionarChaveEstrangeira('fk9_md_lit_lancamento', 'md_lit_lancamento', array('id_situacao_intimacao'), 'md_lit_processo_situacao', array('id_md_lit_processo_situacao'));
-        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'id_situacao_intimacao', $objInfraMetaBD->tipoNumero(), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'id_situacao_intimacao', $objInfraMetaBD->tipoNumero(), 'null');
         $objInfraMetaBD->adicionarChaveEstrangeira('fk10_md_lit_historic_lanc', 'md_lit_historic_lancamento', array('id_situacao_intimacao'), 'md_lit_processo_situacao', array('id_md_lit_processo_situacao'));
 
-        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'id_situacao_recurso', $objInfraMetaBD->tipoNumero(), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'id_situacao_recurso', $objInfraMetaBD->tipoNumero(), 'null');
         $objInfraMetaBD->adicionarChaveEstrangeira('fk10_md_lit_lancamento', 'md_lit_lancamento', array('id_situacao_recurso'), 'md_lit_processo_situacao', array('id_md_lit_processo_situacao'));
-        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'id_situacao_recurso', $objInfraMetaBD->tipoNumero(), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'id_situacao_recurso', $objInfraMetaBD->tipoNumero(), 'null');
         $objInfraMetaBD->adicionarChaveEstrangeira('fk11_md_lit_hist_lancamento', 'md_lit_historic_lancamento', array('id_situacao_recurso'), 'md_lit_processo_situacao', array('id_md_lit_processo_situacao'));
 
-        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'num_doc_decisao_multa', $objInfraMetaBD->tipoTextoVariavel(50), 'NULL');
-        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'num_doc_decisao_multa', $objInfraMetaBD->tipoTextoVariavel(50), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'num_doc_decisao_multa', $objInfraMetaBD->tipoTextoVariavel(50), 'null');
+        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'num_doc_decisao_multa', $objInfraMetaBD->tipoTextoVariavel(50), 'null');
 
         $this->logar('Fim Adicionar campos para documento no lançamento e data da decisão definitiva');
 
@@ -2371,37 +2375,37 @@ class MdLitAtualizadorSeiRN extends InfraRN
         $objInfraMetaBD->setBolValidarIdentificador(true);
 
         $this->logar('Criando coluna para marcar situações de lancamento que irá ser utilizada no agendamento');
-        $objInfraMetaBD->adicionarColuna('md_lit_situacao_lancamento', 'sin_utilizar_agendamento', '' . $objInfraMetaBD->tipoTextoVariavel(1), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_situacao_lancamento', 'sin_utilizar_agendamento', '' . $objInfraMetaBD->tipoTextoVariavel(1), 'null');
         BancoSEI::getInstance()->executarSql('UPDATE md_lit_situacao_lancamento set sin_utilizar_agendamento= \'N\'');
         BancoSEI::getInstance()->executarSql('UPDATE md_lit_situacao_lancamento set sin_utilizar_agendamento= \'S\' WHERE sin_ativo_integracao = \'S\'');
-        $objInfraMetaBD->alterarColuna('md_lit_situacao_lancamento', 'sin_utilizar_agendamento', $objInfraMetaBD->tipoTextoVariavel(1), 'NOT NULL');
+        $objInfraMetaBD->alterarColuna('md_lit_situacao_lancamento', 'sin_utilizar_agendamento', $objInfraMetaBD->tipoTextoVariavel(1), 'not null');
         $this->logar('FIM  Criação da coluna para marcar situações de lancamento que irá ser utilizada no agendamento');
 
         $objInfraMetaBD = new InfraMetaBD(BancoSEI::getInstance());
         $this->logar('Popular valor padrão de NULL para N na coluna sin_cancelamento logo após alterar coluna para NOT NULL');
         BancoSEI::getInstance()->executarSql('UPDATE md_lit_situacao_lancamento set sin_cancelamento = \'N\' WHERE sin_cancelamento  IS NULL');
-        $objInfraMetaBD->alterarColuna('md_lit_situacao_lancamento', 'sin_cancelamento', $objInfraMetaBD->tipoTextoVariavel(1), 'NOT NULL');
+        $objInfraMetaBD->alterarColuna('md_lit_situacao_lancamento', 'sin_cancelamento', $objInfraMetaBD->tipoTextoVariavel(1), 'not null');
         $this->logar('FIM Popular valor padrão de NULL para N na coluna sin_cancelamento logo após alterar coluna para NOT NULL');
 
         $this->logar('ALTERAR COLUNA DE PRAZO da situação');
 
-        $objInfraMetaBD->alterarColuna('md_lit_situacao', 'prazo', $objInfraMetaBD->tipoTextoVariavel(250), 'NULL');
-        $objInfraMetaBD->adicionarColuna('md_lit_processo_situacao', 'prazo', $objInfraMetaBD->tipoTextoVariavel(250), 'NULL');
-        $objInfraMetaBD->adicionarColuna('md_lit_situacao', 'tp_prazo', $objInfraMetaBD->tipoTextoVariavel(1), 'NULL');
-        $objInfraMetaBD->adicionarColuna('md_lit_processo_situacao', 'tp_prazo', $objInfraMetaBD->tipoTextoVariavel(1), 'NULL');
+        $objInfraMetaBD->alterarColuna('md_lit_situacao', 'prazo', $objInfraMetaBD->tipoTextoVariavel(30), 'null');
+        $objInfraMetaBD->adicionarColuna('md_lit_processo_situacao', 'prazo', $objInfraMetaBD->tipoTextoVariavel(30), 'null');
+        $objInfraMetaBD->adicionarColuna('md_lit_situacao', 'tp_prazo', $objInfraMetaBD->tipoTextoVariavel(1), 'null');
+        $objInfraMetaBD->adicionarColuna('md_lit_processo_situacao', 'tp_prazo', $objInfraMetaBD->tipoTextoVariavel(1), 'null');
 
         BancoSEI::getInstance()->executarSql('UPDATE md_lit_processo_situacao set tp_prazo = \'C\' WHERE prazo  IS NOT NULL');
         BancoSEI::getInstance()->executarSql('UPDATE md_lit_situacao set tp_prazo = \'C\' WHERE prazo  IS NOT NULL');
 
-        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'prazo_defesa', $objInfraMetaBD->tipoNumero(), 'NULL');
-        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'tp_prazo_defesa', $objInfraMetaBD->tipoTextoVariavel(1), 'NULL');
-        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'prazo_recurso', $objInfraMetaBD->tipoNumero(), 'NULL');
-        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'tp_prazo_recurso', $objInfraMetaBD->tipoTextoVariavel(1), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'prazo_defesa', $objInfraMetaBD->tipoNumero(), 'null');
+        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'tp_prazo_defesa', $objInfraMetaBD->tipoTextoVariavel(1), 'null');
+        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'prazo_recurso', $objInfraMetaBD->tipoNumero(), 'null');
+        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'tp_prazo_recurso', $objInfraMetaBD->tipoTextoVariavel(1), 'null');
 
-        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'prazo_defesa', $objInfraMetaBD->tipoNumero(), 'NULL');
-        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'tp_prazo_defesa', $objInfraMetaBD->tipoTextoVariavel(1), 'NULL');
-        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'prazo_recurso', $objInfraMetaBD->tipoNumero(), 'NULL');
-        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'tp_prazo_recurso', $objInfraMetaBD->tipoTextoVariavel(1), 'NULL');
+        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'prazo_defesa', $objInfraMetaBD->tipoNumero(), 'null');
+        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'tp_prazo_defesa', $objInfraMetaBD->tipoTextoVariavel(1), 'null');
+        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'prazo_recurso', $objInfraMetaBD->tipoNumero(), 'null');
+        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'tp_prazo_recurso', $objInfraMetaBD->tipoTextoVariavel(1), 'null');
 
         $objMdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
 
@@ -2516,6 +2520,14 @@ class MdLitAtualizadorSeiRN extends InfraRN
 
         $objInfraMetaBD->adicionarChaveEstrangeira('fk1_md_lit_rel_opc_camp_mult', 'md_lit_rel_opc_camp_mult', array('id_md_lit_campos_ad_form'), 'md_lit_campos_ad_form', array('id_md_lit_campos_ad_form'));
         $objInfraMetaBD->adicionarChaveEstrangeira('fk2_md_lit_rel_opc_camp_mult', 'md_lit_rel_opc_camp_mult', array('id_md_lit_campos_ad_sel'), 'md_lit_campos_ad_sel', array('id_md_lit_campos_ad_sel'));
+
+        $this->atualizarNumeroVersao($nmVersao);
+    }
+
+    protected function instalarv230()
+    {
+        $nmVersao = '2.3.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
 
         $this->atualizarNumeroVersao($nmVersao);
     }
