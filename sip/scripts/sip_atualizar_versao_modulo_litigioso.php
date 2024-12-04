@@ -2139,7 +2139,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
 
         if ($objSistemaDTO == null) {
-          throw new InfraException('Sistema SEI não encontrado.');
+            throw new InfraException('Sistema SEI não encontrado.');
         }
 
         $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
@@ -2152,7 +2152,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-          throw new InfraException('Perfil Administrador do sistema SEI não encontrado.');
+            throw new InfraException('Perfil Administrador do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiAdministrador = $objPerfilDTO->getNumIdPerfil();
@@ -2171,6 +2171,26 @@ class MdLitAtualizadorSipRN extends InfraRN
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tp_info_add_contar');
 
 
+        $this->logar('ADICINANDO RECURSO LITIGIOSO PARA ADMINISTRADOR PARA CADASTRAR CAMPOS ADICIONAIS');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_dado_interessado_selecionar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_fase_consultar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_fase_listar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_fase_selecionar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_mapear_param_entrada_listar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_mapear_param_saida_listar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_processo_situacao_alterar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_processo_situacao_excluir');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_num_inter_tp_outor_excluir');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_consultar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_listar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_parametrizar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_selecionar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_consultar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_selecionar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_tipo_decisao_consultar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_decisao_selecionar');
+
+
         $this->logar('REMOVENTO RECURSOS INDEVIDOS DE GESTOR DE CONTROLE LITIGIOSO');
         $objPerfilDTO = new PerfilDTO();
         $objPerfilDTO->retNumIdPerfil();
@@ -2179,7 +2199,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-          throw new InfraException('Perfil Gestor de Controle Litigioso do sistema SEI não encontrado.');
+            throw new InfraException('Perfil Gestor de Controle Litigioso do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiGestorLitigioso = $objPerfilDTO->getNumIdPerfil();
@@ -2197,7 +2217,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-          throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
+            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
