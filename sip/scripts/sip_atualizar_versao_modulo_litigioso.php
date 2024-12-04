@@ -2080,7 +2080,7 @@ class MdLitAtualizadorSipRN extends InfraRN
 
         $numIdPerfilSeiGestorLitigioso = $objPerfilDTO->getNumIdPerfil();
 
-        $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_decisao_alterar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_decisao_alterar');
 
         $this->logar('ADICINANDO RECURSO PARA GESTOR LIGITIOSO PARA CADASTRAR CAMPOS ADICIONAIS');
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_campo_add_cadastrar');
@@ -2129,6 +2129,82 @@ class MdLitAtualizadorSipRN extends InfraRN
     {
         $nmVersao = '2.3.0';
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+
+        $objSistemaRN = new SistemaRN();
+        $objPerfilRN = new PerfilRN();
+
+        $objSistemaDTO = new SistemaDTO();
+        $objSistemaDTO->retNumIdSistema();
+        $objSistemaDTO->setStrSigla('SEI');
+        $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
+
+        if ($objSistemaDTO == null) {
+          throw new InfraException('Sistema SEI não encontrado.');
+        }
+
+        $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
+
+        $this->logar('ADICINANDO RECURSO PARA ADMINISTRADOR PARA CADASTRAR CAMPOS ADICIONAIS');
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome('Administrador');
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+          throw new InfraException('Perfil Administrador do sistema SEI não encontrado.');
+        }
+
+        $numIdPerfilSeiAdministrador = $objPerfilDTO->getNumIdPerfil();
+
+
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_campo_add_cadastrar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_campo_add_alterar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_campo_add_excluir');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_campo_add_sel_cadastrar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_campo_add_sel_alterar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_campo_add_sel_excluir');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_campo_add_sel_consultar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_campo_add_sel_listar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tp_info_add_cadastrar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tp_info_add_alterar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tp_info_add_contar');
+
+
+        $this->logar('REMOVENTO RECURSOS INDEVIDOS DE GESTOR DE CONTROLE LITIGIOSO');
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome("Gestor de Controle Litigioso");
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+          throw new InfraException('Perfil Gestor de Controle Litigioso do sistema SEI não encontrado.');
+        }
+
+        $numIdPerfilSeiGestorLitigioso = $objPerfilDTO->getNumIdPerfil();
+
+        $this->removerRecursoPerfil($numIdSistemaSei, 'md_lit_campo_add_listar', $numIdPerfilSeiGestorLitigioso);
+        $this->removerRecursoPerfil($numIdSistemaSei, 'md_lit_campo_add_consultar', $numIdPerfilSeiGestorLitigioso);
+        $this->removerRecursoPerfil($numIdSistemaSei, 'md_lit_tp_info_add_consultar', $numIdPerfilSeiGestorLitigioso);
+
+
+
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome('Básico');
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+          throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
+        }
+
+        $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
+
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_campo_add_listar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_campo_add_consultar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tp_info_add_consultar');
 
         $this->atualizarNumeroVersao($nmVersao);
     }
