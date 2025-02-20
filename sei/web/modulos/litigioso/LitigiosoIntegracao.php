@@ -1162,6 +1162,29 @@
             }
         }
 
+        public function desativarUnidade($arrObjUnidadeAPI)
+        {
+            foreach ($arrObjUnidadeAPI as $objUnidade) {
+                $arrIds[] = $objUnidade->getIdUnidade();
+            }
+
+            //consultar as unidades relacionadas
+            $objTipoControleLitigiosoUnidadeDTO = new MdLitRelTipoControleUnidadeDTO();
+            $objTipoControleLitigiosoUnidadeDTO->setNumIdUnidade($arrIds, InfraDTO::$OPER_IN);
+            $objTipoControleLitigiosoUnidadeDTO->retNumIdUnidade();
+            $objTipoControleLitigiosoUnidadeDTO->retStrSiglaTipoControleLitigioso();
+            $arrObjTipoControleLitigiosoUnidadeDTO = (new MdLitRelTipoControleUnidadeRN())->listar( $objTipoControleLitigiosoUnidadeDTO );
+
+            if (!empty($arrObjTipoControleLitigiosoUnidadeDTO)) {
+                $objInfraException = new InfraException();
+                $objTipoControleLitigiosoUnidadeDTO = current($arrObjTipoControleLitigiosoUnidadeDTO);
+                $objInfraException->lancarValidacao('Unidade não pode ser desativada, pois está sendo utilizada no Tipo de Controle Litigioso: '. $objTipoControleLitigiosoUnidadeDTO->getStrSiglaTipoControleLitigioso());
+            }
+
+            return $arrObjUnidadeAPI;
+
+        }
+
         public function anexarProcesso(ProcedimentoAPI $objProcedimentoAPIPrincipal, ProcedimentoAPI $objProcedimentoAPIAnexado)
         {
             $objInfraException = new InfraException();

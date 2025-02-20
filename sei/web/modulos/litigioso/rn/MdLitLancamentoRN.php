@@ -448,6 +448,7 @@ class MdLitLancamentoRN extends InfraRN {
             $arrTbVincularLancamento['hdnDtDecursoPrazoRecurso'] = $post['hdnDtDecursoPrazoRecurso'];
             $arrTbVincularLancamento['txtDtDecursoPrazo'] = $post['hdnDtDecursoPrazo'];
             $arrTbVincularLancamento['hdnDtDecursoPrazo'] = $post['hdnDtDecursoPrazo'];
+            $arrTbVincularLancamento['id_situacao'] = $post['id_situacao'];
             $objMdLitLancamentoDTO = $this->vincularLancamento($arrTbVincularLancamento);
             return $objMdLitLancamentoDTO;
         }
@@ -726,6 +727,7 @@ class MdLitLancamentoRN extends InfraRN {
         $objMdLitLancamentoDTO->setStrNumeroInteressado($arrTbVincularLancamento[12]);
         $objMdLitLancamentoDTO->setNumIdMdLitNumeroInteressado($arrTbVincularLancamento['selNumeroInteressado']);
         $objMdLitLancamentoDTO->setStrJustificativa(null);
+        $objMdLitLancamentoDTO->setNumIdSituacaoDecisao($arrTbVincularLancamento['id_situacao']);
 
         //verificar se já existe lancamento para o processo
         $arrObjMdLitLancamentoDTO = $this->listarLancamentoPorProcedimento($arrTbVincularLancamento['hdnIdProcedimento']);

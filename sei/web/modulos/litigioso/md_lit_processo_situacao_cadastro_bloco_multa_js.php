@@ -21,7 +21,7 @@
         }
     }
 
-    function carregarDependenciaMulta(idNumeroInteressado) {
+    function carregarDependenciaMulta(idNumeroInteressado, numeroInteressado) {
 
         objAjaxNumeroInteressado = new infraAjaxMontarSelectDependente('selInteressado', 'selNumeroInteressado', '<?=$strLinkComboNumeroInteressado?>');
 
@@ -31,10 +31,9 @@
             return 'id_interessado=' + document.getElementById('selInteressado').value + '&id_procedimento=' + document.getElementById('hdnIdProcedimento').value;
         };
         objAjaxNumeroInteressado.processarResultado = function (itCnt) {
-            if (document.getElementById('selNumeroInteressado').getAttribute('data-id-dado-interessado') != '') {
-                infraSelectSelecionarItem('selNumeroInteressado', document.getElementById('selNumeroInteressado').getAttribute('data-id-dado-interessado'));
-            } else if (document.getElementById('selNumeroInteressado').options.length == 2) {
-                document.getElementById('selNumeroInteressado').options[1].selected = true;
+            if (idNumeroInteressado) {
+                infraSelectSelecionarItem('selNumeroInteressado', idNumeroInteressado);
+                document.getElementById('hdnNumInteressado').value = numeroInteressado;
             }
         };
 
@@ -202,9 +201,10 @@
                     }
 
                     //interessado
-                    if($(result).find('idInteressado').text() && document.getElementById('selInteressado').value != $(result).find('idInteressado').text()){
+                    if($(result).find('idInteressado').text()){
                         document.getElementById('selInteressado').value = $(result).find('idInteressado').text();
-                        carregarDependenciaMulta($(result).find('idNumeroInteressado').text());
+                        carregarDependenciaMulta($(result).find('idNumeroInteressado').text(), $(result).find('numeroInteressado').text());
+                        document.getElementById('selNumeroInteressado').setAttribute('data-id-dado-interessado', $(result).find('idNumeroInteressado').text());
                     }
 
                     //Data decisao definitiva

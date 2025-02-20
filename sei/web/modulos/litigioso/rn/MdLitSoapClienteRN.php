@@ -388,7 +388,7 @@ class MdLitSoapClienteRN extends nusoap_client{
                     $exception = new InfraException();
                     //tratamento do encode dinamico
                     $err = $this->convertEncondig($err, 'ISO-8859-1');
-                    $exception->lancarValidacao('Não foi possível a comunicação com o Webservice da Arrecadação. Contate o Gestor do Controle.', null,new Exception($err));
+                    $exception->lancarValidacao($err, null,new Exception($err));
                 }
 
                 InfraDebug::getInstance()->setBolLigado(true);
@@ -409,8 +409,7 @@ class MdLitSoapClienteRN extends nusoap_client{
             InfraDebug::getInstance()->setBolLigado(false);
             InfraDebug::getInstance()->setBolDebugInfra(false);
             InfraDebug::getInstance()->setBolEcho(false);
-            $mensage = current($e->getArrObjInfraValidacao())->getStrDescricao();
-            throw new InfraException("Não foi possível realizar a integração com o Sistema de Arrecadação. \n" . $mensage);
+            PaginaSEI::getInstance()->processarExcecao($e);
         }
 
         if(count($arrResultado) > 0) {

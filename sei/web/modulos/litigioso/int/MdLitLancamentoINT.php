@@ -214,6 +214,7 @@ class MdLitLancamentoINT extends InfraINT {
       $tpPrazoDefesa = $idmdLitLancamento ? $objMdLitLancamentoDTO->getStrTipoPrazoDefesa() : null;
       $prazoRecurso = $idmdLitLancamento ? $objMdLitLancamentoDTO->getNumPrazoSituacaoRecurso() : null;
       $tpPrazoRecurso = $idmdLitLancamento ? $objMdLitLancamentoDTO->getStrTipoPrazoRecurso() : null;
+      $numeroInteressado = $idmdLitLancamento ? $objMdLitLancamentoDTO->getStrNumeroInteressado() : null;
 
 
       //ATUALIZAR DATA DO DECURSO DO PRAZO PARA DEFESA
@@ -257,6 +258,7 @@ class MdLitLancamentoINT extends InfraINT {
       $xml .= "<sinTemDecisaoLancamento>$temDecisaoLancamento</sinTemDecisaoLancamento>\n";
       $xml .= "<idInteressado>$idDadoInteressado</idInteressado>\n";
       $xml .= "<idNumeroInteressado>$idNumeroInteressado</idNumeroInteressado>\n";
+      $xml .= "<numeroInteressado>$numeroInteressado</numeroInteressado>\n";
       $xml .= "<idSituacaoDecisao>$idSituacaoDecisao</idSituacaoDecisao>\n";
       $xml .= "<idSituacaoIntimacao>$idSituacaoIntimacao</idSituacaoIntimacao>\n";
       $xml .= "<idSituacaoRecurso>$idSituacaoRecurso</idSituacaoRecurso>\n";
