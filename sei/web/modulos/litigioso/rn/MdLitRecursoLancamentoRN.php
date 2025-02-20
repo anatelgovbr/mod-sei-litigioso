@@ -125,7 +125,7 @@ class MdLitRecursoLancamentoRN extends InfraRN {
         $objMdLitLancamentoDTO->retDblCpfInteressado();
         $objMdLitLancamentoDTO->retDblCnpjInteressado();
 
-      $objMdLitLancamentoDTO->setNumIdMdLitLancamento($post['selCreditosProcesso'] ? $post['selCreditosProcesso'] : $post['hdnCreditosProcesso']);
+        $objMdLitLancamentoDTO->setNumIdMdLitLancamento($post['selCreditosProcesso'] ? $post['selCreditosProcesso'] : $post['hdnCreditosProcesso']);
 
         $objMdLitLancamentoDTO = $objMdLitLancamentoRN->consultar($objMdLitLancamentoDTO);
 

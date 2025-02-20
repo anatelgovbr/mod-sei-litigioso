@@ -272,7 +272,7 @@ if(0){?><script><?}?>
                 'Antes, ajustes os valores de multas constantes nas decisões para que fiquem em conformidade com o lançamento a ser vinculado.');
             return;
         }
-        if(window.top.document.getElementById("ifrVisualizacao").contentWindow.objTabelaDinamicaDecisao.obterItens().length > 1 && bolValorDiferente){
+        if(window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.objTabelaDinamicaDecisao.obterItens().length > 1 && bolValorDiferente){
             document.getElementById('sbmConfirmar').remove();
             alert('Não foi possível realizar a vinculação do lançamento pré existente em razão de divergência entre o valor retornado do Sistema de Arrecadação e o constante nas decisões deste processo (que possui múltiplas multas indicadas).\n' +
                 '\n\n' +

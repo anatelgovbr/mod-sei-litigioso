@@ -616,7 +616,7 @@
 <input type="hidden" name="hdnSinSuspenso" id="hdnSinSuspenso"
        value="<?= $objMdLitLancamentoDTO ? $objMdLitLancamentoDTO->getStrSinSuspenso() : '' ?>"/>
 
-<input type="hidden" name="hdnNumInteressado" value="<?= $numInteressado ?>">
+<input type="hidden" id="hdnNumInteressado" name="hdnNumInteressado" value="<?= $numInteressado ?>">
 
 <!-- Hidden para verificar o valor original das multas -->
 <input type="hidden" name="hdnVlOriginalMultas" id="hdnVlOriginalMultas" value=""/>

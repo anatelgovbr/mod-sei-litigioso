@@ -702,7 +702,7 @@ class MdLitCamposAdINT extends InfraINT
         $objDocumentoRN = new DocumentoRN();
         $objDocumentoDTO = $objDocumentoRN->consultarRN0005($objDocumentoDTO);
 
-        if (!$objDocumentoDTO) {
+        if (!$objDocumentoDTO && $valor != "") {
             $msg = "O campo " . $objMdLitCamposAdDTO->getStrNome() . " precisa ser preenchido com um número de um documento existente. \n";
             if($objMdLitCamposAdDTO->getStrSinDocExterno() == 'N') {
                 $msg = "O campo " . $objMdLitCamposAdDTO->getStrNome() . " precisa ser preenchido com um número de um documento existente dentro do mesmo processo. \n";

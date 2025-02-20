@@ -31,7 +31,9 @@
             $this->configurarPK('IdUnidade', InfraDTO::$TIPO_PK_INFORMADO);
 
             $this->configurarFK('IdUnidade', 'id_unidade', 'unidade');
-            $this->configurarFK('IdTipoControleLitigioso', 'id_md_lit_tipo_controle', 'md_lit_tipo_controle');
+            $this->configurarFK('IdTipoControleLitigioso', 'md_lit_tipo_controle', 'id_md_lit_tipo_controle');
+
+            $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'SiglaTipoControleLitigioso','sigla','md_lit_tipo_controle');
 
         }
     }

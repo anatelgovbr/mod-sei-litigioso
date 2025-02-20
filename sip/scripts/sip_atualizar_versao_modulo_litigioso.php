@@ -6,12 +6,14 @@ class MdLitAtualizadorSipRN extends InfraRN
 
     private $numSeg = 0;
     private $versaoAtualDesteModulo = '2.3.0';
-    private $nomeDesteModulo = 'MÃ“DULO DE CONTROLE LITIGIOSO';
+    private $nomeDesteModulo = 'MÓDULO DE CONTROLE LITIGIOSO';
     private $nomeParametroModulo = 'VERSAO_MODULO_LITIGIOSO';
     private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4', '1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0');
 
     private $nomeGestorControleLitigioso = "Gestor de Controle Litigioso";
-    private $descricaoGestorControleLitigioso = "Acesso aos recursos especÃ­ficos de Gestor de Controle Litigioso do mÃ³dulo Litigioso do SEI.";
+    private $nomePerfilAdministrador = "Administrador";
+    private $nomePerfilBasico = "Básico";
+    private $descricaoGestorControleLitigioso = "Acesso aos recursos específicos de Gestor de Controle Litigioso do módulo Litigioso do SEI.";
 
     public function __construct()
     {
@@ -53,7 +55,7 @@ class MdLitAtualizadorSipRN extends InfraRN
     {
         if (!$bolErro) {
             $this->numSeg = InfraUtil::verificarTempoProcessamento($this->numSeg);
-            $this->logar('TEMPO TOTAL DE EXECUÃ‡ÃƒO: ' . $this->numSeg . ' s');
+            $this->logar('TEMPO TOTAL DE EXECUÇÃO: ' . $this->numSeg . ' s');
         } else {
             $strMsg = 'ERRO: ' . $strMsg;
         }
@@ -82,13 +84,13 @@ class MdLitAtualizadorSipRN extends InfraRN
     {
 
         try {
-            $this->inicializar('INICIANDO A INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DO ' . $this->nomeDesteModulo . ' NO SIP VERSÃƒO ' . SIP_VERSAO);
+            $this->inicializar('INICIANDO A INSTALAÇÃO/ATUALIZAÇÃO DO ' . $this->nomeDesteModulo . ' NO SIP VERSÃO ' . SIP_VERSAO);
 
             //checando BDs suportados
             if (!(BancoSip::getInstance() instanceof InfraMySql) &&
                 !(BancoSip::getInstance() instanceof InfraSqlServer) &&
                 !(BancoSip::getInstance() instanceof InfraOracle)) {
-                $this->finalizar('BANCO DE DADOS NÃƒO SUPORTADO: ' . get_parent_class(BancoSip::getInstance()), true);
+                $this->finalizar('BANCO DE DADOS NÃO SUPORTADO: ' . get_parent_class(BancoSip::getInstance()), true);
             }
 
             //testando versao do framework
@@ -149,10 +151,12 @@ class MdLitAtualizadorSipRN extends InfraRN
                     $this->instalarv220();
                 case '2.2.0':
                     $this->instalarv230();
+                case '2.3.0':
+                    $this->instalarv240();
                     break;
 
                 default:
-                    $this->finalizar('A VERSÃƒO MAIS ATUAL DO ' . $this->nomeDesteModulo . ' (v' . $this->versaoAtualDesteModulo . ') JÃ ESTÃ INSTALADA.');
+                    $this->finalizar('A VERSÃO MAIS ATUAL DO ' . $this->nomeDesteModulo . ' (v' . $this->versaoAtualDesteModulo . ') JÁ ESTÁ INSTALADA.');
                     break;
 
             }
@@ -163,7 +167,7 @@ class MdLitAtualizadorSipRN extends InfraRN
             InfraDebug::getInstance()->setBolLigado(true);
             InfraDebug::getInstance()->setBolDebugInfra(true);
             InfraDebug::getInstance()->setBolEcho(true);
-            throw new InfraException('Erro instalando/atualizando versÃ£o.', $e);
+            throw new InfraException('Erro instalando/atualizando versão.', $e);
         }
 
     }
@@ -171,7 +175,7 @@ class MdLitAtualizadorSipRN extends InfraRN
     protected function instalarv001()
     {
 
-        $this->logar('EXECUTANDO A INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO 0.0.1 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 0.0.1 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
         $objSistemaRN = new SistemaRN();
         $objPerfilRN = new PerfilRN();
@@ -186,7 +190,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
 
         if ($objSistemaDTO == null) {
-            throw new InfraException('Sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Sistema SEI não encontrado.');
         }
 
         $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
@@ -220,7 +224,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil Gestor de Controle Litigioso do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Perfil Gestor de Controle Litigioso do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiGestorLitigioso = $objPerfilDTO->getNumIdPerfil();
@@ -232,7 +236,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil Administrador do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Perfil Administrador do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiAdministrador = $objPerfilDTO->getNumIdPerfil();
@@ -240,11 +244,11 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = new PerfilDTO();
         $objPerfilDTO->retNumIdPerfil();
         $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('BÃ¡sico');
+        $objPerfilDTO->setStrNome('Básico');
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil BÃ¡sico do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
@@ -252,11 +256,11 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = new PerfilDTO();
         $objPerfilDTO->retNumIdPerfil();
         $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('InformÃ¡tica');
+        $objPerfilDTO->setStrNome('Informática');
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil InformÃ¡tica do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Perfil Informática do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiInformatica = $objPerfilDTO->getNumIdPerfil();
@@ -268,7 +272,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objMenuDTO = $objMenuRN->consultar($objMenuDTO);
 
         if ($objMenuDTO == null) {
-            throw new InfraException('Menu do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Menu do sistema SEI não encontrado.');
         }
 
         $numIdMenuSei = $objMenuDTO->getNumIdMenu();
@@ -276,11 +280,11 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objItemMenuDTO = new ItemMenuDTO();
         $objItemMenuDTO->retNumIdItemMenu();
         $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('AdministraÃ§Ã£o');
+        $objItemMenuDTO->setStrRotulo('Administração');
         $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
 
         if ($objItemMenuDTO == null) {
-            throw new InfraException('Item de menu AdministraÃ§Ã£o do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Item de menu Administração do sistema SEI não encontrado.');
         }
 
         $numIdItemMenuSeiAdministracao = $objItemMenuDTO->getNumIdItemMenu();
@@ -288,11 +292,11 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objItemMenuDTO = new ItemMenuDTO();
         $objItemMenuDTO->retNumIdItemMenu();
         $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('UsuÃ¡rios');
+        $objItemMenuDTO->setStrRotulo('Usuários');
         $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
 
         if ($objItemMenuDTO == null) {
-            throw new InfraException('Item de menu AdministraÃ§Ã£o/UsuÃ¡rios do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Item de menu Administração/Usuários do sistema SEI não encontrado.');
         }
 
         $numIdItemMenuSeiUsuarios = $objItemMenuDTO->getNumIdItemMenu();
@@ -300,7 +304,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $this->logar('ATUALIZANDO RECURSOS, MENUS E PERFIS DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP...');
 
 
-        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - situaÃ§Ã£o do processo EM basico');
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - situação do processo EM basico');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_processo_situacao_cadastrar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_processo_situacao_alterar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_processo_situacao_excluir');
@@ -362,12 +366,12 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_processo_listar');
 
 
-        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL AdministraÃ§Ã£o -> Controle de Processos Litigiosos');
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração -> Controle de Processos Litigiosos');
         $objItemMenuDTOControleProcesso = $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiAdministrador, $numIdMenuSei, $numIdItemMenuSeiAdministracao, null, 'Controle de Processos Litigiosos', 0);
         $objItemMenuDTOControleProcessoBasico = $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, $numIdMenuSei, $numIdItemMenuSeiAdministracao, null, 'Controle de Processos Litigiosos', 0);
 
 
-        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL AdministraÃ§Ã£o -> Controle de Processos Litigiosos -> Tipos de Controles Litigiosos');
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração -> Controle de Processos Litigiosos -> Tipos de Controles Litigiosos');
         $this->adicionarItemMenu($numIdSistemaSei,
             $numIdPerfilSeiAdministrador,
             $numIdMenuSei,
@@ -385,13 +389,13 @@ class MdLitAtualizadorSipRN extends InfraRN
             20);
 
 
-        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL  AdministraÃ§Ã£o -> Controle de Processos Litigiosos -> SituaÃ§Ãµes do LanÃ§amento de CrÃ©dito');
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL  Administração -> Controle de Processos Litigiosos -> Situações do Lançamento de Crédito');
         $this->adicionarItemMenu($numIdSistemaSei,
             $numIdPerfilSeiAdministrador,
             $numIdMenuSei,
             $objItemMenuDTOControleProcessoBasico->getNumIdItemMenu(),
             $objRecursoListarSituacaoLancamentoDTO->getNumIdRecurso(),
-            'SituaÃ§Ãµes do LanÃ§amento de CrÃ©dito',
+            'Situações do Lançamento de Crédito',
             70);
 
         $this->logar('CRIANDO REGRA DE AUDITORIA PARA NOVOS RECURSOS');
@@ -429,17 +433,17 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objSistemaRN->replicarRegraAuditoria($objReplicacaoRegraAuditoriaDTO);
 
         //adicionando parametro para controlar versao do modulo
-        $this->logar('ADICIONANDO PARÃ‚METRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃƒO DO MÃ“DULO');
+        $this->logar('ADICIONANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
         BancoSip::getInstance()->executarSql('INSERT INTO infra_parametro (valor, nome ) VALUES( \'0.0.1\',  \'' . $this->nomeParametroModulo . '\' )');
 
-        $this->logar('INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO 0.0.1 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 0.0.1 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
 
     }
 
     protected function instalarv002()
     {
         $nmVersao = '0.0.2';
-        $this->logar('EXECUTANDO A INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
         $objSistemaRN = new SistemaRN();
         $objPerfilRN = new PerfilRN();
@@ -454,7 +458,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
 
         if ($objSistemaDTO == null) {
-            throw new InfraException('Sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Sistema SEI não encontrado.');
         }
 
         $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
@@ -466,7 +470,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil Administrador do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Perfil Administrador do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiAdministrador = $objPerfilDTO->getNumIdPerfil();
@@ -474,11 +478,11 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = new PerfilDTO();
         $objPerfilDTO->retNumIdPerfil();
         $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('BÃ¡sico');
+        $objPerfilDTO->setStrNome('Básico');
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil BÃ¡sico do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
@@ -523,7 +527,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objMenuDTO = $objMenuRN->consultar($objMenuDTO);
 
         if ($objMenuDTO == null) {
-            throw new InfraException('Menu do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Menu do sistema SEI não encontrado.');
         }
 
         $numIdMenuSei = $objMenuDTO->getNumIdMenu();
@@ -531,11 +535,11 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objItemMenuDTO = new ItemMenuDTO();
         $objItemMenuDTO->retNumIdItemMenu();
         $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('AdministraÃ§Ã£o');
+        $objItemMenuDTO->setStrRotulo('Administração');
         $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
 
         if ($objItemMenuDTO == null) {
-            throw new InfraException('Item de menu AdministraÃ§Ã£o do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Item de menu Administração do sistema SEI não encontrado.');
         }
 
         $numIdItemMenuSeiAdministracao = $objItemMenuDTO->getNumIdItemMenu();
@@ -543,18 +547,18 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objItemMenuDTO = new ItemMenuDTO();
         $objItemMenuDTO->retNumIdItemMenu();
         $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('UsuÃ¡rios');
+        $objItemMenuDTO->setStrRotulo('Usuários');
         $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
 
         if ($objItemMenuDTO == null) {
-            throw new InfraException('Item de menu AdministraÃ§Ã£o/UsuÃ¡rios do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Item de menu Administração/Usuários do sistema SEI não encontrado.');
         }
 
         $numIdItemMenuSeiUsuarios = $objItemMenuDTO->getNumIdItemMenu();
 
-        $this->logar('ATUALIZANDO RECURSOS, MENUS E PERFIS DO MÃ“DULO LITIGIOSO NA BASE DO SIP... v0.0.2');
+        $this->logar('ATUALIZANDO RECURSOS, MENUS E PERFIS DO MÓDULO LITIGIOSO NA BASE DO SIP... v0.0.2');
 
-        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - situaÃ§Ã£o EM gestor do controle Litigioso');
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - situação EM gestor do controle Litigioso');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_situacao_parametrizar');
 
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_situacao_alterar');
@@ -579,7 +583,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_tipo_controle_consultar');
         $objRecursoDTOTipoControleGestor = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_tipo_controle_listar');
 
-        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - situaÃ§Ã£o EM BÃ¡sico e administrador');
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - situação EM Básico e administrador');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_situacao_parametrizar');
 
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_alterar');
@@ -612,12 +616,12 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objRecursoDTOTipoControle = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_listar');
 
 
-        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL AdministraÃ§Ã£o -> Controle de Processos Litigiosos');
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração -> Controle de Processos Litigiosos');
         $objItemMenuDTOControleProcesso = $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiAdministrador, $numIdMenuSei, $numIdItemMenuSeiAdministracao, null, 'Controle de Processos Litigiosos', 0);
         $objItemMenuDTOControleProcessoBasico = $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, $numIdMenuSei, $numIdItemMenuSeiAdministracao, null, 'Controle de Processos Litigiosos', 0);
 
 
-        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL AdministraÃ§Ã£o -> Controle de Processos Litigiosos -> Tipos de Controles Litigiosos');
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração -> Controle de Processos Litigiosos -> Tipos de Controles Litigiosos');
         $this->adicionarItemMenu($numIdSistemaSei,
             $numIdPerfilSeiAdministrador,
             $numIdMenuSei,
@@ -725,7 +729,7 @@ class MdLitAtualizadorSipRN extends InfraRN
     protected function instalarv003()
     {
         $nmVersao = '0.0.3';
-        $this->logar('EXECUTANDO A INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
         $objSistemaRN = new SistemaRN();
         $objPerfilRN = new PerfilRN();
@@ -740,7 +744,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
 
         if ($objSistemaDTO == null) {
-            throw new InfraException('Sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Sistema SEI não encontrado.');
         }
 
         $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
@@ -752,7 +756,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil Administrador do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Perfil Administrador do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiAdministrador = $objPerfilDTO->getNumIdPerfil();
@@ -761,11 +765,11 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = new PerfilDTO();
         $objPerfilDTO->retNumIdPerfil();
         $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('BÃ¡sico');
+        $objPerfilDTO->setStrNome('Básico');
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil BÃ¡sico do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
@@ -811,7 +815,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objMenuDTO = $objMenuRN->consultar($objMenuDTO);
 
         if ($objMenuDTO == null) {
-            throw new InfraException('Menu do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Menu do sistema SEI não encontrado.');
         }
 
         $numIdMenuSei = $objMenuDTO->getNumIdMenu();
@@ -819,11 +823,11 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objItemMenuDTO = new ItemMenuDTO();
         $objItemMenuDTO->retNumIdItemMenu();
         $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('AdministraÃ§Ã£o');
+        $objItemMenuDTO->setStrRotulo('Administração');
         $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
 
         if ($objItemMenuDTO == null) {
-            throw new InfraException('Item de menu AdministraÃ§Ã£o do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Item de menu Administração do sistema SEI não encontrado.');
         }
 
         $numIdItemMenuSeiAdministracao = $objItemMenuDTO->getNumIdItemMenu();
@@ -831,16 +835,16 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objItemMenuDTO = new ItemMenuDTO();
         $objItemMenuDTO->retNumIdItemMenu();
         $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('UsuÃ¡rios');
+        $objItemMenuDTO->setStrRotulo('Usuários');
         $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
 
         if ($objItemMenuDTO == null) {
-            throw new InfraException('Item de menu AdministraÃ§Ã£o/UsuÃ¡rios do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Item de menu Administração/Usuários do sistema SEI não encontrado.');
         }
 
         $numIdItemMenuSeiUsuarios = $objItemMenuDTO->getNumIdItemMenu();
 
-        $this->logar('ATUALIZANDO RECURSOS, MENUS E PERFIS DO MÃ“DULO LITIGIOSO NA BASE DO SIP...');
+        $this->logar('ATUALIZANDO RECURSOS, MENUS E PERFIS DO MÓDULO LITIGIOSO NA BASE DO SIP...');
 
 
         $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - dispositivos normativos EM Gestor do controle litigioso e basico');
@@ -899,12 +903,12 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_conduta_desativar');
 
 
-        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL AdministraÃ§Ã£o -> Controle de Processos Litigiosos');
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração -> Controle de Processos Litigiosos');
         $objItemMenuDTOControleProcesso = $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiAdministrador, $numIdMenuSei, $numIdItemMenuSeiAdministracao, null, 'Controle de Processos Litigiosos', 20);
         $objItemMenuDTOControleProcessoBasico = $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, $numIdMenuSei, $numIdItemMenuSeiAdministracao, null, 'Controle de Processos Litigiosos', 20);
 
 
-        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL AdministraÃ§Ã£o -> Controle de Processos Litigiosos -> Dispostivos Normativos');
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração -> Controle de Processos Litigiosos -> Dispostivos Normativos');
         $this->adicionarItemMenu($numIdSistemaSei,
             $numIdPerfilSeiAdministrador,
             $numIdMenuSei,
@@ -969,7 +973,7 @@ class MdLitAtualizadorSipRN extends InfraRN
     protected function instalarv004()
     {
         $nmVersao = '0.0.4';
-        $this->logar('EXECUTANDO A INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
         $objSistemaRN = new SistemaRN();
         $objPerfilRN = new PerfilRN();
@@ -984,7 +988,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
 
         if ($objSistemaDTO == null) {
-            throw new InfraException('Sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Sistema SEI não encontrado.');
         }
 
         $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
@@ -996,7 +1000,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil Administrador do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Perfil Administrador do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiAdministrador = $objPerfilDTO->getNumIdPerfil();
@@ -1005,11 +1009,11 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = new PerfilDTO();
         $objPerfilDTO->retNumIdPerfil();
         $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('BÃ¡sico');
+        $objPerfilDTO->setStrNome('Básico');
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil BÃ¡sico do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
@@ -1055,7 +1059,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objMenuDTO = $objMenuRN->consultar($objMenuDTO);
 
         if ($objMenuDTO == null) {
-            throw new InfraException('Menu do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Menu do sistema SEI não encontrado.');
         }
 
         $numIdMenuSei = $objMenuDTO->getNumIdMenu();
@@ -1063,11 +1067,11 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objItemMenuDTO = new ItemMenuDTO();
         $objItemMenuDTO->retNumIdItemMenu();
         $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('AdministraÃ§Ã£o');
+        $objItemMenuDTO->setStrRotulo('Administração');
         $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
 
         if ($objItemMenuDTO == null) {
-            throw new InfraException('Item de menu AdministraÃ§Ã£o do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Item de menu Administração do sistema SEI não encontrado.');
         }
 
         $numIdItemMenuSeiAdministracao = $objItemMenuDTO->getNumIdItemMenu();
@@ -1075,16 +1079,16 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objItemMenuDTO = new ItemMenuDTO();
         $objItemMenuDTO->retNumIdItemMenu();
         $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('UsuÃ¡rios');
+        $objItemMenuDTO->setStrRotulo('Usuários');
         $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
 
         if ($objItemMenuDTO == null) {
-            throw new InfraException('Item de menu AdministraÃ§Ã£o/UsuÃ¡rios do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Item de menu Administração/Usuários do sistema SEI não encontrado.');
         }
 
         $numIdItemMenuSeiUsuarios = $objItemMenuDTO->getNumIdItemMenu();
 
-        $this->logar('ATUALIZANDO RECURSOS, MENUS E PERFIS DO MÃ“DULO LITIGIOSO NA BASE DO SIP... v0.0.4');
+        $this->logar('ATUALIZANDO RECURSOS, MENUS E PERFIS DO MÓDULO LITIGIOSO NA BASE DO SIP... v0.0.4');
 
 
         $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - tipo de controle EM Gestor do controle litigioso');
@@ -1103,7 +1107,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_mapear_param_saida_listar');
 
 
-        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - tipo de decisÃ£o EM basico e administrador');
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - tipo de decisão EM basico e administrador');
         $objRecursoTipoDecisaoListarDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_decisao_listar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_decisao_selecionar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tipo_decisao_consultar');
@@ -1138,7 +1142,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_obrigacao_cadastrar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_obrigacao_alterar');
 
-        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - serviÃ§o EM basico e administrador');
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - serviço EM basico e administrador');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_servico_selecionar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_servico_integracao_consultar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_servico_consultar');
@@ -1163,7 +1167,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_rel_servico_abrangen_excluir');
 
 
-        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - IntegraÃ§Ã£o EM basico e administrador');
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - Integração EM basico e administrador');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_integracao_listar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_integracao_selecionar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_integracao_consultar');
@@ -1251,7 +1255,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_numero_interessado_listar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_numero_interessado_alterar');
 
-        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - integraÃ§Ã£o EM basico');
+        $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - integração EM basico');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_integracao_consultar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_integracao_listar');
 
@@ -1270,39 +1274,39 @@ class MdLitAtualizadorSipRN extends InfraRN
         $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - /dispositivo normativo EM basico');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_dispositivo_normativo_listar');
 
-        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL AdministraÃ§Ã£o -> Controle de Processos Litigiosos');
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração -> Controle de Processos Litigiosos');
         $objItemMenuDTO = new ItemMenuDTO();
         $objItemMenuDTO->retNumIdItemMenu();
         $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
         $objItemMenuDTO->setStrRotulo('Controle de Processos Litigiosos');
         $objItemMenuDTOControleProcesso = $objItemMenuRN->consultar($objItemMenuDTO);
 
-        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL AdministraÃ§Ã£o > Controle de Processos Litigiosos > Tipos de DecisÃ£o');
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração > Controle de Processos Litigiosos > Tipos de Decisão');
         $this->adicionarItemMenu($numIdSistemaSei,
             $numIdPerfilSeiAdministrador,
             $numIdMenuSei,
             $objItemMenuDTOControleProcesso->getNumIdItemMenu(),
             $objRecursoTipoDecisaoListarDTO->getNumIdRecurso(),
-            'Tipos de DecisÃ£o',
+            'Tipos de Decisão',
             20);
 
-        //criando AdministraÃ§Ã£o > Controle de Processos Litigiosos > ServiÃ§os
-        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL AdministraÃ§Ã£o > Controle de Processos Litigiosos > ServiÃ§os');
+        //criando Administração > Controle de Processos Litigiosos > Serviços
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração > Controle de Processos Litigiosos > Serviços');
         $this->adicionarItemMenu($numIdSistemaSei,
             $numIdPerfilSeiAdministrador,
             $numIdMenuSei,
             $objItemMenuDTOControleProcesso->getNumIdItemMenu(),
             $objRecursoServicoListarDTO->getNumIdRecurso(),
-            'Lista de ServiÃ§os Outorgados',
+            'Lista de Serviços Outorgados',
             30);
 
-        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL AdministraÃ§Ã£o > Controle de Processos Litigiosos > IntegraÃ§Ãµes');
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração > Controle de Processos Litigiosos > Integrações');
         $this->adicionarItemMenu($numIdSistemaSei,
             $numIdPerfilSeiAdministrador,
             $numIdMenuSei,
             $objItemMenuDTOControleProcesso->getNumIdItemMenu(),
             $objRecursoIntegracaoListarDTO->getNumIdRecurso(),
-            'Mapeamento das IntegraÃ§Ãµes',
+            'Mapeamento das Integrações',
             40);
 
         $objRegraAuditoriaDTO = new RegraAuditoriaDTO();
@@ -1394,7 +1398,7 @@ class MdLitAtualizadorSipRN extends InfraRN
     protected function instalarv100()
     {
         $nmVersao = '1.0.0';
-        $this->logar('EXECUTANDO A INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
         $objSistemaRN = new SistemaRN();
         $objPerfilRN = new PerfilRN();
@@ -1409,7 +1413,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
 
         if ($objSistemaDTO == null) {
-            throw new InfraException('Sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Sistema SEI não encontrado.');
         }
 
         $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
@@ -1421,7 +1425,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil Administrador do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Perfil Administrador do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiAdministrador = $objPerfilDTO->getNumIdPerfil();
@@ -1465,11 +1469,11 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = new PerfilDTO();
         $objPerfilDTO->retNumIdPerfil();
         $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('BÃ¡sico');
+        $objPerfilDTO->setStrNome('Básico');
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil BÃ¡sico do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
@@ -1481,7 +1485,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objMenuDTO = $objMenuRN->consultar($objMenuDTO);
 
         if ($objMenuDTO == null) {
-            throw new InfraException('Menu do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Menu do sistema SEI não encontrado.');
         }
 
         $numIdMenuSei = $objMenuDTO->getNumIdMenu();
@@ -1489,11 +1493,11 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objItemMenuDTO = new ItemMenuDTO();
         $objItemMenuDTO->retNumIdItemMenu();
         $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('AdministraÃ§Ã£o');
+        $objItemMenuDTO->setStrRotulo('Administração');
         $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
 
         if ($objItemMenuDTO == null) {
-            throw new InfraException('Item de menu AdministraÃ§Ã£o do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Item de menu Administração do sistema SEI não encontrado.');
         }
 
         $numIdItemMenuSeiAdministracao = $objItemMenuDTO->getNumIdItemMenu();
@@ -1501,16 +1505,16 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objItemMenuDTO = new ItemMenuDTO();
         $objItemMenuDTO->retNumIdItemMenu();
         $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('UsuÃ¡rios');
+        $objItemMenuDTO->setStrRotulo('Usuários');
         $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
 
         if ($objItemMenuDTO == null) {
-            throw new InfraException('Item de menu AdministraÃ§Ã£o/UsuÃ¡rios do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Item de menu Administração/Usuários do sistema SEI não encontrado.');
         }
 
         $numIdItemMenuSeiUsuarios = $objItemMenuDTO->getNumIdItemMenu();
 
-        $this->logar('ATUALIZANDO RECURSOS, MENUS E PERFIS DO MÃ“DULO LITIGIOSO NA BASE DO SIP... v1.0.0');
+        $this->logar('ATUALIZANDO RECURSOS, MENUS E PERFIS DO MÓDULO LITIGIOSO NA BASE DO SIP... v1.0.0');
 
 
         $this->logar('CRIANDO e VINCULANDO RECURSO A PERFIL - reincidencia e antecedencia EM basico e administrador');
@@ -1554,7 +1558,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_controle_motivo_selecionar');
 
 
-        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL AdministraÃ§Ã£o -> Controle de Processos Litigiosos');
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração -> Controle de Processos Litigiosos');
         $objItemMenuDTO = new ItemMenuDTO();
         $objItemMenuDTO->retNumIdItemMenu();
         $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
@@ -1562,23 +1566,23 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objItemMenuDTOControleProcesso = $objItemMenuRN->consultar($objItemMenuDTO);
 
 
-        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL AdministraÃ§Ã£o > Controle de Processos Litigiosos > ReincidÃªncias EspecÃ­ficas e Antecedentes');
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração > Controle de Processos Litigiosos > Reincidências Específicas e Antecedentes');
         $this->adicionarItemMenu($numIdSistemaSei,
             $numIdPerfilSeiAdministrador,
             $numIdMenuSei,
             $objItemMenuDTOControleProcesso->getNumIdItemMenu(),
             $objRecursoReinAnteCadastrarDTO->getNumIdRecurso(),
-            'ReincidÃªncias EspecÃ­ficas e Antecedentes',
+            'Reincidências Específicas e Antecedentes',
             50);
 
 
-        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL AdministraÃ§Ã£o > Controle de Processos Litigiosos > Motivos para InstauraÃ§Ã£o');
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração > Controle de Processos Litigiosos > Motivos para Instauração');
         $this->adicionarItemMenu($numIdSistemaSei,
             $numIdPerfilSeiAdministrador,
             $numIdMenuSei,
             $objItemMenuDTOControleProcesso->getNumIdItemMenu(),
             $objRecursoMotivoListarDTO->getNumIdRecurso(),
-            'Motivos para InstauraÃ§Ã£o',
+            'Motivos para Instauração',
             60);
 
         $objRegraAuditoriaDTO = new RegraAuditoriaDTO();
@@ -1616,7 +1620,7 @@ class MdLitAtualizadorSipRN extends InfraRN
     protected function instalarV110()
     {
         $nmVersao = '1.1.0';
-        $this->logar('EXECUTANDO A INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
         $objSistemaRN = new SistemaRN();
         $objPerfilRN = new PerfilRN();
@@ -1631,7 +1635,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
 
         if ($objSistemaDTO == null) {
-            throw new InfraException('Sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Sistema SEI não encontrado.');
         }
 
         $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
@@ -1640,11 +1644,11 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = new PerfilDTO();
         $objPerfilDTO->retNumIdPerfil();
         $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('BÃ¡sico');
+        $objPerfilDTO->setStrNome('Básico');
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil BÃ¡sico do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
@@ -1657,7 +1661,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil Administrador do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Perfil Administrador do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiAdministrador = $objPerfilDTO->getNumIdPerfil();
@@ -1669,7 +1673,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil Gestor do Controle Litigioso do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Perfil Gestor do Controle Litigioso do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiGestorControle = $objPerfilDTO->getNumIdPerfil();
@@ -1682,7 +1686,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objMenuDTO = $objMenuRN->consultar($objMenuDTO);
 
         if ($objMenuDTO == null) {
-            throw new InfraException('Menu do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Menu do sistema SEI não encontrado.');
         }
 
         $numIdMenuSei = $objMenuDTO->getNumIdMenu();
@@ -1690,11 +1694,11 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objItemMenuDTO = new ItemMenuDTO();
         $objItemMenuDTO->retNumIdItemMenu();
         $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('AdministraÃ§Ã£o');
+        $objItemMenuDTO->setStrRotulo('Administração');
         $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
 
         if ($objItemMenuDTO == null) {
-            throw new InfraException('Item de menu AdministraÃ§Ã£o do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Item de menu Administração do sistema SEI não encontrado.');
         }
 
         $numIdItemMenuSeiAdministracao = $objItemMenuDTO->getNumIdItemMenu();
@@ -1707,7 +1711,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_decisao_uf_excluir');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_decisao_uf_listar');
 
-        $this->logar('Atualizando e VINCULANDO RECURSO A PERFIL - modal de situaÃ§Ã£o EM basico');
+        $this->logar('Atualizando e VINCULANDO RECURSO A PERFIL - modal de situação EM basico');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_situacao_visualizar_parametrizar');
         $objRecursoDTO = $this->removerRecursoPerfil($numIdSistemaSei, 'md_lit_situacao_visualizar_parametrizar', $numIdPerfilSeiAdministrador);
 
@@ -1715,15 +1719,15 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objRecursoListarSituacaoLancamentoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_situacao_lancamento_listar');
 
 
-        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL AdministraÃ§Ã£o -> Controle de Processos Litigiosos');
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Administração -> Controle de Processos Litigiosos');
         $objItemMenuDTOControleProcesso = $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiAdministrador, $numIdMenuSei, $numIdItemMenuSeiAdministracao, null, 'Controle de Processos Litigiosos', 0);
 
 
-        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL  AdministraÃ§Ã£o -> Controle de Processos Litigiosos -> SituaÃ§Ãµes do LanÃ§amento de CrÃ©dito');
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL  Administração -> Controle de Processos Litigiosos -> Situações do Lançamento de Crédito');
         $objItemMenuDTO = new ItemMenuDTO();
         $objItemMenuDTO->retTodos(false);
         $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('SituaÃ§Ãµes do LanÃ§amento de CrÃ©dito');
+        $objItemMenuDTO->setStrRotulo('Situações do Lançamento de Crédito');
         $objItemMenuDTO->setNumIdMenuPai($numIdMenuSei);
         $objItemMenuDTO->setNumIdItemMenuPai($objItemMenuDTOControleProcesso->getNumIdItemMenu());
         $objItemMenuDTO->setNumIdRecurso($objRecursoListarSituacaoLancamentoDTO->getNumIdRecurso());
@@ -1749,7 +1753,7 @@ class MdLitAtualizadorSipRN extends InfraRN
     protected function instalarV120()
     {
         $nmVersao = '1.2.0';
-        $this->logar('EXECUTANDO A INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
 
         $objSistemaRN = new SistemaRN();
@@ -1762,7 +1766,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
 
         if ($objSistemaDTO == null) {
-            throw new InfraException('Sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Sistema SEI não encontrado.');
         }
 
         $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
@@ -1771,17 +1775,17 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = new PerfilDTO();
         $objPerfilDTO->retNumIdPerfil();
         $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('BÃ¡sico');
+        $objPerfilDTO->setStrNome('Básico');
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil BÃ¡sico do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
 
 
-        $this->logar('CRIANDO E VINCULANDO AO PERFIL BÃSICO O RECURSO DESATIVAR DECISÃƒO');
+        $this->logar('CRIANDO E VINCULANDO AO PERFIL BÁSICO O RECURSO DESATIVAR DECISÃO');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_decisao_desativar');
 
         //Atualizando parametro para controlar versao do modulo
@@ -1791,7 +1795,7 @@ class MdLitAtualizadorSipRN extends InfraRN
     protected function instalarV130()
     {
         $nmVersao = '1.3.0';
-        $this->logar('EXECUTANDO A INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
 
         $objSistemaRN = new SistemaRN();
@@ -1806,7 +1810,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
 
         if ($objSistemaDTO == null) {
-            throw new InfraException('Sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Sistema SEI não encontrado.');
         }
 
         $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
@@ -1815,11 +1819,11 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = new PerfilDTO();
         $objPerfilDTO->retNumIdPerfil();
         $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('BÃ¡sico');
+        $objPerfilDTO->setStrNome('Básico');
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil BÃ¡sico do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
@@ -1832,7 +1836,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objMenuDTO = $objMenuRN->consultar($objMenuDTO);
 
         if ($objMenuDTO == null) {
-            throw new InfraException('Menu do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Menu do sistema SEI não encontrado.');
         }
 
         $numIdMenuSei = $objMenuDTO->getNumIdMenu();
@@ -1840,39 +1844,39 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objItemMenuDTO = new ItemMenuDTO();
         $objItemMenuDTO->retNumIdItemMenu();
         $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
-        $objItemMenuDTO->setStrRotulo('RelatÃ³rios');
+        $objItemMenuDTO->setStrRotulo('Relatórios');
         $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
 
         if ($objItemMenuDTO == null) {
-            throw new InfraException('Item de menu RelatÃ³rios do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Item de menu Relatórios do sistema SEI não encontrado.');
         }
 
         $numIdItemMenuSeiRelatorio = $objItemMenuDTO->getNumIdItemMenu();
 
 
-        $this->logar('CRIANDO E VINCULANDO AO PERFIL BÃSICO O RECURSO de relatorio do Antecedente');
+        $this->logar('CRIANDO E VINCULANDO AO PERFIL BÁSICO O RECURSO de relatorio do Antecedente');
         $objRecursoRelatorioAntecedenteDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_relatorio_antecedente');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_modal_relatorio_antecedente');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_relatorio_antecedente_exp_excel');
 
 
-        $this->logar('CRIANDO E VINCULANDO AO PERFIL BÃSICO O RECURSO de relatorio do Reincidente');
+        $this->logar('CRIANDO E VINCULANDO AO PERFIL BÁSICO O RECURSO de relatorio do Reincidente');
         $objRecursoRelatorioReincidenteDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_relatorio_reincidencia');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_modal_relatorio_reincidencia');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_relatorio_antecedente_exp_excel');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_reinciden_anteceden_consultar');
 
 
-        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL RelatÃ³rios -> Processos Litigiosos');
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL Relatórios -> Processos Litigiosos');
         $objItemMenuDTORelatorioLitigiosos = $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiBasico, $numIdMenuSei, $numIdItemMenuSeiRelatorio, null, 'Processos Litigiosos', 30);
 
 
-        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL   RelatÃ³rios -> Processos Litigiosos -> Antecedentes');
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL   Relatórios -> Processos Litigiosos -> Antecedentes');
         $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiBasico, $numIdMenuSei, $objItemMenuDTORelatorioLitigiosos->getNumIdItemMenu(), $objRecursoRelatorioAntecedenteDTO->getNumIdRecurso(), 'Antecendentes', 10);
 
 
-        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL   RelatÃ³rios -> Processos Litigiosos -> Antecedentes');
-        $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiBasico, $numIdMenuSei, $objItemMenuDTORelatorioLitigiosos->getNumIdItemMenu(), $objRecursoRelatorioReincidenteDTO->getNumIdRecurso(), 'ReincidÃªncias EspecÃ­ficas', 20);
+        $this->logar('CRIANDO e VINCULANDO ITEM MENU A PERFIL   Relatórios -> Processos Litigiosos -> Antecedentes');
+        $this->adicionarItemMenu($numIdSistemaSei, $numIdPerfilSeiBasico, $numIdMenuSei, $objItemMenuDTORelatorioLitigiosos->getNumIdItemMenu(), $objRecursoRelatorioReincidenteDTO->getNumIdRecurso(), 'Reincidências Específicas', 20);
 
         //Atualizando parametro para controlar versao do modulo
         $this->atualizarNumeroVersao($nmVersao);
@@ -1881,7 +1885,7 @@ class MdLitAtualizadorSipRN extends InfraRN
     protected function instalarV140()
     {
         $nmVersao = '1.4.0';
-        $this->logar('EXECUTANDO A INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
 
         $objSistemaRN = new SistemaRN();
@@ -1896,7 +1900,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
 
         if ($objSistemaDTO == null) {
-            throw new InfraException('Sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Sistema SEI não encontrado.');
         }
 
         $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
@@ -1905,11 +1909,11 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = new PerfilDTO();
         $objPerfilDTO->retNumIdPerfil();
         $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('BÃ¡sico');
+        $objPerfilDTO->setStrNome('Básico');
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil BÃ¡sico do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
         }
 
         $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
@@ -1922,17 +1926,17 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objMenuDTO = $objMenuRN->consultar($objMenuDTO);
 
         if ($objMenuDTO == null) {
-            throw new InfraException('Menu do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Menu do sistema SEI não encontrado.');
         }
 
 
-        $this->logar('CRIANDO E VINCULANDO AO PERFIL BÃSICO O RECURSO de vincular lancamento');
+        $this->logar('CRIANDO E VINCULANDO AO PERFIL BÁSICO O RECURSO de vincular lancamento');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_vincular_lancamento');
 
-        $this->logar('CRIANDO E VINCULANDO AO PERFIL BÃSICO O RECURSO de situaÃ§Ã£o de lanÃ§amento por integraÃ§Ã£o');
+        $this->logar('CRIANDO E VINCULANDO AO PERFIL BÁSICO O RECURSO de situação de lançamento por integração');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_situacao_lancam_int_consultar');
 
-        $this->logar('CRIANDO E VINCULANDO AO PERFIL BÃSICO O RECURSO de tipo de outorga e numero de interessado');
+        $this->logar('CRIANDO E VINCULANDO AO PERFIL BÁSICO O RECURSO de tipo de outorga e numero de interessado');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_adm_tipo_outor_cadastrar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_modalidade_cadastrar');
         $objRecursoDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_rel_num_inter_tp_outor_listar');
@@ -1949,7 +1953,7 @@ class MdLitAtualizadorSipRN extends InfraRN
     protected function instalarV150()
     {
         $nmVersao = '1.5.0';
-        $this->logar('EXECUTANDO A INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
         $objSistemaRN = new SistemaRN();
         $objPerfilRN = new PerfilRN();
@@ -1963,7 +1967,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
 
         if ($objSistemaDTO == null) {
-            throw new InfraException('Sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Sistema SEI não encontrado.');
         }
 
         $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
@@ -1972,11 +1976,11 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objPerfilDTO = new PerfilDTO();
         $objPerfilDTO->retNumIdPerfil();
         $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('BÃ¡sico');
+        $objPerfilDTO->setStrNome('Básico');
         $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
 
         if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil BÃ¡sico do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Perfil Básico do sistema SEI não encontrado.');
         }
 
         $objMenuDTO = new MenuDTO();
@@ -1986,7 +1990,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $objMenuDTO = $objMenuRN->consultar($objMenuDTO);
 
         if ($objMenuDTO == null) {
-            throw new InfraException('Menu do sistema SEI nÃ£o encontrado.');
+            throw new InfraException('Menu do sistema SEI não encontrado.');
         }
 
         //Atualizando parametro para controlar versao do modulo
@@ -1996,7 +2000,7 @@ class MdLitAtualizadorSipRN extends InfraRN
     protected function instalarV160()
     {
         $nmVersao = '1.6.0';
-        $this->logar('EXECUTANDO A INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
         $this->atualizarNumeroVersao($nmVersao);
     }
@@ -2004,7 +2008,7 @@ class MdLitAtualizadorSipRN extends InfraRN
     protected function instalarV170()
     {
         $nmVersao = '1.7.0';
-        $this->logar('EXECUTANDO A INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
         $this->atualizarNumeroVersao($nmVersao);
     }
@@ -2012,7 +2016,7 @@ class MdLitAtualizadorSipRN extends InfraRN
     protected function instalarV180()
     {
         $nmVersao = '1.8.0';
-        $this->logar('EXECUTANDO A INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
         $this->atualizarNumeroVersao($nmVersao);
     }
@@ -2020,7 +2024,7 @@ class MdLitAtualizadorSipRN extends InfraRN
     protected function instalarV190()
     {
         $nmVersao = '1.9.0';
-        $this->logar('EXECUTANDO A INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
         $this->atualizarNumeroVersao($nmVersao);
     }
@@ -2028,7 +2032,7 @@ class MdLitAtualizadorSipRN extends InfraRN
     protected function instalarV1100()
     {
         $nmVersao = '1.10.0';
-        $this->logar('EXECUTANDO A INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
         $this->atualizarNumeroVersao($nmVersao);
     }
@@ -2036,7 +2040,7 @@ class MdLitAtualizadorSipRN extends InfraRN
     protected function instalarV200()
     {
         $nmVersao = '2.0.0';
-        $this->logar('EXECUTANDO A INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
         $this->atualizarNumeroVersao($nmVersao);
     }
@@ -2044,7 +2048,7 @@ class MdLitAtualizadorSipRN extends InfraRN
     protected function instalarV210()
     {
         $nmVersao = '2.1.0';
-        $this->logar('EXECUTANDO A INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         //Atualizando parametro para controlar versao do modulo
         $this->atualizarNumeroVersao($nmVersao);
     }
@@ -2052,33 +2056,11 @@ class MdLitAtualizadorSipRN extends InfraRN
     protected function instalarV220()
     {
         $nmVersao = '2.2.0';
-        $this->logar('EXECUTANDO A INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
-        $objSistemaRN = new SistemaRN();
-        $objPerfilRN = new PerfilRN();
-
-        $objSistemaDTO = new SistemaDTO();
-        $objSistemaDTO->retNumIdSistema();
-        $objSistemaDTO->setStrSigla('SEI');
-        $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
-
-        if ($objSistemaDTO == null) {
-            throw new InfraException('Sistema SEI nÃ£o encontrado.');
-        }
-
-        $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
-
-        $objPerfilDTO = new PerfilDTO();
-        $objPerfilDTO->retNumIdPerfil();
-        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome($this->nomeGestorControleLitigioso);
-        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
-
-        if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil Gestor de Controle Litigioso do sistema SEI nÃ£o encontrado.');
-        }
-
-        $numIdPerfilSeiGestorLitigioso = $objPerfilDTO->getNumIdPerfil();
+        $numIdSistemaSei = $this->getIdSistemaSei();
+        $numIdPerfilSeiBasico = $this->getIdPerfil($this->nomePerfilBasico);
+        $numIdPerfilSeiGestorLitigioso = $this->getIdPerfil($this->nomeGestorControleLitigioso);
 
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_decisao_alterar');
 
@@ -2098,19 +2080,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_tp_info_add_consultar');
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiGestorLitigioso, 'md_lit_tp_info_add_contar');
 
-        $objPerfilDTO = new PerfilDTO();
-        $objPerfilDTO->retNumIdPerfil();
-        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('BÃ¡sico');
-        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
-
-        if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil BÃ¡sico do sistema SEI nÃ£o encontrado.');
-        }
-
-        $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
-
-        $this->logar('ADICINANDO RECURSO PARA USUARIO BASICO INCLUIR INFORMAÃ‡Ã•ES ADICIONAIS ');
+        $this->logar('ADICINANDO RECURSO PARA USUARIO BASICO INCLUIR INFORMAÇÕES ADICIONAIS ');
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_campo_add_form_cadastrar');
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_campo_add_form_alterar');
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_campo_add_form_excluir');
@@ -2128,35 +2098,12 @@ class MdLitAtualizadorSipRN extends InfraRN
     protected function instalarV230()
     {
         $nmVersao = '2.3.0';
-        $this->logar('EXECUTANDO A INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
 
-        $objSistemaRN = new SistemaRN();
-        $objPerfilRN = new PerfilRN();
-
-        $objSistemaDTO = new SistemaDTO();
-        $objSistemaDTO->retNumIdSistema();
-        $objSistemaDTO->setStrSigla('SEI');
-        $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
-
-        if ($objSistemaDTO == null) {
-            throw new InfraException('Sistema SEI nÃ£o encontrado.');
-        }
-
-        $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
-
-        $this->logar('ADICINANDO RECURSO PARA ADMINISTRADOR PARA CADASTRAR CAMPOS ADICIONAIS');
-        $objPerfilDTO = new PerfilDTO();
-        $objPerfilDTO->retNumIdPerfil();
-        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('Administrador');
-        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
-
-        if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil Administrador do sistema SEI nÃ£o encontrado.');
-        }
-
-        $numIdPerfilSeiAdministrador = $objPerfilDTO->getNumIdPerfil();
-
+        $numIdSistemaSei = $this->getIdSistemaSei();
+        $numIdPerfilSeiBasico = $this->getIdPerfil($this->nomePerfilBasico);
+        $numIdPerfilSeiGestorLitigioso = $this->getIdPerfil($this->nomeGestorControleLitigioso);
+        $numIdPerfilSeiAdministrador = $this->getIdPerfil($this->nomePerfilAdministrador);
 
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_campo_add_cadastrar');
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_campo_add_alterar');
@@ -2170,8 +2117,7 @@ class MdLitAtualizadorSipRN extends InfraRN
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tp_info_add_alterar');
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tp_info_add_contar');
 
-
-        $this->logar('ADICINANDO RECURSO LITIGIOSO PARA ADMINISTRADOR');
+        $this->logar('ADICINANDO RECURSO LITIGIOSO PARA ADMINISTRADOR PARA CADASTRAR CAMPOS ADICIONAIS');
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_dado_interessado_selecionar');
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_fase_consultar');
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_fase_listar');
@@ -2190,43 +2136,63 @@ class MdLitAtualizadorSipRN extends InfraRN
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_controle_tipo_decisao_consultar');
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_tipo_decisao_selecionar');
 
-
         $this->logar('REMOVENTO RECURSOS INDEVIDOS DE GESTOR DE CONTROLE LITIGIOSO');
-        $objPerfilDTO = new PerfilDTO();
-        $objPerfilDTO->retNumIdPerfil();
-        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome("Gestor de Controle Litigioso");
-        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
-
-        if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil Gestor de Controle Litigioso do sistema SEI nÃ£o encontrado.');
-        }
-
-        $numIdPerfilSeiGestorLitigioso = $objPerfilDTO->getNumIdPerfil();
-
         $this->removerRecursoPerfil($numIdSistemaSei, 'md_lit_campo_add_listar', $numIdPerfilSeiGestorLitigioso);
         $this->removerRecursoPerfil($numIdSistemaSei, 'md_lit_campo_add_consultar', $numIdPerfilSeiGestorLitigioso);
         $this->removerRecursoPerfil($numIdSistemaSei, 'md_lit_tp_info_add_consultar', $numIdPerfilSeiGestorLitigioso);
-
-
-
-        $objPerfilDTO = new PerfilDTO();
-        $objPerfilDTO->retNumIdPerfil();
-        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
-        $objPerfilDTO->setStrNome('BÃ¡sico');
-        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
-
-        if ($objPerfilDTO == null) {
-            throw new InfraException('Perfil BÃ¡sico do sistema SEI nÃ£o encontrado.');
-        }
-
-        $numIdPerfilSeiBasico = $objPerfilDTO->getNumIdPerfil();
 
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_campo_add_listar');
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_campo_add_consultar');
         $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_tp_info_add_consultar');
 
         $this->atualizarNumeroVersao($nmVersao);
+    }
+
+    protected function instalarV240()
+    {
+        $nmVersao = '2.4.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+
+        $numIdSistemaSei = $this->getIdSistemaSei();
+        $numIdPerfilSeiBasico = $this->getIdPerfil($this->nomePerfilBasico);
+        $numIdPerfilSeiGestorLitigioso = $this->getIdPerfil($this->nomeGestorControleLitigioso);
+        $numIdPerfilSeiAdministrador = $this->getIdPerfil($this->nomePerfilAdministrador);
+
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_campo_add_sel_listar');
+        $this->removerRecursoPerfil($numIdSistemaSei, 'md_lit_campo_add_sel_listar', $numIdPerfilSeiAdministrador);
+        $this->removerRecursoPerfil($numIdSistemaSei, 'md_lit_campo_add_sel_listar', $numIdPerfilSeiGestorLitigioso);
+
+        $this->atualizarNumeroVersao($nmVersao);
+    }
+
+    private function getIdSistemaSei()
+    {
+        $objSistemaRN = new SistemaRN();
+        $objSistemaDTO = new SistemaDTO();
+        $objSistemaDTO->retNumIdSistema();
+        $objSistemaDTO->setStrSigla('SEI');
+        $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
+
+        if ($objSistemaDTO == null) {
+            throw new InfraException('Sistema SEI não encontrado.');
+        }
+
+        return $objSistemaDTO->getNumIdSistema();
+    }
+
+    private function getIdPerfil($nomePerfil)
+    {
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($this->getIdSistemaSei());
+        $objPerfilDTO->setStrNome($nomePerfil);
+        $objPerfilDTO = (new PerfilRN())->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+            throw new InfraException('Perfil' .  $nomePerfil . ' do sistema SEI não encontrado.');
+        }
+
+        return $objPerfilDTO->getNumIdPerfil();
     }
 
     private function adicionarRecursoPerfil($numIdSistema, $numIdPerfil, $strNome, $strCaminho = null)
@@ -2529,14 +2495,14 @@ class MdLitAtualizadorSipRN extends InfraRN
     }
 
     /**
-     * Atualiza o nmero de versÃ£o do mÃ³dulo nas tabelas de parÃ¢metro do sistema
+     * Atualiza o nmero de versão do módulo nas tabelas de parâmetro do sistema
      *
      * @param string $parStrNumeroVersao
      * @return void
      */
     private function atualizarNumeroVersao($parStrNumeroVersao)
     {
-        $this->logar('ATUALIZANDO PARÃ‚METRO '. $this->nomeParametroModulo .' NA TABELA infra_parametro PARA CONTROLAR A VERSÃƒO DO MÃ“DULO');
+        $this->logar('ATUALIZANDO PARÂMETRO '. $this->nomeParametroModulo .' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
 
         $objInfraParametroDTO = new InfraParametroDTO();
         $objInfraParametroDTO->setStrNome($this->nomeParametroModulo);
@@ -2548,7 +2514,7 @@ class MdLitAtualizadorSipRN extends InfraRN
             $objInfraParametroBD->alterar($objInfraParametroDTO);
         }
 
-        $this->logar('INSTALAÃ‡ÃƒO/ATUALIZAÃ‡ÃƒO DA VERSÃƒO '. $parStrNumeroVersao .' DO '. $this->nomeDesteModulo .' REALIZADA COM SUCESSO NA BASE DO SIP');
+        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $parStrNumeroVersao .' DO '. $this->nomeDesteModulo .' REALIZADA COM SUCESSO NA BASE DO SIP');
 
     }
 
