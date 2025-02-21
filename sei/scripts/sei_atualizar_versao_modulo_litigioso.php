@@ -5,10 +5,10 @@ class MdLitAtualizadorSeiRN extends InfraRN
 {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '2.3.0';
+    private $versaoAtualDesteModulo = '2.4.0';
     private $nomeDesteModulo = 'MÓDULO DE CONTROLE LITIGIOSO';
     private $nomeParametroModulo = 'VERSAO_MODULO_LITIGIOSO';
-    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4', '1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0');
+    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4', '1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0');
 
     public function __construct()
     {
@@ -148,6 +148,8 @@ class MdLitAtualizadorSeiRN extends InfraRN
                     $this->instalarv220();
                 case '2.2.0':
                     $this->instalarv230();
+                case '2.3.0':
+                    $this->instalarv240();
                     break;
 
                 default:
@@ -2527,6 +2529,14 @@ class MdLitAtualizadorSeiRN extends InfraRN
     protected function instalarv230()
     {
         $nmVersao = '2.3.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
+
+        $this->atualizarNumeroVersao($nmVersao);
+    }
+
+    protected function instalarv240()
+    {
+        $nmVersao = '2.4.0';
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
 
         $this->atualizarNumeroVersao($nmVersao);
