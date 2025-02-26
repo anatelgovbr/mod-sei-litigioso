@@ -1,5 +1,8 @@
 <script type="text/javascript">
 
+    let editMode = false;
+    let editRow = null;
+
     function inicializar() {
         if(document.getElementById('hdnIdMdLitCamposAd').value){
             selecionarTipo(true);
@@ -7,8 +10,61 @@
         }
     }
 
-    let editMode = false;
-    let editRow = null;
+    function OnSubmitForm() {
+        return validarCampos();
+    }
+
+    function validarCampos() {
+
+        if (!document.getElementById('txtNome').value) {
+            $("#divMsg > div > label").html('O campo Nome é obrigatório');
+            $("#divMsg").show();
+            return false;
+        }
+
+        if (!document.getElementById('selTipo').value) {
+            $("#divMsg > div > label").html('O campo Tipo de Campo é obrigatório');
+            $("#divMsg").show();
+            return false;
+        }
+
+        if (validacaoBackEnd()) {
+            return false;
+        }
+
+        return true;
+
+    }
+
+    function validacaoBackEnd() {
+        var isInvalido = false
+        var hdnIdMdLitCamposAd = document.getElementById('hdnIdMdLitCamposAd').value;
+        var selTipo = document.getElementById('selTipo').value;
+        var txtNome = document.getElementById('txtNome').value;
+        var hdnIdMdLitTpInforAd = document.getElementById('hdnIdMdLitTpInforAd').value;
+
+        $.ajax({
+            type: "POST",
+            url: "<?=SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_validar_cadastro_campos_info_add') ?>",
+            dataType: "xml",
+            async: false,
+            data: {
+                'hdnIdMdLitCamposAd': hdnIdMdLitCamposAd,
+                'selTipo': selTipo,
+                'txtNome': txtNome,
+                'hdnIdMdLitTpInforAd': hdnIdMdLitTpInforAd
+            },
+            success: function (data) {
+                if ($(data).find('isValido').text() != 1) {
+                    $("#divMsg > div > label").html($(data).find('msg').text());
+                    $("#divMsg").show();
+                    isInvalido = true
+                }
+            }
+        });
+
+        return isInvalido;
+    }
 
     function adicionarOpcao() {
         const nome = document.getElementById('txtNomeSelect').value.trim();

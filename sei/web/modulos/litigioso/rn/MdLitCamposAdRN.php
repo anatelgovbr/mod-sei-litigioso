@@ -12,9 +12,6 @@ require_once dirname(__FILE__) . '/../../../SEI.php';
 class MdLitCamposAdRN extends InfraRN
 {
 
-    public static $STA_LOCALIDADE_NACIONAL = 'N';
-    public static $STA_LOCALIDADE_UF = 'U';
-
     public function __construct()
     {
         parent::__construct();

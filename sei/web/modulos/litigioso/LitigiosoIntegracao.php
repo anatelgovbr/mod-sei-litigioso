@@ -689,6 +689,10 @@
                     $xml = "<resultado>". MdLitCamposAdINT::validarPreenchimentoCampos($_POST)."</resultado>";
                     break;
 
+                case 'md_lit_validar_cadastro_campos_info_add':
+                    $xml = "<resultado>". MdLitCamposAdINT::validarCamposAdd($_POST)."</resultado>";
+                    break;
+
             }
 
             return $xml;
