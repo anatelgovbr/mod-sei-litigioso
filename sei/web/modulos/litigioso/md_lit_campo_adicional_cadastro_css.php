@@ -43,6 +43,10 @@
         display: flex;
     }
 
+    #divMsg {
+        display: none;
+    }
+
 
 
 </style>

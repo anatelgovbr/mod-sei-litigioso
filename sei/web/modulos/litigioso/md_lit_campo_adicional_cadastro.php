@@ -104,15 +104,6 @@ try {
                     }
                 }
             } catch (Exception $e) {
-                $objMdLitCamposAdDTO = new MdLitCamposAdDTO();
-                $objMdLitCamposAdDTO->setNumIdMdLitCamposAd($_POST['hdnIdMdLitCamposAd']);
-                $objMdLitCamposAdDTO->setStrNome($_POST['txtNome']);
-                $objMdLitCamposAdDTO->setStrAjuda($_POST['txaAjuda']);
-                $objMdLitCamposAdDTO->setStrCampoTipo($_POST['selTipo']);
-                $objMdLitCamposAdDTO->setNumIdMdLitCamposAdSel($_POST['selDependencia']);
-                $opcoesTipo = MdLitCamposAdINT::montarSelectTipoInput($_POST['selTipo']);
-                $rowsOpcoes = MdLitCamposAdSelINT::reMontarTabelaListagemOpcoesComboBox($_POST['opcoesSelect']);
-                $opcoesDependencia = MdLitCamposAdSelINT::montarSelectDependencia($idMdLitTpInforAd, $objMdLitCamposAdDTO);
                 (new InfraException())->lancarValidacao($e->getMessage());
             }
 
@@ -145,6 +136,11 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
     <form id="frmCampoAdd" method="post" style="margin-top: 30px" onsubmit="return OnSubmitForm();"
           action="<?= PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'])) ?>">
         <? PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos); ?>
+        <div id="divMsg">
+            <div class="alert alert-danger" role="alert">
+                <label></label>
+            </div>
+        </div>
         <div class="row infraAreaDados">
             <div class="col-md-8">
                 <div class="row">

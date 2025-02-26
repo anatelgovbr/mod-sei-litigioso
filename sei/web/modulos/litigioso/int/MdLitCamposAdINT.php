@@ -322,6 +322,26 @@ class MdLitCamposAdINT extends InfraINT
         return $objMdLitCamposAdDTO;
     }
 
+    public static function validarCamposAdd($post)
+    {
+        $xml = "<isValido>". true ."</isValido>\n";
+        $msg = '';
+
+        if(self::validarNome($post)){
+            $msg = "Não é possível utilizar o Nome " . $post['txtNome'] . ", pois ele já está sendo utilizado neste Tipo de Controle.";
+        }
+
+        if(self::permiteAlterarTipoCampo($post)){
+            $msg = "Não é possível alterar Tipo de Campo, pois ele já está sendo utilizado.";
+        }
+
+        if ($msg) {
+            $xml = "<isValido>". false ."</isValido>\n";
+            $xml.= "<msg>". $msg ."</msg>\n";
+        }
+        return $xml;
+    }
+
     private static function validarNome($post)
     {
         $objMdLitCamposAdRN = new MdLitCamposAdRN();
@@ -336,6 +356,33 @@ class MdLitCamposAdINT extends InfraINT
         $objMdLitCamposAdDTO = $objMdLitCamposAdRN->consultar($objMdLitCamposAdDTO);
 
         return $objMdLitCamposAdDTO ? true : false;
+    }
+
+    private static function permiteAlterarTipoCampo($post)
+    {
+        $isInvalid = false;
+
+        if($post['hdnIdMdLitCamposAd']){
+            $objMdLitCamposAdRN = new MdLitCamposAdRN();
+            $objMdLitCamposAdDTO = new MdLitCamposAdDTO();
+            $objMdLitCamposAdDTO->setNumIdMdLitCamposAd($post['hdnIdMdLitCamposAd']);
+            $objMdLitCamposAdDTO->retStrCampoTipo();
+            $objMdLitCamposAdDTO = $objMdLitCamposAdRN->consultar($objMdLitCamposAdDTO);
+
+            if ($objMdLitCamposAdDTO->getStrCampoTipo() != $post['selTipo']) {
+                $objMdLitCamposAdFormRN = new MdLitCamposAdFormRN();
+                $objMdLitCamposAdFormDTO = new MdLitCamposAdFormDTO();
+                $objMdLitCamposAdFormDTO->setNumIdMdLitCamposAd($post['hdnIdMdLitCamposAd']);
+                $objMdLitCamposAdFormDTO->retNumIdMdLitCamposAdForm();
+                $objMdLitCamposAdFormDTO = $objMdLitCamposAdFormRN->listar($objMdLitCamposAdFormDTO);
+
+                if (!empty($objMdLitCamposAdFormDTO)) {
+                    $isInvalid = true;
+                }
+            }
+        }
+
+        return $isInvalid;
     }
 
     private static function recuperarProximaNaOrdem($idMdLitTpInforAd)
@@ -356,6 +403,10 @@ class MdLitCamposAdINT extends InfraINT
 
         if(self::validarNome($post)){
             throw new InfraException("Não é possível cadastrar Tipo de Informação com o nome " . $post['txtNome'] . ", pois ele já está sendo utilizado neste Tipo de Controle.");
+        }
+
+        if(self::permiteAlterarTipoCampo($post)){
+            throw new InfraException("Não é possível ALTERAR Tipo de Campo, pois ele já está sendo utilizado.");
         }
 
         $objMdLitCamposAdRN = new MdLitCamposAdRN();
