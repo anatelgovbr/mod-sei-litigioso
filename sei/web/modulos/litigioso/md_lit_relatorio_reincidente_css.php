@@ -29,4 +29,12 @@
     #divInfraAreaGlobal{
         overflow: auto;
     }
+
+    .divInfraAreaTelaSimples {
+        display: block !important;
+    }
+
+    .flex-grow-1 {
+        flex-grow: 0 !important;
+    }
 </style>

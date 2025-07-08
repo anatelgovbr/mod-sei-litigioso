@@ -1,423 +1,174 @@
 <?
 /**
-* TRIBUNAL REGIONAL FEDERAL DA 4ª REGIÃO
-*
-* 03/04/2017 - criado por Ellyson de Jesus Silva
-*
-* Versão do Gerador de Código: 1.40.1
-*/
+ * TRIBUNAL REGIONAL FEDERAL DA 4ª REGIÃO
+ *
+ * 03/04/2017 - criado por Ellyson de Jesus Silva
+ * 25/02/2025 - atualizado por Gustavo Camelo
+ *
+ * Versão do Gerador de Código: 1.40.1
+ */
 
-require_once dirname(__FILE__).'/../../../SEI.php';
-require_once dirname(__FILE__).'/../lib/nusoap/nusoap.php';
+require_once dirname(__FILE__) . '/../../../SEI.php';
 
-class MdLitSoapClienteRN extends nusoap_client{
+class MdLitSoapClienteRN extends BeSimple\SoapClient\SoapClient {
 
-	protected $wsdl;
-    protected $soapVersion = SOAP_1_2;
-	protected $options;
+    public $strUrlWsdl = null;
 
-	function __construct($endpoint,$wsdl = false,$proxyhost = false,$proxyport = false,$proxyusername = false, $proxypassword = false, $timeout = 0, $response_timeout = 30, $portName = ''){
-        ini_set('default_socket_timeout', 6000);
+    function __construct($enderecoWSDL, $options = [] ){
+        ini_set("default_socket_timeout", "5");
         ini_set("soap.wsdl_cache_enabled", "0");
 
-        $this->wsdl = $wsdl;
-        parent::nusoap_client($endpoint,$wsdl,$proxyhost,$proxyport,$proxyusername, $proxypassword, $timeout, $response_timeout, $portName);
+        $arrOptions = [
+            'trace'		                   => true,
+            'exceptions'                   => true,
+            'encoding'	                   => 'ISO-8859-1',
+            'cache_wsdl'                   => WSDL_CACHE_NONE,
+            'soap_version'                 => SOAP_1_2,
+            'resolve_wsdl_remote_includes' => true
+        ];
+
+        // informa a versao do soap
+        if ( !empty( $options) ) {
+            foreach ( $options as $k => $v ) {
+                if ( $k == 'soap_version' )
+                    $arrOptions[$k] = $v == '1.1' ? SOAP_1_1 : SOAP_1_2;
+                else
+                    $arrOptions[$k] = $v;
+            }
+        }
+
+        $this->strUrlWsdl = $enderecoWSDL;
+
+        parent::__construct($enderecoWSDL,$arrOptions);
     }
 
-    public function getFunctions(){
-        $functions = array();
+    public function retornaArrayOperacoes() {
+        $arrOperacao = $this->__getFunctions();
+        $arrMetodos  = [];
 
-        if ($this->endpointType == 'wsdl' && is_null($this->wsdl)) {
-            $this->loadWSDL();
-            if ($this->getError())
-            return false;
+        // trata o nome da operacao para retornar somente o valor necessario
+        foreach ( $arrOperacao as $key => $operacao ) {
+            $array = explode(' ', substr($operacao, 0, strpos($operacao, '(')));
+            $arrMetodos[] = end($array);
         }
-        //escrevendo nome de cada operaçao disponivel
-        foreach($this->operations as $op){
-        $functions[] =  $op['name']; //nome da operaçao
-        }
-        return $functions;
+
+        // ordena de forma crescente
+        asort( $arrMetodos );
+
+        // remove duplicidade
+        $arrMetodos = array_unique( $arrMetodos );
+
+        return $arrMetodos;
     }
 
-    /**
-     * Sobreescrita do metodo da biblioteca nusoap para permitir a parametrização da versão do SOAP (1.2 e 1.1),
-     * metodo sobreescrito pois quando o WSLD atende tanto soap1.1 quanto soap1.2 por defalt caia no 1.1 entao
-     * para não impactar na biblioteca do componetente do nusoap
-     *
-     * @see checkWSDL() - sei/web/modulos/litigioso/lib/nusoap/nusoap.php
-     */
-    public function checkWSDL() {
-        $this->appendDebug($this->wsdl->getDebug());
-        $this->wsdl->clearDebug();
-        $this->debug('checkWSDL');
-        // catch errors
-        if ($errstr = $this->wsdl->getError()) {
-            $this->appendDebug($this->wsdl->getDebug());
-            $this->wsdl->clearDebug();
-            $this->debug('got wsdl error: '.$errstr);
-            $this->setError('wsdl error: '.$errstr);
-        } elseif ($this->bindingType == 'soap' && $this->operations = $this->wsdl->getOperations($this->portName, 'soap')) {
-            $this->appendDebug($this->wsdl->getDebug());
-            $this->wsdl->clearDebug();
-            $this->bindingType = 'soap';
-            $this->debug('got '.count($this->operations).' operations from wsdl '.$this->wsdlFile.' for binding type '.$this->bindingType);
-        } elseif ($this->bindingType == 'soap12' && $this->operations = $this->wsdl->getOperations($this->portName, 'soap12')) {
-            $this->appendDebug($this->wsdl->getDebug());
-            $this->wsdl->clearDebug();
-            $this->bindingType = 'soap12';
-            $this->debug('got '.count($this->operations).' operations from wsdl '.$this->wsdlFile.' for binding type '.$this->bindingType);
-            $this->debug('**************** WARNING: SOAP 1.2 BINDING *****************');
-        } else {
-            $this->appendDebug($this->wsdl->getDebug());
-            $this->wsdl->clearDebug();
-            $this->debug('getOperations returned false');
-            $this->setError('no operations defined in the WSDL document!');
+    public function execOperacao($strOperacao,$montarParametroEntrada = []) {
+        try {
+            if ( ! InfraWS::isBolServicoExiste($this, $strOperacao))
+                return ['suc' => false , 'msg' => "Não existe ou não foi encontrado a operação: $strOperacao."];
+
+            $arrResultado = $this->{$strOperacao}($montarParametroEntrada);
+
+            $arrResultado = MdLitIntegracaoINT::object_to_array($arrResultado);
+
+            return $arrResultado;
+        } catch ( SoapFault $s ) {
+            $err = $this->trataSoapFaul( $s );
+            LogSEI::getInstance()->gravar( $err , InfraLog::$INFORMACAO );
+            return ['suc' => false , 'msg' => $err];
         }
     }
 
-    public function getParamsInput($nameOperations, $recursivo = false)
-    {
-        $operations = $this->getOperationData($nameOperations);
-        $complexTypes = $this->wsdl->schemas[$this->wsdl->namespaces['tns']][0]->complexTypes;
-        $outputArr = array();
+    private function parseSoapClientTypes(array $types) {
+        $parsed = [];
 
-        if ($recursivo) {
-            $returnType = $nameOperations;
-        } else {
-            if (!$operations) {
-                throw new InfraException('Nome da operao no existe ou no encontrada para essa verso SOAP.');
+        foreach ($types as $type) {
+            if (preg_match('/^struct\s+(\w+)\s*\{\s*(.*?)\s*\}$/s', $type, $matches)) {
+                $typeName = $matches[1];
+                $fieldsBlock = $matches[2];
+
+                $fields = [];
+                foreach (explode(";\n", $fieldsBlock) as $line) {
+                    $line = trim($line);
+                    if (!$line) continue;
+
+                    if (preg_match('/(\w+)\s+(\w+)/', $line, $fmatch)) {
+                        $fieldType = $fmatch[1];
+                        $fieldName = $fmatch[2];
+                        $fields[$fieldName] = $fieldType;
+                    }
+                }
+
+                $parsed[$typeName] = [
+                    'fields' => $fields
+                ];
+            }
+        }
+
+        return $parsed;
+    }
+
+    private function parseComplexTypesWithExtensionBase(string $wsdlUrl) {
+        $dom = new DOMDocument();
+        $dom->load($wsdlUrl);
+
+        $xpath = new DOMXPath($dom);
+        $xpath->registerNamespace("xsd", "http://www.w3.org/2001/XMLSchema");
+
+        $types = [];
+
+        $query = "//xsd:complexType";
+        foreach ($xpath->query($query) as $complexType) {
+            $name = $complexType->getAttribute('name');
+            if (!$name) continue;
+
+            $base = null;
+            $fields = [];
+
+            $extension = $xpath->query("xsd:complexContent/xsd:extension", $complexType)->item(0);
+            if ($extension instanceof DOMElement) {
+                $base = $extension->getAttribute('base');
+
+                foreach ($xpath->query("xsd:sequence/xsd:element", $extension) as $el) {
+                    $fields[$el->getAttribute('name')] = $el->getAttribute('type');
+                }
+            } else {
+                // Caso não haja extensão (tipo comum)
+                foreach ($xpath->query("xsd:sequence/xsd:element", $complexType) as $el) {
+                    $fields[$el->getAttribute('name')] = $el->getAttribute('type');
+                }
             }
 
-            $nameType = $this->getEntidadePorUrlWSDL($operations['input']['parts']['parameters']);
-
-            if (!$nameType){
-                $nameType = key($operations['input']['parts']);
-            }
-
-            if (!$complexTypes[$nameType]['elements']) {
-                return $outputArr;
-            }
-
-
-            $returnType = current($complexTypes[$nameType]['elements']);
-            $returnType = $this->getEntidadePorUrlWSDL($returnType['type']);
-            $returnType = $this->_verificaTipoDadosWebService($returnType, $nameType);
+            $types[$name] = [
+                'base' => $base,
+                'fields' => $fields
+            ];
         }
 
-        if (!empty($complexTypes[$returnType]['elements'])) {
-            $outputArr = $this->pegarElemento($complexTypes[$returnType]);
-        }
-
-        return $outputArr;
+        return $types;
     }
 
-    /*
-     * Verifica se o tipo retornado é um tipo ou realmente o nome.
-     * */
-    private function _verificaTipoDadosWebService($returnType, $nameType){
+    public function getParametrosEntradaSaidaWsdl() {
+        $soapTypes = $this->parseSoapClientTypes( $this->__getTypes() );
+        $wsdlTypes = $this->parseComplexTypesWithExtensionBase( $this->strUrlWsdl );
+
+        // Unir informações
+        foreach ($wsdlTypes as $typeName => $wsdlInfo) {
+            if (!isset($soapTypes[$typeName])) {
+                $soapTypes[$typeName] = $wsdlInfo;
+            } else {
+                // Se já existe no SoapClient, vamos tentar adicionar o base
+                $soapTypes[$typeName]['base'] = $wsdlInfo['base'] ?? null;
+            }
+        }
+        return $soapTypes;
+    }
+
+    /* Verifica se o tipo retornado é um tipo ou realmente o nome */
+    public function _verificaTipoDadosWebService($tipo){
         $isTipo = false;
-        $arrTipos = array('string', 'boolean', 'long', 'int', 'decimal', 'dateTime', 'short');
-
-       if(in_array($returnType, $arrTipos)){
-           $isTipo = true;
-       }
-
-        $retorno = $isTipo ? $nameType : $returnType;
-
-        return $retorno;
-    }
-
-
-    public function getParamsOutput($nameOperations){
-        $operations     = $this->getOperationData($nameOperations);
-        $complexTypes   = $this->wsdl->schemas[$this->wsdl->namespaces['tns']][0]->complexTypes;
-        $outputArr     = array();
-
-
-        if(!$operations)
-            throw new InfraException('Nome da operação não existe.');
-
-        /**
-         * @todo if para tratar o web-service da ANATEL de serviço aonde o wsdl não possui assinatura de output
-         */
-        if(empty($operations['output']['parts'])){
-            $resp = $this->call($nameOperations, array('soap_version'=>$this->soapVersion,'cache_wsdl' => WSDL_CACHE_NONE));
-            if($this->responseData === false){
-                $objInfraException = new InfraException();
-                $objInfraException->adicionarValidacao('Não foi possível comunicação com o servidor.');
-                $objInfraException->lancarValidacoes();
-            }
-
-            if(!$resp){
-                $objInfraException = new InfraException();
-                $objInfraException->adicionarValidacao('Não possui resposta do web-service.');
-                $objInfraException->lancarValidacoes();
-            }
-
-            foreach ($resp['listaTipoServico'][0] as $campo => $valor){
-                $outputArr[] = $campo;
-            }
-            return $outputArr;
-        }
-
-        $nameType       = $this->getEntidadePorUrlWSDL($operations['output']['parts']['parameters']);
-        if(!$nameType)
-            $nameType       = key($operations['output']['parts']);
-
-
-        $returnType     = $this->getEntidadePorUrlWSDL($complexTypes[$nameType]['elements']['name']);
-
-        if(!$returnType) {
-            $returnType       = key($complexTypes[$nameType]['elements']);
-            $returnType     = $this->getEntidadePorUrlWSDL($complexTypes[$nameType]['elements'][$returnType]["type"]);
-        }
-
-        if ($complexTypes[$returnType]['elements']) {
-            foreach ($complexTypes[$returnType]['elements'] as $chave => $elementos) {
-                $arrTypes = explode('/:', $elementos['type']);
-                $type = end($arrTypes);
-                $filho = null;
-                if(key_exists($type, $complexTypes)){
-                    $filho = $complexTypes[$type];
-                    foreach ($filho['elements'] as $filhoChave => $filhoValor){
-                        $outputArr[$returnType][$chave][$filhoChave] = $filhoValor['name'];
-                    }
-                } else {
-                    $outputArr[$returnType][$chave] = $elementos['name'];
-                }
-            }
-        }
-        return $outputArr;
-    }
-
-    private function pegarElemento($complexTypes){
-        $outputArr = array();
-        if(array_key_exists('extensionBase', $complexTypes)){
-            $returnType     = $this->getEntidadePorUrlWSDL($complexTypes['extensionBase']);
-            $complexTypesGeral   = $this->wsdl->schemas[$this->wsdl->namespaces['tns']][0]->complexTypes;
-            if(isset($complexTypesGeral[$returnType])){
-                $outputArr = $this->pegarElemento($complexTypesGeral[$returnType]);
-            }
-
-        }
-
-        if($complexTypes['elements']){
-            foreach ($complexTypes['elements'] as $nome => $elementArr){
-                $outputArr[$complexTypes["name"]][$nome] = $nome;
-            }
-            //sort($outputArr);
-        }
-        return $outputArr;
-    }//SMA
-
-    private function getEntidadePorUrlWSDL($urlWSDL){
-        $urlWSDL = strrchr($urlWSDL, ':');
-        if(!$urlWSDL) return null;
-
-        return preg_replace('/[^a-z0-9]/i','',$urlWSDL);
-    }
-    /**
-     * xml2array() will convert the given XML text to an array in the XML structure.
-     * Link: http://www.bin-co.com/php/scripts/xml2array/
-     * Arguments : $contents - The XML text
-     *                $get_attributes - 1 or 0. If this is 1 the function will get the attributes as well as the tag values - this results in a different array structure in the return value.
-     *                $priority - Can be 'tag' or 'attribute'. This will change the way the resulting array sturcture. For 'tag', the tags are given more importance.
-     * Return: The parsed XML in an array form. Use print_r() to see the resulting array structure.
-     * Examples: $array =  xml2array(file_get_contents('feed.xml'));
-     *              $array =  xml2array(file_get_contents('feed.xml', 1, 'attribute'));
-     */
-    public function xml2array($contents, $get_attributes=1, $priority = 'tag') {
-        if(!$contents) return array();
-
-        if(!function_exists('xml_parser_create')) {
-            //print "'xml_parser_create()' function not found!";
-            return array();
-        }
-
-        //Get the XML parser of PHP - PHP must have this module for the parser to work
-        $parser = xml_parser_create('');
-        xml_parser_set_option($parser, XML_OPTION_TARGET_ENCODING, "UTF-8"); # http://minutillo.com/steve/weblog/2004/6/17/php-xml-and-character-encodings-a-tale-of-sadness-rage-and-data-loss
-        xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
-        xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, 1);
-        xml_parse_into_struct($parser, trim($contents), $xml_values);
-        xml_parser_free($parser);
-
-        if(!$xml_values) return;//Hmm...
-
-        //Initializations
-        $xml_array = array();
-        $parents = array();
-        $opened_tags = array();
-        $arr = array();
-
-        $current = &$xml_array; //Refference
-
-        //Go through the tags.
-        $repeated_tag_index = array();//Multiple tags with same name will be turned into an array
-        foreach($xml_values as $data) {
-            unset($attributes,$value);//Remove existing values, or there will be trouble
-
-            //This command will extract these variables into the foreach scope
-            // tag(string), type(string), level(int), attributes(array).
-            extract($data);//We could use the array by itself, but this cooler.
-
-            $result = array();
-            $attributes_data = array();
-
-            if(isset($value)) {
-                if($priority == 'tag') $result = $value;
-                else $result['value'] = $value; //Put the value in a assoc array if we are in the 'Attribute' mode
-            }
-
-            //Set the attributes too.
-            if(isset($attributes) and $get_attributes) {
-                foreach($attributes as $attr => $val) {
-                    if($priority == 'tag') $attributes_data[$attr] = $val;
-                    else $result['attr'][$attr] = $val; //Set all the attributes in a array called 'attr'
-                }
-            }
-
-            //See tag status and do the needed.
-            if($type == "open") {//The starting of the tag '<tag>'
-                $parent[$level-1] = &$current;
-                if(!is_array($current) or (!in_array($tag, array_keys($current)))) { //Insert New tag
-                    $current[$tag] = $result;
-                    if($attributes_data) $current[$tag. '_attr'] = $attributes_data;
-                    $repeated_tag_index[$tag.'_'.$level] = 1;
-
-                    $current = &$current[$tag];
-
-                } else { //There was another element with the same tag name
-
-                    if(isset($current[$tag][0])) {//If there is a 0th element it is already an array
-                        $current[$tag][$repeated_tag_index[$tag.'_'.$level]] = $result;
-                        $repeated_tag_index[$tag.'_'.$level]++;
-                    } else {//This section will make the value an array if multiple tags with the same name appear together
-                        $current[$tag] = array($current[$tag],$result);//This will combine the existing item and the new item together to make an array
-                        $repeated_tag_index[$tag.'_'.$level] = 2;
-
-                        if(isset($current[$tag.'_attr'])) { //The attribute of the last(0th) tag must be moved as well
-                            $current[$tag]['0_attr'] = $current[$tag.'_attr'];
-                            unset($current[$tag.'_attr']);
-                        }
-
-                    }
-                    $last_item_index = $repeated_tag_index[$tag.'_'.$level]-1;
-                    $current = &$current[$tag][$last_item_index];
-                }
-
-            } elseif($type == "complete") { //Tags that ends in 1 line '<tag />'
-                //See if the key is already taken.
-                if(!isset($current[$tag])) { //New Key
-                    $current[$tag] = $result;
-                    $repeated_tag_index[$tag.'_'.$level] = 1;
-                    if($priority == 'tag' and $attributes_data) $current[$tag. '_attr'] = $attributes_data;
-
-                } else { //If taken, put all things inside a list(array)
-                    if(isset($current[$tag][0]) and is_array($current[$tag])) {//If it is already an array...
-
-                        // ...push the new element into that array.
-                        $current[$tag][$repeated_tag_index[$tag.'_'.$level]] = $result;
-
-                        if($priority == 'tag' and $get_attributes and $attributes_data) {
-                            $current[$tag][$repeated_tag_index[$tag.'_'.$level] . '_attr'] = $attributes_data;
-                        }
-                        $repeated_tag_index[$tag.'_'.$level]++;
-
-                    } else { //If it is not an array...
-                        $current[$tag] = array($current[$tag],$result); //...Make it an array using using the existing value and the new value
-                        $repeated_tag_index[$tag.'_'.$level] = 1;
-                        if($priority == 'tag' and $get_attributes) {
-                            if(isset($current[$tag.'_attr'])) { //The attribute of the last(0th) tag must be moved as well
-
-                                $current[$tag]['0_attr'] = $current[$tag.'_attr'];
-                                unset($current[$tag.'_attr']);
-                            }
-
-                            if($attributes_data) {
-                                $current[$tag][$repeated_tag_index[$tag.'_'.$level] . '_attr'] = $attributes_data;
-                            }
-                        }
-                        $repeated_tag_index[$tag.'_'.$level]++; //0 and 1 index is already taken
-                    }
-                }
-
-            } elseif($type == 'close') { //End of tag '</tag>'
-                $current = &$parent[$level-1];
-            }
-        }
-
-        return($xml_array);
-    }
-
-
-    public function enviarDadosSigecLancamento($objMdLitIntegracaoDTO, $montarParametroEntrada, $nomeArrPrincipal = false){
-        $arrResultado = array();
-
-        try{
-            $err = $this->getError();
-
-            if($err){
-                throw new InfraException($err);
-            }
-
-            $this->soap_defencoding = 'UTF-8';
-            $this->decode_utf8 = false;
-
-            //converte todas as entradas de parametro para enviar como UTF-8 e evitar erro de parse no xml e erro no Webservice Server
-            $montarParametroEntrada = $this->convertEncondig($montarParametroEntrada, $this->soap_defencoding);
-
-            if($nomeArrPrincipal){
-                $montarParametroEntrada = array($nomeArrPrincipal => $montarParametroEntrada);
-            }
-            $opData = $this->getOperationData($objMdLitIntegracaoDTO->getStrOperacaWsdl());
-
-            if(!empty($opData['endpoint'])){
-                //@todo retirar quanto verificar a configuração do wso2 da anatel
-                $this->forceEndpoint = str_replace('https', 'http',$opData['endpoint']);
-            }
-
-            $this->persistentConnection = false;
-            $arrResultado = $this->call($objMdLitIntegracaoDTO->getStrOperacaWsdl(), $montarParametroEntrada);
-
-            $err = $this->getError();
-
-            if($err){
-
-                if($objMdLitIntegracaoDTO->getNumIdMdLitFuncionalidade() == MdLitIntegracaoRN::$ARRECADACAO_CONSULTAR_LANCAMENTO){
-                    $exception = new InfraException();
-                    //tratamento do encode dinamico
-                    $err = $this->convertEncondig($err, 'ISO-8859-1');
-                    $exception->lancarValidacao($err, null,new Exception($err));
-                }
-
-                InfraDebug::getInstance()->setBolLigado(true);
-                InfraDebug::getInstance()->setBolDebugInfra(false);
-                InfraDebug::getInstance()->limpar();
-                InfraDebug::getInstance()->gravar($this->request);
-                InfraDebug::getInstance()->gravar('Ocorreu erro ao conectar com a operação('.$objMdLitIntegracaoDTO->getStrOperacaWsdl().').'.$err);
-
-                LogSEI::getInstance()->gravar(InfraDebug::getInstance()->getStrDebug(),InfraLog::$INFORMACAO);
-
-                $objInfraException = new InfraException();
-                $objInfraException->adicionarValidacao('Ocorreu erro ao conectar com a operação('.$objMdLitIntegracaoDTO->getStrOperacaWsdl().'). '.$err);
-                $objInfraException->lancarValidacoes();
-            }
-
-        }catch (Exception $e){
-
-            InfraDebug::getInstance()->setBolLigado(false);
-            InfraDebug::getInstance()->setBolDebugInfra(false);
-            InfraDebug::getInstance()->setBolEcho(false);
-            PaginaSEI::getInstance()->processarExcecao($e);
-        }
-
-        if(count($arrResultado) > 0) {
-            //converte o retorno do serviço para o encode esperado pelo sei, que por padrao é ISO-8859-1
-            return $this->convertEncondig($arrResultado, 'ISO-8859-1');
-        }
-
-        return false;
+        $arrTipos = ['string', 'boolean', 'long', 'int', 'decimal', 'dateTime', 'short'];
+        if ( in_array($tipo, $arrTipos) ) $isTipo = true;
+        return $isTipo;
     }
 
     /**
@@ -452,74 +203,118 @@ class MdLitSoapClienteRN extends nusoap_client{
 
             return $params;
         } catch (Exception $e){
-            $exception = new InfraException();
-            $exception->lancarValidacao('Erro ao converter os parametros do webservice. '.$e->getMessage(),null, $e);
+            throw new InfraException("Erro ao converter os parametros do webservice.\n" . $e->getMessage());
         }
     }
 
+    public function trataSoapFaul( $objSoapFault ) {
+        $msgFalha = 'Retorno da requisição SOAP: ';
+        if ( $objSoapFault->getMessage() ) {
+            return $msgFalha . $objSoapFault->getMessage();
+        } else if ( !empty( $this->__getLastResponse() ) ) {
+            $arrResp = $this->getSoapFaultString( $this->__getLastResponse() );
+            return $msgFalha . mb_convert_encoding( $arrResp['faultstring'] , 'UTF-8' );
+        } else {
+            return $msgFalha . 'Não Identificada';
+        }
+    }
 
-    public function enviarDados($strOperacaoWsdl, $montarParametroEntrada, $nomeArrPrincipal = false){
-        $arrResultado = array();
+    private function getSoapFaultString($xmlString) {
+        $xml = new XMLReader();
+        $xml->XML($xmlString);
+        $arrRetorno = [
+            'faultstring' => null
+        ];
 
+        while ( $xml->read() ) {
+            if ( $xml->nodeType == XMLReader::ELEMENT ) {
+                // Elemento encontrado
+                if ( key_exists( $xml->name , $arrRetorno ) ) {
+                    $arrRetorno[$xml->name] = $xml->readString();
+                }
+            } elseif ( $xml->nodeType == XMLReader::END_ELEMENT ) {
+                // Elemento finalizado
+            }
+        }
+        return $arrRetorno;
+    }
+
+    /* ****************************************************************************************************************
+    ************************* Os métodos abaixo são relacionados ao uso das Integrações *******************************
+    **************************************************************************************************************** */
+
+    public function enviarDadosSigecLancamento($objMdLitIntegracaoDTO, $montarParametroEntrada, $nomeArrPrincipal = false){
         try{
-            $err = $this->getError();
+            if ( $nomeArrPrincipal ) {
+                $montarParametroEntrada = [$nomeArrPrincipal => $montarParametroEntrada];
+            }
 
-            if($err){
+            $arrResultado = $this->execOperacao($objMdLitIntegracaoDTO->getStrOperacaWsdl(), $montarParametroEntrada);
+
+            $err = ( is_array($arrResultado) && ( isset($arrResultado['suc']) && $arrResultado['suc'] === false ) )
+                    ? $arrResultado['msg']
+                    : null;
+
+            if ( $err ) {
+
+                if($objMdLitIntegracaoDTO->getNumIdMdLitFuncionalidade() == MdLitIntegracaoRN::$ARRECADACAO_CONSULTAR_LANCAMENTO){
+                    ( new InfraException() )->lancarValidacao('Não foi possível a comunicação com o Webservice da Arrecadação. Contate o Gestor do Controle.', null,new Exception($err));
+                }
+
+                $err = "Ocorreu erro ao conectar com a operação({$objMdLitIntegracaoDTO->getStrOperacaWsdl()})\n" . $err;
+                $this->execDebugLog( $err );
                 throw new InfraException($err);
-            }
-            $this->soap_defencoding = 'UTF-8';
-            $this->decode_utf8 = false;
-            if($nomeArrPrincipal){
-                $montarParametroEntrada = array($nomeArrPrincipal => $montarParametroEntrada);
-            }
-            $opData = $this->getOperationData($strOperacaoWsdl);
-
-            if(!empty($opData['endpoint'])){
-                //@todo retirar quanto verificar a configuração do wso2 da anatel
-                $this->forceEndpoint = str_replace('https', 'http',$opData['endpoint']);
-            }
-
-            $this->persistentConnection = false;
-            $arrResultado = $this->call($strOperacaoWsdl, $montarParametroEntrada);
-            $err = $this->getError();
-
-            if($err){
-
-                InfraDebug::getInstance()->setBolLigado(true);
-                InfraDebug::getInstance()->setBolDebugInfra(false);
-                InfraDebug::getInstance()->limpar();
-                InfraDebug::getInstance()->gravar($this->request);
-                InfraDebug::getInstance()->gravar('Ocorreu erro ao conectar com a operação('.$strOperacaoWsdl.').'.$err);
-
-                LogSEI::getInstance()->gravar(InfraDebug::getInstance()->getStrDebug(),InfraLog::$INFORMACAO);
-
-                $objInfraException = new InfraException();
-                $objInfraException->adicionarValidacao('Ocorreu erro ao conectar com a operação('.$strOperacaoWsdl.'). '.$err);
-                $objInfraException->lancarValidacoes();
             }
 
         }catch (Exception $e){
-
-            InfraDebug::getInstance()->setBolLigado(false);
-            InfraDebug::getInstance()->setBolDebugInfra(false);
-            InfraDebug::getInstance()->setBolEcho(false);
-            throw new InfraException('Ocorreu erro ao executar o serviço de lançamento. ', $e );
+            $this->execDebugLog( $e->getMessage() );
+            throw new InfraException("Não foi possível realizar a integração com o Sistema de Arrecadação.\n" . $e->getMessage());
         }
 
-        if(count($arrResultado) > 0) {
+        if( $arrResultado && count($arrResultado) > 0 ) {
             return $arrResultado;
         }
 
         return false;
     }
 
-    public function setSoapVersion($soapVersion = '1.2')
-    {
-        $this->soapVersion = SOAP_1_2;
-        $this->bindingType = 'soap12';
-        if ($soapVersion == '1.1') {
-            $this->soapVersion = SOAP_1_1;
-            $this->bindingType = 'soap';
+    public function enviarDados($strOperacaoWsdl, $montarParametroEntrada, $nomeArrPrincipal = false){
+        try{
+
+            if( $nomeArrPrincipal ){
+                $montarParametroEntrada = array($nomeArrPrincipal => $montarParametroEntrada);
+            }
+
+            $arrResultado = $this->execOperacao($strOperacaoWsdl, $montarParametroEntrada);
+
+            if ( $arrResultado && count($arrResultado) > 0 ) {
+                return $this->convertEncondig($arrResultado);
+            }
+
+            return false;
+
+        }catch (Exception $e){
+            $this->execDebugLog( $e->getMessage() );
+            throw new InfraException('Ocorreu erro ao executar o serviço de lançamento. ', $e->getMessage() );
         }
+    }
+
+    private function execDebugLog( $strLog ) {
+        // liga
+        InfraDebug::getInstance()->setBolLigado(true);
+        InfraDebug::getInstance()->setBolDebugInfra(false);
+        InfraDebug::getInstance()->setBolEcho(false);
+        InfraDebug::getInstance()->limpar();
+
+        InfraDebug::getInstance()->gravar( $strLog );
+
+        // salva
+        LogSEI::getInstance()->gravar(InfraDebug::getInstance()->getStrDebug(),InfraLog::$INFORMACAO);
+
+        // limpa e fecha
+        InfraDebug::getInstance()->setBolLigado(false);
+        InfraDebug::getInstance()->setBolDebugInfra(false);
+        InfraDebug::getInstance()->setBolEcho(false);
+        InfraDebug::getInstance()->limpar();
     }
 }

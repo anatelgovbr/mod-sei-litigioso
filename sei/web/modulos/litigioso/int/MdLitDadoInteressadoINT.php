@@ -175,10 +175,9 @@ class MdLitDadoInteressadoINT extends InfraINT {
         $objMdLitIntegracaoDTO = $objMdLitIntegracaoRN->consultar($objMdLitIntegracaoDTO);
 
         $filtroWS = self::mapearParamentroEntrada($objMdLitIntegracaoDTO,$filtro);
-        $objMdlitSoapClient = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(), 'wsdl');
-        $objMdlitSoapClient->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
+        $objMdlitSoapClient = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl() , ['soap_version' => $objMdLitIntegracaoDTO->getStrVersaoSoap()]);
 
-        $err = $objMdlitSoapClient->getError();
+        $err = false;
         if($err) {
             return '<erros><erro descricao="' . $err . '"></erro></erros>';
         }
@@ -187,21 +186,19 @@ class MdLitDadoInteressadoINT extends InfraINT {
             $filtroWS['numeroServicos'] = implode(',', $filtroWS['numeroServicos']);
         }
 
-        $objMdlitSoapClient->soap_defencoding = 'UTF-8';
-        $objMdlitSoapClient->decode_utf8 = false;
+        $arrResultado = $objMdlitSoapClient->execOperacao( $objMdLitIntegracaoDTO->getStrOperacaWsdl() , ['filtro' => $filtroWS] );
 
-        // alteração da URL do endpoint para sincronizar com a URL parametrizada do WSDL as duas http ou https
-        $opData = $objMdlitSoapClient->getOperationData($objMdLitIntegracaoDTO->getStrOperacaWsdl());
-        if(!empty($opData['endpoint'])){
-            $http = preg_match('/^https/', $objMdLitIntegracaoDTO->getStrEnderecoWsdl()) ? 'https' : 'http';
-            $objMdlitSoapClient->forceEndpoint = str_replace('https', $http, $opData['endpoint']);
+        $err = is_array($arrResultado) && isset( $arrResultado['suc'] ) && $arrResultado['suc'] === false;
+        if ( $err ) {
+            // Define a mensagem de erro
+            $txtErr = "Ocorreu um erro ao conectar com a operação ({$objMdLitIntegracaoDTO->getStrOperacaWsdl()}). <br> {$arrResultado['msg']}";
+
+            // Escapa a mensagem para ser usada com segurança dentro de um atributo XML
+            $descricaoEscapada = htmlspecialchars($txtErr, ENT_QUOTES | ENT_XML1, 'ISO-8859-1');
+
+            // Retorna o XML com a sintaxe correta do atributo
+            return '<erros><erro descricao="'.$descricaoEscapada.'"></erro></erros>';
         }
-
-        $arrResultado = $objMdlitSoapClient->call($objMdLitIntegracaoDTO->getStrOperacaWsdl(), array('filtro' => $filtroWS));
-
-        $err = $objMdlitSoapClient->getError();
-        if($err)
-            return '<erros><erro descricao="'.$err.'"></erro></erros>';
 
         if(empty($arrResultado) && $filtro['outorga'] == 'N'){
             return self::mensagemValidacaoNaoOutorgado($filtro);
@@ -329,9 +326,9 @@ class MdLitDadoInteressadoINT extends InfraINT {
                         if($resultado[$objMdLitParamEntradaDTO->getStrCampo()]) {
                             $objMdLitServicoDTO = new MdLitServicoDTO();
                             $objMdLitServicoRN = new MdLitServicoRN();
-                            $arrObjMdLitServicoDTO = self::buscarDTOUtilWS($objMdLitServicoDTO, $objMdLitServicoRN, array('Codigo', 'Sigla', 'Descricao'), utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]));
+                            $arrObjMdLitServicoDTO = self::buscarDTOUtilWS($objMdLitServicoDTO, $objMdLitServicoRN, array('Codigo', 'Sigla', 'Descricao'), $resultado[$objMdLitParamEntradaDTO->getStrCampo()]);
                             if (!$arrObjMdLitServicoDTO)
-                                return '<erros><erro descricao="O serviço \'' . utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]) . '\' recuperado pelo web-service não foi cadastrado no SEI"></erro></erros>';
+                                return '<erros><erro descricao="O serviço \'' . $resultado[$objMdLitParamEntradaDTO->getStrCampo()] . '\' recuperado pelo web-service não foi cadastrado no SEI"></erro></erros>';
 
                             $arrItensTabela = self::gerarItensTabela($arrObjMdLitServicoDTO , 'IdMdLitServico', 'Descricao');
                             $arrResultadoParametrizado[$key]['id_servico'] = $arrItensTabela['id'];
@@ -345,11 +342,11 @@ class MdLitDadoInteressadoINT extends InfraINT {
                             $objMdLitAdmTipoOutorDTO = new MdLitAdmTipoOutorDTO();
                             $objMdLitAdmTipoOutorRN = new MdLitAdmTipoOutorRN();
 
-                            $arrObjMdLitAdmTipoOutorDTO = self::buscarDTOUtilWS($objMdLitAdmTipoOutorDTO, $objMdLitAdmTipoOutorRN, array('Nome'), utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]));
+                            $arrObjMdLitAdmTipoOutorDTO = self::buscarDTOUtilWS($objMdLitAdmTipoOutorDTO, $objMdLitAdmTipoOutorRN, array('Nome'), $resultado[$objMdLitParamEntradaDTO->getStrCampo()]);
 
                             if (!$arrObjMdLitAdmTipoOutorDTO){
                                 $objMdLitAdmTipoOutorDTO = new MdLitAdmTipoOutorDTO();
-                                $objMdLitAdmTipoOutorDTO->setStrNome(utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]));
+                                $objMdLitAdmTipoOutorDTO->setStrNome($resultado[$objMdLitParamEntradaDTO->getStrCampo()]);
                                 $objMdLitAdmTipoOutorDTO->setStrSinAtivo('S');
                                 $objMdLitAdmTipoOutorDTO = $objMdLitAdmTipoOutorRN->cadastrar($objMdLitAdmTipoOutorDTO);
 
@@ -365,11 +362,11 @@ class MdLitDadoInteressadoINT extends InfraINT {
                         if($resultado[$objMdLitParamEntradaDTO->getStrCampo()]) {
                             $objMdLitModalidadeDTO = new MdLitModalidadeDTO();
                             $objMdLitModalidadeRN = new MdLitModalidadeRN();
-                            $arrObjMdLitModalidadeDTO = self::buscarDTOUtilWS($objMdLitModalidadeDTO, $objMdLitModalidadeRN, array('Nome'), utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]));
+                            $arrObjMdLitModalidadeDTO = self::buscarDTOUtilWS($objMdLitModalidadeDTO, $objMdLitModalidadeRN, array('Nome'), $resultado[$objMdLitParamEntradaDTO->getStrCampo()]);
 
                             if (!$arrObjMdLitModalidadeDTO){
                                 $objMdLitModalidadeDTO = new MdLitModalidadeDTO();
-                                $objMdLitModalidadeDTO->setStrNome(utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]));
+                                $objMdLitModalidadeDTO->setStrNome($resultado[$objMdLitParamEntradaDTO->getStrCampo()]);
                                 $objMdLitModalidadeDTO->setStrSinAtivo('S');
                                 $objMdLitModalidadeDTO = $objMdLitModalidadeRN->cadastrar($objMdLitModalidadeDTO);
 
@@ -384,7 +381,7 @@ class MdLitDadoInteressadoINT extends InfraINT {
                         break;
                     case MdLitNomeFuncionalRN::$CNPJ_CPF:
                         if($resultado[$objMdLitParamEntradaDTO->getStrCampo()]) {
-                            $arrResultadoParametrizado[$key]['cnpj_cpf'] = utf8_decode($resultado[$objMdLitParamEntradaDTO->getStrCampo()]);
+                            $arrResultadoParametrizado[$key]['cnpj_cpf'] = $resultado[$objMdLitParamEntradaDTO->getStrCampo()];
                         }
                         break;
                 }
@@ -514,7 +511,6 @@ class MdLitDadoInteressadoINT extends InfraINT {
         $objMdLitDadoInteressadoDTO->retTodos(true);
         $objMdLitDadoInteressadoDTO->setNumIdMdLitControle($idMdLitControle);
         $objMdLitDadoInteressadoDTO->setNumIdContato($idContato);
-        $objMdLitDadoInteressadoDTO->setNumIdMdLitControle($idMdLitControle);
         $objMdLitDadoInteressadoDTO->setNumMaxRegistrosRetorno(1);
 
         $objMdLitDadoInteressadoRN = new MdLitDadoInteressadoRN();

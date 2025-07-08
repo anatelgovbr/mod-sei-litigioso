@@ -15,6 +15,7 @@ SessaoSEI::getInstance()->validarLink();
 $arrComandos[] = '<button type="button" accesskey="S" id="btnSalvar" onclick="salvar()" class="infraButton">
                                     <span class="infraTeclaAtalho">S</span>alvar
                               </button>';
+
 $arrComandos[] = '<button type="button" accesskey="C" id="btnCancelar" onclick="cancelar()" class="infraButton">
                                     <span class="infraTeclaAtalho">C</span>ancelar
                               </button>';
@@ -26,8 +27,6 @@ switch ($_GET['acao']) {
     case 'md_lit_servico_integracao_mapear':
         $strTitulo = 'Mapeamento de Campos';
         try {
-            $objMdLitSoapClientRN = new MdLitSoapClienteRN($_POST['txtEnderecoWsdl'], 'wsdl');
-            $objMdLitSoapClientRN->setSoapVersion($_POST['versaoSoap']);
             $objMdLitServicoIntegracaoDTO = null;
             if($_GET['id_md_lit_servico_integracao']){
                 $objMdLitServicoIntegracaoDTO = new MdLitServicoIntegracaoDTO();
@@ -37,7 +36,8 @@ switch ($_GET['acao']) {
                 $objMdLitServicoIntegracaoRN = new MdLitServicoIntegracaoRN();
                 $objMdLitServicoIntegracaoDTO = $objMdLitServicoIntegracaoRN->consultar($objMdLitServicoIntegracaoDTO);
             }
- 
+
+            $objMdLitSoapClientRN = new MdLitSoapClienteRN($_POST['txtEnderecoWsdl'],['soap_version' => $objMdLitServicoIntegracaoDTO->getStrVersaoSoap()]);
             $arrMontarTabelaParamSaida = MdLitServicoIntegracaoINT::montarTabelaParamSaida($objMdLitSoapClientRN, $_POST['txtOperacao'], $objMdLitServicoIntegracaoDTO );
         }catch (Exception $e) {
             PaginaSEI::getInstance()->processarExcecao($e);
@@ -76,7 +76,7 @@ function inicializar(){
 }
 
 function cancelar(){
-    window.close();
+    infraFecharJanelaModal();
 }
 function validarCadastro(){
     var selectcampoDestinoVazio = true;
@@ -124,9 +124,9 @@ function salvar(){
         }
     }
 
-    window.opener.hdnMapeamentoJson.value = JSON.stringify(jsonArr);
-    window.opener.hdnSalvarServico.remove();
-    window.opener.frmServicoCadastro.submit();
+    window.top.hdnMapeamentoJson.value = JSON.stringify(jsonArr);
+    window.top.hdnSalvarServico.remove();
+    window.top.frmServicoCadastro.submit();
     window.close();
 }
 

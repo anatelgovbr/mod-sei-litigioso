@@ -10,7 +10,7 @@
             selectAll: false
         });
 
-        if (document.getElementById('txtEnderecoWsdl').value != '') {
+        if (document.getElementById('txtEnderecoWsdl').value != '' && document.getElementById('hdnValidouEnderecoWsdl').value == 'S' ) {
             validarWsdl();
         }
         // scrool estava ficando grande pois esta com os campos select como multiselect
@@ -179,7 +179,8 @@
 
                     document.getElementById('gridOperacao').style.display = "block";
                 } else {
-                    alert($(result).find('msg').text());
+                    let msgErr = "Não foi possível realizar a validação do Endereço WSDL informado.<br> " + $(result).find('msg').text();
+                    exibirAlert( msgErr );
                     document.getElementById('gridOperacao').style.display = "none";
                 }
             },
@@ -190,6 +191,25 @@
                 infraAvisoCancelar();
             }
         });
+    }
 
+    function exibirAlert(msg,tipoMsg='danger'){
+        let divMsg = '<div class="alert alert-'+ tipoMsg +' alert-dismissible fade show" style="font-size:.875rem; top:0.25rem; margin-bottom: 14px !important; width:100%; margin:0 auto;" role="alert">'
+                        + msg +
+                        '<button type="button" class="close media h-100" data-dismiss="alert" aria-label="Fechar Mensagem" aria-labelledby="divInfraMsg0">'+
+                        '<span aria-hidden="true" class="align-self-center"><b>X</b></span>'+
+                        '</button>'+
+                    '</div>';
+
+        $('#divInfraBarraComandosSuperior').after( divMsg );
+
+        scrollTela('divInfraBarraLocalizacao');
+    }
+
+    function scrollTela(idEle , top = 80){
+        // scroll barra de rolagem automatica
+        var nivel = document.getElementById( idEle ).offsetTop + top;
+        divInfraMoverTopo = document.getElementById("divInfraAreaTelaD");
+        $( divInfraMoverTopo ).animate( { scrollTop: nivel } , 600 );
     }
 </script>

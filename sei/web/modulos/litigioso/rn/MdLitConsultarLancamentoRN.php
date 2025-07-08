@@ -29,30 +29,23 @@ class MdLitConsultarLancamentoRN extends InfraRN
      * @return MdLitLancamentoDTO|bool| Retorna o objeto de MdLitLancamentoDTO se a consulta de lançamento ter certo, FALSE caso contrário.
      */
     public function verificarAtualizarSituacaoLancamento($objMdLitIntegracaoDTO, $post){
-
-        $sucesso = false;
-        $objMdLitSoapClienteRN   = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(),'wsdl');
-        $objMdLitSoapClienteRN->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
-        $montarParametrosEntrada = $this->montarParametrosEntradaConsultarLancamento($objMdLitIntegracaoDTO, $post, 'S');
-        $arrResultado            = $objMdLitSoapClienteRN->enviarDadosSigecLancamento($objMdLitIntegracaoDTO, $montarParametrosEntrada);
-
-        if(empty($arrResultado)){
-            //@todo solução paliativa retirar quanto a consultarLancamento web-service estiver pronto
-            $montarParametrosEntrada = $this->montarParametrosEntradaConsultarLancamento($objMdLitIntegracaoDTO, $post, 'N');
+        try {
+            $sucesso = false;
+            $objMdLitSoapClienteRN   = new MdLitSoapClienteRN( $objMdLitIntegracaoDTO->getStrEnderecoWsdl() , ['soap_version' => $objMdLitIntegracaoDTO->getStrVersaoSoap()] );
+            $montarParametrosEntrada = $this->montarParametrosEntradaConsultarLancamento($objMdLitIntegracaoDTO, $post, 'S');
             $arrResultado            = $objMdLitSoapClienteRN->enviarDadosSigecLancamento($objMdLitIntegracaoDTO, $montarParametrosEntrada);
+
+            if(empty($arrResultado)){
+                //@todo solução paliativa retirar quanto a consultarLancamento web-service estiver pronto
+                $montarParametrosEntrada = $this->montarParametrosEntradaConsultarLancamento($objMdLitIntegracaoDTO, $post, 'N');
+                $arrResultado            = $objMdLitSoapClienteRN->enviarDadosSigecLancamento($objMdLitIntegracaoDTO, $montarParametrosEntrada);
+            }
+            return $this->montarParametrosSaidaConsultarLancamento($objMdLitIntegracaoDTO, $arrResultado, $post);
+
+        } catch ( Exception $e ) {
+            //( new InfraException() )->lancarValidacao( $e->getMessage() );
+            return false;
         }
-
-        $err                     = $objMdLitSoapClienteRN->getError();
-
-        $dadosSaida = '';
-        if(empty($err)){
-            $objMdLitLancamentoDTO = $this->montarParametrosSaidaConsultarLancamento($objMdLitIntegracaoDTO, $arrResultado, $post);
-            return $objMdLitLancamentoDTO;
-        }
-  
-
-        return $sucesso;
-
     }
 
     private function montarParametrosSaidaConsultarLancamento($objMdLitIntegracaoDTO, $arrResultado, $post)
@@ -289,31 +282,18 @@ class MdLitConsultarLancamentoRN extends InfraRN
         $objMdLitIntegracaoDTO = $objMdLitIntegracaoRN->retornarObjIntegracaoDTOPorFuncionalidade(MdLitIntegracaoRN::$ARRECADACAO_CONSULTAR_LANCAMENTO);
 
         $dadosEntrada = array();
-        $sucesso = false;
-        $objMdLitSoapClienteRN   = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(),'wsdl');
-        $objMdLitSoapClienteRN->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
+        $objMdLitSoapClienteRN = new MdLitSoapClienteRN( $objMdLitIntegracaoDTO->getStrEnderecoWsdl(), ['soap_version' => $objMdLitIntegracaoDTO->getStrVersaoSoap()] );
         $dadosEntrada['hdnNumInteressado'] = $numeroInteressado;
         $dadosEntrada['numIdentificacaoLancamento'] = $numIdentificacaoLancamento;
         $montarParametrosEntrada = $this->montarParametrosEntradaConsultarLancamento($objMdLitIntegracaoDTO, $dadosEntrada);
 
         try {
             $arrResultado = $objMdLitSoapClienteRN->enviarDadosSigecLancamento($objMdLitIntegracaoDTO, $montarParametrosEntrada);
-            $err = $objMdLitSoapClienteRN->getError();
-            $dadosSaida = '';
-            if(empty($err)){
-                $objMdLitLancamentoDTO = $this->montarParametrosSaidaConsultarLancamento($objMdLitIntegracaoDTO, $arrResultado, $dadosEntrada);
-                return $objMdLitLancamentoDTO;
-            }
+            $objMdLitLancamentoDTO = $this->montarParametrosSaidaConsultarLancamento($objMdLitIntegracaoDTO, $arrResultado, $dadosEntrada);
+            return $objMdLitLancamentoDTO;
         }catch (Exception $e){
-
-            if($e instanceof InfraException ){
-                $e = $e->getObjException();
-            }
-            $objInfraException = new InfraException();
-            $objInfraException->adicionarValidacao("Erro ao consultar o web-service do sistema de arrecadação: ".$e->getMessage());
-            $objInfraException->lancarValidacoes();
+            ( new InfraException() )->lancarValidacao("Erro ao consultar o web-service do sistema de arrecadação: ".$e->getMessage() );
         }
-//        1352
     }
 
 }

@@ -265,6 +265,7 @@ try {
                         for ($i = 0; $i < count($arrStrIds); $i++) {
                             $objSituacaoLitigiosoDTO = new MdLitSituacaoDTO();
                             $objSituacaoLitigiosoDTO->setNumIdSituacaoLitigioso($arrStrIds[$i]);
+                            $objSituacaoLitigiosoDTO->setStrSinAtivo('N');
                             $arrObjSituacaoLitigiosoDTO[] = $objSituacaoLitigiosoDTO;
                         }
                         $objSituacaoLitigiosoRN = new MdLitSituacaoRN();
@@ -279,6 +280,7 @@ try {
                         for ($i = 0; $i < count($arrStrIds); $i++) {
                             $objSituacaoLitigiosoDTO = new MdLitSituacaoDTO();
                             $objSituacaoLitigiosoDTO->setNumIdSituacaoLitigioso($arrStrIds[$i]);
+                            $objSituacaoLitigiosoDTO->setStrSinAtivo('S');
                             $arrObjSituacaoLitigiosoDTO[] = $objSituacaoLitigiosoDTO;
                         }
                         $objSituacaoLitigiosoRN = new MdLitSituacaoRN();

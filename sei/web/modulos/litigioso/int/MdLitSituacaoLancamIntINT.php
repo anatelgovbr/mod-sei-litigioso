@@ -78,9 +78,8 @@ class MdLitSituacaoLancamIntINT extends InfraINT {
     }
 
     public static function montarTabelaParamSaida(MdLitSoapClienteRN $objMdLitSoapClienteRN, $operacao, $objMdLitSituacaoLancamIntDTO = null){
-        $versaoSoap = $_POST['versaoSoap'] ?: $objMdLitSituacaoLancamIntDTO->getStrVersaoSoap();
-        $objMdLitSoapClienteRN->setSoapVersion($versaoSoap);
-        $arrParametroSaida = $objMdLitSoapClienteRN->getParamsOutput($operacao);
+        $arrParametroSaida = [];
+        MdLitMapearParamSaidaINT::trataDadosSaida( $objMdLitSoapClienteRN->getParametrosEntradaSaidaWsdl() , $operacao , $arrParametroSaida );
         $strResultadoParamSaida = '';
 
         //tabela de dados de saída
@@ -108,7 +107,7 @@ class MdLitSituacaoLancamIntINT extends InfraINT {
 
                 $strCssTr = '<tr id="paramSaidaTable_' . $idLinha . '" class="infraTrClara">';
                 $checked = $strItensSelCampoDestino['chaveUnica'] ? 'checked="checked"' : '';
-                $disable = $checked == ''? 'disabled="disabled"': '';
+                $disable = $dado == MdLitSituacaoLancamIntRN::$DESCRICAO ? 'disabled' : ''; //$checked == ''? 'disabled': '';
 
                 $strResultadoParamSaida .= $strCssTr;
                 $strResultadoParamSaida .= "<td id='campo_$idLinha>";
@@ -116,7 +115,7 @@ class MdLitSituacaoLancamIntINT extends InfraINT {
                 $strResultadoParamSaida .= $key;
                 $strResultadoParamSaida .= "</td>";
                 $strResultadoParamSaida .= "<td align='center'><select  class='form-control' id='campoDestino_$idLinha' name='campoDestino[$dado]' onchange='mudarcampoDestino(this)'>{$strItensSelCampoDestino['select']}</select></td>";
-                $strResultadoParamSaida .= "<td align='center'><div class='infraRadioDiv'><input type='radio'name='chaveUnicaDadosSaida' value='{$key}' $checked id='chaveUnicaDadosSaida_{$idLinha}' $disable class='infraRadioInput'><label class='infraRadioLabel' for='chaveUnicaDadosSaida_{$idLinha}'></div></label></td>";
+                $strResultadoParamSaida .= "<td align='center'><div class='infraRadioDiv'><input type='radio'name='chaveUnicaDadosSaida' value='{$key}' $checked id='chaveUnicaDadosSaida_{$idLinha}' $disable class='infraRadioInput'><label class='infraRadioLabel' for='chaveUnicaDadosSaida_{$idLinha}'></label></div></td>";
 
                 $strResultadoParamSaida .= '</tr>' . "\n";
                 $i++;
@@ -129,8 +128,7 @@ class MdLitSituacaoLancamIntINT extends InfraINT {
 
     public static function montarTabelaSituacaoLancamentoIntegracao(MdLitSituacaoLancamIntDTO $objMdLitSituacaoLancamIntDTO){
 
-        $objMdLitSoapClientRN = new MdLitSoapClienteRN($objMdLitSituacaoLancamIntDTO->getStrEnderecoWsdl(), 'wsdl');
-        $objMdLitSoapClientRN->setSoapVersion($objMdLitSituacaoLancamIntDTO->getStrVersaoSoap());
+        $objMdLitSoapClientRN = new MdLitSoapClienteRN($objMdLitSituacaoLancamIntDTO->getStrEnderecoWsdl(),['soap_version' => $objMdLitSituacaoLancamIntDTO->getStrVersaoSoap()]);
         $objMdLitSituacaoLancamentoRN = new MdLitSituacaoLancamentoRN();
         $arrResultadoWebService = $objMdLitSoapClientRN->enviarDados($objMdLitSituacaoLancamIntDTO->getStrOperacaoWsdl(), array());
 
@@ -138,7 +136,7 @@ class MdLitSituacaoLancamIntINT extends InfraINT {
         $strResultado = '';
 
         //Tabela de resultado do web-service de listar serviço
-        $numRegistros = count($arrResultadoWebService);
+        $numRegistros = ( is_array($arrResultadoWebService) && count($arrResultadoWebService) > 0 ) ? count($arrResultadoWebService) : 0;
         if($numRegistros > 0){
             $strSumarioTabela = 'Tabela de resultado do web-service de listar de situação de lançamento';
             $strCaptionTabela = 'Situação de Lançamento';

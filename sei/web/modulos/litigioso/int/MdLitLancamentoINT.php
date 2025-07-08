@@ -209,7 +209,7 @@ class MdLitLancamentoINT extends InfraINT {
       $dtDecisaoDefinitiva = $idmdLitLancamento ? $objMdLitLancamentoDTO->getDtaDecisaoDefinitiva() : null;
       $dtPrazoDefesa = $idmdLitLancamento ? $objMdLitLancamentoDTO->getDtaPrazoDefesa() : null;
       $selDocumento = $idmdLitLancamento ? $objMdLitLancamentoDTO->getNumIdMdLitSituacaoDecisaoDefin() : null;
-      $txtSituacaoDocOrigem = $idmdLitLancamento ? (new MdLitLancamentoINT())->montarNomeSituacaoDocOrigem($objMdLitLancamentoDTO->getNumIdSituacaoDecisao()) : null;
+      $txtSituacaoDocOrigem = $idmdLitLancamento ? self::montarNomeSituacaoDocOrigem($objMdLitLancamentoDTO->getNumIdSituacaoDecisao()) : null;
       $prazoDefesa = $idmdLitLancamento ? $objMdLitLancamentoDTO->getNumPrazoSituacaoDefesa() : null;
       $tpPrazoDefesa = $idmdLitLancamento ? $objMdLitLancamentoDTO->getStrTipoPrazoDefesa() : null;
       $prazoRecurso = $idmdLitLancamento ? $objMdLitLancamentoDTO->getNumPrazoSituacaoRecurso() : null;
@@ -225,7 +225,7 @@ class MdLitLancamentoINT extends InfraINT {
       $htmlOptionDtDecursoPrazo = htmlspecialchars($htmlOptionDtDecursoPrazo, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
       //ATUALIZAR DATA DO DECURSO DO PRAZO PARA RECURSO
-      $htmlOptionDtDecursoPrazoRecurso = (new MdLitProcessoSituacaoINT())->recuperarParaEdicaoComboBoxDataDecursoPrazoRecurso($objMdLitLancamentoDTO, $dtIntimacaoDecisaoAplicacaoMulta);
+      $htmlOptionDtDecursoPrazoRecurso = MdLitProcessoSituacaoINT::recuperarParaEdicaoComboBoxDataDecursoPrazoRecurso($objMdLitLancamentoDTO, $dtIntimacaoDecisaoAplicacaoMulta);
 
       $xml .= "<dados>\n";
       $xml .= "<isCancelar>".$isCancelar ."</isCancelar>\n";

@@ -87,7 +87,7 @@ switch($_GET['acao']) {
 
         $idUltimoLancamento = MdLitLancamentoINT::consultarUltimoLancamento($idProcedimento);
         $objMdLitDecisaoRN = new MdLitDecisaoRN();
-        $objMdLitLancamentoDTO = $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
+        $objMdLitLancamentoDTO = new MdLitLancamentoDTO();
 
         if($openProcesso != '1') {
             $arrComandos[] = '<button type="submit" accesskey="S" name="sbmCadastrarSituacao" id="sbmCadastrarSituacao" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
@@ -254,7 +254,6 @@ switch($_GET['acao']) {
 //            }
 
             $objMdLitLancamentoDTO = $objMdLitLancamentoRN->atualizarLancamento($idProcedimento, $idLancamentoSelecionado);
-
 
         }catch (Exception $e){
             PaginaSEI::getInstance()->processarExcecao($e);

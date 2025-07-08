@@ -27,7 +27,7 @@ class MdLitTpInfoAdINT extends InfraINT
         return $objMdLitTpInfoAdDTO;
     }
 
-    private function validarNome($post, $IdMdLitTpInforAd = null)
+    private static function validarNome($post, $IdMdLitTpInforAd = null)
     {
         $objMdLitTpInfoAdRN = new MdLitTpInfoAdRN();
         $objMdLitTpInfoAdDTO = new MdLitTpInfoAdDTO();

@@ -111,9 +111,8 @@
                     throw new Exception('O tipo de cliente informado deve ser do tipo SOAP.');
                 }
 
-                $client = new MdLitSoapClienteRN($data['endereco_wsdl'], 'wsdl');
-                $client->setSoapVersion($data['versaoSoap']);
-                $operacaoArr = $client->getFunctions();
+                $client = new MdLitSoapClienteRN( $enderecoWSDL , ['soap_version' => $data['versaoSoap']] );
+                $operacaoArr = $client->retornaArrayOperacoes();
 
                 if(empty($operacaoArr)){
                     $xml .= "<success>false</success>\n";
