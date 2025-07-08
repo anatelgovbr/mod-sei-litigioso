@@ -212,28 +212,8 @@ class MdLitCancelaLancamentoRN extends InfraRN {
       }
 
       try{
-          $objMdlitSoapClient = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(),'wsdl');
-          $objMdlitSoapClient->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
-          $err = $objMdlitSoapClient->getError();
-          if($err)
-              throw new InfraException($err);
-
-          $objMdlitSoapClient->soap_defencoding = 'UTF-8';
-          $objMdlitSoapClient->decode_utf8 = false;
-
-          // alteração da URL do endpoint para sincronizar com a URL parametrizada do WSDL as duas http ou https
-          $opData = $objMdlitSoapClient->getOperationData($objMdLitIntegracaoDTO->getStrOperacaWsdl());
-          if(!empty($opData['endpoint'])){
-              $http = preg_match('/^https/', $objMdLitIntegracaoDTO->getStrEnderecoWsdl()) ? 'https' : 'http';
-              $objMdlitSoapClient->forceEndpoint = str_replace('https', $http, $opData['endpoint']);
-          }
-
-          $arrResultado = $objMdlitSoapClient->call($objMdLitIntegracaoDTO->getStrOperacaWsdl(), array());
-
-          $err = $objMdlitSoapClient->getError();
-
-          if($err)
-              throw new InfraException('Ocorreu erro ao conectar com a operação('.$objMdLitIntegracaoDTO->getStrOperacaWsdl().').'.$err);
+          $objMdlitSoapClient = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(),['soap_version' => $objMdLitIntegracaoDTO->getStrVersaoSoap()]);
+          $arrResultado = $objMdlitSoapClient->execOperacao($objMdLitIntegracaoDTO->getStrOperacaWsdl());
 
       }catch (Exception $e){
           throw new InfraException('Ocorreu erro ao executar o serviço de lançamento. ', $e );
@@ -253,7 +233,7 @@ class MdLitCancelaLancamentoRN extends InfraRN {
                       break;
 
                   case MdLitMapearParamSaidaRN::$ID_PARAM_LISTAR_MOTIVOS_LANCAMENTO['DESCRICAO']:
-                      $arrMotivoCancelamento[$key]['descricao'] = utf8_decode($resultado[$objMdLitMapearParamSaidaDTO->getStrCampo()]);
+                      $arrMotivoCancelamento[$key]['descricao'] = $resultado[$objMdLitMapearParamSaidaDTO->getStrCampo()];
                       break;
               }
           }
@@ -285,10 +265,7 @@ class MdLitCancelaLancamentoRN extends InfraRN {
         }
 
         try {
-
-            $objMdLitSoapClienteRN = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(), 'wsdl');
-            $objMdLitSoapClienteRN->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
-
+            $objMdLitSoapClienteRN  = new MdLitSoapClienteRN( $objMdLitIntegracaoDTO->getStrEnderecoWsdl() , ['soap_version' => $objMdLitIntegracaoDTO->getStrVersaoSoap()] );
             $objInfraException = $objMdLitLancamentoRN->realizarValidacoesGerais($objMdLitIntegracaoDTO, $post, $objInfraException);
             $montarParametroEntrada = $this->_montarParametroEntradaCancelamentoCredito($objMdLitIntegracaoDTO, $post);
 

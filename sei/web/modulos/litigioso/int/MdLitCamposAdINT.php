@@ -234,7 +234,7 @@ class MdLitCamposAdINT extends InfraINT
                 $htmRetorno .= '<div data-id-campo-tp-controle="'. $uniqueId .'" class="campos-info-add col-12 col-sm-12 col-md-8 col-lg-6 col-xl-4">';
                 $htmRetorno .= '    <label for="'. $uniqueId .'" class="'.$obrigatorio.'">' . $objMdLitCamposAdDTO->getStrNome() .':</label>';
                 $htmRetorno .= $htmlAjuda;
-                $htmRetorno .= '    <input type="text" onkeypress="return infraMascaraNumero(this, event, 5)" id="campo_add_'. $uniqueId .'" name="campo_add_'. $uniqueId .'" data-label="'. $objMdLitCamposAdDTO->getStrNome() .'" data-id-campo-add="'. $objMdLitCamposAdDTO->getNumIdMdLitCamposAd() .'" class="infraText form-control" value="'. $value .'" />';
+                $htmRetorno .= '    <input type="text" onkeypress="return infraMascaraNumero(this, event, 10)" id="campo_add_'. $uniqueId .'" name="campo_add_'. $uniqueId .'" data-label="'. $objMdLitCamposAdDTO->getStrNome() .'" data-id-campo-add="'. $objMdLitCamposAdDTO->getNumIdMdLitCamposAd() .'" class="infraText form-control" value="'. $value .'" />';
                 $htmRetorno .= '</div>';
                 break;
 
@@ -261,7 +261,7 @@ class MdLitCamposAdINT extends InfraINT
                 $htmRetorno .= '<div data-id-campo-tp-controle="'. $uniqueId .'" class="campos-info-add col-12 col-sm-12 col-md-8 col-lg-6 col-xl-4">';
                 $htmRetorno .= '    <label for="'. $uniqueId .'" class="'.$obrigatorio.'">' . $objMdLitCamposAdDTO->getStrNome() .':</label>';
                 $htmRetorno .= $htmlAjuda;
-                $htmRetorno .= '    <input type="text" onkeypress="return infraMascaraTexto(this,event,100);" maxlength="100" id="campo_add_'. $uniqueId .'" name="campo_add_'. $uniqueId .'" data-id-campo-add="'. $objMdLitCamposAdDTO->getNumIdMdLitCamposAd() .'" class="infraText form-control" value="'. $value .'" />';
+                $htmRetorno .= '    <input type="text" onkeypress="return infraMascaraTexto(this,event,1000);" maxlength="1000" id="campo_add_'. $uniqueId .'" name="campo_add_'. $uniqueId .'" data-id-campo-add="'. $objMdLitCamposAdDTO->getNumIdMdLitCamposAd() .'" class="infraText form-control" value="'. $value .'" />';
                 $htmRetorno .= '</div>';
                 break;
 

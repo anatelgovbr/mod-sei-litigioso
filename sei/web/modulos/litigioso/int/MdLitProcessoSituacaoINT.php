@@ -115,10 +115,12 @@ class MdLitProcessoSituacaoINT extends InfraINT {
      */
     public static function verificarDependenciasSituacaoComDecisoes($data)
     {
+        /*
         $mdLitSituacaoDto = new MdLitProcessoSituacaoDTO();
         $mdLitSituacaoDto->ret('IdProcedimento');
         $mdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
         $mdLitProcessoSituacaoRN->listar($mdLitSituacaoDto);
+        */
 
         $instanciaBanco = BancoSEI::getInstance();
         $arr = $instanciaBanco->consultarSql("select d.*
@@ -536,10 +538,9 @@ class MdLitProcessoSituacaoINT extends InfraINT {
         return $htmlOption;
     }
 
-    public function montarHtmlPrazo($dataInicial, $prazo, $tipoPrazo, $dataSelecionada = null)
+    public static function montarHtmlPrazo($dataInicial, $prazo, $tipoPrazo, $dataSelecionada = null)
     {
-
-        $return = [];
+        $return = null;
 
         $arrayPrazos = explode(',', $prazo);
         if(count($arrayPrazos) != 1) {
@@ -564,7 +565,7 @@ class MdLitProcessoSituacaoINT extends InfraINT {
         return $return;
     }
 
-    public function calcularPrazoDiasUteis($dtPrazoInicial, $diasPrazo)
+    public static function calcularPrazoDiasUteis($dtPrazoInicial, $diasPrazo)
     {
         self::removerTimeDate($dtPrazoInicial);
 
@@ -584,7 +585,7 @@ class MdLitProcessoSituacaoINT extends InfraINT {
         return $dtPrazoInicial;
     }
 
-    private function removerTimeDate(&$strData){
+    private static function removerTimeDate(&$strData){
         $countDate  = strlen($strData);
         $isDateTime = $countDate > 10 ? true : false;
         if($isDateTime){
@@ -593,7 +594,7 @@ class MdLitProcessoSituacaoINT extends InfraINT {
         }
     }
 
-    public function recuperarFeriados($strDataInicial)
+    public static function recuperarFeriados($strDataInicial)
     {
         $numIdOrgao = SessaoSEI::getInstance()->getNumIdOrgaoUnidadeAtual();
 

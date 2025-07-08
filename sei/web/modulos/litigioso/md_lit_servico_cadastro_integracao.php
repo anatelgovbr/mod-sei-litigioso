@@ -94,59 +94,46 @@
             }
 
             var url = '<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_servico_integracao_mapear&acao_origem=' . $_GET['acao'] . '&id_md_lit_servico_integracao=' . $idMdLitServicoIntegracao); ?>';
-            var windowFeatures = "location=1,status=1,resizable=1,scrollbars=1";
+
+            infraAbrirJanelaModal('',850,550);
 
             var modalForm = document.createElement("form");
-            modalForm.target = "cadastrarMapeamento";
+            modalForm.target = 'modal-frame';
             modalForm.method = "POST"; // or "post" if appropriate
             modalForm.action = url;
 
             //adicionando o endereço do WSDL
             var enderecoInput = document.createElement("input");
-            enderecoInput.type = "text";
+            enderecoInput.type = "hidden";
             enderecoInput.name = "txtEnderecoWsdl";
             enderecoInput.value = txtEnderecoWsdl;
             modalForm.appendChild(enderecoInput);
 
             //adicionando o endereço da operação
             var operacaoInput = document.createElement("input");
-            operacaoInput.type = "text";
+            operacaoInput.type = "hidden";
             operacaoInput.name = "txtOperacao";
             operacaoInput.value = selOperacao;
             modalForm.appendChild(operacaoInput);
-            modalForm.style.display = 'none';
 
             var tipoWsInput = document.createElement("input");
-            tipoWsInput.type = "text";
+            tipoWsInput.type = "hidden";
             tipoWsInput.name = "tipoWs";
             tipoWsInput.value = tipoWs;
             modalForm.appendChild(tipoWsInput);
-            modalForm.style.display = 'none';
 
             var versaoSoapInput = document.createElement("input");
-            versaoSoapInput.type = "text";
+            versaoSoapInput.type = "hidden";
             versaoSoapInput.name = "versaoSoap";
             versaoSoapInput.value = versaoSoap;
             modalForm.appendChild(versaoSoapInput);
-            modalForm.style.display = 'none';
 
             //adiciona no final da pagina
             document.body.appendChild(modalForm);
 
-            var janela = infraAbrirJanela('',
-                'cadastrarMapeamento',
-                780,
-                600,
-                windowFeatures, //options
-                true); //popUp
-            if (janela) {
-                modalForm.submit();
-            } else {
-                alert('Você deve permitir popups para o mapeamento funcionar.');
-            }
-
+            //submete o Form
+            modalForm.submit();
         }
-
 
         function apagarMapear() {
             if (document.getElementById('tableParametroEntrada') != null || document.getElementById('tableParametroSaida') != null) {

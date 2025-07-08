@@ -156,9 +156,9 @@ class MdLitServicoIntegracaoRN extends InfraRN {
 
   private function cadastrarServicoPorIntegracao(MdLitServicoIntegracaoDTO $objMdLitServicoIntegracaoDTO, $arrModalidade, $arrAbrangencia){
       //cadastrando o servico pela integração
-      $objMdLitSoapClientRN = new MdLitSoapClienteRN($objMdLitServicoIntegracaoDTO->getStrEnderecoWsdl(), 'wsdl');
-      $objMdLitSoapClientRN->setSoapVersion($objMdLitServicoIntegracaoDTO->getStrVersaoSoap());
-      $arrResultadoWebService = $objMdLitSoapClientRN->call($objMdLitServicoIntegracaoDTO->getStrOperacaoWsdl(), array());
+      $objMdLitSoapClientRN = new MdLitSoapClienteRN( $objMdLitServicoIntegracaoDTO->getStrEnderecoWsdl() , ['soap_version' => $objMdLitServicoIntegracaoDTO->getStrVersaoSoap()] );
+      $arrResultadoWebService = [];
+      MdLitMapearParamSaidaINT::trataDadosSemAssinaturaSaida($objMdLitSoapClientRN, $objMdLitServicoIntegracaoDTO->getStrOperacaoWsdl() ,$arrResultadoWebService);
 
       $arrResultadoWebService = $arrResultadoWebService['listaTipoServico'];
       //Tabela de resultado do web-service de listar serviço
@@ -261,7 +261,7 @@ class MdLitServicoIntegracaoRN extends InfraRN {
       //Auditoria
 
     }catch(Exception $e){
-      throw new InfraException('Erro alterando serviço de integração.',$e);
+      throw new InfraException('Erro alterando serviço de integração. ' . $e->getMessage(),$e);
     }
   }
 

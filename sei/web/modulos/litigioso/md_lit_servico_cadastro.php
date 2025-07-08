@@ -32,6 +32,7 @@ try {
     $txtSigla = '';
     $txtDescricao = '';
     $idMdLitServicoIntegracao = '';
+    $isValidouEnderecoWsdl = true;
 
     switch ($_GET['acao']) {
 
@@ -251,11 +252,11 @@ try {
                     throw new InfraException('Serviço por integração não encontrado!');
                 }
 
-                $selOperacao = $objMdLitServicoIntegracaoDTO->getStrOperacaoWsdl();
-                $txtEnderecoWsdl = $objMdLitServicoIntegracaoDTO->getStrEnderecoWsdl();
-                $txtIntegracao = $objMdLitServicoIntegracaoDTO->getStrNomeIntegracao();
-                $tipoWs = $objMdLitServicoIntegracaoDTO->getStrTipoClienteWs();
-                $versaoSoap = $objMdLitServicoIntegracaoDTO->getStrVersaoSoap();
+                $selOperacao     = isset($_POST['hdnMapeamentoJson']) ? $_POST['selOperacao']     : $objMdLitServicoIntegracaoDTO->getStrOperacaoWsdl();
+                $txtEnderecoWsdl = isset($_POST['hdnMapeamentoJson']) ? $_POST['txtEnderecoWsdl'] : $objMdLitServicoIntegracaoDTO->getStrEnderecoWsdl();
+                $txtIntegracao   = isset($_POST['hdnMapeamentoJson']) ? $_POST['txtIntegracao']   : $objMdLitServicoIntegracaoDTO->getStrNomeIntegracao();
+                $tipoWs          = isset($_POST['hdnMapeamentoJson']) ? $_POST['tipoWs']          : $objMdLitServicoIntegracaoDTO->getStrTipoClienteWs();
+                $versaoSoap      = isset($_POST['hdnMapeamentoJson']) ? $_POST['versaoSoap']      : $objMdLitServicoIntegracaoDTO->getStrVersaoSoap();
             }
 
             break;
@@ -358,10 +359,10 @@ try {
         $strResultadoTabelaServicoIntegracao = MdLitServicoIntegracaoINT::montarTabelaServicoIntegracao($objMdLitServicoIntegracaoDTO);
 
 } catch (Exception $e) {
-    var_dump($e);
-    exit;
+    $isValidouEnderecoWsdl = false;
     $exception = new InfraException();
-    $exception->adicionarValidacao('Não foi possível carregar o web-service.');
+    $exception->adicionarValidacao("Não foi possível carregar o web-service: {$objMdLitServicoIntegracaoDTO->getStrEnderecoWsdl()}.
+                                   Retorno da requisição SOAP: {$e->getMessage()}");
     PaginaSEI::getInstance()->processarExcecao($exception);
 }
 
@@ -462,8 +463,8 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         </div>
         <input type="hidden" id="hdnSalvarServico" name="hdnSalvarServico" value=""/>
         <input type="hidden" id="hdnIdMdLitServico" name="hdnIdMdLitServico" value="<?= $idMdLitServico ?>"/>
-        <input type="hidden" id="hdnIdMdLitServico" name="hdnIdMdLitServicoIntegracao"
-               value="<?= $idMdLitServicoIntegracao ?>"/>
+        <input type="hidden" id="hdnIdMdLitServico" name="hdnIdMdLitServicoIntegracao" value="<?= $idMdLitServicoIntegracao ?>"/>
+        <input type="hidden" id="hdnValidouEnderecoWsdl" value="<?= $isValidouEnderecoWsdl ? 'S' : 'N' ?>">
     </form>
 
 <?php

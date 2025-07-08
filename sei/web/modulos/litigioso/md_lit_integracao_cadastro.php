@@ -62,7 +62,7 @@ switch ($_GET['acao']) {
             $objMdLitIntegracaoDTO->setStrSinVincularLancamento('S');
         }
         if (isset($_POST['hdnAcaoIntegracao']) && $_POST['hdnAcaoIntegracao'] == 'mapear') {
-            $objMdLitSoapClienteRN = new MdLitSoapClienteRN($_POST['txtEnderecoWsdl'], 'wsdl');
+            $objMdLitSoapClienteRN = new MdLitSoapClienteRN( $_POST['txtEnderecoWsdl'] , ['soap_version' => $_POST['versaoSoap']]);
         }
         if (isset($_POST['sbmCadastrarIntegracao']) && $_POST['sbmCadastrarIntegracao'] == 'Salvar') {
             try {
@@ -287,8 +287,7 @@ switch ($_GET['acao']) {
         break;
 }
 if (!empty($objMdLitIntegracaoDTO->getStrEnderecoWsdl()) && !empty($objMdLitIntegracaoDTO->getStrOperacaWsdl()) && !empty($objMdLitIntegracaoDTO->getNumIdMdLitFuncionalidade())) {
-    $objMdLitSoapClienteRN = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl(), 'wsdl');
-    $objMdLitSoapClienteRN->setSoapVersion($objMdLitIntegracaoDTO->getStrVersaoSoap());
+    $objMdLitSoapClienteRN = new MdLitSoapClienteRN( $objMdLitIntegracaoDTO->getStrEnderecoWsdl() , ['soap_version' => $objMdLitIntegracaoDTO->getStrVersaoSoap()] );
     try {
         $arrMontarTabelaParamEntrada = MdLitMapearParamEntradaINT::montarTabelaParamEntrada($objMdLitSoapClienteRN, $objMdLitIntegracaoDTO->getNumIdMdLitFuncionalidade(), $objMdLitIntegracaoDTO->getStrOperacaWsdl(), $objMdLitIntegracaoDTO->getNumIdMdLitIntegracao(), $objMdLitIntegracaoDTO);
         $arrMontarTabelaParamSaida = MdLitMapearParamSaidaINT::montarTabelaParamSaida($objMdLitSoapClienteRN, $objMdLitIntegracaoDTO->getNumIdMdLitFuncionalidade(), $objMdLitIntegracaoDTO->getStrOperacaWsdl(), $objMdLitIntegracaoDTO->getNumIdMdLitIntegracao(), $objMdLitIntegracaoDTO);

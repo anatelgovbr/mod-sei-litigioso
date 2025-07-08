@@ -69,16 +69,10 @@ try {
                 MdLitTpInfoAdINT::ativarTipoInformacao($arrStrIds);
                 PaginaSEI::getInstance()->adicionarMensagem('Operação realizada com sucesso.');
             } catch (Exception $e) {
-                $objMdLitTpInfoAdDTO = new MdLitTpInfoAdDTO();
-                $objMdLitTpInfoAdDTO->setNumIdMdLitTpControle($_GET['id_tipo_controle_litigioso']);
-                $objMdLitTpInfoAdDTO->retTodos();
-                $arrObjMdLitTpInfoAdDTO = (new MdLitTpInfoAdRN())->listar($objMdLitTpInfoAdDTO);
-
-                $arrDados = MdLitTpInfoAdINT::montarTabelaListagemTipoInformacao($arrObjMdLitTpInfoAdDTO);
-                (new InfraException())->lancarValidacao($e->getMessage());
+                PaginaSEI::getInstance()->processarExcecao($e);
+                header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_tipo_controle_info_adicionais_listar&acao_origem=' . $_GET['acao']. '&id_tipo_controle_litigioso='. $_GET['id_tipo_controle_litigioso']));
+                die;
             }
-            header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_tipo_controle_info_adicionais_listar&acao_origem=' . $_GET['acao']. '&id_tipo_controle_litigioso='. $_GET['id_tipo_controle_litigioso']));
-            die;
 
         case 'md_lit_tipo_controle_info_adicionais_excluir':
 

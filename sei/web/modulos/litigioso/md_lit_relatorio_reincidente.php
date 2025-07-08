@@ -452,7 +452,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 </div>
             </div>
             <?php if ($objMdLitReincidenAntecedenDTO->getStrTipoRegraReincidencia() == MdLitReincidenAntecedenRN::$DISPOSITIVO || $objMdLitReincidenAntecedenDTO->getStrTipoRegraReincidencia() == MdLitReincidenAntecedenRN::$DISPOSITIVO_CONDUTA) { ?>
-                <div class="row linha">
+                <div class="row linha" style="margin-left: 1%;">
                     <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
                         <label id="lblDispositivo" accesskey="" for="rdFiltroDispositivo" class="infraLabelObrigatorio">Dispositivo
                             Normativo:</label>
@@ -485,7 +485,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 </div>
             <?php } ?>
             <?php if ($objMdLitReincidenAntecedenDTO->getStrTipoRegraReincidencia() == MdLitReincidenAntecedenRN::$CONDUTA || $objMdLitReincidenAntecedenDTO->getStrTipoRegraReincidencia() == MdLitReincidenAntecedenRN::$DISPOSITIVO_CONDUTA) { ?>
-                <div class="row linha">
+                <div class="row linha" style="margin-left: 1%;">
                     <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
                         <label id="lblConduta" accesskey="" for="rdFiltroConduta"
                                class="infraLabelObrigatorio">Conduta:</label>
@@ -528,7 +528,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         </div>
     </div>
     <? if ($strComboConduta) { ?>
-        <div class="row linha">
+        <div class="row linha" style="margin-left: 1%;">
             <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
                 <label id="lblDispositivoEspecifica" for="selDispositivoEspecifica" name="lblDispositivoEspecifica"
                        class="infraLabelOpcional">Dispositivo Normativo:</label>
@@ -541,7 +541,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
             </div>
         </div>
         <?php if ($objMdLitReincidenAntecedenDTO->getStrTipoRegraReincidencia() != MdLitReincidenAntecedenRN::$DISPOSITIVO) { ?>
-            <div class="row linha">
+            <div class="row linha" style="margin-left: 1%;">
                 <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
                     <label id="lblCondutaEspecifica" for="selCondutaEspecifica" name="lblCondutaEspecifica"
                            class="infraLabelOpcional">Conduta:</label>

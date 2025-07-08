@@ -692,7 +692,7 @@
                 objTblDadosComplementaresConsulta.limpar();
                 objTblDadosComplementaresConsultaNaoOutorgado.limpar();
                 if($(result).find('erro').length > 0){
-                    alert($(result).find('erro').attr('descricao'));
+                    exibirAlert( $(result).find('erro').attr('descricao') );
                     return;
                 }
 
@@ -788,6 +788,27 @@
             document.getElementById('txtNumero').value = '';
         }
     }
+
+    function exibirAlert(msg,tipoMsg='danger'){
+        let divMsg = '<div class="alert alert-'+ tipoMsg +' alert-dismissible fade show" style="font-size:.875rem; top:0.25rem; margin-bottom: 14px !important; width:100%; margin:0 auto;" role="alert">'
+                        + msg +
+                        '<button type="button" class="close media h-100" data-dismiss="alert" aria-label="Fechar Mensagem" aria-labelledby="divInfraMsg0">'+
+                        '<span aria-hidden="true" class="align-self-center"><b>X</b></span>'+
+                        '</button>'+
+                    '</div>';
+
+        $('#divInfraBarraComandosSuperior').after( divMsg );
+
+        scrollTela('divInfraBarraLocalizacao');
+    }
+
+    function scrollTela(idEle , top = 80){
+        // scroll barra de rolagem automatica
+        var nivel = document.getElementById( idEle ).offsetTop + top;
+        divInfraMoverTopo = document.getElementById("divInfraAreaTelaD");
+        $( divInfraMoverTopo ).animate( { scrollTop: nivel } , 600 );
+    }
+
     $(document).ready(function() {
         $('#btnFechar').click(function() {
             $(window.top.document).find('div[id^=divInfraSparklingModalClose]').click();

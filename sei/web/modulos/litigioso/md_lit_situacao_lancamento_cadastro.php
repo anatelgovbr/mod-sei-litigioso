@@ -89,6 +89,7 @@ try {
                     $objMdLitSituacaoLancamIntDTO->setArrCoresSelecionados($_POST['selCores']);
                     $objMdLitSituacaoLancamIntDTO->setStrTipoClienteWs($_POST['tipoWs']);
                     $objMdLitSituacaoLancamIntDTO->setStrVersaoSoap($_POST['versaoSoap']);
+                    $objMdLitSituacaoLancamIntDTO->setArrSinUtilizarAgendamento($_POST['sinUtilizarAgendamento']);
 
                     if (count($arrMapeamento) > 0) {
                         foreach ($arrMapeamento as $mapeamento) {
@@ -358,7 +359,7 @@ try {
 
 } catch (Exception $e) {
     $exception = new InfraException();
-    $exception->adicionarValidacao('Não foi possível carregar o web-service.');
+    $exception->adicionarValidacao("Não foi possível carregar o web-service. \n" . $e->getMessage());
     PaginaSEI::getInstance()->processarExcecao($exception);
 }
 

@@ -5,15 +5,10 @@ require_once dirname(__FILE__) . '/../../SEI.php';
 session_start();
 SessaoSEI::getInstance()->validarLink();
 
-
 //Botões de ação do topo
 $arrComandos[] = '<button type="button" accesskey="S" id="btnSalvar" onclick="salvar()" class="infraButton">
                                     <span class="infraTeclaAtalho">S</span>alvar
                               </button>';
-$arrComandos[] = '<button type="button" accesskey="C" id="btnCancelar" onclick="cancelar()" class="infraButton">
-                                    <span class="infraTeclaAtalho">C</span>ancelar
-                              </button>';
-
 
 switch ($_GET['acao']) {
 
@@ -21,7 +16,7 @@ switch ($_GET['acao']) {
     case 'md_lit_situacao_lancamento_integracao_mapear':
         $strTitulo = 'Mapeamento de Campos';
         try {
-            $objMdLitSoapClientRN = new MdLitSoapClienteRN($_POST['txtEnderecoWsdl'], 'wsdl');
+            $objMdLitSoapClientRN = new MdLitSoapClienteRN($_POST['txtEnderecoWsdl']);
             $objMdLitSituacaoLancamIntDTO = null;
             if($_GET['id_md_lit_situacao_lancamento_integracao']){
                 $objMdLitSituacaoLancamIntDTO = new MdLitSituacaoLancamIntDTO();
@@ -66,30 +61,27 @@ PaginaSEI::getInstance()->abrirJavaScript();
 ?>
 <?if(0){?><script><?}?>
 function inicializar(){
-    removerDisable();
+    //removerDisable();
 }
 
 function cancelar(){
     window.close();
 }
 function validarCadastro(){
-    var selectcampoDestinoVazio = true;
     var rdChaveUnicaDadosVazio = true;
 
     for(var i = 0; i < (document.getElementById('tableParametroSaida').rows.length-1); i++ ){
-        if(document.getElementById('campoDestino_'+i).value != ''){
-            selectcampoDestinoVazio = false;
+        if (document.getElementById('campoDestino_'+i).value == '' ) {
+            alert('Faltou selecionar uma opção da combo na tabela de dados de saída.');
+            document.getElementById('campoDestino_' + i).focus();
+            return false;
         }
+
         if(document.getElementById('chaveUnicaDadosSaida_'+i).checked){
             rdChaveUnicaDadosVazio = false;
         }
     }
 
-    if(selectcampoDestinoVazio){
-        alert('Informe ao menos um campo de destino no SEI na tabela de dados de saída.');
-        document.getElementById('tableParametroSaida').scrollIntoView()
-        return false;
-    }
     if(rdChaveUnicaDadosVazio){
         alert('Informe ao menos uma chave única da integração na tabela de dados de saída.');
         document.getElementById('tableParametroSaida').scrollIntoView()
@@ -116,14 +108,18 @@ function salvar(){
 
         }
     }
-    window.opener.hdnMapeamentoJson.value = JSON.stringify(jsonArr);
-    window.opener.hdnSalvarSituacao.remove();
-    window.opener.frmSituacaoCadastro.submit();
+
+    window.top.hdnMapeamentoJson.value = JSON.stringify(jsonArr);
+    window.top.hdnSalvarSituacao.remove();
+    window.top.frmSituacaoCadastro.submit();
     window.close();
 }
 
 
 function mudarcampoDestino(element){
+    //foi adicionado o return abaixo de forma paliativa, pois poderar ser utilizado, novamente, no futuro o conteudo
+    //abaixo
+    return true;
     if(element.value != ''){
         var row = document.getElementById('tableParametroSaida').rows[element.parentNode.parentNode.rowIndex];
         row.cells[2].children[0].children[0].disabled = false;

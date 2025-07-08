@@ -1,19 +1,20 @@
 <script type="text/javascript">
+
     setTimeout(function(){
         processando();
     },0);
+
     var hdnTbDecisao = '';
+    var telaPai      = window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao");
     function inicializar(){
 
         <?if ($bolCadastro){ ?>
 
         var isMudanca = "<?= $bolHouveMudanca ?>";
         var valueNovo = '<?=$arrTabela?>';
-        var obj = window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnTbDecisao');
+        var obj = telaPai.contentWindow.document.getElementById('hdnTbDecisao');
         var arrayRetorno = processarItemListas(valueNovo);
         var situacaoParcial = false;
-
-
 
         for(linhas = 0; linhas < arrayRetorno.length; linhas++){
             if(arrayRetorno[linhas][18] == 'S'){
@@ -49,9 +50,7 @@
             window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.consultarExtratoMulta();
         }
 
-        $(window.top.document).find('div[id^=divInfraSparklingModalClose]').click();;
-
-
+        $(window.top.document).find('div[id^=divInfraSparklingModalClose]').click();
 
         return;
 
@@ -64,7 +63,7 @@
             selectAll: false,
         }).parent('div').hide();
 
-        hdnTbDecisao = window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById("hdnTbDecisao");
+        hdnTbDecisao = telaPai.contentWindow.document.getElementById("hdnTbDecisao");
         if(hdnTbDecisao.value != ''){
             montaResultado();
         }
@@ -201,107 +200,109 @@
     }
 
     function montaResultado(){
-        var arrItens = window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.objTabelaDinamicaDecisao.obterItens();
-        if(arrItens.length > 0){
+        const arrItens = telaPai.contentWindow.objTabelaDinamicaDecisao.obterItens();
+        if( arrItens.length > 0 ){
             var idAnterior = 0;
             var isSituacaoDecisaoNovo = verificarSituacaoDecisaoNovo();
-            if(window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnVlOriginalMultas').value
-            ){
-                window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnVlOriginalMultas').value = hdnTbDecisao.value;
+
+            if( telaPai.contentWindow.document.getElementById('hdnVlOriginalMultas').value ){
+                telaPai.contentWindow.document.getElementById('hdnVlOriginalMultas').value = hdnTbDecisao.value;
             }
 
-            for(var i = 0; i < arrItens.length; i++ ){
-                var tamanhoTR = document.getElementById('tableDadosComplementarInteressado').rows.length;
-                for (var j = 1;j < tamanhoTR; j++ ){
-                    var table = document.getElementById('tableDadosComplementarInteressado');
-
-                    if ( table.rows.length > 0) {
-                            if(arrItens[i][1] == table.rows[j].children[0].getElementsByTagName('input')[0].value){
-                                if(idAnterior == arrItens[i][1]){
-                                    j = incluirLinha(table.rows[j].children[0].children[2]);
-                                    //combo tipo decisao
-                                    var selectTipoDecisao = table.rows[j].children[0].children[0]
-                                    carregarTipoDecisao(selectTipoDecisao,arrItens[i][2]);
-                                    // combo especie decisao
-                                    carregarComboEspecieDecisao(selectTipoDecisao, arrItens[i][3]);
-                                    //input multa
-                                    table.rows[j].children[2].children[0].value = arrItens[i][4];
-                                    //valor ressarcimento
-                                    table.rows[j].children[3].children[0].value = arrItens[i][5];
-                                    //input prazo
-                                    table.rows[j].children[5].children[0].value = arrItens[i][7] != 'null'? arrItens[i][7] :'';
-                                    //combo obrigacao
-                                    table.rows[j].children[4].children[0].value = arrItens[i][6];
-                                    if(!isSituacaoDecisaoNovo){
-                                        //id_decisao hidden
-                                        table.rows[j].children[0].children[2].value = arrItens[i][0];
-                                        //input id_usuario
-                                        table.rows[j].children[5].children[1].value = arrItens[i][8];
-                                        //input id_unidade
-                                        table.rows[j].children[5].children[2].value = arrItens[i][9];
-                                        //input data
-                                        table.rows[j].children[5].children[3].value = arrItens[i][13];
-                                        //input nome_usuario
-                                        table.rows[j].children[5].children[4].value = arrItens[i][14];
-                                        //input sigla_unidade
-                                        table.rows[j].children[5].children[5].value = arrItens[i][15];
-                                        //input sin_cadastro_parcial
-                                        //table.rows[j].children[5].children[6].value = arrItens[i][18];
-                                    }
-                                }else{
-                                    if(arrItens[i][16] == 'N'){
-                                        //checkbox localidade Nacional
-                                        table.rows[j].children[1].children[0].children[0].checked = true;
-                                        changeLocalidades(table.rows[j].children[1].children[0].children[0], false);
-                                    }else if(arrItens[i][16] == 'U'){
-                                        //checkbox localidade U
-                                        table.rows[j].children[1].children[3].children[0].checked = true;
-                                        changeLocalidades(table.rows[j].children[1].children[3].children[0], true);
-                                        var selectUF = table.rows[j].children[1].children[5].children[0];
-                                        var arrUf = arrItens[j - 1][17].split('#');
-                                        $(selectUF).multipleSelect("setSelects", arrUf);
-                                    }
-                                    //combo tipo decisao
-                                    var selectTipoDecisao = table.rows[j].children[2].children[0];
-                                    carregarTipoDecisao(selectTipoDecisao,arrItens[i][2]);
-                                    // combo especie decisao
-                                    carregarComboEspecieDecisao(selectTipoDecisao, arrItens[i][3]);
-                                    //input multa
-                                    if(arrItens[i][4]) {
-                                        table.rows[j].children[4].children[0].value = arrItens[i][4];
-                                    }
-                                    //input prazo
-                                    table.rows[j].children[7].children[0].value = arrItens[i][7] != 'null' ? arrItens[i][7] : '';
-                                    //valor ressarcimento
-                                    table.rows[j].children[5].children[0].value = arrItens[i][5];
-                                    //combo obrigacao
-                                    table.rows[j].children[6].children[0].value = arrItens[i][6];
-                                    if(!isSituacaoDecisaoNovo){
-                                        //id_decisao hidden
-                                        table.rows[j].children[0].children[1].value = arrItens[i][0];
-                                        //input id_usuario
-                                        table.rows[j].children[7].children[1].value = arrItens[i][8];
-                                        //input id_unidade
-                                        table.rows[j].children[7].children[2].value = arrItens[i][9];
-                                        //input data
-                                        table.rows[j].children[7].children[3].value = arrItens[i][13];
-                                        //input nome_usuario
-                                        table.rows[j].children[7].children[4].value = arrItens[i][14];
-                                        //input sigla_unidade
-                                        table.rows[j].children[7].children[5].value = arrItens[i][15];
-                                        //input sin_cadastro_parcial
-                                        // table.rows[j].children[7].children[6].value = arrItens[i][18];
-                                    }
+            let table            = document.getElementById('tableDadosComplementarInteressado');
+            let idxElemTableGrid = 0;
+            for ( let j = 1 ; j < table.rows.length ; j++  ) {
+                for ( let i = 0 ; i < arrItens.length ; i++ ) {
+                    if ( table.rows.length > 0 ) {
+                        // se loop for de infração igual ao anterior
+                        if ( arrItens[i][1] == table.rows[j].children[0].getElementsByTagName('input')[0].value ) {
+                            if ( idAnterior == arrItens[i][1] ) {
+                                j = incluirLinha(table.rows[j].children[0].children[2]);
+                                //combo tipo decisao
+                                var selectTipoDecisao = table.rows[j].children[0].children[0]
+                                carregarTipoDecisao(selectTipoDecisao, arrItens[i][2]);
+                                // combo especie decisao
+                                carregarComboEspecieDecisao(selectTipoDecisao, arrItens[i][3]);
+                                //input multa
+                                table.rows[j].children[2].children[0].value = arrItens[i][4];
+                                //valor ressarcimento
+                                table.rows[j].children[3].children[0].value = arrItens[i][5];
+                                //input prazo
+                                table.rows[j].children[5].children[0].value = arrItens[i][7] != 'null' ? arrItens[i][7] : '';
+                                //combo obrigacao
+                                table.rows[j].children[4].children[0].value = arrItens[i][6];
+                                if (!isSituacaoDecisaoNovo) {
+                                    //id_decisao hidden
+                                    table.rows[j].children[0].children[2].value = arrItens[i][0];
+                                    //input id_usuario
+                                    table.rows[j].children[5].children[1].value = arrItens[i][8];
+                                    //input id_unidade
+                                    table.rows[j].children[5].children[2].value = arrItens[i][9];
+                                    //input data
+                                    table.rows[j].children[5].children[3].value = arrItens[i][13];
+                                    //input nome_usuario
+                                    table.rows[j].children[5].children[4].value = arrItens[i][14];
+                                    //input sigla_unidade
+                                    table.rows[j].children[5].children[5].value = arrItens[i][15];
+                                    //input sin_cadastro_parcial
+                                    //table.rows[j].children[5].children[6].value = arrItens[i][18];
+                                }
+                            } else {
+                                let elem = null;
+                                if (arrItens[i][16] == 'N') {
+                                    //checkbox localidade Nacional
+                                    elem = document.querySelector('#rdDispositivoNormativo_localidade_' + idxElemTableGrid);
+                                    elem.checked = true;
+                                    changeLocalidades(elem, false);
+                                } else if (arrItens[i][16] == 'U') {
+                                    //checkbox localidade U
+                                    elem = document.querySelector('#rdDispositivoNormativo_uf_' + idxElemTableGrid);
+                                    elem.checked = true;
+                                    changeLocalidades(elem, true);
+                                    var selectUF = document.querySelector('#selUf_' + idxElemTableGrid);
+                                    var arrUf = arrItens[i][17].split('#');
+                                    $(selectUF).multipleSelect("setSelects", arrUf);
                                 }
 
-                                idAnterior = arrItens[i][1];
-                                break;
+                                //combo tipo decisao
+                                var selectTipoDecisao = table.rows[j].children[2].children[0];
+                                setTimeout(carregarTipoDecisao(selectTipoDecisao, arrItens[i][2]), 500);
+                                // combo especie decisao
+                                setTimeout(carregarComboEspecieDecisao(selectTipoDecisao, arrItens[i][3]), 500);
+                                //input multa
+                                if (arrItens[i][4]) {
+                                    table.rows[j].children[4].children[0].value = arrItens[i][4];
+                                }
+                                //input prazo
+                                table.rows[j].children[7].children[0].value = arrItens[i][7] != 'null' ? arrItens[i][7] : '';
+                                //valor ressarcimento
+                                table.rows[j].children[5].children[0].value = arrItens[i][5];
+                                //combo obrigacao
+                                table.rows[j].children[6].children[0].value = arrItens[i][6];
+                                if (!isSituacaoDecisaoNovo) {
+                                    //id_decisao hidden
+                                    table.rows[j].children[0].children[1].value = arrItens[i][0];
+                                    //input id_usuario
+                                    table.rows[j].children[7].children[1].value = arrItens[i][8];
+                                    //input id_unidade
+                                    table.rows[j].children[7].children[2].value = arrItens[i][9];
+                                    //input data
+                                    table.rows[j].children[7].children[3].value = arrItens[i][13];
+                                    //input nome_usuario
+                                    table.rows[j].children[7].children[4].value = arrItens[i][14];
+                                    //input sigla_unidade
+                                    table.rows[j].children[7].children[5].value = arrItens[i][15];
+                                    //input sin_cadastro_parcial
+                                    // table.rows[j].children[7].children[6].value = arrItens[i][18];
+                                }
+                                idxElemTableGrid++;
                             }
+                            idAnterior = arrItens[i][1];
+                        }
                     } else {
-                        montaResultado();
+                        setTimeout(montaResultado, 200);
                     }
                 }
-
             }
         }
     }
@@ -739,7 +740,7 @@
     function OnSubmitForm(){
         if(!validar())
             return false;
-        }
+    }
 
     function changeLocalidades(element, isUf){
         var elementSelectUF = document.getElementById(element.getAttribute('data-id-select-uf'));

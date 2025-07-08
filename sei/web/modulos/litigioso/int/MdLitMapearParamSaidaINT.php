@@ -33,9 +33,8 @@ class MdLitMapearParamSaidaINT extends InfraINT {
   }
     public static function montarTabelaParamSaida(MdLitSoapClienteRN $objMdLitSoapClienteRN, $idMdLitFuncionalidade, $operacao, $idMdLitIntegracao, MdLitIntegracaoDTO $objMdLitIntegracaoDTO = null){
         $objMdLitMapearParamSaidaDTO = new MdLitMapearParamSaidaDTO();
-        $versaoSoap = $_POST['versaoSoap'] ?: $objMdLitIntegracaoDTO->getStrVersaoSoap();
-        $objMdLitSoapClienteRN->setSoapVersion($versaoSoap);
-        $arrParametroSaida = $objMdLitSoapClienteRN->getParamsOutput($operacao);
+        $arrParametroSaida = [];
+        MdLitMapearParamSaidaINT::trataDadosSaida( $objMdLitSoapClienteRN->getParametrosEntradaSaidaWsdl() , $operacao , $arrParametroSaida);
 
         $strResultadoParamSaida = '';
         $arrObjMdLitMapearParamSaidaDTO = array();
@@ -141,33 +140,58 @@ class MdLitMapearParamSaidaINT extends InfraINT {
 
         return array('strResultado' => $strResultadoParamSaida,'numRegistros'=> $numRegistrosParametroSaida );
     }
+
     public static function montarSelectCampoDestino($arrParametroSaida, $saidaParametroSalvo)
-        {
-            ksort($arrParametroSaida);
-            $chaveUnica = false;
-            $str = '<option  value="null">&nbsp;</option>';
-            foreach ($arrParametroSaida as $key=>$arrayParam) {
-                  if(is_array($arrayParam)) {
-                        ksort($arrayParam);
-                        foreach ($arrayParam as $chave => $item) {
-                            if(is_array($item)){
-                                foreach($item as $chaveItem => $value) {
-                                    $chaveFormatada = $key . " - " . $chave . " - " . $chaveItem;
-                                    $value = $chave . " - " . $chaveItem;
-                                }
-                            } else {
-                                $chaveFormatada = $key . " - " . $item;
-                                $value = $item;
+    {
+        ksort($arrParametroSaida);
+        $chaveUnica = false;
+        $str = '<option  value="null">&nbsp;</option>';
+        foreach ($arrParametroSaida as $key=>$arrayParam) {
+              if(is_array($arrayParam)) {
+                    ksort($arrayParam);
+                    foreach ($arrayParam as $chave => $item) {
+                        if(is_array($item)){
+                            foreach($item as $chaveItem => $value) {
+                                $chaveFormatada = $key . " - " . $chave . " - " . $chaveItem;
+                                $value = $chave . " - " . $chaveItem;
                             }
-                            $selected = $saidaParametroSalvo == $value ? 'selected=selected' : '';
-                            $str .= '<option '.$selected.' value="'.$value.'"> '.$chaveFormatada.' </option>';
-                      }
-                    } else {
-                        $selected = $saidaParametroSalvo == $arrayParam ? 'selected=selected' : '';
-                        $str .= '<option '.$selected.' value="'.$arrayParam.'"> '.$arrayParam.' </option>';
+                        } else {
+                            $chaveFormatada = $key . " - " . $item;
+                            $value = $item;
+                        }
+                        $selected = $saidaParametroSalvo == $value ? 'selected=selected' : '';
+                        $str .= '<option '.$selected.' value="'.$value.'"> '.$chaveFormatada.' </option>';
+                  }
+                } else {
+                    $selected = $saidaParametroSalvo == $arrayParam ? 'selected=selected' : '';
+                    $str .= '<option '.$selected.' value="'.$arrayParam.'"> '.$arrayParam.' </option>';
+                }
+            }
+        return $str;
+    }
+
+    public static function trataDadosSaida( $arrParametro, $operacao = null, &$arrParametroSaida){
+        $nmOperacao = $operacao . 'Response';
+        if ( isset( $arrParametro[$nmOperacao] ) ) {
+            $arrInicial = $arrParametro[$nmOperacao]['fields'];
+            foreach ( $arrInicial as $k => $v ) {
+                if ( $k == 'return' && !MdLitSoapClienteRN::_verificaTipoDadosWebService($v) ) {
+                    foreach ( $arrParametro[$v]['fields'] as $k1 => $v1 ) {
+                        $arrParametroSaida[$v][$k1] = $k1;
                     }
                 }
-            return $str;
+            }
         }
+    }
+
+    public static function trataDadosSemAssinaturaSaida($objMdLitSoapClienteRN , $operacao, &$arrParametroSaida) {
+        $objMdLitSoapClienteRN->execOperacao($operacao);
+        if ( $objMdLitSoapClienteRN->__getLastResponse() ) {
+            $arrParametroSaida = $objMdLitSoapClienteRN->convertEncondig(
+                MdLitIntegracaoINT::object_to_array( new SimpleXMLElement( $objMdLitSoapClienteRN->__getLastResponse() ) ),
+                'ISO-8859-1'
+            );
+        }
+    }
 }
 ?>

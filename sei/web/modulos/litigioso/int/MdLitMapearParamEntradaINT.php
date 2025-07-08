@@ -33,26 +33,9 @@ class MdLitMapearParamEntradaINT extends InfraINT {
   }
 
   public static function montarTabelaParamEntrada($objMdLitSoapClienteRN, $idMdLitFuncionalidade, $operacao, $idMdLitIntegracao = null){
-      $objMdLitMapearParamEntradaDTO    = new MdLitMapearParamEntradaDTO();
-      $arrParametroEntrada              = $objMdLitSoapClienteRN->getParamsInput($operacao);
-
-        foreach ($arrParametroEntrada as $indice=>$valor) {
-            if(is_array($valor)) {
-                ksort($valor);
-                foreach ($valor as $chave => $item) {
-                    if(is_array($item)){
-                        foreach($item as $chaveItem => $value) {
-                            $parametroEntradaCorreto[$chaveItem] = $indice . " - " . $chave . " - " . $chaveItem;
-                        }
-                    } else {
-                        $parametroEntradaCorreto[$chave] = $indice." - ".$item;
-                    }
-                }
-            } else {
-                $parametroEntradaCorreto[$valor] = $valor;
-            }
-        }
-
+      $objMdLitMapearParamEntradaDTO = new MdLitMapearParamEntradaDTO();
+      $arrParametroEntrada = [];
+      self::trataDadosEntrada( $objMdLitSoapClienteRN->getParametrosEntradaSaidaWsdl() , $operacao , $arrParametroEntrada);
       $strResultadoParamEntrada         = '';
       $arrObjMdLitMapearParamEntradaDTO = array();
 
@@ -84,8 +67,11 @@ class MdLitMapearParamEntradaINT extends InfraINT {
             }else{
                 $strItensSelNomeFuncional = MdLitCampoIntegracaoINT::montarSelectCampoIntergracao('null', '&nbsp;', $idMdLitFuncionalidade, 'E');
             }
+
             $i = 0;
-            foreach ($strItensSelNomeFuncional as $campoOrigemEntrada) {
+            $arrSalvosBDIdsInput = InfraArray::converterArrInfraDTO($arrObjMdLitMapearParamEntradaDTO,'IdMdLitCampoIntegracao');
+
+            foreach ($strItensSelNomeFuncional as $campoOrigemEntrada) { // lista total de objetos que existem como parametro de entrada vindos do web-service
                 $tabelaCodigoReceita = '';
                 $entradaParametroSalvo = null;
                 $chaveUnica = null;
@@ -100,7 +86,7 @@ class MdLitMapearParamEntradaINT extends InfraINT {
                     $campoOrigemEntradaIdMdLitCampo = $campoOrigemEntrada->get("NomeCampo");
                 }
 
-                foreach($arrObjMdLitMapearParamEntradaDTO as $parametrosSalvos) {
+                foreach($arrObjMdLitMapearParamEntradaDTO as $parametrosSalvos) { // lista de objetos já cadastrados no banco
                     $parametrosSalvosIdMdLitId = null;
 
                     if($idMdLitFuncionalidade == 1) {
@@ -121,7 +107,10 @@ class MdLitMapearParamEntradaINT extends InfraINT {
                     }
                 }
 
-                $itensSelectParamEntrada = MdLitCampoIntegracaoINT::montarSelectArray('null','&nbsp;', $entradaParametroSalvo, $parametroEntradaCorreto);
+                if ( $campoOrigemEntradaIdMdLitId == 5 && !in_array(5,$arrSalvosBDIdsInput) && $campoOrigemEntradaIdMdLitCampo == "Código da Receita" )
+                    $tabelaCodigoReceita = MdLitIntegracaoINT::montarTabelaCodigoReceita();
+
+                $itensSelectParamEntrada = MdLitCampoIntegracaoINT::montarSelectArray('null','&nbsp;', $entradaParametroSalvo, $arrParametroEntrada);
                 $strCssTr = '<tr id="paramEntradaTable_' . $i . '" class="infraTrClara">';
 
                 if($campoOrigemEntradaIdMdLitId == $chaveUnica) {
@@ -158,5 +147,21 @@ class MdLitMapearParamEntradaINT extends InfraINT {
       return array('strResultado' => $strResultadoParamEntrada,'numRegistros'=> $numRegistrosParametroEntrada );
   }
 
+  public static function trataDadosEntrada( $arrParametro, $nmEntidade, &$arrParametroEntrada ){
+      if ( isset($arrParametro[$nmEntidade] ) ) {
+          foreach ($arrParametro[$nmEntidade]['fields'] as $k => $v) {
+              if (MdLitSoapClienteRN::_verificaTipoDadosWebService($v)) {
+                  $arrParametroEntrada[$k] = $nmEntidade . ' - ' . $k;
+              } else {
+                  self::trataDadosEntrada($arrParametro, $v, $arrParametroEntrada);
+              }
+          }
+
+          if (!empty($arrParametro[$nmEntidade]['base'])) {
+              $arrBase = explode(':', $arrParametro[$nmEntidade]['base']);
+              self::trataDadosEntrada($arrParametro, $arrBase[1], $arrParametroEntrada);
+          }
+      }
+  }
 }
 ?>

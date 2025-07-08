@@ -25,12 +25,16 @@ class MdLitServicoIntegracaoINT extends InfraINT {
     }
 
     public static function montarTabelaParamSaida(MdLitSoapClienteRN $objMdLitSoapClienteRN, $operacao, $objMdLitServicoIntegracaoDTO = null){
-        $versaoSoap = $_POST['versaoSoap'] ?: $objMdLitServicoIntegracaoDTO->getStrVersaoSoap();
-        $objMdLitSoapClienteRN->setSoapVersion($versaoSoap);
-        $arrParametroSaida = $objMdLitSoapClienteRN->getParamsOutput($operacao);
+        $arrParametroSaidaAux = [];
+        $arrParametroSaida    = [];
+
+        MdLitMapearParamSaidaINT::trataDadosSemAssinaturaSaida($objMdLitSoapClienteRN,$operacao,$arrParametroSaidaAux);
+
+        foreach ( $arrParametroSaidaAux['listaTipoServico'][0] as $campo => $valor ) {
+            $arrParametroSaida[] = $campo;
+        }
 
         $strResultadoParamSaida = '';
-
 
         //tabela de dados de saída
         $numRegistrosParametroSaida = count($arrParametroSaida);
@@ -82,16 +86,19 @@ class MdLitServicoIntegracaoINT extends InfraINT {
     }
 
     public static function montarTabelaServicoIntegracao(MdLitServicoIntegracaoDTO $objMdLitServicoIntegracaoDTO){
+        $objMdLitSoapClientRN = new MdLitSoapClienteRN( $objMdLitServicoIntegracaoDTO->getStrEnderecoWsdl() , [
+                'soap_version' => $objMdLitServicoIntegracaoDTO->getStrVersaoSoap(),
+                'encoding'     => 'UTF-8'
+            ]
+        );
 
-        $objMdLitSoapClientRN = new MdLitSoapClienteRN($objMdLitServicoIntegracaoDTO->getStrEnderecoWsdl(), 'wsdl');
-        $objMdLitSoapClientRN->setSoapVersion($objMdLitServicoIntegracaoDTO->getStrVersaoSoap());
-        $arrResultadoWebService = $objMdLitSoapClientRN->call($objMdLitServicoIntegracaoDTO->getStrOperacaoWsdl(), array('soap_version'=>SOAP_1_2,'cache_wsdl' => WSDL_CACHE_NONE));
-
-        $arrResultadoWebService = $arrResultadoWebService['listaTipoServico'];
+        $arrResultadoWebService = [];
+        MdLitMapearParamSaidaINT::trataDadosSemAssinaturaSaida($objMdLitSoapClientRN,$objMdLitServicoIntegracaoDTO->getStrOperacaoWsdl(),$arrResultadoWebService);
+        $arrResultadoWebService = $arrResultadoWebService['listaTipoServico'] ?? [];
         $strResultado = '';
 
         //Tabela de resultado do web-service de listar serviço
-        $numRegistros = count($arrResultadoWebService);
+        $numRegistros = $arrResultadoWebService ? count($arrResultadoWebService) : 0;
         if($numRegistros > 0){
             $strSumarioTabela = 'Tabela de resultado do web-service de listar serviço';
             $strCaptionTabela = 'Serviços';

@@ -1241,54 +1241,58 @@ class MdLitProcessoSituacaoRN extends InfraRN
 
     protected function processarCadastrarControlado($post)
     {
-        $arrSituacao = PaginaSEI::getInstance()->getArrItensTabelaDinamica($post['hdnTbSituacoes']);
+        try {
 
-        $dadosSituacaoRecurso = [
-            'idLancamento'             => $post['hdnCreditosProcesso'] ? $post['hdnCreditosProcesso'] : null,
-            'hdnDtApresentacaoRecurso' => $post['hdnDtApresentacaoRecurso'] ? $post['hdnDtApresentacaoRecurso'] : null,
-            'hdnDtIntimacaoAplMulta'   => $post['hdnDtIntimacaoAplMulta'] ? $post['hdnDtIntimacaoAplMulta'] : null
-        ];
+            $arrSituacao = PaginaSEI::getInstance()->getArrItensTabelaDinamica($post['hdnTbSituacoes']);
 
-        $arrIdSituacao = $this->_prepararCadastroAlteracaoSituacao($arrSituacao, $dadosSituacaoRecurso, $post);
+            $dadosSituacaoRecurso = [
+                'idLancamento' => $post['hdnCreditosProcesso'] ? $post['hdnCreditosProcesso'] : null,
+                'hdnDtApresentacaoRecurso' => $post['hdnDtApresentacaoRecurso'] ? $post['hdnDtApresentacaoRecurso'] : null,
+                'hdnDtIntimacaoAplMulta' => $post['hdnDtIntimacaoAplMulta'] ? $post['hdnDtIntimacaoAplMulta'] : null
+            ];
 
-        //web-service com o sistema de faturamento
-        $objMdLitLancamentoRN = new MdLitLancamentoRN();
+            $arrIdSituacao = $this->_prepararCadastroAlteracaoSituacao($arrSituacao, $dadosSituacaoRecurso, $post);
 
-        $idUltimaSituacao = intval(end($arrSituacao)[0]);
-        $post['id_situacao'] =  !empty($arrIdSituacao) ? end($arrIdSituacao) : $idUltimaSituacao;
-        $objMdLitLancamentoDTO = $objMdLitLancamentoRN->prepararLancamento($post);
+            //web-service com o sistema de faturamento
+            $objMdLitLancamentoRN = new MdLitLancamentoRN();
 
-        //se nao for esclusao da situacao deve alterar/cadastrar
-        if ($this->isEsclusaoSituacao) {
-            return;
-        }
-        // o cadastrar situação colocar o $id_md_lit_processo_situacao cadastrado/alterado
-        if($arrIdSituacao) {
-            $arrDecisao['id_md_lit_processo_situacao'] = count($arrIdSituacao) > 0 ? end($arrIdSituacao) : null;
-        } else {
-            $arrDecisao['id_md_lit_processo_situacao'] = null;
-        }
-        $arrDecisao['id_procedimento'] = $post['hdnIdProcedimento'];
-        $arrDecisao['valor_lancamento'] = $objMdLitLancamentoDTO ? $objMdLitLancamentoRN->valorLancadoPorProcedimento($objMdLitLancamentoDTO->getDblIdProcedimento()) : null;
-        $arrDecisao['lista'] = PaginaSEI::getInstance()->getArrItensTabelaDinamica($post['hdnTbDecisao']);
-        $objMdLitDecisaoRN = new MdLitDecisaoRN();
+            $idUltimaSituacao = intval(end($arrSituacao)[0]);
+            $post['id_situacao'] = !empty($arrIdSituacao) ? end($arrIdSituacao) : $idUltimaSituacao;
+            $objMdLitLancamentoDTO = $objMdLitLancamentoRN->prepararLancamento($post);
 
-        $arrIdDecisao = $objMdLitDecisaoRN->cadastrar($arrDecisao);
-
-        if ($arrIdDecisao) {
-            $objMdLitDecisaoDTO = new MdLitDecisaoDTO();
-            $objMdLitDecisaoDTO->retTodos(false);
-            $objMdLitDecisaoDTO->retDblIdProcedimentoMdLitProcessoSituacao();
-            $objMdLitDecisaoDTO->setNumIdMdLitDecisao($arrIdDecisao, InfraDTO::$OPER_IN);
-
+            //se nao for esclusao da situacao deve alterar/cadastrar
+            if ($this->isEsclusaoSituacao) {
+                return;
+            }
+            // o cadastrar situação colocar o $id_md_lit_processo_situacao cadastrado/alterado
+            if ($arrIdSituacao) {
+                $arrDecisao['id_md_lit_processo_situacao'] = count($arrIdSituacao) > 0 ? end($arrIdSituacao) : null;
+            } else {
+                $arrDecisao['id_md_lit_processo_situacao'] = null;
+            }
+            $arrDecisao['id_procedimento'] = $post['hdnIdProcedimento'];
+            $arrDecisao['valor_lancamento'] = $objMdLitLancamentoDTO ? $objMdLitLancamentoRN->valorLancadoPorProcedimento($objMdLitLancamentoDTO->getDblIdProcedimento()) : null;
+            $arrDecisao['lista'] = PaginaSEI::getInstance()->getArrItensTabelaDinamica($post['hdnTbDecisao']);
             $objMdLitDecisaoRN = new MdLitDecisaoRN();
-            $arrObjMdLitDecisaoDTO = $objMdLitDecisaoRN->listar($objMdLitDecisaoDTO);
+
+            $arrIdDecisao = $objMdLitDecisaoRN->cadastrar($arrDecisao);
+
+            if ($arrIdDecisao) {
+                $objMdLitDecisaoDTO = new MdLitDecisaoDTO();
+                $objMdLitDecisaoDTO->retTodos(false);
+                $objMdLitDecisaoDTO->retDblIdProcedimentoMdLitProcessoSituacao();
+                $objMdLitDecisaoDTO->setNumIdMdLitDecisao($arrIdDecisao, InfraDTO::$OPER_IN);
+
+                $objMdLitDecisaoRN = new MdLitDecisaoRN();
+                $arrObjMdLitDecisaoDTO = $objMdLitDecisaoRN->listar($objMdLitDecisaoDTO);
 
 
-            $objMdLitRelDecisLancamentRN = new MdLitRelDecisLancamentRN();
-            $objMdLitRelDecisLancamentRN->vincularDecisaoComLancamento($arrObjMdLitDecisaoDTO);
+                $objMdLitRelDecisLancamentRN = new MdLitRelDecisLancamentRN();
+                $objMdLitRelDecisLancamentRN->vincularDecisaoComLancamento($arrObjMdLitDecisaoDTO);
+            }
+        }catch ( Exception $e ) {
+            ( new InfraException() )->lancarValidacao( $e->getMessage() );
         }
-
     }
 
     private function _controlarExclusaoSituacoes($idProcedimento, $arrSituacao, $post)

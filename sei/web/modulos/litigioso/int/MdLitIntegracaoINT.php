@@ -46,13 +46,12 @@ class MdLitIntegracaoINT extends InfraINT {
                 return $xml;
             }
 
-            if($data['tipoWs'] != 'SOAP'){
+            if ( $data['tipoWs'] != 'SOAP' ) {
                 throw new Exception('O tipo de cliente informado deve ser do tipo SOAP.');
             }
 
-            $client = new MdLitSoapClienteRN($enderecoWSDL, 'wsdl');
-            $client->setSoapVersion($data['versaoSoap']);
-            $operacaoArr = $client->getFunctions();
+            $client = new MdLitSoapClienteRN( $enderecoWSDL , ['soap_version' => $data['versaoSoap']] );
+            $operacaoArr = $client->retornaArrayOperacoes();
 
             if(empty($operacaoArr)){
                 $xml .= "<success>false</success>\n";
@@ -62,19 +61,18 @@ class MdLitIntegracaoINT extends InfraINT {
             }
 
             $xml .= "<success>true</success>\n";
-            asort($operacaoArr);
-            foreach ($operacaoArr as $key=>$operacao){
+
+            // cria a string xml com as operacoes
+            foreach ( $operacaoArr as $key => $operacao ) {
                 $xml .= "<operacao key='{$key}'>{$operacao}</operacao>\n";
             }
 
-        }catch(Exception $e){
-            $xml = "<operacoes>\n";
-            $xml .= "<success>false</success>\n";
-            $xml .= "<msg>Erro na conexão SOAP: {$e->getMessage()}</msg>\n";
-        }
+            $xml .= '</operacoes>';
+            return $xml;
 
-        $xml .= '</operacoes>';
-        return $xml;
+        }catch(Exception $e){
+            return "<operacoes><sucess><msg> Erro Soap: ".$e->getMessage()."</msg></sucess></operacoes>";
+        }
     }
 
     public static function montarTabelaCodigoReceita($idMdLitMapearParamEntrada = null)
@@ -94,7 +92,7 @@ class MdLitIntegracaoINT extends InfraINT {
 
         if (!empty($arrObjMdLitTipoControleDTO)) {
             $xml = '<div style="padding-top: 2px; padding-bottom: 2px; width: 100%">';
-            $xml .= '<table width="100%" align="center" class="infraTable table-striped">';
+            $xml .= '<table width="100%" align="center" class="infraTable table-striped" id="tbTpCtrlReceita">';
             $xml .= '<tr>';
             $xml .= '<th style="display: none;">ID</th>';
             $xml .= '<th class="infraTh" width="40%">Tipo de Controle</th>';
@@ -123,5 +121,21 @@ class MdLitIntegracaoINT extends InfraINT {
         }
         return $xml;
 
+    }
+
+    public static function object_to_array( $object ) {
+        $result = (array) $object;
+        foreach( $result as &$value ) {
+            if ( $value instanceof stdClass || $value instanceof SimpleXMLElement )
+                $value = self::object_to_array( $value );
+
+            if ( is_array( $value ) ) {
+                foreach ( $value as $k => $v ) {
+                    if ( $v instanceof stdClass || $v instanceof SimpleXMLElement )
+                        $value[$k] = self::object_to_array( $v );
+                }
+            }
+        }
+        return $result;
     }
 }

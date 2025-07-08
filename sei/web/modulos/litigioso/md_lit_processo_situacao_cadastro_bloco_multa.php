@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row mt-2 mb-2">
     <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
         <fieldset class="infraFieldset form-control" id="fieldsetMulta"
                   style="<?php echo (!$blnDecisaoMultaIntegracao || $strGridDecisao == '' && !$objMdLitLancamentoDTO) ? 'display:none' : '' ?>">

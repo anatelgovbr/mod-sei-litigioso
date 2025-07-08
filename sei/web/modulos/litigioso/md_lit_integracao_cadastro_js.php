@@ -325,6 +325,8 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
                 }
             });
 
+            const objTableTpCtrlReceita = document.querySelector('#tbTpCtrlReceita');
+
             var msgEntrada = '';
             if (!infraInArray(78, valoresDadosEntrada)) {
                 msgEntrada += "- CNPJ/CPF\n";
@@ -342,7 +344,29 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
                 msgEntrada += "- Valor Total\n";
             }
 
+            //verifica preenchimento sobre Codigo da Receita
+            let isPreenchidoComboReceita       = infraInArray( 5,valoresDadosEntrada );
+            let isPreenchidoTableTpCtrlReceita = false;
+            let idxLoop = 0;
+            for ( item of objTableTpCtrlReceita.rows ) {
+                if ( idxLoop == 0 ) {
+                    idxLoop++;
+                    continue;
+                }
 
+                if ( item.children[2].getElementsByTagName('input')[0].value != '' && item.children[2].getElementsByTagName('input')[0].value != null ) {
+                    isPreenchidoTableTpCtrlReceita = true;
+                    break;
+                }
+
+                idxLoop++;
+            }
+
+            if ( ( isPreenchidoComboReceita == true && isPreenchidoTableTpCtrlReceita == false ) || ( isPreenchidoComboReceita == false && isPreenchidoTableTpCtrlReceita == true ) ){
+                msgEntrada += "- Código da Receita\n";
+            }
+
+            // prossegue com outras validacoes
             var valoresDadosSaida = [];
             $('[name^="nomeFuncionalDadosSaida"]').each(function (key, value) {
                 if (value.value != 'null') {
