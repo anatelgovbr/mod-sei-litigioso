@@ -91,7 +91,7 @@ class MdLitAtualizadorSeiRN extends InfraRN
 
             //testando versao do framework
 
-            $numVersaoInfraRequerida = '2.23.8';
+            $numVersaoInfraRequerida = '2.29.0';
             if (version_compare(VERSAO_INFRA, $numVersaoInfraRequerida) < 0) {
                 $this->finalizar('VERSÃO DO FRAMEWORK PHP INCOMPATÍVEL (VERSÃO ATUAL ' . VERSAO_INFRA . ', SENDO REQUERIDA VERSÃO IGUAL OU SUPERIOR A ' . $numVersaoInfraRequerida . ')', true);
             }
