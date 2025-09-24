@@ -594,37 +594,39 @@ class MdLitCamposAdINT extends InfraINT
     public static function validarPreenchimentoCampos($params)
     {
         $msg = '';
+        if($params['campos']){
+            foreach($params['campos'] as $campo => $valor){
+                preg_match('/^campo_add_(\d+)_/', $campo, $matches);
+                $todosCampos[] = rtrim($campo, '[]');
+                $objMdLitCamposAdDTO = new MdLitCamposAdDTO();
+                $objMdLitCamposAdDTO->setNumIdMdLitCamposAd($matches[1]);
+                $objMdLitCamposAdDTO->retTodos();
+                $objMdLitCamposAdDTO = (new MdLitCamposAdRN())->consultar($objMdLitCamposAdDTO);
 
-        foreach($params['campos'] as $campo => $valor){
-            preg_match('/^campo_add_(\d+)_/', $campo, $matches);
-            $todosCampos[] = rtrim($campo, '[]');
-            $objMdLitCamposAdDTO = new MdLitCamposAdDTO();
-            $objMdLitCamposAdDTO->setNumIdMdLitCamposAd($matches[1]);
-            $objMdLitCamposAdDTO->retTodos();
-            $objMdLitCamposAdDTO = (new MdLitCamposAdRN())->consultar($objMdLitCamposAdDTO);
+                switch ($objMdLitCamposAdDTO->getStrCampoTipo()) {
+                    case MdLitCamposAdINT::$DATA:
+                        $msg  .= self::validarCampoTipoData($objMdLitCamposAdDTO, $valor);
+                        break;
 
-            switch ($objMdLitCamposAdDTO->getStrCampoTipo()) {
-                case MdLitCamposAdINT::$DATA:
-                    $msg  .= self::validarCampoTipoData($objMdLitCamposAdDTO, $valor);
-                    break;
+                    case MdLitCamposAdINT::$TEXTO:
+                        $msg .= self::validarCampoTipoTexto($objMdLitCamposAdDTO, $valor);
+                        break;
 
-                case MdLitCamposAdINT::$TEXTO:
-                    $msg .= self::validarCampoTipoTexto($objMdLitCamposAdDTO, $valor);
-                    break;
+                    case MdLitCamposAdINT::$MONETARIO:
+                    case MdLitCamposAdINT::$INTEIRO:
+                        $msg .= self::validarCampoTipoMonetarioInteiro($objMdLitCamposAdDTO, $valor);
+                        break;
 
-                case MdLitCamposAdINT::$MONETARIO:
-                case MdLitCamposAdINT::$INTEIRO:
-                    $msg .= self::validarCampoTipoMonetarioInteiro($objMdLitCamposAdDTO, $valor);
-                    break;
-
-                case MdLitCamposAdINT::$COMBO_BOX:
-                    $msg .= self::validarCampoCombobox($objMdLitCamposAdDTO, $valor);
-                    break;
-                case MdLitCamposAdINT::$DOCUMENTOSEI:
-                    $msg .= self::validarCampoTipoDocumentoSei($objMdLitCamposAdDTO, $valor, $params['id_procedimento']);
-                    break;
+                    case MdLitCamposAdINT::$COMBO_BOX:
+                        $msg .= self::validarCampoCombobox($objMdLitCamposAdDTO, $valor);
+                        break;
+                    case MdLitCamposAdINT::$DOCUMENTOSEI:
+                        $msg .= self::validarCampoTipoDocumentoSei($objMdLitCamposAdDTO, $valor, $params['id_procedimento']);
+                        break;
+                }
             }
         }
+        
 
         // Validação de campos de Multipla Seleção
         foreach (json_decode($params['campoOrganizador'], true) as $linha => $campos ){
