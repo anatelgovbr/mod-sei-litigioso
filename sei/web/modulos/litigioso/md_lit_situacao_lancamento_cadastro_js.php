@@ -61,18 +61,24 @@
 
     }
 
-    function validarSituacaoAgendamentoMarcada(){
+    function validarSituacaoAgendamentoMarcada() {
         var formulario = document.getElementById("frmSituacaoCadastro");
         var dados = new FormData(formulario);
-        var valido = false;
+        
+        if (!document.getElementById("tableWebServiceSituacaoLancamento")) {
+            return false;
+        }
 
-        dados.forEach(function(valor, chave){
+        var valido = false;
+        dados.forEach(function(valor, chave) {
             if (chave.includes('sinUtilizarAgendamento')) {
                 valido = true;
             }
         });
+
         return !valido;
     }
+
 
     function cancelar() {
         location.href = "<?= $strUrlCancelar ?>";

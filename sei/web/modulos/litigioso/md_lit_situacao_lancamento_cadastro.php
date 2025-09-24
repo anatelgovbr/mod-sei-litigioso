@@ -73,6 +73,7 @@ try {
                     $objMdLitSituacaoLancamentoDTO->setStrSinAtivoIntegracao('S');
                     $objMdLitSituacaoLancamentoDTO->setStrCorSituacao($_POST['selCor']);
                     $objMdLitSituacaoLancamentoDTO->setStrSinCancelamento($_POST['rdoSinCancelamento']);
+                    $objMdLitSituacaoLancamentoDTO->setStrSinUtilizarAgendamento('N');
 
                     $objMdLitSituacaoLancamentoRN = new MdLitSituacaoLancamentoRN();
                     $objMdLitSituacaoLancamentoDTO = $objMdLitSituacaoLancamentoRN->cadastrar($objMdLitSituacaoLancamentoDTO);

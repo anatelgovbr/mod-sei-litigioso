@@ -262,12 +262,12 @@ class MdLitSoapClienteRN extends BeSimple\SoapClient\SoapClient {
                 }
 
                 $err = "Ocorreu erro ao conectar com a operação({$objMdLitIntegracaoDTO->getStrOperacaWsdl()})\n" . $err;
-                $this->execDebugLog( $err );
+                LogSEI::getInstance()->gravar($err,InfraLog::$INFORMACAO);
                 throw new InfraException($err);
             }
 
         }catch (Exception $e){
-            $this->execDebugLog( $e->getMessage() );
+            LogSEI::getInstance()->gravar($e->getMessage(),InfraLog::$INFORMACAO);
             throw new InfraException("Não foi possível realizar a integração com o Sistema de Arrecadação.\n" . $e->getMessage());
         }
 
@@ -294,27 +294,9 @@ class MdLitSoapClienteRN extends BeSimple\SoapClient\SoapClient {
             return false;
 
         }catch (Exception $e){
-            $this->execDebugLog( $e->getMessage() );
+            LogSEI::getInstance()->gravar($e->getMessage(),InfraLog::$INFORMACAO);
             throw new InfraException('Ocorreu erro ao executar o serviço de lançamento. ', $e->getMessage() );
         }
-    }
-
-    private function execDebugLog( $strLog ) {
-        // liga
-        InfraDebug::getInstance()->setBolLigado(true);
-        InfraDebug::getInstance()->setBolDebugInfra(false);
-        InfraDebug::getInstance()->setBolEcho(false);
-        InfraDebug::getInstance()->limpar();
-
-        InfraDebug::getInstance()->gravar( $strLog );
-
-        // salva
-        LogSEI::getInstance()->gravar(InfraDebug::getInstance()->getStrDebug(),InfraLog::$INFORMACAO);
-
-        // limpa e fecha
-        InfraDebug::getInstance()->setBolLigado(false);
-        InfraDebug::getInstance()->setBolDebugInfra(false);
-        InfraDebug::getInstance()->setBolEcho(false);
-        InfraDebug::getInstance()->limpar();
+        
     }
 }

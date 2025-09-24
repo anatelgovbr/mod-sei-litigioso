@@ -1861,7 +1861,6 @@
         objLupaMotivos = new infraLupaSelect('selMotivos', 'hdnMotivos', '<?=$strLinkMotivosSelecao?>');
     }
 
-    // ADICIONAR UM CAMPO NIVEL 1 NA GRID
     function adicionarCampo() {
 
         if(verificarSeJaEstaNaGrid()){
@@ -2112,53 +2111,60 @@
     }
 
     function organizarCamposPorLinha() {
-        var linhas = document.querySelectorAll('#tbCamposSelecionados tbody tr');
-        var organizador = [];
+        
+        // CASO NÃO ESTEJA CONFIGURADO PARA UTILIZAÇÃO NÃO DEVE EXECUTAR O ORGANIZADOR DE LINHAS
+        if (document.getElementById('divInformacoesComplementares')){
+            var linhas = document.querySelectorAll('#tbCamposSelecionados tbody tr');
+            var organizador = [];
 
-        linhas.forEach(function(linha, index) {
-            var campos = linha.querySelectorAll('[data-id-campo-add]');
-            var idsCampos = [];
+            linhas.forEach(function(linha, index) {
+                var campos = linha.querySelectorAll('[data-id-campo-add]');
+                var idsCampos = [];
 
-            campos.forEach(function(campo) {
-                idsCampos.push(campo.getAttribute('id'));
+                campos.forEach(function(campo) {
+                    idsCampos.push(campo.getAttribute('id'));
+                });
+
+                organizador.push(idsCampos);
             });
 
-            organizador.push(idsCampos);
-        });
-
-        var campoOrganizador = document.getElementById('campoOrganizador');
-        campoOrganizador.value = JSON.stringify(organizador);
+            var campoOrganizador = document.getElementById('campoOrganizador');
+            campoOrganizador.value = JSON.stringify(organizador);
+        }
     }
 
     function validarInformacoesAdicionais() {
 
         var isValid = true;
 
-        var params = {
-            campos: coletarCamposGrid(),
-            id_procedimento: document.getElementById('idProcedimento').value,
-            campoOrganizador: document.getElementById('campoOrganizador').value
-        };
+        if (document.getElementById('divInformacoesComplementares')){
 
-        $.ajax({
-            type: "POST",
-            url: "<?=SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_validar_preenchiemnto_campos') ?>",
-            dataType: "xml",
-            data: params,
-            async: false,
-            success: function (result) {
-                var msg = $(result).find('msg').text();
-                if(msg != ''){
-                    alert(msg);
-                    isValid = false;
+            var params = {
+                campos: coletarCamposGrid(),
+                id_procedimento: document.getElementById('idProcedimento').value,
+                campoOrganizador: document.getElementById('campoOrganizador').value
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "<?=SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_lit_validar_preenchiemnto_campos') ?>",
+                dataType: "xml",
+                data: params,
+                async: false,
+                success: function (result) {
+                    var msg = $(result).find('msg').text();
+                    if(msg != ''){
+                        alert(msg);
+                        isValid = false;
+                    }
+                },
+                error: function (msgError) {
+                    msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;
+                    valid = false;
+                    return false;
                 }
-            },
-            error: function (msgError) {
-                msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;
-                valid = false;
-                return false;
-            }
-        });
+            }); 
+        }
 
 
         return isValid;
