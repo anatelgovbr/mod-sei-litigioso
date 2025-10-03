@@ -163,7 +163,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                         de
                         Decisão:</label>
                     <select id="selDescricaoTipoDecisaoLitigioso" name="selDescricaoTipoDecisaoLitigioso"
-                            class="infraSelect form-control">
+                            class="infraSelect form-select">
                         <?= $strItensSelTipoDecisao ?>
                     </select>
                 </div>
@@ -174,7 +174,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                         Decisão:</label>
                     <div class="input-group mb-3">
                         <select id="selEspecieDecisaoLitigioso" name="selEspecieDecisaoLitigioso"
-                                class="infraSelect form-control">
+                                class="infraSelect form-select">
                         </select>
                         <input type="hidden" name="hdnTbTiposDecisao" id="hdnTbTiposDecisao"
                             value="<?php echo $hdnTbTiposDecisao ?>"/>

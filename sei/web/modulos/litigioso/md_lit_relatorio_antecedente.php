@@ -89,7 +89,7 @@ try {
                     $objEntradaListarContatosAPI = new ContatoDTO();
                     $objEntradaListarContatosAPI->retNumIdContato();
                     $objEntradaListarContatosAPI->retDblCpf();
-                    $objEntradaListarContatosAPI->retDblCnpj();
+                    $objEntradaListarContatosAPI->retStrCnpj();
                     $objEntradaListarContatosAPI->setNumIdContato($arrIdContato, InfraDTO::$OPER_IN);
 
                     $objSeiRN = new ContatoRN();
@@ -373,7 +373,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo , $inicializar);
                         <div class="col-sm-12 col-md-5 col-lg-5 col-xl-5">
                             <div class="input-group mb-3">
                                 <select id="selInteressados" name="selInteressados" size="4" multiple="multiple"
-                                        class="infraSelect">
+                                        class="infraSelect form-select">
                                 </select>
                                 <div id="divOpcoesInteressados" class="botoes">
                                     <img id="imgLupaInteressados" onclick="objLupaInteressados.selecionar(700,500);"

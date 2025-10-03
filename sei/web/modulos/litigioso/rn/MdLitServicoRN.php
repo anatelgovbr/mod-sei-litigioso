@@ -60,6 +60,9 @@
                 }
 
                 $objServicoBD = new MdLitServicoBD ($this->getObjInfraIBanco());
+                foreach ($arrObjServicoDTO as $objServicoDTO) {
+                    $objServicoBD->excluir($objServicoDTO);
+                }
 
             } catch (Exception $e) {
                 throw new InfraException ('Erro excluindo Serviço.', $e);

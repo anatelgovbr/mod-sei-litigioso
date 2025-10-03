@@ -94,7 +94,7 @@ class MdLitAtualizadorSipRN extends InfraRN
             }
 
             //testando versao do framework
-            $numVersaoInfraRequerida = '2.29.0';
+            $numVersaoInfraRequerida = '2.41.1';
             if ($this->normalizaVersao(VERSAO_INFRA) < $this->normalizaVersao($numVersaoInfraRequerida)) {
                 $this->finalizar('VERSO DO FRAMEWORK PHP INCOMPATVEL (VERSO ATUAL ' . VERSAO_INFRA . ', SENDO REQUERIDA VERSO IGUAL OU SUPERIOR A ' . $numVersaoInfraRequerida . ')', true);
             }

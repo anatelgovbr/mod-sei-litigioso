@@ -129,7 +129,7 @@ class MdLitMapearParamSaidaINT extends InfraINT {
                 $strResultadoParamSaida .= "<input type='hidden' name='hdnArrayDadosSaida[$i]' value='{$arrParametroSaida[$campoOrigemSaidaIdMdLitId]}' />";
                 $strResultadoParamSaida .= "<label ".$class.">".PaginaSEI::tratarHTML($campoOrigemSaidaIdMdLitCampo)."</label>";
                 $strResultadoParamSaida .= "</td>";
-                $strResultadoParamSaida .= "<td align='center'><select class='infraSelect form-control' id='nomeFuncionalDadosSaida_$idLinha' name='nomeFuncionalDadosSaida[".$campoOrigemSaidaIdMdLitId."]' onchange='mudarNomeFuncionalDadosSaida(this)' style='width: 80%;'>{$strItensSelCampoDestino}</select></td>";
+                $strResultadoParamSaida .= "<td align='center'><select class='infraSelect form-select' id='nomeFuncionalDadosSaida_$idLinha' name='nomeFuncionalDadosSaida[".$campoOrigemSaidaIdMdLitId."]' onchange='mudarNomeFuncionalDadosSaida(this)' style='width: 80%;'>{$strItensSelCampoDestino}</select></td>";
                 $strResultadoParamSaida .= "<td align='center'><input type='radio' class='infraRadio' name='chaveUnicaDadosSaida' value='".$campoOrigemSaidaIdMdLitId."' $checked id='chaveUnicaDadosSaida_{$idLinha}' $disable> </td>";
 
                 $strResultadoParamSaida .= '</tr>' . "\n";

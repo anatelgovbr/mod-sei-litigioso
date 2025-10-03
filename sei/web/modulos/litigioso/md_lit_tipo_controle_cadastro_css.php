@@ -35,4 +35,8 @@
     .mb-3{
         margin-bottom: 0px !important;
     }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
 </style>

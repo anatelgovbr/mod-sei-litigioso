@@ -115,15 +115,24 @@ class MdLitProcessoSituacaoINT extends InfraINT {
      */
     public static function verificarDependenciasSituacaoComDecisoes($data)
     {
-        /*
-        $mdLitSituacaoDto = new MdLitProcessoSituacaoDTO();
-        $mdLitSituacaoDto->ret('IdProcedimento');
-        $mdLitProcessoSituacaoRN = new MdLitProcessoSituacaoRN();
-        $mdLitProcessoSituacaoRN->listar($mdLitSituacaoDto);
-        */
+        $objMdLitDecisaoDTO = new MdLitDecisaoDTO();
+        $objMdLitDecisaoDTO->retNumIdMdLitProcessoSituacao();
+        $objMdLitDecisaoDTO->setNumIdMdLitProcessoSituacao((int)$data['id_processo_situacao']);
+        $objMdLitDecisaoDTO->setStrSinAtivo('S');
 
-        $instanciaBanco = BancoSEI::getInstance();
-        $arr = $instanciaBanco->consultarSql("select d.*
+        $objMdLitDecisaoDTO->adicionarCriterio(
+          array('Valor', 'Multa', 'IdMdLitEspecieDecisao', 'IdMdLitTipoDecisao', 'Prazo', 'ValorMultaSemIntegracao', 'IdMdLitObrigacao'), 
+          array(InfraDTO::$OPER_DIFERENTE, InfraDTO::$OPER_DIFERENTE, InfraDTO::$OPER_DIFERENTE, InfraDTO::$OPER_DIFERENTE, InfraDTO::$OPER_DIFERENTE, InfraDTO::$OPER_DIFERENTE, InfraDTO::$OPER_DIFERENTE), 
+          array(NULL, NULL, NULL, NULL, NULL, NULL, NULL), 
+          array(InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR)
+        );
+
+        $objMdLitDecisaoDTO->setOrdNumIdMdLitProcessoSituacao(InfraDTO::$TIPO_ORDENACAO_DESC);
+        $objMdLitDecisaoRN = new MdLitDecisaoRN();
+        return $objMdLitDecisaoRN->contar($objMdLitDecisaoDTO);
+        
+        // TODO - Remover depois
+        /*$arr = BancoSEI::getInstance()->consultarSql("select d.*
             from md_lit_processo_situacao ps
             inner join md_lit_decisao d on d.id_md_lit_processo_situacao = ps.id_md_lit_processo_situacao
             where ps.id_md_lit_processo_situacao = " . (int)$data['id_processo_situacao'] . "
@@ -139,7 +148,7 @@ class MdLitProcessoSituacaoINT extends InfraINT {
             order by ps.id_md_lit_processo_situacao desc;"
         );
 
-        return $arr;
+        return $arr;*/
     }
 
   public static function diferencaEntreDias($data1, $data2 = null){

@@ -73,7 +73,7 @@ class MdLitServicoIntegracaoINT extends InfraINT {
                 $strResultadoParamSaida .= "<input type='hidden' name='hdnArrayDadosSaida[$dado]' value='{$key}' />";
                 $strResultadoParamSaida .= $key;
                 $strResultadoParamSaida .= "</td>";
-                $strResultadoParamSaida .= "<td align='center'><select class='form-control' id='campoDestino_$idLinha' name='campoDestino[$dado]' onchange='mudarcampoDestino(this)' style='width: 80%;'>{$strItensSelCampoDestino['select']}</select></td>";
+                $strResultadoParamSaida .= "<td align='center'><select class='form-select' id='campoDestino_$idLinha' name='campoDestino[$dado]' onchange='mudarcampoDestino(this)' style='width: 80%;'>{$strItensSelCampoDestino['select']}</select></td>";
                 $strResultadoParamSaida .= "<td align='center'><div class='infraRadioDiv'><input type='radio'name='chaveUnicaDadosSaida' value='{$key}' $checked id='chaveUnicaDadosSaida_{$idLinha}' $disable class='infraRadioInput'><label class='infraRadioLabel' for='chaveUnicaDadosSaida_{$idLinha}'></div></label></td>";
 
                 $strResultadoParamSaida .= '</tr>' . "\n";

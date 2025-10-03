@@ -25,7 +25,7 @@
                 <label id="lbltipoWs" for="tipoWs" class="infraLabelObrigatorio">
                     Versão SOAP:
                 </label>
-                <select id="versaoSoap" name="versaoSoap" class="infraSelect form-control">
+                <select id="versaoSoap" name="versaoSoap" class="infraSelect form-select">
                     <option value="1.2" <?= $versaoSoap == '1.2' ? 'selected' : '' ?>>1.2</option>
                     <option value="1.1" <?= $versaoSoap == '1.1' ? 'selected' : '' ?>>1.1</option>
                 </select>
@@ -58,7 +58,7 @@
                     </a>
                 </label>
                 <div class="input-group mb-3">
-                    <select id="selOperacao" name="selOperacao" onchange="apagarMapear()" class="infraSelect form-control">
+                    <select id="selOperacao" name="selOperacao" onchange="apagarMapear()" class="infraSelect form-select">
                     </select>
                     <button class="infraButton" type="button" name="btnMapeamento" id="btnMapeamento"
                             onclick="abrirJanelaMapeamento();">Mapeamento

@@ -65,7 +65,7 @@ try {
     $objContatoDTO->setBolExclusaoLogica(false);
 
     $objContatoDTO = $objContatoRN->consultarRN0324($objContatoDTO);
-    $contatoCpfCnpj = $objContatoDTO->getDblCpf() ? str_pad($objContatoDTO->getDblCpf(), 11, '0', STR_PAD_LEFT) : str_pad($objContatoDTO->getDblCnpj(), 14, '0', STR_PAD_LEFT);
+    $contatoCpfCnpj = $objContatoDTO->getDblCpf() ? str_pad($objContatoDTO->getDblCpf(), 11, '0', STR_PAD_LEFT) : str_pad($objContatoDTO->getStrCnpj(), 14, '0', STR_PAD_LEFT);
 
     $checkedRdoOutorgadaSim = $_POST['rdoOutorgada'] == 'S' ? 'checked="checked"' : '';
     $checkedRdoOutorgadaNao = $_POST['rdoOutorgada'] == 'N' ? 'checked="checked"' : '';
@@ -289,7 +289,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                                                     <div class="col-sm-12 col-md-12 col-lg-10 col-xl-8">
                                                         <div class="input-group mb-3">
                                                             <select id="selServicos" name="selServicos"
-                                                                    class="infraSelect form-control" multiple="multiple"
+                                                                    class="infraSelect form-select" multiple="multiple"
                                                                     tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                                                                 <?= $strItensSelServicos ?>
                                                             </select>
@@ -508,7 +508,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                                                                 name="ajuda"
                                                                 id="imgAjudaServicos" <?= PaginaSEI::montarTitleTooltip($objMdLitParametrizarInteressadoDTO->getStrDescricaoAjuda(), 'Ajuda') ?>
                                                                 class="infraImg"/> <? } ?>
-                                                    <select id="selServicos" name="selServicos" class="infraSelect"
+                                                    <select id="selServicos" name="selServicos" class="infraSelect form-select"
                                                             multiple="multiple"
                                                             tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                                                         <?= $strItensSelServicos ?>
@@ -675,7 +675,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                                                             <div class="input-group mb-3">
                                                                 <select id="selServicosNaoOutorga"
                                                                         name="selServicosNaoOutorga"
-                                                                        class="infraSelect form-control"
+                                                                        class="infraSelect form-select"
                                                                         multiple="multiple"
                                                                         tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                                                                     <?= $strItensSelServicos ?>

@@ -213,7 +213,7 @@ class MdLitCamposAdINT extends InfraINT
                 $htmRetorno .= '<div data-id-campo-tp-controle="'. $uniqueId .'" class="campos-info-add col-12 col-sm-12 col-md-8 col-lg-6 col-xl-4">';
                 $htmRetorno .= '    <label for="'. $uniqueId .'" class="'.$obrigatorio.'">' . $objMdLitCamposAdDTO->getStrNome() .':</label>';
                 $htmRetorno .= $htmlAjuda;
-                $htmRetorno .= '    <select style="white-space: nowrap;" onChange="mudarOpcaoComboBox(this)" id="campo_add_'. $uniqueId .'" name="campo_add_'. $uniqueId .'" data-label="'. $objMdLitCamposAdDTO->getStrNome() .'" data-id-campo-add="'. $objMdLitCamposAdDTO->getNumIdMdLitCamposAd() .'" class="infraSelect form-control" data-old-value="'. $value .'" value="'. $value .'">';
+                $htmRetorno .= '    <select style="white-space: nowrap;" onChange="mudarOpcaoComboBox(this)" id="campo_add_'. $uniqueId .'" name="campo_add_'. $uniqueId .'" data-label="'. $objMdLitCamposAdDTO->getStrNome() .'" data-id-campo-add="'. $objMdLitCamposAdDTO->getNumIdMdLitCamposAd() .'" class="infraSelect form-select" data-old-value="'. $value .'" value="'. $value .'">';
                 $htmRetorno .= $htmlOption;
                 $htmRetorno .= '    </select>';
                 $htmRetorno .= '</div>';
@@ -251,7 +251,7 @@ class MdLitCamposAdINT extends InfraINT
                 $htmRetorno .= '<div data-id-campo-tp-controle="'. $uniqueId .'" class="campos-info-add col-12 col-sm-12 col-md-8 col-lg-6 col-xl-4">';
                 $htmRetorno .= '    <label for="'. $uniqueId .'" class="'.$obrigatorio.'">' . $objMdLitCamposAdDTO->getStrNome() .':</label>';
                 $htmRetorno .= $htmlAjuda;
-                $htmRetorno .=      '<select id="campo_add_'. $uniqueId .'" name="campo_add_'. $uniqueId .'[]" multiple="multiple" class="infraSelect multipleSelect form-control" data-label="'. $objMdLitCamposAdDTO->getStrNome() .'" data-id-campo-add="'. $objMdLitCamposAdDTO->getNumIdMdLitCamposAd() .'" style="width: 100%;">';
+                $htmRetorno .=      '<select id="campo_add_'. $uniqueId .'" name="campo_add_'. $uniqueId .'[]" multiple="multiple" class="infraSelect multipleSelect form-select multiSelectLit" data-label="'. $objMdLitCamposAdDTO->getStrNome() .'" data-id-campo-add="'. $objMdLitCamposAdDTO->getNumIdMdLitCamposAd() .'">';
                 $htmRetorno .=           self::montarSelectMultiSelect(null, null, $objMdLitCamposAdDTO->getNumIdMdLitCamposAd(), $idMdLitCamposAdForm);
                 $htmRetorno .=      '</select>';
                 $htmRetorno .= '</div>';

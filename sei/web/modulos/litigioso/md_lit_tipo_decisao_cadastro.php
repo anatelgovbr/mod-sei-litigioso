@@ -255,7 +255,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 <div class="form-group">
                     <div class="input-group mb-3">
                         <select <?= $strDesabilitar; ?> id="selEspecies" name="selEspecies" size="8" multiple="multiple"
-                                                        class="infraSelect form-control">
+                                                        class="infraSelect form-select">
                             <?= $strItensSelEspecies ?>
                         </select>
                         <div class="botoes">

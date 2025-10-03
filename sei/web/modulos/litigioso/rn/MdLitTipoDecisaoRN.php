@@ -58,7 +58,6 @@
 
                 //nao permite excluir tipo de controle se ele ja estiver vinculado a um dispositivo
                 $listaIds = "";
-
                 for ($i = 0; $i < count($arrObjTipoDecisaoLitigiosoDTO); $i++) {
 
                     if ($listaIds == "") {
@@ -74,14 +73,17 @@
 
                 $rs  = $this->getObjInfraIBanco()->executarSql($sql);
                 $rs1 = $this->getObjInfraIBanco()->executarSql($sql1);
-
-                if (($rs != null && count($rs) > 0) || ($rs1 != null && count($rs1) > 0)) {
-
+                
+                
+                $rs = is_array($rs) ? count($rs) : (is_int($rs) ? $rs : null);
+                if (($rs != null && $rs > 0) || ($rs1 != null && $rs1 > 0)) {
+                    
                     $objInfraException = new InfraException();
                     $objInfraException->adicionarValidacao('A exclusão do tipo de decisao não é permitida, pois já existem registros vinculados.');
                     $objInfraException->lancarValidacoes();
-
+                    
                 } else if (count($arrObjTipoDecisaoLitigiosoDTO) > 0) {
+                    
                     $objTipoDecisaoLitigiosoBD = new MdLitTipoDecisaoBD($this->getObjInfraIBanco());
 
                     for ($i = 0; $i < count($arrObjTipoDecisaoLitigiosoDTO); $i++) {

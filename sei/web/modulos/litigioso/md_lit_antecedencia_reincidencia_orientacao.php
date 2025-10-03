@@ -17,9 +17,6 @@ try {
     InfraDebug::getInstance()->limpar();
     //////////////////////////////////////////////////////////////////////////////
 
-
-    SessaoSEI::getInstance()->validarLink();
-
     SessaoSEI::getInstance()->validarLink();
 
     $objMdLitReincidenAntecedenDTO = new MdLitReincidenAntecedenDTO();

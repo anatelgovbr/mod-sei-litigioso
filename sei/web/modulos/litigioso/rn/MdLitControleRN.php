@@ -399,7 +399,8 @@
                 $objContatoDTO->retStrNome();
                 $objContatoDTO->retStrNomeTipoContato();
                 $objContatoDTO->retDblCpf();
-                $objContatoDTO->retDblCnpj();
+                #$objContatoDTO->retDblCnpj();
+                $objContatoDTO->retStrCnpj();
                 $objContatoDTO->retStrStaNatureza();
                 $objContatoDTO->retStrEndereco();
                 $objContatoDTO->retStrBairro();
@@ -656,13 +657,14 @@
                         $objContatoDTO = new ContatoDTO();
                         $objContatoDTO->retNumIdContato();
                         $objContatoDTO->retDblCpf();
-                        $objContatoDTO->retDblCnpj();
+                        #$objContatoDTO->retDblCnpj();
+                        $objContatoDTO->retStrCnpj();
                         $objContatoDTO->retStrStaNatureza();
                         $objContatoDTO->setNumIdContato($linha[0]);
                         $objContatoDTO = $objContatoRN->consultarRN0324($objContatoDTO);
                         if($objContatoDTO){
                             if($objContatoDTO->getStrStaNatureza() == ContatoRN::$TN_PESSOA_JURIDICA){
-                                $mdLitDadoInteressadoDTO->setDblCnpj($objContatoDTO->getDblCnpj());
+                                $mdLitDadoInteressadoDTO->setDblCnpj($objContatoDTO->getStrCnpj());
                             }else{
                                 $mdLitDadoInteressadoDTO->setDblCpf($objContatoDTO->getDblCpf());
                             }

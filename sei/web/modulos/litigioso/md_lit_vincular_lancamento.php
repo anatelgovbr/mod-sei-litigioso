@@ -348,7 +348,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
     <input type="hidden" name="hdnIdMdLitFuncionalidade" id="hdnIdMdLitFuncionalidade" value="<?= $_GET['id_md_lit_funcionalidade'] ?>">
     <input type="hidden" name="hdntbLancamento" id="hdntbLancamento">
 
-    <div class="row">
+    <div class="row position-relative">
         <div class="col-sm-12 col-md-6 col-lg-6">
             <div class="form-group">
                 <label class="infraLabelObrigatorio"> Número de Complemento do Interessado: </label>
@@ -365,7 +365,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
             </div>
         </div>
 
-        <div class="col-sm-12 col-md-2 col-lg-2 align-self-center pt-1">
+        <div class="col-sm-12 col-md-2 col-lg-2 position-absolute bottom-0 end-0">
                 <button tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" type="submit" accesskey="V"
                         name="sbmValidar" id="sbmValidar" value="Validar" class="infraButton">
                     <span class="infraTeclaAtalho">V</span>alidar

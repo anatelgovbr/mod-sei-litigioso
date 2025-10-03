@@ -421,16 +421,18 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 </fieldset>
             </div>
         </div>
-        <div class="" id="divIntegracao"
+        <div class="mt-1" id="divIntegracao"
              style="display:<?= $rdoOrigem == MdLitServicoRN::$STA_ORIGEM_INTEGRACAO ? 'block' : 'none' ?>">
-            <?php
-            //Get Integração
-            require_once 'md_lit_servico_cadastro_integracao.php';
+            <div class="row">
+                <?php
+                    //Get Integração
+                    require_once 'md_lit_servico_cadastro_integracao.php';
 
-            PaginaSEI::getInstance()->montarAreaTabela($strResultadoTabelaServicoIntegracao['strResultado'], $strResultadoTabelaServicoIntegracao['numRegistros']);
-            ?>
+                    PaginaSEI::getInstance()->montarAreaTabela($strResultadoTabelaServicoIntegracao['strResultado'], $strResultadoTabelaServicoIntegracao['numRegistros']);
+                ?>
+            </div>
         </div>
-        <div class="" id="divManual"
+        <div class="mt-1" id="divManual"
              style="display:<?= $rdoOrigem == MdLitServicoRN::$STA_ORIGEM_MANUAL ? 'block' : 'none' ?>">
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-10 col-xl-9">

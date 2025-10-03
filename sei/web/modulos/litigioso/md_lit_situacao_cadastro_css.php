@@ -9,4 +9,7 @@
         padding-left: 5px;
         width: 40px;
     }
+    .form-group {
+        margin-bottom: 1rem;
+    }
 </style>

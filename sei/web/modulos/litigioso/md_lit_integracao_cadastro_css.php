@@ -14,4 +14,7 @@
     .infraImgModulo{
         width: 20px;
     }
+    .form-group {
+        margin-bottom: 1rem;
+    }
 </style>

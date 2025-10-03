@@ -293,7 +293,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     <label id="lblFuncionalidade" for="selFuncionalidade" class="infraLabelOpcional">
                         Funcionalidade:
                     </label>
-                    <select id="selFuncionalidade" name="selFuncionalidade" class="infraSelect form-control"
+                    <select id="selFuncionalidade" name="selFuncionalidade" class="infraSelect form-select"
                             onchange="this.form.submit();">
                         <?= $comboFuncionalidade ?>
                     </select>

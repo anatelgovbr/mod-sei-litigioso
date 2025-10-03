@@ -160,7 +160,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 <div class="form-group">
                     <div class="input-group">
                         <select id="selDescricaoDispositivoNormativo" name="selDescricaoDispositivoNormativo" size="30"
-                                multiple="multiple" class="infraSelect form-control">
+                                multiple="multiple" class="infraSelect form-select">
                             <?= $strItensSelDispositivoNormativos ?>
                         </select>
                         <div class="botoes">

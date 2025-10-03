@@ -78,7 +78,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         <div class="row mb-3">
             <div class="col-sm-10 col-md-9 col-lg-8">
                 <label class="infraLabelObrigatorio"> Motivo do Cancelamento: </label>
-                <select name="selMotivoCancelar" id="selMotivoCancelar" class="infraSelect form-control">
+                <select name="selMotivoCancelar" id="selMotivoCancelar" class="infraSelect form-select">
                     <?= $strComboMotivoCancelar ?>
                 </select>
             </div>
@@ -124,11 +124,13 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         }
         var optionsSelMotivo = document.getElementById('selMotivoCancelar').options;
 
-        window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnIdMotivoCancelamento').value      = document.getElementById('selMotivoCancelar').value;
-        window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnJustificativaCancelamento').value = document.getElementById('txtJustificativaCancelamento').value;
-        window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnIdMdLitFuncionalidade').value     = document.getElementById('hdnIdMdLitFuncionalidade').value;
-        window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('hdnTxtMotivoCancelamento').value     = optionsSelMotivo[optionsSelMotivo.selectedIndex].text;
-        window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow.document.getElementById('sbmCadastrarSituacao').click();
+        var janelaPai = window.top.document.getElementById("ifrConteudoVisualizacao").contentWindow.document.getElementById("ifrVisualizacao").contentWindow;
+
+        janelaPai.document.getElementById('hdnIdMotivoCancelamento').value      = document.getElementById('selMotivoCancelar').value;
+        janelaPai.document.getElementById('hdnJustificativaCancelamento').value = document.getElementById('txtJustificativaCancelamento').value;
+        janelaPai.document.getElementById('hdnIdMdLitFuncionalidade').value     = document.getElementById('hdnIdMdLitFuncionalidade').value;
+        janelaPai.document.getElementById('hdnTxtMotivoCancelamento').value     = optionsSelMotivo[optionsSelMotivo.selectedIndex].text;
+        janelaPai.document.getElementById('sbmCadastrarSituacao').click();
         $(window.top.document).find('div[id^=divInfraSparklingModalClose]').click();
 
         return false;

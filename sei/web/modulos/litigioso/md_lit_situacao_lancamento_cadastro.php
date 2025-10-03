@@ -382,7 +382,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 <?php PaginaSEI::getInstance()->abrirAreaDados(); ?>
     <form id="frmSituacaoCadastro" method="post" action="<?= $strAcaoForm ?>">
         <?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos); ?>
-        <div class="row">
+        <div class="mb-2 row">
             <div class="col-sm-12 col-md-12 col-lg-10 col-xl-9">
                 <fieldset class="infraFieldset form-control">
                     <legend class="infraLegend">&nbsp;Origem&nbsp;</legend>
@@ -455,7 +455,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                         <label id="lbltipoWs" for="tipoWs" class="infraLabelObrigatorio">
                             Versão SOAP:
                         </label>
-                        <select id="versaoSoap" name="versaoSoap" class="infraSelect form-control">
+                        <select id="versaoSoap" name="versaoSoap" class="infraSelect form-select">
                             <option value="1.2" <?= PaginaSEI::tratarHTML($txtVersaoSoap) == '1.2' ? 'selected' : ''; ?>>
                                 1.2
                             </option>
@@ -495,7 +495,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     </label>
                     <div class="form-group">
                         <div class="input-group mb-3">
-                            <select id="selOperacao" name="selOperacao" class="infraSelect form-control"
+                            <select id="selOperacao" name="selOperacao" class="infraSelect form-select"
                                     onchange="apagarMapear()"/>
                             </select>
                             <button class="infraButton" type="button" name="btnMapeamento" id="btnMapeamento"
@@ -542,7 +542,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                         <label class="infraLabelObrigatorio" id="lblDescricao" for="txtDescricao">Cor para
                             Apresentação
                             da Situação:</label>
-                        <select id="selCor" name="selCor" class="infraSelect form-control">
+                        <select id="selCor" name="selCor" class="infraSelect form-select">
                             <?= MdLitSituacaoLancamentoINT::montarSelectCor($selCor) ?>
                         </select>
                     </div>

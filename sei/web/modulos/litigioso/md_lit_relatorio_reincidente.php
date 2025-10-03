@@ -99,7 +99,7 @@ try {
                     $objEntradaListarContatosAPI = new ContatoDTO();
                     $objEntradaListarContatosAPI->retNumIdContato();
                     $objEntradaListarContatosAPI->retDblCpf();
-                    $objEntradaListarContatosAPI->retDblCnpj();
+                    $objEntradaListarContatosAPI->retStrCnpj();
                     $objEntradaListarContatosAPI->setNumIdContato($arrIdContato, InfraDTO::$OPER_IN);
 
                     $objSeiRN = new ContatoRN();
@@ -411,7 +411,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 <div class="col-sm-12 col-md-5 col-lg-5 col-xl-5">
                     <div class="input-group mb-3">
                         <select id="selInteressados" name="selInteressados" size="4" multiple="multiple"
-                                class="infraSelect">
+                                class="infraSelect form-select">
                         </select>
                         <div id="divOpcoesInteressados">
                             <img id="imgLupaInteressados" onclick="objLupaInteressados.selecionar(700,500);"
@@ -464,7 +464,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     <div class="col-sm-12 col-md-5 col-lg-5 col-xl-5">
                         <div class="input-group mb-3">
                             <select id="selDispositivo" name="selDispositivo" size="4" multiple="multiple"
-                                    class="infraSelect">
+                                    class="infraSelect form-select">
                             </select>
                             <div id="divOpcoesDispositivo" class="botoes">
                                 <img id="imgLupaDispositivo" onclick="objLupaDispositivos.selecionar(700,500);"
@@ -496,7 +496,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 <div class="row">
                     <div class="col-sm-12 col-md-5 col-lg-5 col-xl-5">
                         <div class="input-group mb-3">
-                            <select id="selConduta" name="selConduta" size="4" multiple="multiple" class="infraSelect">
+                            <select id="selConduta" name="selConduta" size="4" multiple="multiple" class="infraSelect form-select">
                             </select>
                             <div id="divOpcoesConduta" class="botoes">
                                 <img id="imgLupaConduta" onclick="objLupaConduta.selecionar(700,500);"
@@ -533,7 +533,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 <label id="lblDispositivoEspecifica" for="selDispositivoEspecifica" name="lblDispositivoEspecifica"
                        class="infraLabelOpcional">Dispositivo Normativo:</label>
                 <select id="selDispositivoEspecifica" style="width:98%" name="selDispositivoEspecifica"
-                        class="infraSelect form-control"
+                        class="infraSelect form-select"
                         onchange="submitFormPesquisa()">
                     <?php echo $strComboDispositivo ?>
 
@@ -545,7 +545,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
                     <label id="lblCondutaEspecifica" for="selCondutaEspecifica" name="lblCondutaEspecifica"
                            class="infraLabelOpcional">Conduta:</label>
-                    <select id="selCondutaEspecifica" name="selCondutaEspecifica" class="infraSelect form-control"
+                    <select id="selCondutaEspecifica" name="selCondutaEspecifica" class="infraSelect form-select"
                             onchange="submitFormPesquisa()">
                         <?php echo $strComboConduta ?>
                     </select>

@@ -48,7 +48,7 @@ try{
         $objEntradaListarContatosAPI = new ContatoDTO();
         $objEntradaListarContatosAPI->retNumIdContato();
         $objEntradaListarContatosAPI->retDblCpf();
-        $objEntradaListarContatosAPI->retDblCnpj();
+        $objEntradaListarContatosAPI->retStrCnpj();
         $objEntradaListarContatosAPI->setNumIdContato($arrIdContato, InfraDTO::$OPER_IN);
 
         $objSeiRN = new ContatoRN();

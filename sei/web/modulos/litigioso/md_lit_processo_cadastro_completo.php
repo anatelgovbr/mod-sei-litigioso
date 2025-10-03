@@ -231,7 +231,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();" onunloa
                                            for="selIDNCondutas" style="display: none">Conduta:</label>
                                     <select id="selIDNCondutas" name="selIDNCondutas" style="display: none"
                                             tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"
-                                            class="infraSelect form-control">
+                                            class="infraSelect form-select">
                                         <?= $strItensSelIDNCondutas ?>
                                     </select>
                                 </div>
@@ -351,7 +351,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();" onunloa
                                                 onchange="mostrarDispositivoPorConduta()"
                                                 onkeypress="return enterAdicionarInfracao(event)"
                                                 tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"
-                                                class="infraSelect form-control">
+                                                class="infraSelect form-select">
                                             <?= $strItensSelConduta ?>
                                         </select>
                                     </div>
@@ -545,7 +545,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();" onunloa
                                 <div class="col-sm-12 col-md-9 col-lg-8 col-xl-7">
                                     <div class="input-group mb-3">
                                         <select id="selMotivos" name="selMotivos" size="6" multiple="multiple"
-                                                class="infraSelect">
+                                                class="infraSelect form-select">
                                             <?= $strItensSelMotivos ?>
                                         </select>
                                         <div class="botoes">
@@ -721,7 +721,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();" onunloa
                                         <div class="input-group mb-4">
                                             <select id="selCampo"
                                                     name="selCampo"
-                                                    class="infraSelect form-control">
+                                                    class="infraSelect form-select">
                                                 <? echo $arrOpcoesCampoAdicionais; ?>
                                             </select>
                                     </div>

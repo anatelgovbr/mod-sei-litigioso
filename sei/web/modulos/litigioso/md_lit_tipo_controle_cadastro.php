@@ -120,7 +120,7 @@ processos com Data de Autuação anterior à Data de Corte.', 'Ajuda') ?>
                 <div class="form-group">
                     <div class="input-group">
                         <select id="selGestores" name="selGestores" size="8" multiple="multiple"
-                                class="infraSelect form-control">
+                                class="infraSelect form-select">
                             <?= $strItensSelGestores ?>
                         </select>
                         <div class="botoes">
@@ -152,7 +152,7 @@ processos com Data de Autuação anterior à Data de Corte.', 'Ajuda') ?>
             <div class="col-sm-12 col-md-12 col-lg-10 col-xl-9">
                 <div class="form-group">
                     <div class="input-group">
-                        <select id="selMotivos" name="selMotivos" size="8" multiple="multiple" class="infraSelect form-control">
+                        <select id="selMotivos" name="selMotivos" size="8" multiple="multiple" class="infraSelect form-select">
                             <?= $strItensSelMotivos ?>
                         </select>
                         <div class="botoes">
@@ -184,7 +184,7 @@ processos com Data de Autuação anterior à Data de Corte.', 'Ajuda') ?>
                 <div class="form-group">
                     <div class="input-group">
                         <select id="selTipoProcessos" name="selTipoProcessos" size="8" multiple="multiple"
-                                class="infraSelect form-control">
+                                class="infraSelect form-select">
                             <?= $strItensSelTipoProcessos ?>
                         </select>
                         <div class="botoes">
@@ -216,7 +216,7 @@ processos com Data de Autuação anterior à Data de Corte.', 'Ajuda') ?>
                 <div class="form-group">
                     <div class="input-group">
                         <select id="selUnidades" name="selUnidades" size="8" multiple="multiple"
-                                class="infraSelect form-control">
+                                class="infraSelect form-select">
                             <?= $strItensSelUnidades ?>
                         </select>
                         <div class="botoes">
@@ -279,7 +279,7 @@ processos com Data de Autuação anterior à Data de Corte.', 'Ajuda') ?>
                     <div class="form-group">
                         <div class="input-group">
                             <select id="selTipoProcessosSobrestados" name="selTipoProcessosSobrestados" size="8"
-                                    multiple="multiple" class="infraSelect form-control">
+                                    multiple="multiple" class="infraSelect form-select">
                                 <?= $strItensSelTipoProcessosSobrestados ?>
                             </select>
                             <div class="botoes">

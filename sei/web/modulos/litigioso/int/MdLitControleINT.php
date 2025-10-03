@@ -324,7 +324,7 @@ class MdLitControleINT extends InfraINT
                 $xml .= "</Cpf>\n";
 
                 $xml .= '<Cnpj>';
-                $xml .= $objContatoDTO->isSetDblCnpj() ? $objContatoDTO->getDblCnpj() : '';
+                $xml .= $objContatoDTO->isSetStrCnpj() ? $objContatoDTO->getStrCnpj() : '';
                 $xml .= "</Cnpj>\n";
 
                 $xml .= '<StaNatureza>';

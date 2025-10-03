@@ -25,4 +25,7 @@
     .form-check {
         padding-left: 0;
     }
+    .form-group {
+        margin-bottom: 1rem;
+    }
 </style>
