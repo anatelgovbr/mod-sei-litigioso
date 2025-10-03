@@ -417,7 +417,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
             <div class="form-group">
                 <div class="input-group mb-3">
                     <select id="selDescricaoConduta" name="selDescricaoConduta" size="8" multiple="multiple"
-                            class="infraSelect form-control">
+                            class="infraSelect form-select">
                         <?= $strItensSelCondutas ?>
                     </select>
                     <div class="botoes">
@@ -453,7 +453,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 <div class="input-group mb-3">
                     <select id="selDescricaoTipoControle" name="selDescricaoTipoControle" size="8"
                             multiple="multiple"
-                            class="infraSelect form-control">
+                            class="infraSelect form-select">
                         <?= $strItensSelTiposControle ?>
                     </select>
                     <div class="botoes">
@@ -486,7 +486,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
             <div class="form-group">
                 <div class="input-group mb-3">
                     <select id="selRevogarDispositivo" name="selRevogarDispositivo" size="8" multiple="multiple"
-                            class="infraSelect form-control">
+                            class="infraSelect form-select">
                         <?= $strItensSelRevogarDispositivo ?>
                     </select>
                     <div class="botoes">

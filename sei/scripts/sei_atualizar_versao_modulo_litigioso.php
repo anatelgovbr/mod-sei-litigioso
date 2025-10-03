@@ -91,7 +91,7 @@ class MdLitAtualizadorSeiRN extends InfraRN
 
             //testando versao do framework
 
-            $numVersaoInfraRequerida = '2.29.0';
+            $numVersaoInfraRequerida = '2.41.1';
             if (version_compare(VERSAO_INFRA, $numVersaoInfraRequerida) < 0) {
                 $this->finalizar('VERSÃO DO FRAMEWORK PHP INCOMPATÍVEL (VERSÃO ATUAL ' . VERSAO_INFRA . ', SENDO REQUERIDA VERSÃO IGUAL OU SUPERIOR A ' . $numVersaoInfraRequerida . ')', true);
             }
@@ -2185,7 +2185,7 @@ class MdLitAtualizadorSeiRN extends InfraRN
                     $this->logar('objMdLitDadoInteressado: ' . $objMdLitDadoInteressado->getNumIdContato());
 
                     $contatoDTO = new ContatoDTO();
-                    $contatoDTO->retDblCnpj();
+                    $contatoDTO->retStrCnpj();
                     $contatoDTO->retDblCpf();
                     $contatoDTO->retStrStaNatureza();
                     $contatoDTO->setBolExclusaoLogica(false);
@@ -2195,7 +2195,7 @@ class MdLitAtualizadorSeiRN extends InfraRN
                     if ($contatoDTO) {
                         try {
                             if ($contatoDTO->getStrStaNatureza() == "J") {
-                                $objMdLitDadoInteressado->setDblCnpj($contatoDTO->getDblCnpj());
+                                $objMdLitDadoInteressado->setStrCnpj($contatoDTO->getStrCnpj());
                             } else {
                                 $objMdLitDadoInteressado->setDblCpf($contatoDTO->getDblCpf());
                             }

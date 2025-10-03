@@ -310,7 +310,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                             Origem:
                         </label>
                         <select id="selOrigem" name="selOrigem" onchange="pesquisar()"
-                                class="infraSelect form-control">
+                                class="infraSelect form-select">
                             <option value="">&nbsp;</option>
                             <option value="<?= MdLitSituacaoLancamentoRN::$STA_ORIGEM_MANUAL ?>"
                                 <?= $_POST['selOrigem'] == MdLitSituacaoLancamentoRN::$STA_ORIGEM_MANUAL ? 'selected="selected"' : '' ?>>

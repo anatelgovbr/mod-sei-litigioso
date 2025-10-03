@@ -166,3 +166,7 @@ margin-bottom: -3px;
 .tooltipAjudaInput{
 margin: 16px 0 0 -10px;
 }
+
+.form-group {
+margin-bottom: 1rem;
+}

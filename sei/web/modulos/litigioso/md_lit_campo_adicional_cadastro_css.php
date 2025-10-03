@@ -47,6 +47,8 @@
         display: none;
     }
 
-
+    .form-group {
+        margin-bottom: 1rem;
+    }
 
 </style>

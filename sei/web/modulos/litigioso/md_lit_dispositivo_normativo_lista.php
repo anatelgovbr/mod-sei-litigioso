@@ -469,7 +469,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                                 name="lblTipoControleLitigioso"
                                 class="infraLabelOpcional">Tipo de Controle Litigioso:</label>
                         <select id="selTipoControleLitigioso" name="selTipoControleLitigioso"
-                                class="infraSelect form-control"
+                                class="infraSelect form-select"
                                 onchange="submitFormPesquisa()">
                             <option></option>
                             <?= $strItensSelTipoProcesso ?>

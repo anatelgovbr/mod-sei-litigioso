@@ -161,7 +161,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                             <select id="selRelelacionamento"
                                     name="selRelelacionamento"
                                     tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"
-                                    class="infraSelect form-control">
+                                    class="infraSelect form-select">
                                 <?= $opcoesDependencia ?>
                             </select>
                         </div>
@@ -202,7 +202,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                                     data-valor-antigo="<?= PaginaSEI::tratarHTML($objMdLitCamposAdDTO->getStrCampoTipo()); ?>"
                                     tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"
                                     onchange="selecionarTipo(false)"
-                                    class="infraSelect form-control">
+                                    class="infraSelect form-select">
                                 <?= $opcoesTipo ?>
                             </select>
                         </div>

@@ -164,7 +164,7 @@ class MdLitSoapClienteRN extends BeSimple\SoapClient\SoapClient {
     }
 
     /* Verifica se o tipo retornado é um tipo ou realmente o nome */
-    public function _verificaTipoDadosWebService($tipo){
+    public static function _verificaTipoDadosWebService($tipo){
         $isTipo = false;
         $arrTipos = ['string', 'boolean', 'long', 'int', 'decimal', 'dateTime', 'short'];
         if ( in_array($tipo, $arrTipos) ) $isTipo = true;

@@ -114,7 +114,7 @@ class MdLitSituacaoLancamIntINT extends InfraINT {
                 $strResultadoParamSaida .= "<input type='hidden' name='hdnArrayDadosSaida[$i]' value='{$arrParametroSaida[$dado]}' />";
                 $strResultadoParamSaida .= $key;
                 $strResultadoParamSaida .= "</td>";
-                $strResultadoParamSaida .= "<td align='center'><select  class='form-control' id='campoDestino_$idLinha' name='campoDestino[$dado]' onchange='mudarcampoDestino(this)'>{$strItensSelCampoDestino['select']}</select></td>";
+                $strResultadoParamSaida .= "<td align='center'><select  class='form-select' id='campoDestino_$idLinha' name='campoDestino[$dado]' onchange='mudarcampoDestino(this)'>{$strItensSelCampoDestino['select']}</select></td>";
                 $strResultadoParamSaida .= "<td align='center'><div class='infraRadioDiv'><input type='radio'name='chaveUnicaDadosSaida' value='{$key}' $checked id='chaveUnicaDadosSaida_{$idLinha}' $disable class='infraRadioInput'><label class='infraRadioLabel' for='chaveUnicaDadosSaida_{$idLinha}'></label></div></td>";
 
                 $strResultadoParamSaida .= '</tr>' . "\n";
@@ -208,7 +208,7 @@ class MdLitSituacaoLancamIntINT extends InfraINT {
 
                 // Cor
                 $strResultado .= "<td id='cor_$idLinha'>";
-                $strResultado .= "<select id='selCor_$i' name='selCores[{$codigo}]'  style='width: 80%;' class='infraSelect form-control'>";
+                $strResultado .= "<select id='selCor_$i' name='selCores[{$codigo}]'  style='width: 80%;' class='infraSelect form-select'>";
                 $strResultado .= $strOptionCor;
                 $strResultado .= "</select>";
                 $strResultado .= "</td>";

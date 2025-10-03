@@ -448,7 +448,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     <div class="input-group mb-3">
                         <select id="selDescricaoObrigacao" name="selDescricaoObrigacao" size="8"
                                 multiple="multiple"
-                                class="infraSelect">
+                                class="infraSelect form-select">
                             <?= $strItensSelObrigacoes ?>
                         </select>
                         <div class="botoes">

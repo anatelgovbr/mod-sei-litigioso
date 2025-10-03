@@ -89,7 +89,8 @@
     }
 
     #btnValidarNumeroSei{
-        margin-left: 5px;
+        margin-left: 5px !important;
+        border-radius: .25rem;
     }
 
 
@@ -117,6 +118,10 @@
     }
     .campoDisable{
         background-color: #e9ecef;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
     }
 </style>
 

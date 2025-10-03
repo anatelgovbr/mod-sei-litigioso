@@ -420,7 +420,7 @@ class MdLitDadoInteressadoINT extends InfraINT {
         $objContatoDTO->setNumIdContato($filtro['id_contato']);
 
         $objContatoDTO = $objContatoRN->consultarRN0324($objContatoDTO);
-        $contatoCpfCnpj = $objContatoDTO->getDblCpf() ? $objContatoDTO->getDblCpf() : $objContatoDTO->getDblCnpj();
+        $contatoCpfCnpj = $objContatoDTO->getDblCpf() ? $objContatoDTO->getDblCpf() : $objContatoDTO->getStrCnpj();
 
         //retornando os nomes das labels para montar msg de exceção
         $objMdLitParametrizarInteressadoDTO = new MdLitParametrizarInteressadoDTO();

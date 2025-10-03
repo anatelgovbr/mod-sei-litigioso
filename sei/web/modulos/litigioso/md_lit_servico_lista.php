@@ -333,7 +333,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                             <label id="lblOrigem" for="selOrigem" class="infraLabelOpcional">
                                 Origem:
                             </label>
-                            <select id="selOrigem" name="selOrigem" class="infraSelect form-control"
+                            <select id="selOrigem" name="selOrigem" class="infraSelect form-select"
                                     onchange="pesquisar()">
                                 <option value="">&nbsp;</option>
                                 <option value="<?= MdLitServicoRN::$STA_ORIGEM_MANUAL ?>"

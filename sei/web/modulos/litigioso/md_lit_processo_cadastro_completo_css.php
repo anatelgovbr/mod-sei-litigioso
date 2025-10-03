@@ -19,7 +19,8 @@
 
     #sbmAdicionarNumeroSei {
         margin-top: 5px;
-        margin-left: 2px;
+        margin-left: 5px !important;
+        border-radius: .25rem !important;
     }
 
     #sbmICAdicionar {
@@ -40,7 +41,8 @@
     }
 
     .sbmValidarNumeroSei {
-        margin-left: 5px;
+        margin-left: 5px !important;
+        border-radius: .25rem !important;
     }
 
     #imgDadoComplementar {
@@ -119,6 +121,19 @@
         margin-left: 16px;
         padding-bottom: 5px;
         padding-top: 5px;
+    }
+
+    .multiSelectLit {
+        width: 100% !important;
+        height: calc(1.5em + .4rem + 4px);
+    }
+
+    .ms-choice {
+        height: calc(1.5em + .4rem);
+    }
+
+    .ms-choice>div {
+        display: none;
     }
 
 </style>

@@ -134,7 +134,7 @@ class MdLitMapearParamEntradaINT extends InfraINT {
                 $strResultadoParamEntrada .= "<input type='hidden' name='hdnArrayDadosEntrada[".$i."]' value='{$arrParametroEntrada[$campoOrigemEntradaIdMdLitId]}' />";
                 $strResultadoParamEntrada .= "<label ".$class.">".PaginaSEI::tratarHTML($campoOrigemEntradaIdMdLitCampo)."</label>";
                 $strResultadoParamEntrada.= $tabelaCodigoReceita."</td>";
-                $strResultadoParamEntrada .= "<td align='center'><select id='nomeFuncionalDadosEntrada_".$i."' class='infraSelect form-control' name='nomeFuncionalDadosEntrada[".$campoOrigemEntradaIdMdLitId."]' onchange='mudarNomeFuncionalDadosEntrada(this), verificarCodigoReceita(this)' style='width: 80%;'>{$itensSelectParamEntrada}</select>";
+                $strResultadoParamEntrada .= "<td align='center'><select id='nomeFuncionalDadosEntrada_".$i."' class='infraSelect form-select' name='nomeFuncionalDadosEntrada[".$campoOrigemEntradaIdMdLitId."]' onchange='mudarNomeFuncionalDadosEntrada(this), verificarCodigoReceita(this)' style='width: 80%;'>{$itensSelectParamEntrada}</select>";
                 $strResultadoParamEntrada .= "</td>";
                 $strResultadoParamEntrada .= "<td align='center'><input type='radio' class='infraRadio' name='chaveUnicaDadosEntrada' id='chaveUnicaDadosEntrada_".$i."' value='".$campoOrigemEntradaIdMdLitId."' $disable $checked> </td>";
 

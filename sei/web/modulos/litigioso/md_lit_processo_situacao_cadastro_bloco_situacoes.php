@@ -46,14 +46,14 @@
                 <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
                     <label class="infraLabelObrigatorio" id="lblFases" name="lblFases" for="selFases">Fases:</label>
                     <div class="input-group mb-3" id="divSelFasesInicial">
-                        <select class="campoFieldsetSituacao bloquearTelaProcesso infraSelect form-control" type="text"
+                        <select class="campoFieldsetSituacao bloquearTelaProcesso infraSelect form-select" type="text"
                                 id="selFases" name="selFases"
                                 value="">
                             <?php echo $strSelFases; ?>
                         </select>
                     </div>
                     <div class="input-group mb-3" id="divSelFasesAlteracao" style="display: none">
-                        <select class="campoFieldsetSituacao bloquearTelaProcesso infraSelect form-control"
+                        <select class="campoFieldsetSituacao bloquearTelaProcesso infraSelect form-select"
                                 type="text" id="selFasesAlteracao"
                                 name="selFasesAlteracao"
                                 value="">
@@ -63,7 +63,7 @@
                 <div class="col-sm-12 col-md-8 col-lg-8 col-xl-8">
                     <label class="infraLabelObrigatorio" id="lblSituacoes" name="lblSituacoes"
                            for="selSituacoes">Situações:</label>
-                    <select class="campoFieldsetSituacao bloquearTelaProcesso infraSelect form-control" type="text"
+                    <select class="campoFieldsetSituacao bloquearTelaProcesso infraSelect form-select" type="text"
                             onchange="changeSituacoes();"
                             id="selSituacoes"
                             name="selSituacoes" value="">

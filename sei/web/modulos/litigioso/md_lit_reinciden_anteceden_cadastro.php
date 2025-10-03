@@ -185,7 +185,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                             <div class="form-group">
                                 <div class="input-group  mb-3">
                                     <select style="float: left;" id="selDecRein" name="selDecRein" size="8"
-                                            multiple="multiple" class="infraSelect form-control">
+                                            multiple="multiple" class="infraSelect form-select">
                                         <?= $strItensDecisaoRein; ?>
                                     </select>
                                     <div id="divOpcoesTipoDecisao" class="botoes">
@@ -257,7 +257,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 </fieldset>
             </div>
         </div>
-        <div class="row">
+        <div class="mt-2 row">
             <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
                 <fieldset id="fieldAntec" class="infraFieldset form-control">
                     <legend class="infraLegend">Antecedentes</legend>
@@ -300,7 +300,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                             <div class="form-group">
                                 <div class="input-group mb-3">
                                     <select style="float: left;" id="selDecAntec" name="selDecAntec" size="8"
-                                            multiple="multiple" class="infraSelect form-control">
+                                            multiple="multiple" class="infraSelect form-select">
                                         <?= $strItensDecisaoAnte; ?>
                                     </select>
 

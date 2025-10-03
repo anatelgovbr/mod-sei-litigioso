@@ -147,19 +147,19 @@ if ($numRegistros > 0) {
                         <input onclick='changeLocalidades(this, true);' type='radio' name='decisao[idDispositivoNormativo_{$idLinha}][localidade]'
                                id='rdDispositivoNormativo_uf_{$idLinha}'  value ='U' class='infraRadio' tabindex='" . PaginaSEI::getInstance()->getProxTabDados() . "' data-id-select-uf='divUf_{$idLinha}'>" .
             "<label id='lblRdIdUf_{$idLinha}' class='infraLabelRadio' for='rdDispositivoNormativo_uf_{$idLinha}'>UF</label>";
-        $strTbCadastroDecisao .= "<div id='divUf_{$idLinha}' style='display: none; padding-top: 10px' ><select id='selUf_{$idLinha}' name='decisao[idDispositivoNormativo_{$idLinha}][id_uf][]' class='infraSelect multipleSelect form-control' multiple='multiple' style='width: 100%;display: none'>";
+        $strTbCadastroDecisao .= "<div id='divUf_{$idLinha}' style='display: none; padding-top: 10px' ><select id='selUf_{$idLinha}' name='decisao[idDispositivoNormativo_{$idLinha}][id_uf][]' class='infraSelect multipleSelect form-select' multiple='multiple' style='width: 100%;display: none'>";
         $strTbCadastroDecisao .= UfINT::montarSelectSiglaRI0416(null, null, '');
         $strTbCadastroDecisao .= "</td>";
 
         $strTbCadastroDecisao .= "<td align='center'>";
-        $strTbCadastroDecisao .= "<select id='tipo_decisao_{$idLinha}' name='decisao[idDispositivoNormativo_{$idLinha}][id_md_lit_tipo_decisao]' style='width: 100%;' class='infraSelect form-control' onchange='carregarComboEspecieDecisao(this); carregarTipoDecisao(this, $(this).val(), false)'>";
+        $strTbCadastroDecisao .= "<select id='tipo_decisao_{$idLinha}' name='decisao[idDispositivoNormativo_{$idLinha}][id_md_lit_tipo_decisao]' style='width: 100%;' class='infraSelect form-select' onchange='carregarComboEspecieDecisao(this); carregarTipoDecisao(this, $(this).val(), false)'>";
         $strTbCadastroDecisao .= $strComboTipoDecosao;
         $strTbCadastroDecisao .= "</select></td>";
 
-        $strTbCadastroDecisao .= "<td align='center'><select class='especie-decisao form-control infraSelect' id='id_md_lit_especie_decisao_{$idLinha}' class='infraSelect form-control' name='decisao[idDispositivoNormativo_{$idLinha}][id_md_lit_especie_decisao]' onchange='refreshEspecieAtivos(this); carregarEspecieDecisao(this)' style='width: 100%;display: none'></select></td>";
+        $strTbCadastroDecisao .= "<td align='center'><select class='especie-decisao form-select infraSelect' id='id_md_lit_especie_decisao_{$idLinha}' class='infraSelect form-select' name='decisao[idDispositivoNormativo_{$idLinha}][id_md_lit_especie_decisao]' onchange='refreshEspecieAtivos(this); carregarEspecieDecisao(this)' style='width: 100%;display: none'></select></td>";
         $strTbCadastroDecisao .= "<td align='center' class='multa' style='display: none;'><input id='multa_{$idLinha}' onkeypress='return infraMascaraDinheiro(this,event,2,12);' type='text' name='decisao[idDispositivoNormativo_{$idLinha}][multa]' class='infraText form-control' style='width: 90%;display: none' decisao_valor_antigo=''></td>";
         $strTbCadastroDecisao .= "<td align='center' class='ressarcimento' style='display: none;'><input id='valor_ressarcimento_{$idLinha}' onkeypress='return infraMascaraDinheiro(this,event,2,12);' type='text' name='decisao[idDispositivoNormativo_{$idLinha}][valor_ressarcimento]' class='infraText form-control' style='width: 90%; display: none'></td>";
-        $strTbCadastroDecisao .= "<td align='center' class='obrigacoes' style='display: none;'><select class='infraSelect form-control' id='id_md_lit_obrigacao_{$idLinha}' name='decisao[idDispositivoNormativo_{$idLinha}][id_md_lit_obrigacao]' style='width: 100%;display: none'></select></td>";
+        $strTbCadastroDecisao .= "<td align='center' class='obrigacoes' style='display: none;'><select class='infraSelect form-select' id='id_md_lit_obrigacao_{$idLinha}' name='decisao[idDispositivoNormativo_{$idLinha}][id_md_lit_obrigacao]' style='width: 100%;display: none'></select></td>";
         $strTbCadastroDecisao .= "<td align='center' class='prazo' style='display: none;'>";
         $strTbCadastroDecisao .= "<input id='prazo_{$idLinha}' type='text' class='infraText form-control'  onkeypress='return infraMascaraNumero(this,event,16);' name='decisao[idDispositivoNormativo_{$idLinha}][prazo]' style='width: 90%;display: none'>";
         $strTbCadastroDecisao .= "<input type='hidden' name='decisao[idDispositivoNormativo_{$idLinha}][id_usuario]'>";

@@ -72,7 +72,7 @@
             <div class="row" style="display: none;" id="divCreditoProcesso">
                 <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
                     <label id="lblCreditoProcesso" name="lblCreditoProcesso"> Créditos do Processo: </label>
-                    <select class="infraSelect form-control" id="selCreditosProcesso" name="selCreditosProcesso"
+                    <select class="infraSelect form-select" id="selCreditosProcesso" name="selCreditosProcesso"
                             onchange="mudarCreditosProcesso(this)">
                         <?= $strComboCreditoProcesso ?>
                     </select>
@@ -200,7 +200,7 @@
                                              src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
                                              class="infraImg imgAjudaCtrlProcLit"/>
                                     </a>
-                                    <select class="infraSelect form-control" name="selDtDecursoPrazo" onchange="atualizarHiddenDtDecursoPrazo();"
+                                    <select class="infraSelect form-select" name="selDtDecursoPrazo" onchange="atualizarHiddenDtDecursoPrazo();"
                                             id="selDtDecursoPrazo" <?= $strCombodataDecursoPrazoDefesa['disabled'] ? 'disabled' : '' ?> >
                                         <?= $strCombodataDecursoPrazoDefesa['htmlOption'] ?>
                                     </select>
@@ -297,7 +297,7 @@
                                              src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
                                              class="infraImg imgAjudaCtrlProcLit"/>
                                     </a>
-                                    <select class="infraSelect form-control" name="selDtDecursoPrazoRecurso" onchange="atualizarHiddenDtDecursoPrazoRecurso();"
+                                    <select class="infraSelect form-select" name="selDtDecursoPrazoRecurso" onchange="atualizarHiddenDtDecursoPrazoRecurso();"
                                             id="selDtDecursoPrazoRecurso">
                                     </select>
                                 </div>
@@ -389,7 +389,7 @@
                                 <div class="form-group">
                                     <label class="infraLabelObrigatorio" id="lblInteressado" name="lblInteressado"
                                         for="txtInteressado">Interessado:</label>
-                                    <select class="infraSelect form-control" name="selInteressado"
+                                    <select class="infraSelect form-select" name="selInteressado"
                                             id="selInteressado" <?= $objMdLitLancamentoDTO ? 'disabled="disabled"' : '' ?> >
                                         <?= $strComboInteressado ?>
                                     </select>
@@ -404,7 +404,7 @@
                                             name="lblNumeroInteressado"
                                             for="txtNumeroInteressado">Número de Complemento do Interessado:</label>
                                         <select onchange="verificarMudancaMulta()"
-                                                class="infraSelect form-control"
+                                                class="infraSelect form-select"
                                                 name="selNumeroInteressado"
                                                 id="selNumeroInteressado"
                                                 data-id-dado-interessado="<?= $objMdLitLancamentoDTO ? $objMdLitLancamentoDTO->getNumIdMdLitNumeroInteressado() : '' ?>" <?= $objMdLitLancamentoDTO ? 'disabled="disabled"' : '' ?>
@@ -449,7 +449,7 @@
                                              src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
                                              class="infraImg imgAjudaCtrlProcLit"/>
                                     </a>
-                                    <select class="infraSelect form-control" name="selDocumento"
+                                    <select class="infraSelect form-select" name="selDocumento"
                                             id="selDocumento" <?= $objMdLitLancamentoDTO ? 'disabled="disabled"' : '' ?>
                                             onchange="atualizarDataDecisaoDefinitiva()"
                                             campo-mapea-param-entrada="<?= in_array('numDocOrigem', $arrCampoMapeaParamEntrada) ? 'S' : 'N' ?>">

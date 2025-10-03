@@ -338,7 +338,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     <label id="lblFuncionalidade" for="selFuncionalidade" class="infraLabelObrigatorio">
                         Funcionalidade:
                     </label>
-                    <select id="selFuncionalidade" name="selFuncionalidade" class="infraSelect form-control"
+                    <select id="selFuncionalidade" name="selFuncionalidade" class="infraSelect form-select"
                             onchange="apagarOperacao()">
                         <?= $comboFuncionalidade ?>
                     </select>
@@ -364,7 +364,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     <label id="lbltipoWs" for="tipoWs" class="infraLabelObrigatorio">
                         Versão SOAP:
                     </label>
-                    <select id="versaoSoap" name="versaoSoap" class="infraSelect form-control">
+                    <select id="versaoSoap" name="versaoSoap" class="infraSelect form-select">
                         <option value="1.2" <?= PaginaSEI::tratarHTML($objMdLitIntegracaoDTO->getStrVersaoSoap()) == '1.2' ? 'selected' : ''; ?>>
                             1.2
                         </option>
@@ -407,7 +407,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                         </a>
                     </label>
                     <div class="input-group mb-3">
-                        <select type="text" id="selOperacao" name="selOperacao" class="infraSelect form-control"
+                        <select type="text" id="selOperacao" name="selOperacao" class="infraSelect form-select"
                                 onchange="apagarMapear()">
                         </select>
                         <button class="infraButton" name="btnMapear" id="btnMapear" type="button"

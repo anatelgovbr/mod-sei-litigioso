@@ -288,7 +288,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
             <div class="col-sm-12 col-md-12 col-lg-10 col-xl-9">
                 <div class="form-group">
                     <label id="lblFase" for="selFase" accesskey="f" class="infraLabelObrigatorio">Fase:</label>
-                    <select id="selFase" name="selFase" class="infraText form-control"
+                    <select id="selFase" name="selFase" class="infraText form-select"
                             tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                         <option></option>
                         <?= $strItensSelFase ?>
@@ -323,7 +323,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
             <div class="col-sm-12 col-md-12 col-lg-10 col-xl-9">
                 <div class="input-group">
                     <select id="selDescricao" name="selDescricao" size="8" multiple="multiple"
-                            class="infraSelect">
+                            class="infraSelect form-select">
                         <?= $strItensSel ?>
                     </select>
                     <div class="botoes">

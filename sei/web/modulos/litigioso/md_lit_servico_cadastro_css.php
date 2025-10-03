@@ -24,6 +24,10 @@
         display: none
     }
 
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
     <?php if ($_GET['acao'] == 'md_lit_servico_consultar') { ?>
     #btnValidar, #btnMapeamento {
         display: none

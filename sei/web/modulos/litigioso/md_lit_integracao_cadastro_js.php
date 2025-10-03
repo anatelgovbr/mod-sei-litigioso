@@ -862,7 +862,10 @@ $strLinkAjaxBuscarTipoControle = SessaoSEI::getInstance()->assinarLink('controla
                 }
             },
             error: function (msgError) {
-                msgCommit = "Erro ao processar o XML do SEI: " + msgError.responseText;
+                let objErro = msgError.responseText;
+                let txtErro = "Erro ao processar o XML do SEI: " + $( objErro ).find('msg').text();
+                console.error( txtErro );
+                alert( txtErro );
             },
             complete: function (result) {
                 infraAvisoCancelar();
