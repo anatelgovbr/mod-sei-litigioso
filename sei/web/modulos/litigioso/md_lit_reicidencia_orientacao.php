@@ -6,24 +6,51 @@
  * Time: 18:20
  */
 
-$objEditorDTO = new EditorDTO();
-$objEditorRN = new EditorRN();
-$objEditorDTO->setStrNomeCampo('txaConteudo');
+$objReinciEditorDTO = new EditorDTO();
+$objReinciEditorRN = new EditorRN();
+$staReinciTipoEditor= EditorRN::obterTipoEditorSimples();
 
-$objEditorDTO->setStrSinSomenteLeitura('N');
+if($staReinciTipoEditor==EditorRN::$VE_CK5){
+    $objReinciEditorDTO=new EditorDTO();
+    $objReinciEditorDTO->setStrNomeCampo('txtOrientacoes');
+    $objReinciEditorDTO->setNumTamanhoEditor(300);
+    $objReinciEditorDTO->setStrSinSomenteLeitura('N');
+    $objReinciEditorDTO->setStrIdElementoHtml('txtOrientacoes');
+    $objReinciEditorDTO->setStrConteudoInicial(isset($orientacaoRein) ? $orientacaoRein : '');
+    EditorCk5RN::montarSimples($objReinciEditorDTO);
+} else {
+    $objReinciEditorDTO->setStrNomeCampo('txtOrientacoes');
+    $objReinciEditorDTO->setNumTamanhoEditor(300);
+    $objReinciEditorDTO->setStrSinSomenteLeitura('N');
+    $objReinciEditorDTO->setStrIdElementoHtml('txtOrientacoes');
+    $objReinciEditorDTO = $objReinciEditorRN->montarSimples($objReinciEditorDTO);
+}
 
-$retEditor = $objEditorRN->montarSimples($objEditorDTO);
-
-echo $retEditor->getStrInicializacao();
-
+if($staReinciTipoEditor==EditorRN::$VE_CK5){
+    echo $objReinciEditorDTO->getStrCss();
+    echo $objReinciEditorDTO->getStrJs();
+} else {
+    echo $objReinciEditorDTO->getStrInicializacao();
+}
 ?>
+
 <table id="tbOrientacao">
     <td>
-        <textarea type="text" id="txaConteudo" rows="4" name="txtOrientacoes"
-                  class="infraText form-control" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
-            <?= PaginaSEI::tratarHTML($orientacaoRein); ?></textarea>
-        <script type="text/javascript">
-            <?=$retEditor->getStrEditores();?>
-        </script>
+         <?php
+            if($staReinciTipoEditor==EditorRN::$VE_CK5){
+                ?>
+                    <div id="divEditoresReinci" class="infra-editor" style="visibility: visible;">
+                        <?= $objReinciEditorDTO->getStrHtml(); ?>
+                    </div>
+                    <?php
+            } else {
+                ?>
+                    <div id="divEditoresReinci" class="mb-0">
+                        <textarea id="txaConteudo" name="txtOrientacoes" rows="10" class="infraTextarea" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>"><?= isset($orientacaoRein) ? $orientacaoRein : '' ?></textarea>
+                        <script type="text/javascript"> <?= $objReinciEditorDTO->getStrEditores(); ?> </script>
+                    </div>
+                <?php
+            }
+            ?>
     </td>
 </table>
