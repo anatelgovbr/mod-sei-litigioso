@@ -17,7 +17,7 @@ try {
 
     SessaoSEI::getInstance()->validarPermissao($_GET['acao']);
 
-    //checar se usuario é administrador ou nao para aplicar as devidas restrições de permissões
+    //checar se usuario Ã© administrador ou nao para aplicar as devidas restriÃ§Ãµes de permissÃµes
     $permissaoRN = new MdLitPermissaoLitigiosoRN();
     $isAdministradorSEI = $permissaoRN->isAdm();
     //se quiser simular um usuario nao administrador nesta tela,
@@ -36,7 +36,7 @@ try {
                 }
                 $objTipoControleLitigiosoRN = new MdLitTipoControleRN();
                 $objTipoControleLitigiosoRN->excluir($arrObjTipoControleLitigiosoDTO);
-                PaginaSEI::getInstance()->adicionarMensagem('Operação realizada com sucesso.');
+                PaginaSEI::getInstance()->adicionarMensagem('OperaÃ§Ã£o realizada com sucesso.');
             } catch (Exception $e) {
                 PaginaSEI::getInstance()->processarExcecao($e);
             }
@@ -55,7 +55,7 @@ try {
                 }
                 $objTipoControleLitigiosoRN = new MdLitTipoControleRN();
                 $objTipoControleLitigiosoRN->desativar($arrObjTipoControleLitigiosoDTO);
-                PaginaSEI::getInstance()->adicionarMensagem('Operação realizada com sucesso.');
+                PaginaSEI::getInstance()->adicionarMensagem('OperaÃ§Ã£o realizada com sucesso.');
             } catch (Exception $e) {
                 PaginaSEI::getInstance()->processarExcecao($e);
             }
@@ -79,7 +79,7 @@ try {
                     }
                     $objTipoControleLitigiosoRN = new MdLitTipoControleRN();
                     $objTipoControleLitigiosoRN->reativar($arrObjTipoControleLitigiosoDTO);
-                    PaginaSEI::getInstance()->adicionarMensagem('Operação realizada com sucesso.');
+                    PaginaSEI::getInstance()->adicionarMensagem('OperaÃ§Ã£o realizada com sucesso.');
                 } catch (Exception $e) {
                     PaginaSEI::getInstance()->processarExcecao($e);
                 }
@@ -105,7 +105,7 @@ try {
             break;
 
         default:
-            throw new InfraException("Ação '" . $_GET['acao'] . "' não reconhecida.");
+            throw new InfraException("AÃ§Ã£o '" . $_GET['acao'] . "' nÃ£o reconhecida.");
     }
 
     $bolAcaoReativarTopo = false;
@@ -258,12 +258,12 @@ try {
             $strResultado .= '<th class="infraTh" width="1%">' . PaginaSEI::getInstance()->getThCheck() . '</th>' . "\n";
         }
         $strResultado .= '<th class="infraTh" width="15%">' . PaginaSEI::getInstance()->getThOrdenacao($objTipoControleLitigiosoDTO, 'Sigla', 'Sigla', $arrObjTipoControleLitigiosoDTO) . '</th>' . "\n";
-        $strResultado .= '<th class="infraTh">' . PaginaSEI::getInstance()->getThOrdenacao($objTipoControleLitigiosoDTO, 'Descrição', 'Descricao', $arrObjTipoControleLitigiosoDTO) . '</th>' . "\n";
+        $strResultado .= '<th class="infraTh">' . PaginaSEI::getInstance()->getThOrdenacao($objTipoControleLitigiosoDTO, 'DescriÃ§Ã£o', 'Descricao', $arrObjTipoControleLitigiosoDTO) . '</th>' . "\n";
 
         if ($_GET['acao'] == 'md_lit_tipo_controle_selecionar') {
-            $strResultado .= '<th class="infraTh" width="20%">Ações</th>' . "\n";
+            $strResultado .= '<th class="infraTh" width="20%">AÃ§Ãµes</th>' . "\n";
         } else {
-            $strResultado .= '<th class="infraTh" width="25%">Ações</th>' . "\n";
+            $strResultado .= '<th class="infraTh" width="25%">AÃ§Ãµes</th>' . "\n";
         }
 
         $strResultado .= '</tr>' . "\n";
@@ -302,12 +302,12 @@ try {
                     $strResultado .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_parametrizar_interessado_cadastrar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_tipo_processo_litigioso=' . $arrObjTipoControleLitigiosoDTO[$i]->getNumIdTipoControleLitigioso())) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/litigioso/imagens/svg/icone_parametrizar.svg?'.Icone::VERSAO.'" title="Parametrizar Dados Complementares - ' . $siglaTipoControle . '" alt="Parametrizar Dados Complementares - ' . $siglaTipoControle . '" class="infraImgGrid" /></a>&nbsp;';
                 }
 
-                $strResultado .= '<a href="' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_tipo_controle_tipo_decisao_consultar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_tipo_controle_litigioso=' . $arrObjTipoControleLitigiosoDTO[$i]->getNumIdTipoControleLitigioso()) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/litigioso/imagens/svg/associar.svg?'.Icone::VERSAO.'" title="Associar Tipos de Decisão - ' . $siglaTipoControle . '" alt="Associar Tipos de Decisão - ' . $siglaTipoControle . '" class="infraImgGrid" /></a>&nbsp;';
+                $strResultado .= '<a href="' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_tipo_controle_tipo_decisao_consultar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_tipo_controle_litigioso=' . $arrObjTipoControleLitigiosoDTO[$i]->getNumIdTipoControleLitigioso()) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/litigioso/imagens/svg/associar.svg?'.Icone::VERSAO.'" title="Associar Tipos de DecisÃ£o - ' . $siglaTipoControle . '" alt="Associar Tipos de DecisÃ£o - ' . $siglaTipoControle . '" class="infraImgGrid" /></a>&nbsp;';
 
                 $strResultado .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_associar_dispositivo_normativo_consultar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_tipo_controle_litigioso=' . $arrObjTipoControleLitigiosoDTO[$i]->getNumIdTipoControleLitigioso())) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/litigioso/imagens/svg/livro.svg?'.Icone::VERSAO.'" title="Dispositivos Normativos Associados - ' . $siglaTipoControle . '" alt="Dispositivos Normativos Associados - ' . $siglaTipoControle . '" class="infraImgGrid" /></a>&nbsp;';
 
                 //link para a tela de parametrizar situacoes
-                $strResultado .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_situacao_parametrizar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_tipo_processo_litigioso=' . $arrObjTipoControleLitigiosoDTO[$i]->getNumIdTipoControleLitigioso())) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioSvgGlobal() . '/menu.svg?'.Icone::VERSAO.'" title="Parametrizar Situações - ' . $siglaTipoControle . '" alt="Parametrizar Situações - ' . $siglaTipoControle . '" class="infraImg" /></a>&nbsp;';
+                $strResultado .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_lit_situacao_parametrizar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_tipo_processo_litigioso=' . $arrObjTipoControleLitigiosoDTO[$i]->getNumIdTipoControleLitigioso())) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioSvgGlobal() . '/menu.svg?'.Icone::VERSAO.'" title="Parametrizar SituaÃ§Ãµes - ' . $siglaTipoControle . '" alt="Parametrizar SituaÃ§Ãµes - ' . $siglaTipoControle . '" class="infraImg" /></a>&nbsp;';
             }
 
             if ($bolAcaoConsultar) {
@@ -381,7 +381,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     </div>
                     <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
                         <div class="form-group">
-                            <label id="lblDescricao" for="txtDescricao" class="infraLabelOpcional">Descrição:</label>
+                            <label id="lblDescricao" for="txtDescricao" class="infraLabelOpcional">DescriÃ§Ã£o:</label>
                             <input type="text" id="txtDescricao" name="txtDescricao" class="infraText form-control"
                                 value="<?= $_POST['txtDescricao'] ?>" maxlength="250" tabindex="503">
                         </div>

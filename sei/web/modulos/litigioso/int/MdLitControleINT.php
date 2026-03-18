@@ -28,7 +28,6 @@ class MdLitControleINT extends InfraINT
             $objDocumentoDTO->retStrNomeSerie();
             $objDocumentoDTO->retStrStaProtocoloProtocolo();
             $objDocumentoDTO->retDtaGeracaoProtocolo();
-            $objDocumentoDTO->retArrObjAssinaturaDTO();
             $objDocumentoRN = new DocumentoRN();
             $objDocumentoDTO = $objDocumentoRN->consultarRN0005($objDocumentoDTO);
 
