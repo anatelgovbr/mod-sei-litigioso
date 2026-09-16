@@ -5,10 +5,10 @@ class MdLitAtualizadorSeiRN extends InfraRN
 {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '2.4.0';
+    private $versaoAtualDesteModulo = '2.6.0';
     private $nomeDesteModulo = 'MÓDULO DE CONTROLE LITIGIOSO';
     private $nomeParametroModulo = 'VERSAO_MODULO_LITIGIOSO';
-    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4', '1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0');
+    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4', '1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0', '2.5.0', '2.6.0');
 
     public function __construct()
     {
@@ -150,6 +150,10 @@ class MdLitAtualizadorSeiRN extends InfraRN
                     $this->instalarv230();
                 case '2.3.0':
                     $this->instalarv240();
+                case '2.4.0':
+                    $this->instalarv250();
+                case '2.5.0':
+                    $this->instalarv260();
                     break;
 
                 default:
@@ -706,6 +710,20 @@ class MdLitAtualizadorSeiRN extends InfraRN
             $objMdLitNomeFuncionalDTO->setStrNome($nome);
             $objMdLitNomeFuncionalRN->cadastrar($objMdLitNomeFuncionalDTO);
         }
+
+        $this->logar('ADICIONANDO COLUNA prazo_dias_sug_venc NA TABELA md_lit_tipo_controle');
+        $coluna = $objInfraMetaBD->obterColunasTabela('md_lit_tipo_controle', 'prazo_dias_sug_venc');
+        if (count($coluna) == 0) {
+            $objInfraMetaBD->adicionarColuna('md_lit_tipo_controle', 'prazo_dias_sug_venc', $objInfraMetaBD->tipoNumero(), 'null');
+        }
+        BancoSEI::getInstance()->executarSql('UPDATE md_lit_tipo_controle SET prazo_dias_sug_venc = 40 WHERE prazo_dias_sug_venc IS NULL');
+
+        $this->logar('ADICIONANDO COLUNA prazo_dias_crit_venc_min NA TABELA md_lit_tipo_controle');
+        $coluna = $objInfraMetaBD->obterColunasTabela('md_lit_tipo_controle', 'prazo_dias_crit_venc_min');
+        if (count($coluna) == 0) {
+            $objInfraMetaBD->adicionarColuna('md_lit_tipo_controle', 'prazo_dias_crit_venc_min', $objInfraMetaBD->tipoNumero(), 'null');
+        }
+        BancoSEI::getInstance()->executarSql('UPDATE md_lit_tipo_controle SET prazo_dias_crit_venc_min = 30 WHERE prazo_dias_crit_venc_min IS NULL');
 
 
         $this->logar('CRIANDO A TABELA md_lit_funcionalidade');
@@ -2538,6 +2556,57 @@ class MdLitAtualizadorSeiRN extends InfraRN
     {
         $nmVersao = '2.4.0';
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
+
+        $this->atualizarNumeroVersao($nmVersao);
+    }
+
+    protected function instalarv250()
+    {
+        $nmVersao = '2.5.0';
+        $this->logar('EXECUTANDO A INSTALACAO/ATUALIZACAO DA VERSAO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
+
+        $this->atualizarNumeroVersao($nmVersao);
+    }
+
+    protected function instalarv260()
+    {
+        $objInfraMetaBD = new InfraMetaBD(BancoSEI::getInstance());
+        $objInfraParametro = new InfraParametro(BancoSEI::getInstance());
+
+        $nmVersao = '2.6.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
+
+        $this->logar('ADICIONANDO COLUNA id_md_lit_lancamento_inicial NA TABELA md_lit_lancamento');
+        $objInfraMetaBD->adicionarColuna('md_lit_lancamento', 'id_md_lit_lancamento_inicial', $objInfraMetaBD->tipoNumero(), 'null');
+
+        $this->logar('ALTERANDO COLUNA sequencial PARA NULL NA TABELA md_lit_lancamento');
+        $objInfraMetaBD->alterarColuna('md_lit_lancamento', 'sequencial', $objInfraMetaBD->tipoTextoVariavel(45), 'null');
+
+        $this->logar('ADICIONANDO FK id_md_lit_lancamento_inicial NA TABELA md_lit_lancamento');
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk11_md_lit_lancamento','md_lit_lancamento', array('id_md_lit_lancamento_inicial'),'md_lit_lancamento', array('id_md_lit_lancamento'));
+
+        $this->logar('ADICIONANDO COLUNA id_md_lit_lancamento_inicial NA TABELA md_lit_historic_lancamento');
+        $objInfraMetaBD->adicionarColuna('md_lit_historic_lancamento', 'id_md_lit_lancamento_inicial', $objInfraMetaBD->tipoNumero(), 'null');
+
+        $this->logar('ALTERANDO COLUNA sequencial PARA NULL NA TABELA md_lit_historic_lancamento');
+        $objInfraMetaBD->alterarColuna('md_lit_historic_lancamento', 'sequencial', $objInfraMetaBD->tipoTextoVariavel(45), 'null');
+        
+        $this->logar('ADICIONANDO FK id_md_lit_lancamento_inicial NA TABELA md_lit_historic_lancamento');
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk11_md_lit_historic_lancamento','md_lit_historic_lancamento',array('id_md_lit_lancamento_inicial'),'md_lit_lancamento', array('id_md_lit_lancamento'));
+
+        $this->logar('ADICIONANDO COLUNA id_md_lit_decisao_origem NA TABELA md_lit_decisao');
+        $objInfraMetaBD->adicionarColuna('md_lit_decisao', 'id_md_lit_decisao_origem', $objInfraMetaBD->tipoNumero(), 'null');
+
+        $this->logar('ADICIONANDO FK id_md_lit_decisao_origem NA TABELA md_lit_decisao');
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk6_md_lit_decisao','md_lit_decisao', array('id_md_lit_decisao_origem'),'md_lit_decisao', array('id_md_lit_decisao'));
+
+        $this->logar('ADICIONANDO COLUNA prazo_dias_sug_venc NA TABELA md_lit_tipo_controle');
+        $objInfraMetaBD->adicionarColuna('md_lit_tipo_controle', 'prazo_dias_sug_venc', $objInfraMetaBD->tipoNumero(), 'null');
+        BancoSEI::getInstance()->executarSql('UPDATE md_lit_tipo_controle SET prazo_dias_sug_venc = 40 WHERE prazo_dias_sug_venc IS NULL');
+
+        $this->logar('ADICIONANDO COLUNA prazo_dias_crit_venc_min NA TABELA md_lit_tipo_controle');
+        $objInfraMetaBD->adicionarColuna('md_lit_tipo_controle', 'prazo_dias_crit_venc_min', $objInfraMetaBD->tipoNumero(), 'null');
+        BancoSEI::getInstance()->executarSql('UPDATE md_lit_tipo_controle SET prazo_dias_crit_venc_min = 30 WHERE prazo_dias_crit_venc_min IS NULL');
 
         $this->atualizarNumeroVersao($nmVersao);
     }

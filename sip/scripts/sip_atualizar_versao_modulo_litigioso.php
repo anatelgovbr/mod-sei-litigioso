@@ -5,10 +5,10 @@ class MdLitAtualizadorSipRN extends InfraRN
 {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '2.4.0';
+    private $versaoAtualDesteModulo = '2.6.0';
     private $nomeDesteModulo = 'MÓDULO DE CONTROLE LITIGIOSO';
     private $nomeParametroModulo = 'VERSAO_MODULO_LITIGIOSO';
-    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4', '1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0');
+    private $historicoVersoes = array('0.0.1', '0.0.2', '0.0.3', '0.0.4', '1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0', '2.5.0', '2.6.0');
 
     private $nomeGestorControleLitigioso = "Gestor de Controle Litigioso";
     private $nomePerfilAdministrador = "Administrador";
@@ -153,6 +153,10 @@ class MdLitAtualizadorSipRN extends InfraRN
                     $this->instalarv230();
                 case '2.3.0':
                     $this->instalarv240();
+                case '2.4.0':
+                    $this->instalarv250();
+                case '2.5.0':
+                    $this->instalarv260();
                     break;
 
                 default:
@@ -2162,6 +2166,30 @@ class MdLitAtualizadorSipRN extends InfraRN
         $this->removerRecursoPerfil($numIdSistemaSei, 'md_lit_campo_add_sel_listar', $numIdPerfilSeiAdministrador);
         $this->removerRecursoPerfil($numIdSistemaSei, 'md_lit_campo_add_sel_listar', $numIdPerfilSeiGestorLitigioso);
 
+        $this->atualizarNumeroVersao($nmVersao);
+    }
+
+    protected function instalarV250()
+    {
+        $nmVersao = '2.5.0';
+        $this->logar('EXECUTANDO A INSTALACAO/ATUALIZACAO DA VERSAO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+
+        $numIdSistemaSei = $this->getIdSistemaSei();
+        $numIdPerfilSeiBasico = $this->getIdPerfil($this->nomePerfilBasico);
+        $numIdPerfilSeiAdministrador = $this->getIdPerfil($this->nomePerfilAdministrador);
+
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_historic_lancamento_alterar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_campo_integracao_listar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_adm_tipo_outor_listar');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_lit_adm_tipo_outor_listar');
+
+        $this->atualizarNumeroVersao($nmVersao);
+    }
+
+    protected function instalarV260()
+    {
+        $nmVersao = '2.6.0';
+        $this->logar('EXECUTANDO A INSTALACAO/ATUALIZACAO DA VERSAO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
         $this->atualizarNumeroVersao($nmVersao);
     }
 
