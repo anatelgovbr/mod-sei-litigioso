@@ -1,4 +1,4 @@
-<?
+<?php
 /**
 * ANATEL
 *
@@ -17,6 +17,7 @@ class MdLitMapearParamEntradaRN extends InfraRN {
     public static $PARAM_PRINCIPAL_SIGEC_DENEGAR_RECURSO  = 'denegarRecursosSIGEC';
     public static $PARAM_PRINCIPAL_SIGEC_RETIF_LANCAMENTO = 'lancamentoRetificar';
     public static $PARAM_PRINCIPAL_SIGEC_SUSP_LANCAMENTO  = 'suspenderRecursosSIGEC';
+    public static $PARAM_PRINCIPAL_FILTROS  = 'filtro';
 
     public static $ID_PARAM_LANCAMENTO_CREDITO = array(
         'COD_RECEITA'                  => 5,
@@ -114,8 +115,8 @@ class MdLitMapearParamEntradaRN extends InfraRN {
       'SEQUENCIAL'                     => 12
   );
 
-    public static $ID_PARAM_INTEGRACAO = array(
-        'RETIFICAR_LANCAMENTO' => 3
+    public static $ID_PARAM_GERAR_NUMERO_NAO_OUTORGADA = array(
+        'SISTEMA_ORIGEM' => 76
     );
 
     public function __construct(){

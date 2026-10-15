@@ -1,4 +1,4 @@
-<?
+<?php
 /**
 * ANATEL
 *
@@ -67,7 +67,12 @@ class MdLitRetificarLancamentoRN extends InfraRN {
                     break;
 
                 case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['VALOR_TOTAL']:
-                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitLancamentoDTO->getDblVlrLancamento();
+                    $valorTotal = $objMdLitLancamentoDTO->getDblVlrLancamento();
+                    if (strpos($valorTotal, ',') !== false) {
+                        $valorTotal = str_replace('.', '', $valorTotal);
+                        $valorTotal = str_replace(',', '.', $valorTotal);
+                    }
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $valorTotal;
                     break;
 
                 case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['JUSTIFICATIVA_LANCAMENTO']:
@@ -97,7 +102,7 @@ class MdLitRetificarLancamentoRN extends InfraRN {
                     break;
 
                 case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['DOC_DECISAO_APL_MULTA']:
-                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $this->retornaProtocoloFormatadoDocumentoPorSituacao($objMdLitLancamentoDTO->getNumIdSituacaoDecisao());
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = (new MdLitLancamentoRN)->retornaProtocoloFormatadoDocumentoPorSituacao($objMdLitLancamentoDTO->getNumIdSituacaoDecisao());
                     break;
 
                 case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['DTA_INT_DECISAO_APL_MULTA']:
@@ -161,7 +166,7 @@ class MdLitRetificarLancamentoRN extends InfraRN {
                 case MdLitMapearParamEntradaRN::$ID_PARAM_RETIFICAR_LANCAMENTO['DOC_DECISAO_DEFINITIVA']:
                   $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = null;
                   if($objMdLitLancamentoDTO->isSetNumIdMdLitSituacaoDecisaoDefin() && $objMdLitLancamentoDTO->getNumIdMdLitSituacaoDecisaoDefin()){
-                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $this->retornaProtocoloFormatadoDocumentoPorSituacao($objMdLitLancamentoDTO->getNumIdMdLitSituacaoDecisaoDefin());
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = (new MdLitLancamentoRN)->retornaProtocoloFormatadoDocumentoPorSituacao($objMdLitLancamentoDTO->getNumIdMdLitSituacaoDecisaoDefin());
                   }
                   break;
             }

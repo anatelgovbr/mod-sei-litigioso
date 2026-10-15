@@ -303,21 +303,14 @@ switch($_GET['acao']) {
         }
 
         //retorna parametros de entrada mapeados para funcionalidade de RetificarLançamento
-        $objMdLitMapearParamEntradaDTO    = new MdLitMapearParamEntradaDTO();
-        $objMdLitMapearParamEntradaRN = new MdLitMapearParamEntradaRN();
-        $objMdLitMapearParamEntradaDTO->retTodos();
-
-        $objMdLitMapearParamEntradaDTO->setNumIdMdLitIntegracao(MdLitMapearParamEntradaRN::$ID_PARAM_INTEGRACAO['RETIFICAR_LANCAMENTO']);
-        $objMdLitMapearParamEntradaDTO->setOrdStrCampo(InfraDTO::$TIPO_ORDENACAO_ASC);
-        $arrObjMdLitMapearParamEntradaDTO = $objMdLitMapearParamEntradaRN->listar($objMdLitMapearParamEntradaDTO);
-        $arrObjMdLitMapearParamEntrada = $arrObjMdLitMapearParamEntradaDTO;
+        $objMdLitIntegracaoRetificarDTO = (new MdLitIntegracaoRN())->retornarObjIntegracaoDTOPorFuncionalidade(MdLitIntegracaoRN::$ARRECADACAO_RETIFICAR_LANCAMENTO);
 
         //retorna todos os campos mapeados para entrda no webservice
-        $arrCampoMapeaParamEntrada = array();
+        $arrCampoMapeaParamEntrada = [];
 
-        if(count($arrObjMdLitMapearParamEntrada) > 0){
-            foreach( $arrObjMdLitMapearParamEntrada as $paramEntrada){
-                array_push($arrCampoMapeaParamEntrada, $paramEntrada->getStrCampo());
+        if($objMdLitIntegracaoRetificarDTO){
+            foreach($objMdLitIntegracaoRetificarDTO->getArrObjMdLitMapearParamEntradaDTO() as $paramEntrada){
+                $arrCampoMapeaParamEntrada[] = $paramEntrada->getStrCampo();
             }
         }
 

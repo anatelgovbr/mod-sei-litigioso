@@ -59,6 +59,16 @@
 5. Para parametrização dos Dispositivos Normativos e Condutas, vide planilha de exemplo da parametrização da Anatel: https://docs.google.com/spreadsheets/d/e/2PACX-1vT9mkpXBjvQbMcodB9q_bsuoLjcLwKNk9n2JSS199HXQybl56qKSkPyI-o6Pfs8kGWGqvMnZDDSJvuZ/pubhtml
 6. A parametrização da Lista de Serviços Outorgados e do Mapeamento das Integrações é **opcional**, mas é DETERMINANTE para que o módulo possa fazer a gestão de multas e pagamentos relacionadas ao controle litigioso.
 
+## Integração com a suspensão automática do Peticionamento
+
+O [hook `alterarContato`](LitigiosoIntegracao.php) mantém o bloqueio e as dispensas anteriores por unidade e contexto. A única nova dispensa vale durante os agendamentos CPF/CNPJ de suspensão automática do Peticionamento, com o módulo habilitado, contexto interno ativo e usuário efetivo igual ao usuário técnico previamente validado pela [RN do Peticionamento](../peticionamento/rn/MdPetIntUsuarioRN.php). Ser usuário técnico, estar com a sessão desabilitada ou pertencer a uma unidade específica não basta para obter essa nova dispensa.
+
+Na suspensão de autorrepresentação, o Peticionamento atualiza a observação do contato e desativa o usuário externo, sem inativar o contato. Suspensões manuais, outras ações e execuções sem a identidade/contexto exigidos continuam seguindo as verificações anteriores. A nova dispensa não usa parâmetros HTTP nem amplia a lista de unidades dispensadas.
+
+Publique este hook junto com as RNs de usuário, agendamento e vínculos do Peticionamento. Não há alteração de esquema, recursos SIP, parâmetros ou versão nesta integração. Se o Peticionamento instalado não disponibilizar o verificador de contexto, o hook mantém o fluxo anterior, sem conceder a nova dispensa.
+
+O [teste isolado](../peticionamento/tests/suspensao_identidade_test.php), executado com `php /opt/sei/web/modulos/peticionamento/tests/suspensao_identidade_test.php`, passou em 55 cenários, incluindo o hook real, bloqueio para usuário humano e técnico fora do agendamento, módulo desabilitado, troca de identidade efetiva, geração de documento fora do escopo e preservação das regras existentes. O lint do hook passou. Os testes não acessam o banco configurado ou a RFB. A homologação do fluxo e da auditoria em ambiente autorizado permanece pendente; os gates das RNs do Peticionamento ainda apresentam apontamentos preexistentes.
+
 ## Erros ou Sugestões
 1. [Abrir Issue](https://github.com/anatelgovbr/mod-sei-litigioso/issues) no repositório do GitHub do módulo se ocorrer erro na execução dos scripts de banco do módulo no SEI ou no SIP acima.
 2. [Abrir Issue](https://github.com/anatelgovbr/mod-sei-litigioso/issues) no repositório do GitHub do módulo se ocorrer erro na operação do módulo.

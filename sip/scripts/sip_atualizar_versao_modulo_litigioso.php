@@ -1,4 +1,4 @@
-<?
+<?php
 require_once dirname(__FILE__) . '/../web/Sip.php';
 
 class MdLitAtualizadorSipRN extends InfraRN
@@ -2190,6 +2190,20 @@ class MdLitAtualizadorSipRN extends InfraRN
     {
         $nmVersao = '2.6.0';
         $this->logar('EXECUTANDO A INSTALACAO/ATUALIZACAO DA VERSAO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->atualizarNumeroVersao($nmVersao);
+    }
+
+    protected function instalarV270()
+    {
+        $nmVersao = '2.7.0';
+        $this->logar('EXECUTANDO A INSTALACAO/ATUALIZACAO DA VERSAO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+
+        $numIdSistemaSei = $this->getIdSistemaSei();
+        $numIdPerfilSeiBasico = $this->getIdPerfil($this->nomePerfilBasico);
+
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_decisao_historico');
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiBasico, 'md_lit_processo_cadastro_consultar');
+
         $this->atualizarNumeroVersao($nmVersao);
     }
 

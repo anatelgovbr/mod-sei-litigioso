@@ -1,4 +1,4 @@
-<?
+<?php
 require_once dirname(__FILE__) . '/../web/SEI.php';
 
 class MdLitAtualizadorSeiRN extends InfraRN
@@ -2609,6 +2609,53 @@ class MdLitAtualizadorSeiRN extends InfraRN
         BancoSEI::getInstance()->executarSql('UPDATE md_lit_tipo_controle SET prazo_dias_crit_venc_min = 30 WHERE prazo_dias_crit_venc_min IS NULL');
 
         $this->atualizarNumeroVersao($nmVersao);
+    }
+
+    protected function instalarv270()
+    {
+        $nmVersao = '2.7.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
+
+        $strDescricao = 'Agendamento responsável por enviar para Anatel dados de versão dos módulos mantidos pela Anatel.';
+        $strComando = 'MdLitAgendamentoAutomaticoRN::EnviarDadosSistemaModulo';
+        $strPeriodicidadeComplemento = '1/0';
+        $this->_cadastrarNovoAgendamento($strDescricao, $strComando, $strPeriodicidadeComplemento, InfraAgendamentoTarefaRN::$PERIODICIDADE_EXECUCAO_DIA_SEMANA);
+
+        $this->atualizarNumeroVersao($nmVersao);
+    }
+
+    private function _cadastrarNovoAgendamento($strDescricao = null, $strComando = null, $strPeriodicidadeComplemento = 0, $strPeriodicidade = null)
+    {
+        $objInfraParametro = new InfraParametro(BancoSEI::getInstance());
+        SessaoInfra::setObjInfraSessao(SessaoSEI::getInstance());
+        $strEmailErro = $objInfraParametro->getValor('SEI_EMAIL_ADMINISTRADOR');
+
+        $msgLogar = 'Inserção de Novo Agendamento: ' . $strDescricao;
+        $this->logar($msgLogar);
+
+        if (is_null($strPeriodicidade)) {
+            $strPeriodicidade = InfraAgendamentoTarefaRN::$PERIODICIDADE_EXECUCAO_HORA;
+        }
+
+        if (!is_null($strDescricao) && !is_null($strComando)) {
+
+            $strComando = trim($strComando);
+
+            $infraAgendamentoDTO = new InfraAgendamentoTarefaDTO();
+            $infraAgendamentoDTO->setStrDescricao($strDescricao);
+            $infraAgendamentoDTO->setStrComando($strComando);
+            $infraAgendamentoDTO->setStrSinAtivo('S');
+            $infraAgendamentoDTO->setStrStaPeriodicidadeExecucao($strPeriodicidade);
+            $infraAgendamentoDTO->setStrPeriodicidadeComplemento($strPeriodicidadeComplemento);
+            $infraAgendamentoDTO->setStrParametro(null);
+            $infraAgendamentoDTO->setDthUltimaExecucao(null);
+            $infraAgendamentoDTO->setDthUltimaConclusao(null);
+            $infraAgendamentoDTO->setStrSinSucesso('S');
+            $infraAgendamentoDTO->setStrEmailErro($strEmailErro);
+
+            $infraAgendamentoRN = new InfraAgendamentoTarefaRN();
+            $infraAgendamentoRN->cadastrar($infraAgendamentoDTO);
+        }
     }
 
     protected function cadastrarParametroVerificarUnidadePermitidaAlterarContato()
