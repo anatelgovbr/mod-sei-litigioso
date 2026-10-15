@@ -1219,8 +1219,16 @@
             return parent::anexarProcesso($objProcedimentoAPIPrincipal, $objProcedimentoAPIAnexado);
         }
 
+        /** Preserva o bloqueio, exceto na suspensão RFB com identidade técnica validada. */
         public function alterarContato(ContatoAPI $objContatoAPI)
         {
+            $arrModulos = ConfiguracaoSEI::getInstance()->getValor('SEI', 'Modulos');
+            if (is_array($arrModulos)
+                && array_key_exists('PeticionamentoIntegracao', $arrModulos)
+                && method_exists(MdPetIntUsuarioRN::class, 'isExecutandoSuspensaoAutomatica')
+                && MdPetIntUsuarioRN::isExecutandoSuspensaoAutomatica()) {
+                return parent::alterarContato($objContatoAPI);
+            }
 
             if (SessaoSEI::getInstance()->verificarPermissao('md_lit_dado_interessado_listar')) {
 

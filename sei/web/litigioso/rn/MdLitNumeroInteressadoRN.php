@@ -144,6 +144,47 @@ class MdLitNumeroInteressadoRN extends InfraRN {
         }
     }
 
+    public function gerarNumeroComplementar(MdLitNumeroInteressadoDTO $objMdLitNumeroInteressadoDTO){
+        $numeroComplementar = null;
+        $objMdLitIntegracaoRN   = new MdLitIntegracaoRN();
+
+        $objMdLitIntegracaoDTO  = $objMdLitIntegracaoRN->retornarObjIntegracaoDTOPorFuncionalidade(MdLitIntegracaoRN::$GERAR_NUMERO_COMPLEMENTAR_ENTIDADE_NAO_OUTORGADA);
+
+        if(!$objMdLitIntegracaoDTO){
+            $objInfraException = new InfraException();
+            $objInfraException->adicionarValidacao('O Número Complementar do Interessado é obrigatório para a inclusão do lançamento. Antes, é necessário que a Administração do SEI parametrize o Mapeamento da Integração correspondente à funcionalidade "Gerar Número do Interessado para Entidade não Outorgada".');
+            $objInfraException->lancarValidacoes();
+        }
+
+        $objMdLitSoapClienteRN = new MdLitSoapClienteRN($objMdLitIntegracaoDTO->getStrEnderecoWsdl() , ['soap_version' => $objMdLitIntegracaoDTO->getStrVersaoSoap()] );
+
+        //monta os parametros de entrada do web-service
+        $montarParametroEntrada = array();
+        foreach ($objMdLitIntegracaoDTO->getArrObjMdLitMapearParamEntradaDTO() as $objMdLitMapearParamEntradaDTO){
+            switch ($objMdLitMapearParamEntradaDTO->getNumIdMdLitCampoIntegracao()){
+                case MdLitMapearParamEntradaRN::$ID_PARAM_GERAR_NUMERO_NAO_OUTORGADA['SISTEMA_ORIGEM']:
+                    $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = MdLitLancamentoRN::$SISTEMA_ORIGEM;
+                    break;
+            }
+
+        }
+
+        $arrResultado = $objMdLitSoapClienteRN->enviarDadosSigecLancamento($objMdLitIntegracaoDTO, $montarParametroEntrada, MdLitMapearParamEntradaRN::$PARAM_PRINCIPAL_FILTROS);
+
+
+        foreach ($objMdLitIntegracaoDTO->getArrObjMdLitMapearParamSaidaDTO() as $objMdLitMapearParamSaidaDTO){
+            switch ($objMdLitMapearParamSaidaDTO->getNumIdMdLitCampoIntegracao()){
+                case MdLitMapearParamSaidaRN::$ID_PARAM_GERAR_NUMERO_NAO_OUTORGADA['NUMERO_INTERESSADO']:
+                    $numeroComplementar = $arrResultado['return'][$objMdLitMapearParamSaidaDTO->getStrCampo()];
+                    break;
+            }
+        }
+        $objMdLitNumeroInteressadoDTO->setStrNumero($numeroComplementar);
+        $this->alterar($objMdLitNumeroInteressadoDTO);
+        return $objMdLitNumeroInteressadoDTO;
+
+    }
+
     private function cadastrarRel(InfraRN $objRN, InfraDTO $objDTO, $arrId, $idMdLitNumeroInteressado, $strAtributo){
         if($arrId){
             foreach ($arrId as $id){

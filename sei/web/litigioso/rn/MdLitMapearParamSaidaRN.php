@@ -59,6 +59,10 @@ class MdLitMapearParamSaidaRN extends InfraRN {
         'SEQUENCIAL'       => 59,
     );
 
+    public static $ID_PARAM_GERAR_NUMERO_NAO_OUTORGADA = array(
+        'NUMERO_INTERESSADO' => 77
+    );
+
   public function __construct(){
     parent::__construct();
   }

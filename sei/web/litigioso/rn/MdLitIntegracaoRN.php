@@ -20,6 +20,7 @@ class MdLitIntegracaoRN extends InfraRN {
     public static $ARRECADACAO_DENEGAR_RECURSO           = 7;
     public static $ARRECADACAO_CANCELAR_RECURSO          = 8;
     public static $ARRECADACAO_LISTA_MOTIVO_CANCELAMENTO = 9;
+    public static $GERAR_NUMERO_COMPLEMENTAR_ENTIDADE_NAO_OUTORGADA = 10;
 
   public function __construct(){
     parent::__construct();

@@ -1,4 +1,4 @@
-<?
+<?php
 /**
 * ANATEL
 *
@@ -199,10 +199,12 @@ class MdLitRelDecisLancamentRN extends InfraRN {
             $objMdLitRelDecisLancamentDTO = new MdLitRelDecisLancamentDTO();
             $objMdLitRelDecisLancamentDTO->setNumIdMdLitDecisao((int) $idDecisao);
             $objMdLitRelDecisLancamentDTO->retTodos();
+            //DECISÕES LEGADAS PODEM TER MAIS DE UM VÍNCULO; BASTA SABER SE EXISTE ALGUM
+            $objMdLitRelDecisLancamentDTO->setNumMaxRegistrosRetorno(1);
 
-            $objMdLitRelDecisLancamentDTO = $this->consultar($objMdLitRelDecisLancamentDTO);
+            $arrObjMdLitRelDecisLancamentDTO = $this->listar($objMdLitRelDecisLancamentDTO);
 
-            if (!$objMdLitRelDecisLancamentDTO) {
+            if (empty($arrObjMdLitRelDecisLancamentDTO)) {
                 $objMdLitRelDecisLancamentDTO = new MdLitRelDecisLancamentDTO();
                 $objMdLitRelDecisLancamentDTO->setNumIdMdLitDecisao((int) $idDecisao);
                 $objMdLitRelDecisLancamentDTO->setNumIdMdLitLancamento($this->consultarIdLancamentoParaVinculacao($objMdLitLancamentoDTO));

@@ -79,7 +79,16 @@ class MdLitIncluirLancamentoRN extends InfraRN {
                 case MdLitMapearParamEntradaRN::$ID_PARAM_LANCAMENTO_CREDITO['NUMERO_INTERESSADO']:
                     $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $this->retornaCpfCnpjInteressado($objMdLitLancamentoDTO->getNumIdMdLitNumeroInteressado());
                     if ($this->retornarExigeDadosComplementares($idTipoControle) == 'S') {
-                        $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $objMdLitLancamentoDTO->getStrNumeroInteressado();
+                        $strNumeroInteressado = $objMdLitLancamentoDTO->getStrNumeroInteressado();
+
+                        if (!$strNumeroInteressado) {
+                            $objMdLitNumeroInteressadoDTO = (new MdLitNumeroInteressadoRN)->retornaObjNumeroInteressado($objMdLitLancamentoDTO->getNumIdMdLitNumeroInteressado());
+                            $objMdLitNumeroInteressadoDTO = (new MdLitNumeroInteressadoRN)->gerarNumeroComplementar($objMdLitNumeroInteressadoDTO);
+                            $strNumeroInteressado = $objMdLitNumeroInteressadoDTO->getStrNumero();
+                            $objMdLitLancamentoDTO->setStrNumeroInteressado($strNumeroInteressado);
+                        }
+
+                        $montarParametroEntrada[$objMdLitMapearParamEntradaDTO->getStrCampo()] = $strNumeroInteressado;
                     }
                     break;
 
